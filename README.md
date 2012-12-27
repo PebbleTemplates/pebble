@@ -7,7 +7,7 @@ Pebble is not even in an alpha stage. It is not yet ready for use.
 
 ## Roadmap
 
-### Version 0.1
+### Version 0.1-alpha
 - tags: block, extends, filter, for, if, import, include, macro
 - filters: capitalize, date, default, escape, format, json_encode, length, lower, number_format, trim, upper, url_encode
 - functions: undetermined
