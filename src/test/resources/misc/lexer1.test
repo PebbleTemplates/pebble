@@ -1,0 +1,5 @@
+ {# single variable with weird whitespace #}
+   
+   <html>{{  name  
+
+}}  </html  >

@@ -1,0 +1,6 @@
+Macro test
+
+
+{% macro input(name, value, type, size) %}
+	<input name="{{ name }}" value="{{ value }}" type="{{ type }}" />
+{% endmacro %}

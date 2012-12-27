@@ -1,0 +1,4 @@
+{# syntax error due to unclosed bracket #}
+<html>
+
+{% [unclosedBracket %}</html>

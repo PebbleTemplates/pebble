@@ -1,0 +1,1 @@
+hello {{ object.simpleObject2.simpleObject.name }}

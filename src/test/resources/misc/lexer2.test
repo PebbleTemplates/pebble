@@ -1,0 +1,5 @@
+{#
+	Expression with numbers and a binary operator plus multiline comments.
+	
+#}
+<html>{%  3 %}</html>
