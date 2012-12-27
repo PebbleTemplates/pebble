@@ -8,9 +8,10 @@ Pebble is not even in an alpha stage. It is not yet ready for use.
 ## Roadmap
 
 ### Version 0.1-alpha
-- tags: block, extends, filter, for, if, import, include, macro
-- filters: capitalize, date, default, escape, format, json_encode, length, lower, number_format, trim, upper, url_encode
-- functions: undetermined
+- Expected January 2013
+- tags: block, extends, for, if, import, include, macro
+- filters: capitalize, date, default, format, json_encode, length, lower, number_format, trim, upper, url_encode
+- functions: not yet determined
 - tests: empty, even, null, odd
 - operators: in, is, +, -, /, *, %, and, or, not, (), ==, !=, <, >, <=, >=, |, .
 - extensive unit tests
