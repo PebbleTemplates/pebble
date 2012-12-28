@@ -12,6 +12,8 @@ package com.mitchellbosecke.pebble.extension;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class CoreExtension implements Extension {
 		filters.add(new FilterFunction("date", dateFilter));
 		filters.add(new FilterFunction("url_encode", urlEncoderFilter));
 		filters.add(new FilterFunction("format", formatFilter));
+		filters.add(new FilterFunction("number_format", numberFilter));
 		return filters;
 	}
 
@@ -142,6 +145,18 @@ public class CoreExtension implements Extension {
 			DateFormat format = new SimpleDateFormat((String) data.get(data.size() - 1));
 
 			return format.format(arg);
+		}
+	};
+
+	private Command<Object, List<Object>> numberFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+
+			Double number = (Double) data.get(0);
+
+			Format format = new DecimalFormat((String) data.get(1));
+
+			return format.format(number);
 		}
 	};
 

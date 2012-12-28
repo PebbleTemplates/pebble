@@ -62,4 +62,12 @@ public class CoreFiltersTest extends AbstractTest {
 		assertEquals("I like foo and bar.", template.render(context));
 	}
 
+	@Test
+	public void testNumberFormat() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.number_format.peb");
+		Map<String, Object> context = new HashMap<>();
+		context.put("currencyFormat", "$#,###,###,##0.00");
+		assertEquals("You owe me $10,000.24.", template.render(context));
+	}
+
 }

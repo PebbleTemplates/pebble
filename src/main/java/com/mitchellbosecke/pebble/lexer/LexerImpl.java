@@ -85,7 +85,7 @@ public class LexerImpl implements Lexer {
 	 * Generic regular expressions for names, numbers, and punctuation.
 	 */
 	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
-	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+");
+	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
 	private static final Pattern REGEX_STRING = Pattern.compile("\".*?\"");
 	private static final String PUNCTUATION = "()[]{}?:.,|";
 
