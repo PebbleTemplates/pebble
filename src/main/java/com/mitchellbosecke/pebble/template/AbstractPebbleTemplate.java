@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,11 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	protected PebbleEngine engine;
 
 	public abstract void buildContent();
+	
+	@Override
+	public String render(){
+		return render(new HashMap<String,Object>());
+	}
 
 	@Override
 	public String render(Map<String, Object> context) {
@@ -35,7 +41,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		this.builder = new StringBuilder();
 		buildContent();
 		return builder.toString();
-
 	}
 
 	@Override

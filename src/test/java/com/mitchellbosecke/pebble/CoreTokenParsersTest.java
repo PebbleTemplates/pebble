@@ -9,7 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,9 +53,21 @@ public class CoreTokenParsersTest extends AbstractTest {
 	@Test
 	public void testMacro() {
 		PebbleTemplate template = pebble.loadTemplate("template.macro.peb");
-		template.render(new HashMap<String, Object>());
 		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n",
 				template.render(new HashMap<String, Object>()));
+	}
+	
+	@Test
+	public void testMacroFromAnotherFile() {
+		PebbleTemplate template = pebble.loadTemplate("template.macro2.peb");
+		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n",
+				template.render());
+	}
+	
+	@Test
+	public void testInclude() {
+		PebbleTemplate template = pebble.loadTemplate("template.include1.peb");
+		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n",template.render());
 	}
 
 	public class User {

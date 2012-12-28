@@ -15,8 +15,10 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 
 public interface PebbleTemplate {
 	
+	public String render();
+
 	public String render(Map<String, Object> model);
-	
+
 	public void setEngine(PebbleEngine engine);
 
 }
