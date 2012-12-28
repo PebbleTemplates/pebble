@@ -12,15 +12,20 @@ package com.mitchellbosecke.pebble.template;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	private String sourceCode;
-	private StringBuilder builder = new StringBuilder();
+	protected StringBuilder builder = new StringBuilder();
 	protected Map<String, Object> context;
+	protected PebbleEngine engine;
 
 	public abstract void buildContent();
 
@@ -30,20 +35,21 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		this.builder = new StringBuilder();
 		buildContent();
 		return builder.toString();
+
 	}
 
-	protected Object getContextValue(String key) {
-		if (context.containsKey(key)) {
-			return context.get(key);
-		} else {
-			throw new PebbleException("Could not find variable in context: "
-					+ key);
-		}
+	@Override
+	public void setEngine(PebbleEngine engine) {
+		this.engine = engine;
 	}
 
-	protected Object getAttribute(Object object, String attribute) {
-		
-		if(object == null){
+	protected Object getAttribute(NodeExpressionGetAttribute.Type type, Object object, String attribute) {
+		return getAttribute(type, object, attribute, new Object[0]);
+	}
+
+	protected Object getAttribute(NodeExpressionGetAttribute.Type type, Object object, String attribute, Object... args) {
+
+		if (object == null) {
 			throw new PebbleException(String.format("Can not get attribute [%s] of null object.", attribute));
 		}
 
@@ -51,77 +57,101 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		Object result = null;
 		boolean found = false;
-		
-		// is object a hash map?
-		if(object instanceof Map && ((Map<?,?>)object).containsKey(attribute)){
-			result = ((Map<?,?>)object).get(attribute);
-			found = true;
+
+		if (!NodeExpressionGetAttribute.Type.METHOD.equals(type)) {
+
+			// is object a hash map?
+			if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
+				result = ((Map<?, ?>) object).get(attribute);
+				found = true;
+			}
+
+			// check for public field
+			try {
+				Field field = clazz.getField(attribute);
+				result = field.get(object);
+				found = true;
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			}
 		}
 
-		// check for public field
-		try {
-			Field field = clazz.getField(attribute);
-			result = field.get(object);
-			found = true;
-		} catch (NoSuchFieldException | SecurityException
-				| IllegalArgumentException | IllegalAccessException e) {
+		if (result == null) {
+
+			Method method = null;
+
+			// check if attribute is a method
+			try {
+				method = clazz.getMethod(attribute);
+				found = true;
+			} catch (NoSuchMethodException | SecurityException e) {
+			}
+
+			// macro methods are prefixed with the word 'macro' to avoid
+			// conflicts.
+			if (method == null) {
+				try {
+
+					// in order to use reflection we need to know the EXACT
+					// number of arguments the intended method takes
+					List<Class<?>> paramTypes = new ArrayList<>();
+					for (@SuppressWarnings("unused")
+					Object param : args) {
+						paramTypes.add(Object.class);
+					}
+					
+					method = clazz.getMethod("macro" + attribute, paramTypes.toArray(new Class[paramTypes.size()]));
+					found = true;
+				} catch (NoSuchMethodException | SecurityException e) {
+				}
+			}
+
+			// capitalize first letter of attribute for the following attempts
+			attribute = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
+
+			// check get method
+			if (method == null) {
+				try {
+					method = clazz.getMethod("get" + attribute);
+					found = true;
+				} catch (NoSuchMethodException | SecurityException e) {
+				}
+			}
+
+			// check is method
+			if (method == null) {
+				try {
+					method = clazz.getMethod("is" + attribute);
+					found = true;
+				} catch (NoSuchMethodException | SecurityException e) {
+				}
+			}
+
+			if (method != null) {
+				try {
+					if (args.length > 0) {
+						result = method.invoke(object, args);
+					} else {
+						result = method.invoke(object);
+					}
+					found = true;
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				}
+			}
 		}
-		
-		Method method;
-		
-		// check if attribute is a method
-		try {
-			method = clazz.getMethod(attribute);
-			result = method.invoke(object);
-			found = true;
-		} catch (NoSuchMethodException | SecurityException
-				| IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
 
-		}
-		
-		// capitalize first letter of attribute for the following attempts
-		attribute = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
-
-
-		// check get method
-		try {
-			method = clazz.getMethod("get" + attribute);
-			result = method.invoke(object);
-			found = true;
-		} catch (NoSuchMethodException | SecurityException
-				| IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-		}
-
-		// check is method
-		try {
-			method = clazz.getMethod("is" + attribute);
-			result = method.invoke(object);
-			found = true;
-		} catch (NoSuchMethodException | SecurityException
-				| IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			
-		}
-
-		
-		if(!found){
-			throw new PebbleException(String.format("Attribute [%s] of [%s] does not exist or can not be accessed.", attribute, clazz));
+		if (!found) {
+			throw new PebbleException(String.format("Attribute [%s] of [%s] does not exist or can not be accessed.",
+					attribute, clazz));
 		}
 		return result;
 
 	}
 
-	public void append(String string) {
-		builder.append(string);
-	}
-	
-	public void setSourceCode(String source){
+	public void setSourceCode(String source) {
 		this.sourceCode = source;
 	}
-	
-	public String getSourceCode(){
+
+	public String getSourceCode() {
 		return sourceCode;
 	}
 

@@ -22,11 +22,11 @@ public class NodeRoot extends AbstractNode {
 	private final String parentClassName;
 
 	private final Map<String, NodeBlock> blocks;
-	
+
 	private final Map<String, NodeMacro> macros;
 
-	public NodeRoot(NodeBody body, String parent,
-			Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros, String filename) {
+	public NodeRoot(NodeBody body, String parent, Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros,
+			String filename) {
 		super(0);
 		this.body = body;
 		this.parentClassName = parent;
@@ -51,22 +51,23 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileClassHeader(Compiler compiler) {
-		String parentClass = this.parentClassName == null ? compiler.getEngine()
-				.getTemplateAbstractClass().getName() : parentClassName;
+		String parentClass = this.parentClassName == null ? compiler.getEngine().getTemplateAbstractClass().getName()
+				: parentClassName;
+
 		compiler.write("package com.mitchellbosecke.pebble.template;")
 				.raw("\n\n")
 				.write("import java.util.Map;")
-				.raw("\n\n")
-				.write(String.format(
-						"public class %s extends %s implements %s {", compiler
-								.getEngine().getTemplateClassName(filename),
-						parentClass, compiler.getEngine()
-								.getTemplateInterfaceClass().getName())).indent();
+				.raw("\n")
+				.write("import java.util.HashMap;")
+				.raw("\n")
+				.raw("\n")
+				.write(String.format("public class %s extends %s implements %s {", compiler.getEngine()
+						.getTemplateClassName(filename), parentClass, compiler.getEngine().getTemplateInterfaceClass()
+						.getName())).indent();
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {
-		compiler.raw("\n\n").write("public void buildContent() {").raw("\n")
-				.indent();
+		compiler.raw("\n\n").write("public void buildContent() {").raw("\n").indent();
 
 		body.compile(compiler);
 
@@ -82,9 +83,9 @@ public class NodeRoot extends AbstractNode {
 			compiler.raw("\n\n").subcompile(block);
 		}
 	}
-	
-	private void compileMacroMethods(Compiler compiler){
-		for(NodeMacro macro: macros.values()){
+
+	private void compileMacroMethods(Compiler compiler) {
+		for (NodeMacro macro : macros.values()) {
 			compiler.raw("\n\n").subcompile(macro);
 		}
 	}

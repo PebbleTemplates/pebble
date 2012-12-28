@@ -8,20 +8,21 @@
  * http://creativecommons.org/licenses/by-sa/3.0/
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 
-public class NodeText extends AbstractNode implements DisplayableNode{
-	
+public class NodeText extends AbstractNode implements DisplayableNode {
+
 	private final String data;
-	
-	public NodeText(String data, int lineNumber){
+
+	public NodeText(String data, int lineNumber) {
 		super(lineNumber);
 		this.data = data;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.appendContent(getData());
+		compiler.raw("\n").write("builder.append(String.valueOf(").string(getData()).raw("));");
 	}
 
 	public String getData() {

@@ -30,21 +30,22 @@ public class NodeMacro extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.write(String.format("public void macro%s", name)).subcompile(args).raw("{\n\n").indent();
+		compiler.write(String.format("public String macro%s", name)).subcompile(args).raw("{\n\n").indent();
+
+		// create a context that is local to this macro
+		compiler.write("Map<String,Object> context = new HashMap<>();").raw("\n");
 
 		// put args into context
-		for(NodeExpressionDeclaration arg : args.getArgs()){
+		for (NodeExpressionDeclaration arg : args.getArgs()) {
 			compiler.write("context.put(").string(arg.getName()).raw(",").raw(arg.getName()).raw(");\n");
 		}
-		
+
+		compiler.write("StringBuilder builder = new StringBuilder();").raw("\n");
+
 		compiler.subcompile(body);
-		
-		
-		// remove args from scope of context
-		for(NodeExpressionDeclaration arg : args.getArgs()){
-			compiler.write("context.remove(").string(arg.getName()).raw(");\n");
-		}
-		
+
+		compiler.write("return builder.toString();").raw("\n");
+
 		compiler.raw("\n").outdent().write("}");
 
 	}

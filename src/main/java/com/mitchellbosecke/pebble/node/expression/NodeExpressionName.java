@@ -23,7 +23,10 @@ public class NodeExpressionName extends NodeExpression {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("getContextValue(").string(name).raw(")");
+		compiler.raw("context.get(").string(name).raw(")");
 	}
 
+	public String getName(){
+		return name;
+	}
 }

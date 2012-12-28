@@ -21,6 +21,7 @@ import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ForTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.IfTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.ImportTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.utils.Operator;
@@ -39,6 +40,7 @@ public class CoreExtension implements Extension {
 		parsers.add(new IfTokenParser());
 		parsers.add(new ForTokenParser());
 		parsers.add(new MacroTokenParser());
+		parsers.add(new ImportTokenParser());
 		return parsers;
 	}
 	

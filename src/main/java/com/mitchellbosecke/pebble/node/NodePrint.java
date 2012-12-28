@@ -22,7 +22,7 @@ public class NodePrint extends AbstractNode implements DisplayableNode{
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("\n").write("append(String.valueOf(").subcompile(expression)
+		compiler.raw("\n").write("builder.append(String.valueOf(").subcompile(expression)
 				.raw("));");
 	}
 

@@ -14,20 +14,39 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionGetAttribute extends NodeExpression {
 
-	private final NodeExpression node;
-	private final NodeExpression attribute;
+	public static enum Type {
+		ANY, METHOD
+	};
 
-	public NodeExpressionGetAttribute(NodeExpression node,
-			NodeExpression attribute, int lineNumber) {
+	private final Type type;
+	private final NodeExpression node;
+	private final NodeExpressionConstant attribute;
+	private final NodeExpressionArguments args;
+
+	public NodeExpressionGetAttribute(int lineNumber, Type type, NodeExpression node, NodeExpressionConstant attribute) {
+		this(lineNumber, type, node, attribute, null);
+	}
+
+	public NodeExpressionGetAttribute(int lineNumber, Type type, NodeExpression node, NodeExpressionConstant attribute,
+			NodeExpressionArguments args) {
 		super(lineNumber);
 		this.node = node;
 		this.attribute = attribute;
+		this.type = type;
+		this.args = args;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("getAttribute(").subcompile(node).raw(",\"")
-				.subcompile(attribute).raw("\")");
+		compiler.raw("getAttribute(").raw(NodeExpressionGetAttribute.Type.class.getCanonicalName()).raw(".")
+				.raw(type.toString()).raw(",").subcompile(node).raw(",\"").subcompile(attribute).raw("\"");
+
+		if (args != null) {
+			for (NodeExpressionDeclaration arg : args.getArgs()) {
+				compiler.raw(",").raw(arg.getName());
+			}
+		}
+		compiler.raw(")");
 	}
 
 }

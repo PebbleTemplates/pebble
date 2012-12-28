@@ -272,7 +272,7 @@ public class ExpressionParser {
 
 	/**
 	 * A subscript expression can either be an expression getting an attribute
-	 * from a variable, or calling a method from a variable, etc.
+	 * from a variable, or calling a method from a variable.
 	 * 
 	 * @param node
 	 *            The expression parsed so far
@@ -280,15 +280,26 @@ public class ExpressionParser {
 	 */
 	private NodeExpression parseSubscriptExpression(NodeExpression node) {
 		TokenStream stream = parser.getStream();
-		Token token = stream.current();
-		int lineNumber = token.getLineNumber();
-		if (token.test(Token.Type.PUNCTUATION, ".")) {
-			token = stream.next();
-			if (token.test(Token.Type.NAME)) {
-				NodeExpression constant = new NodeExpressionConstant(token.getValue(), token.getLineNumber());
-				node = new NodeExpressionGetAttribute(node, constant, lineNumber);
-				stream.next();
+		int lineNumber = stream.current().getLineNumber();
+
+		if (stream.current().test(Token.Type.PUNCTUATION, ".")) {
+			
+			// skip over the '.' token
+			stream.next();
+			
+			Token token = stream.expect(Token.Type.NAME);
+
+			NodeExpressionConstant constant = new NodeExpressionConstant(token.getValue(), token.getLineNumber());
+
+			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
+
+				NodeExpressionArguments arguments = this.parseArguments();
+				node = new NodeExpressionGetAttribute(lineNumber, NodeExpressionGetAttribute.Type.METHOD, node, constant, arguments);
+
+			} else {
+				node = new NodeExpressionGetAttribute(lineNumber, NodeExpressionGetAttribute.Type.ANY, node, constant);
 			}
+
 		}
 		return node;
 	}
@@ -309,7 +320,7 @@ public class ExpressionParser {
 
 			Token token = stream.current();
 			vars.add(new NodeExpressionDeclaration(token.getLineNumber(), token.getValue()));
-			
+
 			stream.next();
 		}
 

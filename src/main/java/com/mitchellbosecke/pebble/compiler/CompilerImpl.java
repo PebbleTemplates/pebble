@@ -120,12 +120,6 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public Compiler appendContent(String string) {
-		write("append(").string(string).raw(");");
-		return this;
-	}
-
-	@Override
 	public PebbleTemplate compileToJava() {
 
 		/* Creating dynamic java source code file object */
