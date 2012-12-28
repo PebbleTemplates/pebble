@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
-import com.mitchellbosecke.pebble.utils.Operator;
+import com.mitchellbosecke.pebble.parser.Operator;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class LexerImpl implements Lexer {

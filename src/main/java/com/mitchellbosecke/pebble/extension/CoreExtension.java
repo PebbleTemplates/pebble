@@ -19,6 +19,7 @@ import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryOr;
+import com.mitchellbosecke.pebble.parser.Operator;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ForTokenParser;
@@ -28,7 +29,6 @@ import com.mitchellbosecke.pebble.tokenParser.IncludeTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.utils.Command;
-import com.mitchellbosecke.pebble.utils.Operator;
 
 public class CoreExtension implements Extension {
 

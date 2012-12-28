@@ -25,7 +25,6 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionName;
-import com.mitchellbosecke.pebble.utils.Operator;
 
 /**
  * Parses expressions.

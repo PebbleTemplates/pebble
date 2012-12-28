@@ -7,7 +7,7 @@
  * Unported License. To view a copy of this license, visit 
  * http://creativecommons.org/licenses/by-sa/3.0/
  ******************************************************************************/
-package com.mitchellbosecke.pebble.utils;
+package com.mitchellbosecke.pebble.parser;
 
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionOperator;
 

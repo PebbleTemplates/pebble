@@ -28,6 +28,7 @@ import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.LoaderImpl;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
+import com.mitchellbosecke.pebble.parser.Operator;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
@@ -35,7 +36,6 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBrokerImpl;
-import com.mitchellbosecke.pebble.utils.Operator;
 
 public class PebbleEngine {
 
