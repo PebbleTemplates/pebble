@@ -20,6 +20,7 @@ import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.extension.CoreExtension;
 import com.mitchellbosecke.pebble.extension.Extension;
+import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
@@ -70,6 +71,7 @@ public class PebbleEngine {
 	private TokenParserBroker tokenParserBroker;
 	private Map<String, Operator> unaryOperators;
 	private Map<String, Operator> binaryOperators;
+	private Map<String, Filter> filters;
 
 	/**
 	 * Constructor for the Pebble Engine give file system paths to templates.
@@ -224,6 +226,7 @@ public class PebbleEngine {
 		this.tokenParserBroker = new TokenParserBrokerImpl();
 		this.unaryOperators = new HashMap<>();
 		this.binaryOperators = new HashMap<>();
+		this.filters = new HashMap<>();
 
 		for (Extension extension : this.extensions.values()) {
 			initExtension(extension);
@@ -254,6 +257,13 @@ public class PebbleEngine {
 				}
 			}
 		}
+		
+		// filters
+		if(extension.getFilters() != null){
+			for(Filter filter : extension.getFilters()){
+				this.filters.put(filter.getTag(), filter);
+			}
+		}
 
 	}
 
@@ -276,6 +286,13 @@ public class PebbleEngine {
 			initExtensions();
 		}
 		return this.binaryOperators;
+	}
+	
+	public Map<String, Filter> getFilters(){
+		if(!this.extensionsInitialized){
+			initExtensions();
+		}
+		return this.filters;
 	}
 
 	/**

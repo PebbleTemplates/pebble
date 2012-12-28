@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.filter.Filter;
+import com.mitchellbosecke.pebble.filter.FilterFunction;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
@@ -25,6 +27,7 @@ import com.mitchellbosecke.pebble.tokenParser.ImportTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.IncludeTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+import com.mitchellbosecke.pebble.utils.Command;
 import com.mitchellbosecke.pebble.utils.Operator;
 
 public class CoreExtension implements Extension {
@@ -55,5 +58,31 @@ public class CoreExtension implements Extension {
 		operators.add(new Operator("!=", 20, new NodeExpressionBinaryNotEqual(), Operator.Associativity.LEFT));
 		return operators;
 	}
+	
+	@Override
+	public List<Filter> getFilters(){
+		ArrayList<Filter> filters = new ArrayList<>();
+		filters.add(new FilterFunction("lower", lowerFilter));
+		filters.add(new FilterFunction("upper", upperFilter));
+		return filters;
+	}
+	
+	private Command<Object, List<Object>> lowerFilter = new Command<Object, List<Object>>(){
+		@Override
+		public Object execute(List<Object> data) {
+			// first argument should be a string
+			String arg = (String)data.get(0);
+			return arg.toLowerCase();
+		}
+	};
+	
+	private Command<Object, List<Object>> upperFilter = new Command<Object, List<Object>>(){
+		@Override
+		public Object execute(List<Object> data) {
+			// first argument should be a string
+			String arg = (String)data.get(0);
+			return arg.toUpperCase();
+		}
+	};
 
 }

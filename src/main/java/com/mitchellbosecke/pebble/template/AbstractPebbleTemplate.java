@@ -13,12 +13,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
@@ -150,6 +152,18 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		}
 		return result;
 
+	}
+	
+	public Object applyFilter(String filterName, Object ... args){
+		List<Object> arguments = new ArrayList<>();
+		
+		// add the filterName to the arguments
+		
+		Collections.addAll(arguments, args);
+		
+		Map<String,Filter> filters = engine.getFilters();
+		Filter filter = filters.get(filterName);
+		return filter.apply(arguments);
 	}
 
 	public void setSourceCode(String source) {

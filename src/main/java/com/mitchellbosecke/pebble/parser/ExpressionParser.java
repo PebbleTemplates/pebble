@@ -22,6 +22,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionName;
 import com.mitchellbosecke.pebble.utils.Operator;
@@ -252,21 +253,51 @@ public class ExpressionParser {
 		while (true) {
 			current = stream.current();
 
-			// a period represents getting an attribute from a variable
 			if (current.test(Token.Type.PUNCTUATION, ".")) {
 
+				// a period represents getting an attribute from a variable or
+				// calling a method
 				node = parseSubscriptExpression(node);
 
-				// handle the filter operator
 			} else if (current.test(Token.Type.PUNCTUATION, "|")) {
-
-				// TODO: parse filter expression
-				// node = parseFilterExpression(node);
+				// handle the filter operator
+				node = parseFilterExpression(node);
 
 			} else {
 				break;
 			}
 		}
+		return node;
+	}
+
+	public NodeExpression parseFilterExpression(NodeExpression node) {
+		TokenStream stream = parser.getStream();
+		int lineNumber = stream.current().getLineNumber();
+
+		// skip over the | character
+		stream.next();
+
+		while (true) {
+			Token filterToken = stream.expect(Token.Type.NAME);
+
+			NodeExpressionConstant filterName = new NodeExpressionConstant(filterToken.getValue(),
+					filterToken.getLineNumber());
+			
+			NodeExpressionArguments args = null;
+			if(stream.current().test(Token.Type.PUNCTUATION, "(")){
+				args = this.parseArguments();
+			}
+			
+			node = new NodeExpressionFilter(lineNumber, node, filterName, args);
+			
+			if(!stream.current().test(Token.Type.PUNCTUATION, "|")){
+				break;
+			}else{
+				// skip over the | character and the while loop will continue
+				stream.next();
+			}
+		}
+		
 		return node;
 	}
 
@@ -283,10 +314,10 @@ public class ExpressionParser {
 		int lineNumber = stream.current().getLineNumber();
 
 		if (stream.current().test(Token.Type.PUNCTUATION, ".")) {
-			
+
 			// skip over the '.' token
 			stream.next();
-			
+
 			Token token = stream.expect(Token.Type.NAME);
 
 			NodeExpressionConstant constant = new NodeExpressionConstant(token.getValue(), token.getLineNumber());
@@ -294,7 +325,8 @@ public class ExpressionParser {
 			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 
 				NodeExpressionArguments arguments = this.parseArguments();
-				node = new NodeExpressionGetAttribute(lineNumber, NodeExpressionGetAttribute.Type.METHOD, node, constant, arguments);
+				node = new NodeExpressionGetAttribute(lineNumber, NodeExpressionGetAttribute.Type.METHOD, node,
+						constant, arguments);
 
 			} else {
 				node = new NodeExpressionGetAttribute(lineNumber, NodeExpressionGetAttribute.Type.ANY, node, constant);

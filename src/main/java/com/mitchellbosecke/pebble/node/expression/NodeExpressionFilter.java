@@ -12,22 +12,36 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
-public class NodeExpressionConstant extends NodeExpression {
+public class NodeExpressionFilter extends NodeExpression {
 
-	private final Object value;
+	protected final NodeExpression node;
 
-	public NodeExpressionConstant(Object value, int lineNumber) {
+	protected final NodeExpressionConstant filterName;
+
+	protected final NodeExpressionArguments args;
+
+	public NodeExpressionFilter(int lineNumber, NodeExpression node, NodeExpressionConstant filterName,
+			NodeExpressionArguments args) {
 		super(lineNumber);
-		this.value = value;
+		this.node = node;
+		this.filterName = filterName;
+		this.args = args;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(String.valueOf(value));
-	}
-	
-	public Object getValue(){
-		return value;
+
+		compiler.raw("applyFilter(").string(String.valueOf(filterName.getValue()));
+		
+		compiler.raw(",").subcompile(node);
+
+		if (args != null) {
+			for (NodeExpressionDeclaration arg : args.getArgs()) {
+				compiler.raw(",").subcompile(arg);
+			}
+		}
+
+		compiler.raw(")");
 	}
 
 }
