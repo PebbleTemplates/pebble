@@ -1,0 +1,2 @@
+{{ realDate | date("MM/dd/yyyy") }}
+{{ stringDate | date("yyyy-MMMM-d", "yyyy/MMMM/d") }}

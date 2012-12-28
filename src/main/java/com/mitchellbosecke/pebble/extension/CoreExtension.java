@@ -9,7 +9,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -48,9 +52,9 @@ public class CoreExtension implements Extension {
 		parsers.add(new IncludeTokenParser());
 		return parsers;
 	}
-	
+
 	@Override
-	public List<Operator> getBinaryOperators(){
+	public List<Operator> getBinaryOperators() {
 		ArrayList<Operator> operators = new ArrayList<>();
 		operators.add(new Operator("and", 15, new NodeExpressionBinaryAnd(), Operator.Associativity.LEFT));
 		operators.add(new Operator("or", 10, new NodeExpressionBinaryOr(), Operator.Associativity.LEFT));
@@ -58,30 +62,57 @@ public class CoreExtension implements Extension {
 		operators.add(new Operator("!=", 20, new NodeExpressionBinaryNotEqual(), Operator.Associativity.LEFT));
 		return operators;
 	}
-	
+
 	@Override
-	public List<Filter> getFilters(){
+	public List<Filter> getFilters() {
 		ArrayList<Filter> filters = new ArrayList<>();
 		filters.add(new FilterFunction("lower", lowerFilter));
 		filters.add(new FilterFunction("upper", upperFilter));
+		filters.add(new FilterFunction("date", dateFilter));
 		return filters;
 	}
-	
-	private Command<Object, List<Object>> lowerFilter = new Command<Object, List<Object>>(){
+
+	private Command<Object, List<Object>> lowerFilter = new Command<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 			// first argument should be a string
-			String arg = (String)data.get(0);
+			String arg = (String) data.get(0);
 			return arg.toLowerCase();
 		}
 	};
-	
-	private Command<Object, List<Object>> upperFilter = new Command<Object, List<Object>>(){
+
+	private Command<Object, List<Object>> upperFilter = new Command<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 			// first argument should be a string
-			String arg = (String)data.get(0);
+			String arg = (String) data.get(0);
 			return arg.toUpperCase();
+		}
+	};
+
+	private Command<Object, List<Object>> dateFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+
+			Date arg = null;
+
+			if (data.size() == 2) {
+				arg = (Date) data.get(0);
+			} else if (data.size() == 3) {
+				// second argument is the format of the existing date
+				DateFormat originalFormat = new SimpleDateFormat((String) data.get(1));
+
+				try {
+					arg = originalFormat.parse((String) data.get(0));
+				} catch (ParseException e) {
+					//TODO: figure out what to do here
+				}
+			}
+
+			// last argument is the intended format
+			DateFormat format = new SimpleDateFormat((String) data.get(data.size() - 1));
+
+			return format.format(arg);
 		}
 	};
 
