@@ -9,6 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -69,6 +71,8 @@ public class CoreExtension implements Extension {
 		filters.add(new FilterFunction("lower", lowerFilter));
 		filters.add(new FilterFunction("upper", upperFilter));
 		filters.add(new FilterFunction("date", dateFilter));
+		filters.add(new FilterFunction("url_encode", urlEncoderFilter));
+		filters.add(new FilterFunction("format", formatFilter));
 		return filters;
 	}
 
@@ -90,6 +94,31 @@ public class CoreExtension implements Extension {
 		}
 	};
 
+	private Command<Object, List<Object>> urlEncoderFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+			// first argument should be a string
+			String arg = (String) data.get(0);
+			try {
+				arg = URLEncoder.encode(arg, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+			}
+			return arg;
+		}
+	};
+
+	private Command<Object, List<Object>> formatFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+			// first argument should be a string
+			String arg = (String) data.get(0);
+
+			Object[] formatArgs = data.subList(1, data.size()).toArray();
+
+			return String.format(arg, formatArgs);
+		}
+	};
+
 	private Command<Object, List<Object>> dateFilter = new Command<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
@@ -105,7 +134,7 @@ public class CoreExtension implements Extension {
 				try {
 					arg = originalFormat.parse((String) data.get(0));
 				} catch (ParseException e) {
-					//TODO: figure out what to do here
+					// TODO: figure out what to do here
 				}
 			}
 

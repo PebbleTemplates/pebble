@@ -84,9 +84,9 @@ public class LexerImpl implements Lexer {
 	/**
 	 * Generic regular expressions for names, numbers, and punctuation.
 	 */
-	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9]*");
+	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
 	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+");
-	private static final Pattern REGEX_STRING = Pattern.compile("\".*\"");
+	private static final Pattern REGEX_STRING = Pattern.compile("\".*?\"");
 	private static final String PUNCTUATION = "()[]{}?:.,|";
 
 	/**
@@ -107,8 +107,10 @@ public class LexerImpl implements Lexer {
 		/*
 		 * Generate a special regex used to find the next START tag.
 		 */
-		this.regexStartTags = Pattern.compile(Pattern.quote(tagVariableOpen) + "|" + Pattern.quote(tagBlockOpen) + "|"
-				+ Pattern.quote(tagCommentOpen), Pattern.DOTALL);
+		this.regexStartTags =
+				Pattern.compile(Pattern.quote(tagVariableOpen) + "|" + Pattern.quote(tagBlockOpen) + "|"
+						+ Pattern.quote(tagCommentOpen),
+					Pattern.DOTALL);
 	}
 
 	/**
@@ -147,20 +149,20 @@ public class LexerImpl implements Lexer {
 		 */
 		while (this.cursor < this.end) {
 			switch (this.state) {
-				case DATA:
-					lexData();
-					break;
-				case BLOCK:
-					lexBlock();
-					break;
-				case VARIABLE:
-					lexVariable();
-					break;
-				case COMMENT:
-					lexComment();
-					break;
-				default:
-					break;
+			case DATA:
+				lexData();
+				break;
+			case BLOCK:
+				lexBlock();
+				break;
+			case VARIABLE:
+				lexVariable();
+				break;
+			case COMMENT:
+				lexComment();
+				break;
+			default:
+				break;
 			}
 
 		}
@@ -361,8 +363,9 @@ public class LexerImpl implements Lexer {
 		}
 
 		// we should have found something and returned by this point
-		throw new SyntaxException(String.format("Unexpected character \"%s\"", source.charAt(cursor)), lineNumber,
-				filename);
+		throw new SyntaxException(String.format("Unexpected character \"%s\"", source.charAt(cursor)),
+			lineNumber,
+			filename);
 
 	}
 

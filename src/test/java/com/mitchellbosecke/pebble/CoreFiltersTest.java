@@ -27,19 +27,19 @@ public class CoreFiltersTest extends AbstractTest {
 	@Test
 	public void testLower() {
 		PebbleTemplate template = pebble.loadTemplate("template.filter.lower.peb");
-		assertEquals("template",template.render());
+		assertEquals("template", template.render());
 	}
-	
+
 	@Test
 	public void testUpper() {
 		PebbleTemplate template = pebble.loadTemplate("template.filter.upper.peb");
-		assertEquals("TEMPLATE",template.render());
+		assertEquals("TEMPLATE", template.render());
 	}
-	
+
 	@Test
-	public void testDate() throws ParseException{
+	public void testDate() throws ParseException {
 		PebbleTemplate template = pebble.loadTemplate("template.filter.date.peb");
-		Map<String,Object> context = new HashMap<>();
+		Map<String, Object> context = new HashMap<>();
 		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
 		Date realDate = format.parse("2012-July-01");
 		context.put("realDate", realDate);
@@ -48,6 +48,18 @@ public class CoreFiltersTest extends AbstractTest {
 		assertEquals("07/01/20122012/July/1", template.render(context));
 	}
 
+	@Test
+	public void testUrlEncode() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.url_encode.peb");
+		assertEquals("The+string+%C3%BC%40foo-bar", template.render());
+	}
 
+	@Test
+	public void testFormat() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.format.peb");
+		Map<String, Object> context = new HashMap<>();
+		context.put("foo", "foo");
+		assertEquals("I like foo and bar.", template.render(context));
+	}
 
 }

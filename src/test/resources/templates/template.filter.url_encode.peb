@@ -1,0 +1,1 @@
+{{ "The string ü@foo-bar" | url_encode }}
