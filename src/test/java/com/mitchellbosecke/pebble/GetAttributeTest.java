@@ -9,7 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,7 +94,8 @@ public class GetAttributeTest extends AbstractTest {
 		template.render(model);
 	}
 	
-	@Test()
+	//TODO: should be a clean PebbleException here, not a null pointer?
+	@Test(expected = NullPointerException.class)
 	public void testNullAttribute() {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
 		Map<String,Object> model = new HashMap<>();

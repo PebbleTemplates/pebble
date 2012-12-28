@@ -14,9 +14,9 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionArguments extends NodeExpression {
 
-	private final NodeExpressionDeclaration[] args;
+	private final NodeExpression[] args;
 
-	public NodeExpressionArguments(int lineNumber, NodeExpressionDeclaration[] args) {
+	public NodeExpressionArguments(int lineNumber, NodeExpression[] args) {
 		super(lineNumber);
 		this.args = args;
 	}
@@ -25,7 +25,7 @@ public class NodeExpressionArguments extends NodeExpression {
 	public void compile(Compiler compiler) {
 		compiler.raw("(");
 
-		NodeExpressionDeclaration var;
+		NodeExpression var;
 		for (int i = 0; i < args.length; ++i) {
 			var = args[i];
 			compiler.subcompile(var, true);
@@ -38,7 +38,7 @@ public class NodeExpressionArguments extends NodeExpression {
 		compiler.raw(")");
 	}
 
-	public NodeExpressionDeclaration[] getArgs(){
+	public NodeExpression[] getArgs(){
 		return args;
 	}
 }

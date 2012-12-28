@@ -36,8 +36,9 @@ public class NodeMacro extends AbstractNode {
 		compiler.write("Map<String,Object> context = new HashMap<>();").raw("\n");
 
 		// put args into context
-		for (NodeExpressionDeclaration arg : args.getArgs()) {
-			compiler.write("context.put(").string(arg.getName()).raw(",").raw(arg.getName()).raw(");\n");
+		for (NodeExpression arg : args.getArgs()) {
+			compiler.write("context.put(").string(((NodeExpressionDeclaration) arg).getName()).raw(",")
+					.raw(((NodeExpressionDeclaration) arg).getName()).raw(");\n");
 		}
 
 		compiler.write("StringBuilder builder = new StringBuilder();").raw("\n");

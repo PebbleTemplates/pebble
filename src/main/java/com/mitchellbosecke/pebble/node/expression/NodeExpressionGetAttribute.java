@@ -42,8 +42,8 @@ public class NodeExpressionGetAttribute extends NodeExpression {
 				.raw(type.toString()).raw(",").subcompile(node).raw(",\"").subcompile(attribute).raw("\"");
 
 		if (args != null) {
-			for (NodeExpressionDeclaration arg : args.getArgs()) {
-				compiler.raw(",").raw(arg.getName());
+			for (NodeExpression arg : args.getArgs()) {
+				compiler.raw(",").subcompile(arg);
 			}
 		}
 		compiler.raw(")");

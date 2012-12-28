@@ -334,9 +334,13 @@ public class ExpressionParser {
 		}
 		return node;
 	}
-
+	
 	public NodeExpressionArguments parseArguments() {
-		List<NodeExpressionDeclaration> vars = new ArrayList<>();
+		return parseArguments(false);
+	}
+
+	public NodeExpressionArguments parseArguments(boolean isMethodDefinition) {
+		List<NodeExpression> vars = new ArrayList<>();
 		this.stream = this.parser.getStream();
 
 		int lineNumber = stream.current().getLineNumber();
@@ -349,15 +353,18 @@ public class ExpressionParser {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
 
-			Token token = stream.current();
-			vars.add(new NodeExpressionDeclaration(token.getLineNumber(), token.getValue()));
+			if(isMethodDefinition){
+				Token token = stream.expect(Token.Type.NAME);
+				vars.add(new NodeExpressionDeclaration(token.getLineNumber(), token.getValue()));
+			}else{
+				vars.add(subparseExpression());
+			}
 
-			stream.next();
 		}
 
 		stream.expect(Token.Type.PUNCTUATION, ")");
 
-		return new NodeExpressionArguments(lineNumber, vars.toArray(new NodeExpressionDeclaration[vars.size()]));
+		return new NodeExpressionArguments(lineNumber, vars.toArray(new NodeExpression[vars.size()]));
 	}
 
 	public NodeExpressionDeclaration parseDeclarationExpression() {

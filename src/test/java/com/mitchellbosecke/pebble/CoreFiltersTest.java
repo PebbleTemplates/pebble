@@ -44,6 +44,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Date realDate = format.parse("2012-July-01");
 		context.put("realDate", realDate);
 		context.put("stringDate", format.format(realDate));
+		context.put("format", "yyyy-MMMM-d");
 		assertEquals("07/01/20122012/July/1", template.render(context));
 	}
 

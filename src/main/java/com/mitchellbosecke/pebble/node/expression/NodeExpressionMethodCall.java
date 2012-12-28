@@ -32,13 +32,13 @@ public class NodeExpressionMethodCall extends NodeExpression {
 		compiler.subcompile(node).raw(".").subcompile(method).raw("(");
 
 		boolean isFirst = true;
-		for (NodeExpressionDeclaration arg : args.getArgs()) {
+		for (NodeExpression arg : args.getArgs()) {
 			if (!isFirst) {
 				compiler.raw(", ");
 			}
 			isFirst = false;
 
-			compiler.raw(arg.getName());
+			compiler.subcompile(arg);
 		}
 
 		compiler.raw(")");
