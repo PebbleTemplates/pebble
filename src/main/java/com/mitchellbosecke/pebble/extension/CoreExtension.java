@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.filter.FilterFunction;
@@ -76,6 +78,9 @@ public class CoreExtension implements Extension {
 		filters.add(new FilterFunction("url_encode", urlEncoderFilter));
 		filters.add(new FilterFunction("format", formatFilter));
 		filters.add(new FilterFunction("number_format", numberFilter));
+		filters.add(new FilterFunction("abbreviate", abbreviateFilter));
+		filters.add(new FilterFunction("capitalize", capitalizeFilter));
+		filters.add(new FilterFunction("trim", trimFilter));
 		return filters;
 	}
 
@@ -157,6 +162,36 @@ public class CoreExtension implements Extension {
 			Format format = new DecimalFormat((String) data.get(1));
 
 			return format.format(number);
+		}
+	};
+
+	private Command<Object, List<Object>> abbreviateFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+
+			String str = (String) data.get(0);
+
+			int maxWidth = (Integer) data.get(1);
+
+			return StringUtils.abbreviate(str, maxWidth);
+		}
+	};
+
+	private Command<Object, List<Object>> capitalizeFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+
+			String str = (String) data.get(0);
+			return StringUtils.capitalize(str);
+		}
+	};
+
+	private Command<Object, List<Object>> trimFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+
+			String str = (String) data.get(0);
+			return str.trim();
 		}
 	};
 

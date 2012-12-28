@@ -70,4 +70,22 @@ public class CoreFiltersTest extends AbstractTest {
 		assertEquals("You owe me $10,000.24.", template.render(context));
 	}
 
+	@Test
+	public void testAbbreviateFormat() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.abbreviate.peb");
+		assertEquals("This is a tes...", template.render());
+	}
+
+	@Test
+	public void testCapitalizeFormat() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.capitalize.peb");
+		assertEquals("This should be capitalized.", template.render());
+	}
+
+	@Test
+	public void testTrimFormat() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.trim.peb");
+		assertEquals("This should be trimmed.", template.render());
+	}
+
 }
