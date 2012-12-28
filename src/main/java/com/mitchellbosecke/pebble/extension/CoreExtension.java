@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.filter.FilterFunction;
@@ -81,6 +83,7 @@ public class CoreExtension implements Extension {
 		filters.add(new FilterFunction("abbreviate", abbreviateFilter));
 		filters.add(new FilterFunction("capitalize", capitalizeFilter));
 		filters.add(new FilterFunction("trim", trimFilter));
+		filters.add(new FilterFunction("json_encode", jsonEncodeFilter));
 		return filters;
 	}
 
@@ -192,6 +195,23 @@ public class CoreExtension implements Extension {
 
 			String str = (String) data.get(0);
 			return str.trim();
+		}
+	};
+
+	private Command<Object, List<Object>> jsonEncodeFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+
+			Object obj = data.get(0);
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			String json = null;
+			try {
+				json = mapper.writeValueAsString(obj);
+			} catch (JsonProcessingException e) {
+			}
+			return json;
 		}
 	};
 

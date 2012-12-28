@@ -71,21 +71,41 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testAbbreviateFormat() {
+	public void testAbbreviate() {
 		PebbleTemplate template = pebble.loadTemplate("template.filter.abbreviate.peb");
 		assertEquals("This is a tes...", template.render());
 	}
 
 	@Test
-	public void testCapitalizeFormat() {
+	public void testCapitalize() {
 		PebbleTemplate template = pebble.loadTemplate("template.filter.capitalize.peb");
 		assertEquals("This should be capitalized.", template.render());
 	}
 
 	@Test
-	public void testTrimFormat() {
+	public void testTrim() {
 		PebbleTemplate template = pebble.loadTemplate("template.filter.trim.peb");
 		assertEquals("This should be trimmed.", template.render());
+	}
+
+	@Test
+	public void testJsonEncode() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.json_encode.peb");
+		Map<String, Object> context = new HashMap<>();
+		context.put("obj", new User("Alex"));
+		assertEquals("{\"username\":\"Alex\"}", template.render(context));
+	}
+
+	public class User {
+		private final String username;
+
+		public User(String username) {
+			this.username = username;
+		}
+
+		public String getUsername() {
+			return username;
+		}
 	}
 
 }
