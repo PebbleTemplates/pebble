@@ -45,7 +45,7 @@ public class CoreFiltersTest extends AbstractTest {
 		context.put("realDate", realDate);
 		context.put("stringDate", format.format(realDate));
 		context.put("format", "yyyy-MMMM-d");
-		assertEquals("07/01/20122012/July/1", template.render(context));
+		assertEquals("07/01/2012\n2012-July-1\n2012/July/1", template.render(context));
 	}
 
 	@Test
@@ -94,6 +94,14 @@ public class CoreFiltersTest extends AbstractTest {
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", new User("Alex"));
 		assertEquals("{\"username\":\"Alex\"}", template.render(context));
+	}
+	
+	@Test
+	public void testDefault() {
+		PebbleTemplate template = pebble.loadTemplate("template.filter.default.peb");
+		Map<String, Object> context = new HashMap<>();
+		context.put("obj", null);
+		assertEquals("Hello Steve", template.render(context));
 	}
 
 	public class User {

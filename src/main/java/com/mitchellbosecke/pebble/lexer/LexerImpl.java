@@ -100,17 +100,14 @@ public class LexerImpl implements Lexer {
 		this.engine = engine;
 
 		// generate the regexes used to find the individual tags
-		this.regexVariableClose = Pattern.compile("^\\s*" + Pattern.quote(tagVariableClose));
+		this.regexVariableClose = Pattern.compile("^\\s*" + Pattern.quote(tagVariableClose) + "\\n?");
 		this.regexBlockClose = Pattern.compile("^\\s*" + Pattern.quote(tagBlockClose) + "\\n?");
-		this.regexCommentClose = Pattern.compile(Pattern.quote(tagCommentClose) + "\\n?", Pattern.DOTALL);
+		this.regexCommentClose = Pattern.compile(Pattern.quote(tagCommentClose) + "\\n?");
 
-		/*
-		 * Generate a special regex used to find the next START tag.
-		 */
+		//Generate a special regex used to find the next START tag
 		this.regexStartTags =
 				Pattern.compile(Pattern.quote(tagVariableOpen) + "|" + Pattern.quote(tagBlockOpen) + "|"
-						+ Pattern.quote(tagCommentOpen),
-					Pattern.DOTALL);
+						+ Pattern.quote(tagCommentOpen));
 	}
 
 	/**
@@ -392,7 +389,7 @@ public class LexerImpl implements Lexer {
 	 */
 	private void pushToken(Token.Type type, String value) {
 		// ignore empty text tokens
-		if (type.equals(Token.Type.TEXT) && StringUtils.isBlank(value))
+		if (type.equals(Token.Type.TEXT) && StringUtils.isEmpty(value))
 			return;
 		this.tokens.add(new Token(type, value, this.lineNumber));
 	}

@@ -84,6 +84,7 @@ public class CoreExtension implements Extension {
 		filters.add(new FilterFunction("capitalize", capitalizeFilter));
 		filters.add(new FilterFunction("trim", trimFilter));
 		filters.add(new FilterFunction("json_encode", jsonEncodeFilter));
+		filters.add(new FilterFunction("default", defaultFilter));
 		return filters;
 	}
 
@@ -215,4 +216,22 @@ public class CoreExtension implements Extension {
 		}
 	};
 
+
+	private Command<Object, List<Object>> defaultFilter = new Command<Object, List<Object>>() {
+		@Override
+		public Object execute(List<Object> data) {
+
+			Object obj = data.get(0);
+
+			Object defaultObj = data.get(1);
+			
+			if(obj == null){
+				return defaultObj;
+			}
+			return obj;
+		}
+	};
+
+
+	
 }

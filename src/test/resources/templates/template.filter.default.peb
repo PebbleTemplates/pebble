@@ -1,0 +1,1 @@
+{{ obj|default("Hello") }} {{ null|default("Steve") }}

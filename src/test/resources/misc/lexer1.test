@@ -1,4 +1,4 @@
- {# single variable with weird whitespace #}
+{# single variable with weird whitespace #}
    
    <html>{{  name  
 
