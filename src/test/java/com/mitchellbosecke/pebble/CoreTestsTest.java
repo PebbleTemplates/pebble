@@ -14,6 +14,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -57,6 +59,25 @@ public class CoreTestsTest extends AbstractTest {
 		context.put("obj2", new HashMap<String, Object>());
 		assertEquals(" null is not iterable.  one is iterable.  two is not iterable. ", template.render(context));
 	}
-
-
+	
+	@Test
+	public void testIsnt() {
+		PebbleTemplate template = pebble.loadTemplate("template.test.isnt.peb");
+		assertEquals(" two isnt odd.  null isnt iterable. ", template.render());
+		
+		
+		/*
+		String test = "is not cool";
+		Pattern pattern = Pattern.compile("^\\Qis not\\E|\\Qis\\E");
+		Matcher matcher = pattern.matcher(test);
+		
+		if(matcher.lookingAt()){
+			System.out.println("\n\n" + test.substring(0, matcher.end()) + "\n\n");
+		}else{
+			System.out.println("\n\n" + "NO MATCH" + "\n\n");
+		}
+		*/
+		
+		
+	}
 }

@@ -17,7 +17,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
+public class NodeExpressionBinaryIsNot extends NodeExpressionBinaryCallable {
 
 	@Override
 	public void compile(Compiler compiler) {
@@ -39,7 +39,7 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
 			method = (NodeExpressionConstant) right;
 		}
 
-		compiler.raw("applyTest(").string(String.valueOf(method.getValue()));
+		compiler.raw("(applyTest(").string(String.valueOf(method.getValue()));
 
 		compiler.raw(",").subcompile(left);
 
@@ -49,12 +49,12 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
 			}
 		}
 
-		compiler.raw(")");
+		compiler.raw(") == false)");
 	}
 
 	@Override
 	public void tree(TreeWriter tree) {
-		tree.write("binary is").subtree(left).subtree(right, true);
+		tree.write("binary is not").subtree(left).subtree(right, true);
 
 	}
 

@@ -305,7 +305,7 @@ public class PebbleEngine {
 		if(!this.extensionsInitialized){
 			initExtensions();
 		}
-		return this.binaryOperators;
+		return this.unaryOperators;
 	}
 	
 	public Map<String, Filter> getFilters(){

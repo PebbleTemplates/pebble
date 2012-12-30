@@ -10,7 +10,9 @@
 package com.mitchellbosecke.pebble.lexer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +24,7 @@ import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.parser.Operator;
 import com.mitchellbosecke.pebble.utils.Pair;
+import com.mitchellbosecke.pebble.utils.StringLengthComparator;
 
 public class LexerImpl implements Lexer {
 
@@ -104,10 +107,9 @@ public class LexerImpl implements Lexer {
 		this.regexBlockClose = Pattern.compile("^\\s*" + Pattern.quote(tagBlockClose) + "\\n?");
 		this.regexCommentClose = Pattern.compile(Pattern.quote(tagCommentClose) + "\\n?");
 
-		//Generate a special regex used to find the next START tag
-		this.regexStartTags =
-				Pattern.compile(Pattern.quote(tagVariableOpen) + "|" + Pattern.quote(tagBlockOpen) + "|"
-						+ Pattern.quote(tagCommentOpen));
+		// Generate a special regex used to find the next START tag
+		this.regexStartTags = Pattern.compile(Pattern.quote(tagVariableOpen) + "|" + Pattern.quote(tagBlockOpen) + "|"
+				+ Pattern.quote(tagCommentOpen));
 	}
 
 	/**
@@ -146,20 +148,20 @@ public class LexerImpl implements Lexer {
 		 */
 		while (this.cursor < this.end) {
 			switch (this.state) {
-			case DATA:
-				lexData();
-				break;
-			case BLOCK:
-				lexBlock();
-				break;
-			case VARIABLE:
-				lexVariable();
-				break;
-			case COMMENT:
-				lexComment();
-				break;
-			default:
-				break;
+				case DATA:
+					lexData();
+					break;
+				case BLOCK:
+					lexBlock();
+					break;
+				case VARIABLE:
+					lexVariable();
+					break;
+				case COMMENT:
+					lexComment();
+					break;
+				default:
+					break;
 			}
 
 		}
@@ -360,9 +362,8 @@ public class LexerImpl implements Lexer {
 		}
 
 		// we should have found something and returned by this point
-		throw new SyntaxException(String.format("Unexpected character \"%s\"", source.charAt(cursor)),
-			lineNumber,
-			filename);
+		throw new SyntaxException(String.format("Unexpected character \"%s\"", source.charAt(cursor)), lineNumber,
+				filename);
 
 	}
 
@@ -534,7 +535,7 @@ public class LexerImpl implements Lexer {
 	 */
 	private Pattern getOperatorRegex() {
 
-		ArrayList<String> operators = new ArrayList<>();
+		List<String> operators = new ArrayList<>();
 
 		for (Operator operator : engine.getUnaryOperators().values()) {
 			operators.add(operator.getSymbol());
@@ -543,16 +544,25 @@ public class LexerImpl implements Lexer {
 		for (Operator operator : engine.getBinaryOperators().values()) {
 			operators.add(operator.getSymbol());
 		}
+
+		/*
+		 * Since java's matcher doesn't conform with the posix standard of
+		 * matching the longest alternative (it matches the first alternative),
+		 * we must first sort all of the operators by length before creating the
+		 * regex. This is to help match "is not" over "is".
+		 */
+		Collections.sort(operators, new StringLengthComparator());
+
 		String regex = "^";
 
 		boolean isFirst = true;
 		for (String operator : operators) {
 			if (isFirst) {
-				regex += Pattern.quote(operator);
 				isFirst = false;
 			} else {
-				regex += "|" + Pattern.quote(operator);
+				regex += "|";
 			}
+			regex += Pattern.quote(operator);
 		}
 
 		return Pattern.compile(regex);

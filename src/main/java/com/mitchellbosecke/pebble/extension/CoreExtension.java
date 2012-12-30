@@ -32,6 +32,7 @@ import com.mitchellbosecke.pebble.filter.FilterFunction;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIs;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIsNot;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryOr;
 import com.mitchellbosecke.pebble.parser.Operator;
@@ -79,6 +80,7 @@ public class CoreExtension implements Extension {
 		operators.add(new Operator("==", 20, NodeExpressionBinaryEqual.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("!=", 20, NodeExpressionBinaryNotEqual.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("is", 100, NodeExpressionBinaryIs.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("is not", 100, NodeExpressionBinaryIsNot.class, Operator.Associativity.LEFT));
 		return operators;
 	}
 

@@ -1,0 +1,2 @@
+{% if 2 is not odd() %} two isnt odd. {% else %} two is odd. {% endif %}
+{% if null is not iterable() %} null isnt iterable. {% else %} null is iterable. {% endif %}
