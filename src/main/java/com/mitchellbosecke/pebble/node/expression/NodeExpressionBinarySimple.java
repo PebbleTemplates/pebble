@@ -11,31 +11,24 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionDeclaration extends NodeExpression {
+public abstract class NodeExpressionBinarySimple extends NodeExpressionBinary {
 
-	private final String name;
+	public NodeExpressionBinarySimple(){
+		super();
+	}
 
-	public NodeExpressionDeclaration(int lineNumber, String name) {
-		super(lineNumber);
-		this.name = name;
+	public NodeExpressionBinarySimple(int lineNumber, NodeExpression left, NodeExpression right) {
+		super(lineNumber, left, right);
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(String.format("Object %s", name));
+		compiler.raw("(").subcompile(left).raw(" ");
+		this.operator(compiler);
+		compiler.raw(" ").subcompile(right).raw(")");
 	}
 	
-	public String getName(){
-		return name;
-	}
-
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write(String.format("declaration [%s]", name));
-	}
-	
-	
+	public abstract void operator(Compiler compiler);
 
 }

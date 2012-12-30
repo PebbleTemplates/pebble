@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodePrint extends AbstractNode implements DisplayableNode{
 
@@ -24,6 +25,11 @@ public class NodePrint extends AbstractNode implements DisplayableNode{
 	public void compile(Compiler compiler) {
 		compiler.raw("\n").write("builder.append(").subcompile(expression)
 				.raw(".toString());");
+	}
+	
+	@Override
+	public void tree(TreeWriter tree) {
+		tree.write("print").subtree(expression, true);
 	}
 
 }

@@ -11,12 +11,13 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionConstant extends NodeExpression {
 
 	private final Object value;
 
-	public NodeExpressionConstant(Object value, int lineNumber) {
+	public NodeExpressionConstant(int lineNumber, Object value) {
 		super(lineNumber);
 		this.value = value;
 	}
@@ -28,6 +29,11 @@ public class NodeExpressionConstant extends NodeExpression {
 	
 	public Object getValue(){
 		return value;
+	}
+	
+	@Override
+	public void tree(TreeWriter tree) {
+		tree.write(String.format("constant [%s]", String.valueOf(value)));
 	}
 
 }

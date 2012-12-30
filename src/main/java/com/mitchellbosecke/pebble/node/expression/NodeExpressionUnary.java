@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.node.Node;
 public abstract class NodeExpressionUnary extends NodeExpressionOperator {
 
 	private final Node node;
-	
+
 	public NodeExpressionUnary(int lineNumber, Node node) {
 		super(lineNumber);
 		this.node = node;
@@ -27,5 +27,7 @@ public abstract class NodeExpressionUnary extends NodeExpressionOperator {
 		operator(compiler);
 		compiler.subcompile(node).raw(")");
 	}
+
+	public abstract void operator(Compiler compiler);
 
 }

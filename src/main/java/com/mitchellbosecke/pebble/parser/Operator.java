@@ -15,16 +15,16 @@ public class Operator {
 
 	private final int precedence;
 	private final String symbol;
-	private final NodeExpressionOperator node;
+	private final Class<? extends NodeExpressionOperator> nodeClass;
 	private final Associativity associativity;
 	
 	
 	public enum Associativity { LEFT, RIGHT };
 
-	public Operator(String symbol, int precedence, NodeExpressionOperator node, Associativity associativity) {
+	public Operator(String symbol, int precedence, Class<? extends NodeExpressionOperator> nodeClass, Associativity associativity) {
 		this.symbol = symbol;
 		this.precedence = precedence;
-		this.node = node;
+		this.nodeClass = nodeClass;
 		this.associativity = associativity;
 	}
 
@@ -35,9 +35,15 @@ public class Operator {
 	public String getSymbol() {
 		return symbol;
 	}
-
-	public NodeExpressionOperator getNode() {
-		return node;
+	
+	public NodeExpressionOperator getNodeInstance(){
+		try {
+			return nodeClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public Associativity getAssociativity() {

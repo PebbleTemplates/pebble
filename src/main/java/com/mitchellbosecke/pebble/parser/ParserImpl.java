@@ -106,7 +106,7 @@ public class ParserImpl implements Parser {
 	 * The main method for the parser. This method does the work of converting
 	 * a TokenStream into a Node
 	 * 
-	 * @param stream	The TokenStream to convert into an Abstract Syntax Tree
+	 * @param stopCondition	A stopping condition provided by a token parser
 	 * @return Node		The root node of the generated Abstract Syntax Tree
 	 */
 	public NodeBody subparse(Command<Boolean, Token> stopCondition) {

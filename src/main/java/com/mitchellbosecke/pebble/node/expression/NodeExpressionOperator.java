@@ -9,10 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
-public abstract class NodeExpressionOperator extends NodeExpression{
+public abstract class NodeExpressionOperator extends NodeExpression {
 	
 	public NodeExpressionOperator(){
 		super();
@@ -22,5 +21,4 @@ public abstract class NodeExpressionOperator extends NodeExpression{
 		super(lineNumber);
 	}
 
-	public abstract void operator(Compiler compiler);
 }

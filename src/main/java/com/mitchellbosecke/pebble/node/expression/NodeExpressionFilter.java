@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionFilter extends NodeExpression {
 
@@ -42,6 +43,11 @@ public class NodeExpressionFilter extends NodeExpression {
 		}
 
 		compiler.raw(")");
+	}
+	
+	@Override
+	public void tree(TreeWriter tree) {
+		tree.write("filter").subtree(node).subtree(filterName).subtree(args, true);
 	}
 
 }

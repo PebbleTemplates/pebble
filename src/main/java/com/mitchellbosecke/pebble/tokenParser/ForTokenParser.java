@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeFor;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
 import com.mitchellbosecke.pebble.utils.Command;
 
 public class ForTokenParser extends AbstractTokenParser {
@@ -48,7 +48,7 @@ public class ForTokenParser extends AbstractTokenParser {
 		
 		stream.expect(Token.Type.BLOCK_END);
 		
-		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionName)iterable, body);
+		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionVariableName)iterable, body);
 	}
 
 	private Command<Boolean, Token> decideForFork = new Command<Boolean, Token>() {

@@ -9,36 +9,28 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionBinary extends NodeExpressionOperator {
 
-	private Node left;
-	private Node right;
+	protected NodeExpression left;
+	protected NodeExpression right;
 	
 	public NodeExpressionBinary(){
 		super();
 	}
 
-	public NodeExpressionBinary(int lineNumber, Node left, Node right) {
+	public NodeExpressionBinary(int lineNumber, NodeExpression left, NodeExpression right) {
 		super(lineNumber);
 		this.left = left;
 		this.right = right;
 	}
-
-	@Override
-	public void compile(Compiler compiler) {
-		compiler.raw("(").subcompile(left).raw(" ");
-		this.operator(compiler);
-		compiler.raw(" ").subcompile(right).raw(")");
-	}
 	
-	public void setLeft(Node left){
+	public void setLeft(NodeExpression left){
 		this.left = left;
 	}
 	
-	public void setRight(Node right){
+	public void setRight(NodeExpression right){
 		this.right = right;
 	}
 

@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeBlock extends AbstractNode {
 
@@ -40,6 +41,10 @@ public class NodeBlock extends AbstractNode {
 
 	}
 	
-	
+
+	@Override
+	public void tree(TreeWriter tree) {
+		tree.write(String.format("block [%s]", name)).subtree(body, true);
+	}
 
 }

@@ -9,24 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.NodeExpression;
 
-public class NodeExpressionName extends NodeExpression {
 
-	protected final String name;
+public abstract class NodeExpressionBinaryCallable extends NodeExpressionBinary {
 
-	public NodeExpressionName(int lineNumber, String name) {
-		super(lineNumber);
-		this.name = name;
-	}
-
-	@Override
-	public void compile(Compiler compiler) {
-		compiler.raw("context.get(").string(name).raw(")");
-	}
-
-	public String getName(){
-		return name;
-	}
 }

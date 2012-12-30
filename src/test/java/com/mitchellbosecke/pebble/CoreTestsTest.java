@@ -7,15 +7,21 @@
  * Unported License. To view a copy of this license, visit 
  * http://creativecommons.org/licenses/by-sa/3.0/
  ******************************************************************************/
-package com.mitchellbosecke.pebble.node;
+package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
+import static org.junit.Assert.assertEquals;
 
-public interface Node {
-	
-	public void compile(Compiler compiler);
-	
-	public void tree(TreeWriter treeWriter);
+import org.junit.Test;
+
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+public class CoreTestsTest extends AbstractTest {
+
+	@Test
+	public void testEven() {
+		PebbleTemplate template = pebble.loadTemplate("template.test.even.peb");
+		assertEquals(" two is even.  three is odd. ", template.render());
+	}
+
 
 }

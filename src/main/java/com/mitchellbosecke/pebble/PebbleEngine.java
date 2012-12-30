@@ -33,6 +33,7 @@ import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBrokerImpl;
@@ -72,6 +73,7 @@ public class PebbleEngine {
 	private Map<String, Operator> unaryOperators;
 	private Map<String, Operator> binaryOperators;
 	private Map<String, Filter> filters;
+	private Map<String, Test> tests;
 
 	/**
 	 * Constructor for the Pebble Engine give file system paths to templates.
@@ -159,7 +161,7 @@ public class PebbleEngine {
 	 *            The root Node of the AST
 	 * @return The source code of the new Java class
 	 */
-	public String compile(Node node) {
+	private String compile(Node node) {
 		return getCompiler().compile(node).getSource();
 	}
 
@@ -174,8 +176,9 @@ public class PebbleEngine {
 	 *            The filename of the template (used for meaningful error
 	 *            messages)
 	 */
-	public void compileSource(String sourceCode, String filename) {
-		compile(parse(tokenize(sourceCode, filename)));
+	private void compileSource(String sourceCode, String filename) {
+		Node root = parse(tokenize(sourceCode, filename));
+		compile(root);
 	}
 
 	public Loader getLoader() {
@@ -227,6 +230,7 @@ public class PebbleEngine {
 		this.unaryOperators = new HashMap<>();
 		this.binaryOperators = new HashMap<>();
 		this.filters = new HashMap<>();
+		this.tests = new HashMap<>();
 
 		for (Extension extension : this.extensions.values()) {
 			initExtension(extension);
@@ -249,7 +253,7 @@ public class PebbleEngine {
 			}
 		}
 		
-		// operators
+		// binary operators
 		if(extension.getBinaryOperators() != null){
 			for(Operator operator : extension.getBinaryOperators()){
 				if(!this.binaryOperators.containsKey(operator.getSymbol())){
@@ -258,10 +262,26 @@ public class PebbleEngine {
 			}
 		}
 		
+		// unary operators
+		if(extension.getUnaryOperators() != null){
+			for(Operator operator : extension.getUnaryOperators()){
+				if(!this.unaryOperators.containsKey(operator.getSymbol())){
+					this.unaryOperators.put(operator.getSymbol(), operator);
+				}
+			}
+		}
+		
 		// filters
 		if(extension.getFilters() != null){
 			for(Filter filter : extension.getFilters()){
 				this.filters.put(filter.getTag(), filter);
+			}
+		}
+		
+		// tests
+		if(extension.getTests() != null){
+			for(Test test : extension.getTests()){
+				this.tests.put(test.getTag(), test);
 			}
 		}
 
@@ -293,6 +313,13 @@ public class PebbleEngine {
 			initExtensions();
 		}
 		return this.filters;
+	}
+	
+	public Map<String, Test> getTests(){
+		if(!this.extensionsInitialized){
+			initExtensions();
+		}
+		return this.tests;
 	}
 
 	/**

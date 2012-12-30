@@ -13,46 +13,25 @@ import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionArguments extends NodeExpression {
+public class NodeExpressionVariableName extends NodeExpression {
 
-	private final NodeExpression[] args;
+	protected final String name;
 
-	public NodeExpressionArguments(int lineNumber, NodeExpression[] args) {
+	public NodeExpressionVariableName(int lineNumber, String name) {
 		super(lineNumber);
-		this.args = args;
+		this.name = name;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("(");
-
-		NodeExpression var;
-		for (int i = 0; i < args.length; ++i) {
-			var = args[i];
-			compiler.subcompile(var, true);
-
-			if (i < (args.length - 1)) {
-				compiler.raw(",");
-			}
-		}
-
-		compiler.raw(")");
+		compiler.raw("context.get(").string(name).raw(")");
 	}
 
-	public NodeExpression[] getArgs(){
-		return args;
+	public String getName(){
+		return name;
 	}
 	
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("arguments");
-		
-		for (int i = 0; i < args.length; ++i) {
-			if (i == (args.length - 1)) {
-				tree.subtree(args[i], true);
-			} else {
-				tree.subtree(args[i]);
-			}
-		}
+	public void tree(TreeWriter tree){
+		tree.write(String.format("variable name [%s]", name));
 	}
 }

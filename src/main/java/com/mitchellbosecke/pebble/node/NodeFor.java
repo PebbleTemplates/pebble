@@ -11,17 +11,18 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeFor extends AbstractNode {
 
 	private NodeExpressionDeclaration iterationVariable;
 
-	private NodeExpressionName iterable;
+	private NodeExpressionVariableName iterable;
 
 	private NodeBody body;
 
-	public NodeFor(int lineNumber, NodeExpressionDeclaration iterationVariable, NodeExpressionName iterable,
+	public NodeFor(int lineNumber, NodeExpressionDeclaration iterationVariable, NodeExpressionVariableName iterable,
 			NodeBody body) {
 		super(lineNumber);
 		this.iterationVariable = iterationVariable;
@@ -43,5 +44,10 @@ public class NodeFor extends AbstractNode {
 		// scope once we leave the for loop.
 		compiler.write("context.remove(").string(iterationVariable.getName()).raw(");").raw("\n");
 
+	}
+	
+	@Override
+	public void tree(TreeWriter tree) {
+		tree.write("for").subtree(iterationVariable).subtree(iterable).subtree(body, true);
 	}
 }

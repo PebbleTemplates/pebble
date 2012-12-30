@@ -11,7 +11,8 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeImport extends AbstractNode {
 
@@ -30,13 +31,18 @@ public class NodeImport extends AbstractNode {
 
 		compiler.write("context.put(").string(var.getName()).raw(",");
 
-		if (importExpression instanceof NodeExpressionName
-				&& "_self".equals(((NodeExpressionName) importExpression).getName())) {
+		if (importExpression instanceof NodeExpressionVariableName
+				&& "_self".equals(((NodeExpressionVariableName) importExpression).getName())) {
 			compiler.raw("this");
 		}
 		else{
 			compiler.raw("this.engine.loadTemplate(").subcompile(importExpression).raw(")");
 		}
 		compiler.raw(");\n");
+	}
+	
+	@Override
+	public void tree(TreeWriter tree) {
+		tree.write("import").subtree(importExpression, true);
 	}
 }

@@ -23,8 +23,9 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
 
 /**
  * Parses expressions.
@@ -70,7 +71,7 @@ public class ExpressionParser {
 
 		this.stream = parser.getStream();
 		Token token = stream.current();
-		NodeExpression expression;
+		NodeExpression expression = null;
 
 		/*
 		 * The first check is to see if the expression begins with a unary
@@ -124,7 +125,7 @@ public class ExpressionParser {
 			 * final expression. The operator provides us with the type of node
 			 * we are creating (and an instance of that node type)
 			 */
-			NodeExpressionBinary finalExpression = (NodeExpressionBinary) operator.getNode();
+			NodeExpressionBinary finalExpression = (NodeExpressionBinary) operator.getNodeInstance();
 
 			finalExpression.setLineNumber(stream.current().getLineNumber());
 			finalExpression.setLeft(expression);
@@ -178,44 +179,45 @@ public class ExpressionParser {
 		switch (token.getType()) {
 
 			case NAME:
-				/*
-				 * The token can either be a constant such as true, false, or
-				 * null or instead it might be the name of a variable or a
-				 * function.
-				 */
 				switch (token.getValue()) {
 
+					// a constant?
 					case "true":
 					case "TRUE":
-						node = new NodeExpressionConstant(true, token.getLineNumber());
+						node = new NodeExpressionConstant(token.getLineNumber(), true);
 						break;
 					case "false":
 					case "FALSE":
-						node = new NodeExpressionConstant(false, token.getLineNumber());
+						node = new NodeExpressionConstant(token.getLineNumber(), false);
 						break;
 					case "none":
 					case "NONE":
 					case "null":
 					case "NULL":
-						node = new NodeExpressionConstant(null, token.getLineNumber());
+						node = new NodeExpressionConstant(token.getLineNumber(), null);
 						break;
 
 					default:
-						// is it a method name?
-						// TODO: check for function
 
-						// it must be a variable name
-						node = new NodeExpressionName(token.getLineNumber(), token.getValue());
+						// name of a function?
+						if (stream.peek().test(Token.Type.PUNCTUATION, "(")) {
+							node = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
+						}
+
+						// variable name
+						else{
+							node = new NodeExpressionVariableName(token.getLineNumber(), token.getValue());
+						}
 						break;
 				}
 				break;
 
 			case NUMBER:
-				node = new NodeExpressionConstant(token.getValue(), token.getLineNumber());
+				node = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
 				break;
 
 			case STRING:
-				node = new NodeExpressionConstant(token.getValue(), token.getLineNumber());
+				node = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
 				break;
 
 			// not found, syntax error
@@ -259,14 +261,27 @@ public class ExpressionParser {
 				node = parseSubscriptExpression(node);
 
 			} else if (current.test(Token.Type.PUNCTUATION, "|")) {
+
 				// handle the filter operator
 				node = parseFilterExpression(node);
+
+			} else if (current.test(Token.Type.PUNCTUATION, "(")) {
+
+				// function call
+				node = parseFunctionExpression(node);
 
 			} else {
 				break;
 			}
 		}
 		return node;
+	}
+
+	public NodeExpression parseFunctionExpression(NodeExpression node) {
+		TokenStream stream = parser.getStream();
+		int lineNumber = stream.current().getLineNumber();
+		NodeExpressionArguments args = parseArguments();
+		return new NodeExpressionFunctionCall(lineNumber, (NodeExpressionConstant) node, args);
 	}
 
 	public NodeExpression parseFilterExpression(NodeExpression node) {
@@ -279,24 +294,24 @@ public class ExpressionParser {
 		while (true) {
 			Token filterToken = stream.expect(Token.Type.NAME);
 
-			NodeExpressionConstant filterName = new NodeExpressionConstant(filterToken.getValue(),
-					filterToken.getLineNumber());
-			
+			NodeExpressionConstant filterName = new NodeExpressionConstant(filterToken.getLineNumber(),
+					filterToken.getValue());
+
 			NodeExpressionArguments args = null;
-			if(stream.current().test(Token.Type.PUNCTUATION, "(")){
+			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 				args = this.parseArguments();
 			}
-			
+
 			node = new NodeExpressionFilter(lineNumber, node, filterName, args);
-			
-			if(!stream.current().test(Token.Type.PUNCTUATION, "|")){
+
+			if (!stream.current().test(Token.Type.PUNCTUATION, "|")) {
 				break;
-			}else{
+			} else {
 				// skip over the | character and the while loop will continue
 				stream.next();
 			}
 		}
-		
+
 		return node;
 	}
 
@@ -319,22 +334,23 @@ public class ExpressionParser {
 
 			Token token = stream.expect(Token.Type.NAME);
 
-			NodeExpressionConstant constant = new NodeExpressionConstant(token.getValue(), token.getLineNumber());
+			NodeExpressionConstant constant = new NodeExpressionConstant(token.getLineNumber(),token.getValue());
 
 			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 
 				NodeExpressionArguments arguments = this.parseArguments();
-				node = new NodeExpressionGetAttribute(lineNumber, NodeExpressionGetAttribute.Type.METHOD, node,
-						constant, arguments);
+				node = new NodeExpressionGetAttributeOrMethod(lineNumber,
+						NodeExpressionGetAttributeOrMethod.Type.METHOD, node, constant, arguments);
 
 			} else {
-				node = new NodeExpressionGetAttribute(lineNumber, NodeExpressionGetAttribute.Type.ANY, node, constant);
+				node = new NodeExpressionGetAttributeOrMethod(lineNumber, NodeExpressionGetAttributeOrMethod.Type.ANY,
+						node, constant);
 			}
 
 		}
 		return node;
 	}
-	
+
 	public NodeExpressionArguments parseArguments() {
 		return parseArguments(false);
 	}
@@ -353,10 +369,10 @@ public class ExpressionParser {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
 
-			if(isMethodDefinition){
+			if (isMethodDefinition) {
 				Token token = stream.expect(Token.Type.NAME);
 				vars.add(new NodeExpressionDeclaration(token.getLineNumber(), token.getValue()));
-			}else{
+			} else {
 				vars.add(subparseExpression());
 			}
 

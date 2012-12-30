@@ -12,6 +12,7 @@ package com.mitchellbosecke.pebble.node;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeRoot extends AbstractNode {
 
@@ -89,5 +90,8 @@ public class NodeRoot extends AbstractNode {
 			compiler.raw("\n\n").subcompile(macro);
 		}
 	}
-
+	
+	public void tree(TreeWriter tree){
+		tree.write("root").subtree(body, true);
+	}
 }

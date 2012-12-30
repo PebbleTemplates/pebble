@@ -29,9 +29,12 @@ import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.filter.FilterFunction;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIs;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryOr;
 import com.mitchellbosecke.pebble.parser.Operator;
+import com.mitchellbosecke.pebble.test.Test;
+import com.mitchellbosecke.pebble.test.TestFunction;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ForTokenParser;
@@ -60,14 +63,20 @@ public class CoreExtension implements Extension {
 		parsers.add(new IncludeTokenParser());
 		return parsers;
 	}
+	
+	@Override
+	public List<Operator> getUnaryOperators() {
+		return null;
+	}
 
 	@Override
 	public List<Operator> getBinaryOperators() {
 		ArrayList<Operator> operators = new ArrayList<>();
-		operators.add(new Operator("and", 15, new NodeExpressionBinaryAnd(), Operator.Associativity.LEFT));
-		operators.add(new Operator("or", 10, new NodeExpressionBinaryOr(), Operator.Associativity.LEFT));
-		operators.add(new Operator("==", 20, new NodeExpressionBinaryEqual(), Operator.Associativity.LEFT));
-		operators.add(new Operator("!=", 20, new NodeExpressionBinaryNotEqual(), Operator.Associativity.LEFT));
+		operators.add(new Operator("and", 15, NodeExpressionBinaryAnd.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("or", 10, NodeExpressionBinaryOr.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("==", 20, NodeExpressionBinaryEqual.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("!=", 20, NodeExpressionBinaryNotEqual.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("is", 100, NodeExpressionBinaryIs.class, Operator.Associativity.LEFT));
 		return operators;
 	}
 
@@ -86,6 +95,13 @@ public class CoreExtension implements Extension {
 		filters.add(new FilterFunction("json_encode", jsonEncodeFilter));
 		filters.add(new FilterFunction("default", defaultFilter));
 		return filters;
+	}
+	
+	@Override
+	public List<Test> getTests(){
+		ArrayList<Test> tests = new ArrayList<>();
+		tests.add(new TestFunction("even", evenTest));
+		return tests;
 	}
 
 	private Command<Object, List<Object>> lowerFilter = new Command<Object, List<Object>>() {
@@ -229,6 +245,17 @@ public class CoreExtension implements Extension {
 				return defaultObj;
 			}
 			return obj;
+		}
+	};
+	
+	
+	private Command<Boolean, List<Object>> evenTest = new Command<Boolean, List<Object>>() {
+		@Override
+		public Boolean execute(List<Object> data) {
+
+			Integer obj = (Integer) data.get(0);
+			
+			return (obj % 2 == 0);
 		}
 	};
 

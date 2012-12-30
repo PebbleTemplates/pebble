@@ -21,7 +21,8 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.filter.Filter;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
+import com.mitchellbosecke.pebble.test.Test;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
@@ -50,11 +51,11 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		this.engine = engine;
 	}
 
-	protected Object getAttribute(NodeExpressionGetAttribute.Type type, Object object, String attribute) {
+	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute) {
 		return getAttribute(type, object, attribute, new Object[0]);
 	}
 
-	protected Object getAttribute(NodeExpressionGetAttribute.Type type, Object object, String attribute, Object... args) {
+	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute, Object... args) {
 
 		if (object == null) {
 			throw new PebbleException(String.format("Can not get attribute [%s] of null object.", attribute));
@@ -65,7 +66,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		Object result = null;
 		boolean found = false;
 
-		if (!NodeExpressionGetAttribute.Type.METHOD.equals(type)) {
+		if (!NodeExpressionGetAttributeOrMethod.Type.METHOD.equals(type)) {
 
 			// is object a hash map?
 			if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
@@ -156,14 +157,22 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	
 	public Object applyFilter(String filterName, Object ... args){
 		List<Object> arguments = new ArrayList<>();
-		
-		// add the filterName to the arguments
-		
+
 		Collections.addAll(arguments, args);
 		
 		Map<String,Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
 		return filter.apply(arguments);
+	}
+	
+	public boolean applyTest(String testName, Object ... args){
+		List<Object> arguments = new ArrayList<>();
+
+		Collections.addAll(arguments, args);
+		
+		Map<String,Test> tests = engine.getTests();
+		Test test = tests.get(testName);
+		return test.apply(arguments);
 	}
 
 	public void setSourceCode(String source) {

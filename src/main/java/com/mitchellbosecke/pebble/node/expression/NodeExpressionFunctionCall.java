@@ -11,17 +11,16 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
+import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionMethodCall extends NodeExpression {
+public class NodeExpressionFunctionCall extends NodeExpression {
 
-	private final NodeExpression node;
 	private final NodeExpressionConstant method;
 	private final NodeExpressionArguments args;
 
-	public NodeExpressionMethodCall(int lineNumber, NodeExpression node, NodeExpressionConstant method,
+	public NodeExpressionFunctionCall(int lineNumber, NodeExpressionConstant method,
 			NodeExpressionArguments arguments) {
 		super(lineNumber);
-		this.node = node;
 		this.method = method;
 		this.args = arguments;
 	}
@@ -29,7 +28,7 @@ public class NodeExpressionMethodCall extends NodeExpression {
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.subcompile(node).raw(".").subcompile(method).raw("(");
+		compiler.subcompile(method).raw("(");
 
 		boolean isFirst = true;
 		for (NodeExpression arg : args.getArgs()) {
@@ -42,6 +41,20 @@ public class NodeExpressionMethodCall extends NodeExpression {
 		}
 
 		compiler.raw(")");
+	}
+	
+	public NodeExpressionConstant getMethod(){
+		return method;
+	}
+
+	public NodeExpressionArguments getArguments() {
+		return args;
+	}
+	
+
+	@Override
+	public void tree(TreeWriter tree) {
+		tree.write("function call ").subtree(method).subtree(args, true);
 	}
 
 }

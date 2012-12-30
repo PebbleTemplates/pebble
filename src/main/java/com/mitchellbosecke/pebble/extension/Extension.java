@@ -14,6 +14,7 @@ import java.util.List;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.parser.Operator;
+import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 public interface Extension {
@@ -21,8 +22,12 @@ public interface Extension {
 	public void initRuntime(PebbleEngine engine);
 
 	public List<Filter> getFilters();
+	
+	public List<Test> getTests();
 
 	public List<TokenParser> getTokenParsers();
 	
 	public List<Operator> getBinaryOperators();
+	
+	public List<Operator> getUnaryOperators();
 }
