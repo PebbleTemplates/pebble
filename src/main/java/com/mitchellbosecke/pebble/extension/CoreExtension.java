@@ -92,13 +92,13 @@ public class CoreExtension implements Extension {
 		filters.add(new FilterFunction("lower", lowerFilter));
 		filters.add(new FilterFunction("upper", upperFilter));
 		filters.add(new FilterFunction("date", dateFilter));
-		filters.add(new FilterFunction("url_encode", urlEncoderFilter));
+		filters.add(new FilterFunction("urlencode", urlEncoderFilter));
 		filters.add(new FilterFunction("format", formatFilter));
-		filters.add(new FilterFunction("number_format", numberFilter));
+		filters.add(new FilterFunction("number", numberFilter));
 		filters.add(new FilterFunction("abbreviate", abbreviateFilter));
 		filters.add(new FilterFunction("capitalize", capitalizeFilter));
 		filters.add(new FilterFunction("trim", trimFilter));
-		filters.add(new FilterFunction("json_encode", jsonEncodeFilter));
+		filters.add(new FilterFunction("json", jsonEncodeFilter));
 		filters.add(new FilterFunction("default", defaultFilter));
 		return filters;
 	}

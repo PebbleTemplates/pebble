@@ -1,1 +1,1 @@
-You owe me {{ 10000.235166 | number_format(currencyFormat) }}.
+You owe me {{ 10000.235166 | number(currencyFormat) }}.

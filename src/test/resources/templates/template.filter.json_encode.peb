@@ -1,1 +1,1 @@
-{{ obj | json_encode }}
+{{ obj | json }}
