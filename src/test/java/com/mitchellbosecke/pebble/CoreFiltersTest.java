@@ -101,7 +101,7 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("template.filter.default.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
-		assertEquals("Hello Steve", template.render(context));
+		assertEquals("Hello Steve Hello", template.render(context));
 	}
 
 	public class User {

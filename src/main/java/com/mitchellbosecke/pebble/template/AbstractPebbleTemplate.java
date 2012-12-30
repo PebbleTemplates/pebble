@@ -166,9 +166,14 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	}
 	
 	public boolean applyTest(String testName, Object ... args){
-		List<Object> arguments = new ArrayList<>();
-
-		Collections.addAll(arguments, args);
+		ArrayList<Object> arguments = new ArrayList<>();
+		
+		// if args is null, it's because there was ONE argument and that argument happens to be null
+		if(args == null){
+			arguments.add(null);
+		}else{
+			Collections.addAll(arguments, args);
+		}
 		
 		Map<String,Test> tests = engine.getTests();
 		Test test = tests.get(testName);

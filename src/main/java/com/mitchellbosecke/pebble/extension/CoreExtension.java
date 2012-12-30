@@ -17,8 +17,10 @@ import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -101,6 +103,10 @@ public class CoreExtension implements Extension {
 	public List<Test> getTests(){
 		ArrayList<Test> tests = new ArrayList<>();
 		tests.add(new TestFunction("even", evenTest));
+		tests.add(new TestFunction("odd", oddTest));
+		tests.add(new TestFunction("null", nullTest));
+		tests.add(new TestFunction("empty", emptyTest));
+		tests.add(new TestFunction("iterable", iterableTest));
 		return tests;
 	}
 
@@ -241,7 +247,7 @@ public class CoreExtension implements Extension {
 
 			Object defaultObj = data.get(1);
 			
-			if(obj == null){
+			if(emptyTest.execute(data)){
 				return defaultObj;
 			}
 			return obj;
@@ -258,7 +264,51 @@ public class CoreExtension implements Extension {
 			return (obj % 2 == 0);
 		}
 	};
+	
+	private Command<Boolean, List<Object>> oddTest = new Command<Boolean, List<Object>>() {
+		@Override
+		public Boolean execute(List<Object> data) {
 
+			return evenTest.execute(data) == false;
+		}
+	};
+	
+	private Command<Boolean, List<Object>> nullTest = new Command<Boolean, List<Object>>() {
+		@Override
+		public Boolean execute(List<Object> data) {
+			return (data.get(0) == null);
+		}
+	};
+	
+	private Command<Boolean, List<Object>> emptyTest = new Command<Boolean, List<Object>>() {
+		@Override
+		public Boolean execute(List<Object> data) {
+			Object obj = data.get(0);
+			boolean isEmpty = obj == null;
+			
+			if(!isEmpty && obj instanceof String){
+				isEmpty = StringUtils.isBlank(((String)obj));
+			}
+			
+			if(!isEmpty && obj instanceof Collection){
+				isEmpty = ((Collection<?>)obj).isEmpty();
+			}
+			
+			if(!isEmpty && obj instanceof Map){
+				isEmpty = ((Map<?,?>)obj).isEmpty();
+			}
+			
+			return isEmpty;
+		}
+	};
 
+	private Command<Boolean, List<Object>> iterableTest = new Command<Boolean, List<Object>>() {
+		@Override
+		public Boolean execute(List<Object> data) {
+			Object obj = data.get(0);
+			
+			return obj instanceof Iterable;
+		}
+	};
 	
 }
