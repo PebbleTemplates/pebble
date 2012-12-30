@@ -109,6 +109,7 @@ public class CoreExtension implements Extension {
 		tests.add(new TestFunction("null", nullTest));
 		tests.add(new TestFunction("empty", emptyTest));
 		tests.add(new TestFunction("iterable", iterableTest));
+		tests.add(new TestFunction("equalTo", equalsTest));
 		return tests;
 	}
 
@@ -310,6 +311,14 @@ public class CoreExtension implements Extension {
 			Object obj = data.get(0);
 			
 			return obj instanceof Iterable;
+		}
+	};
+	
+	private Command<Boolean, List<Object>> equalsTest = new Command<Boolean, List<Object>>() {
+		@Override
+		public Boolean execute(List<Object> data) {
+			Object obj = data.get(0);
+			return obj.equals(data.get(1));
 		}
 	};
 	

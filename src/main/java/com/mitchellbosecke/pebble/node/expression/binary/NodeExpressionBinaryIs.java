@@ -15,6 +15,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinaryCallable;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
@@ -33,10 +34,16 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
 		} else {
 
 			/*
-			 * TODO: adjust expression parser to allow users to call tests
-			 * without arguments which would lead them to this 'else' clause.
+			 * We allow the user to omit the brackets when calling tests that
+			 * dont require arguments. The parser parses this as a
+			 * "variable name" node instead of a constant or function call. We
+			 * have to make the conversion here.
+			 * 
+			 * TODO: Is this too much of a hack? Should the parser somehow be
+			 * tweaked to be more intelligent?
 			 */
-			method = (NodeExpressionConstant) right;
+			NodeExpressionVariableName name = (NodeExpressionVariableName) right;
+			method = new NodeExpressionConstant(name.getLineNumber(), name.getName());
 		}
 
 		compiler.raw("applyTest(").string(String.valueOf(method.getValue()));

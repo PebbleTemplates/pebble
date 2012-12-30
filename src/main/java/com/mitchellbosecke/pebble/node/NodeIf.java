@@ -38,7 +38,7 @@ public class NodeIf extends AbstractNode {
 			if (!isFirst) {
 				compiler.raw("\n").outdent().write("} else if (");
 			} else {
-				compiler.write("if (");
+				compiler.raw("\n").write("if (");
 			}
 
 			compiler.subcompile(ifStatement.getLeft()).raw(") {\n").indent().subcompile(ifStatement.getRight());
