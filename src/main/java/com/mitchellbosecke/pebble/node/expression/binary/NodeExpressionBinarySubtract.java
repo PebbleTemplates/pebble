@@ -7,32 +7,21 @@
  * Unported License. To view a copy of this license, visit 
  * http://creativecommons.org/licenses/by-sa/3.0/
  ******************************************************************************/
-package com.mitchellbosecke.pebble.node;
+package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinarySimple;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodePrint extends AbstractNode implements DisplayableNode{
-
-	private final NodeExpression expression;
-
-	public NodePrint(NodeExpression expression, int lineNumber) {
-		super(lineNumber);
-		this.expression = expression;
-	}
+public class NodeExpressionBinarySubtract extends NodeExpressionBinarySimple {
 
 	@Override
-	public void compile(Compiler compiler) {
-		
-		// the compile form first casts the expression to an Object
-		// just in case it's a primitive and we can't call toString
-		compiler.raw("\n").write("builder.append(((Object)").subcompile(expression)
-				.raw(").toString());");
+	public void operator(Compiler compiler) {
+		compiler.raw("-");
 	}
-	
+
 	@Override
 	public void tree(TreeWriter tree) {
-		tree.write("print").subtree(expression, true);
+		tree.write("-").subtree(left).subtree(right, true);
 	}
-
 }
