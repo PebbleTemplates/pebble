@@ -69,6 +69,14 @@ public class CoreTokenParsersTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("template.include1.peb");
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n",template.render());
 	}
+	
+	@Test
+	public void testSet() {
+		PebbleTemplate template = pebble.loadTemplate("template.set.peb");
+		Map<String, Object> context = new HashMap<>();
+		context.put("name", "steve");
+		assertEquals("alex", template.render(context));
+	}
 
 	public class User {
 		private final String username;

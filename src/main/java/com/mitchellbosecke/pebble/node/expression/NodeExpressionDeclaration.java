@@ -22,12 +22,24 @@ public class NodeExpressionDeclaration extends NodeExpression {
 		this.name = name;
 	}
 
+	/**
+	 * This compile function is really only useful when compiling a method
+	 * declaration. It becomes useless when compiling a method call or the
+	 * declaration is part of the "set" node.
+	 * 
+	 * useful:
+	 * public String method(Object name){ ... };
+	 * 
+	 * useless:
+	 * obj.method(name);
+	 * context.put(name, true); 
+	 */
 	@Override
 	public void compile(Compiler compiler) {
 		compiler.raw(String.format("Object %s", name));
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
 
@@ -35,7 +47,5 @@ public class NodeExpressionDeclaration extends NodeExpression {
 	public void tree(TreeWriter tree) {
 		tree.write(String.format("declaration [%s]", name));
 	}
-	
-	
 
 }

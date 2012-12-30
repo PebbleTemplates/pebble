@@ -17,6 +17,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
+import com.mitchellbosecke.pebble.node.NodeBlockReference;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
@@ -181,7 +182,7 @@ public class ExpressionParser {
 			case NAME:
 				switch (token.getValue()) {
 
-					// a constant?
+				// a constant?
 					case "true":
 					case "TRUE":
 						node = new NodeExpressionConstant(token.getLineNumber(), true);
@@ -205,7 +206,7 @@ public class ExpressionParser {
 						}
 
 						// variable name
-						else{
+						else {
 							node = new NodeExpressionVariableName(token.getLineNumber(), token.getValue());
 						}
 						break;
@@ -280,6 +281,7 @@ public class ExpressionParser {
 	public NodeExpression parseFunctionExpression(NodeExpression node) {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
+
 		NodeExpressionArguments args = parseArguments();
 		return new NodeExpressionFunctionCall(lineNumber, (NodeExpressionConstant) node, args);
 	}
@@ -334,7 +336,7 @@ public class ExpressionParser {
 
 			Token token = stream.expect(Token.Type.NAME);
 
-			NodeExpressionConstant constant = new NodeExpressionConstant(token.getLineNumber(),token.getValue());
+			NodeExpressionConstant constant = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
 
 			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 
