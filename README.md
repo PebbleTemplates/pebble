@@ -13,7 +13,7 @@ Pebble is not even in an alpha stage. It is not yet ready for use.
 - filters: abbreviate, capitalize, date, default, format, json_encode, lower, number_format, trim, upper, url_encode
 - functions: block, parent
 - tests: empty, even, null, odd, iterable
-- operators: in, is, is not, +, -, /, *, %, and, or, not, (), ==, !=, <, >, <=, >=, |, .
+- operators: in, is, is not, +, -, /, *, %, and, or, (), ==, !=, <, >, <=, >=, |, .
 - extensive unit tests
 - dedicated website and documentation
 
