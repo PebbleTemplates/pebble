@@ -9,7 +9,7 @@ Pebble is not even in an alpha stage. It is not yet ready for use.
 
 ### Version 0.1-alpha
 - Expected January 2013
-- tags: block, extends, for, if, import, include, macro
+- tags: block, extends, for, if, import, include, macro, set
 - filters: abbreviate, capitalize, date, default, format, json_encode, lower, number_format, trim, upper, url_encode
 - functions: block, parent
 - tests: empty, even, null, odd, iterable
