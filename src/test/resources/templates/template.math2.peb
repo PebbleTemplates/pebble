@@ -1,0 +1,15 @@
+{% if 3 > 2 %}
+three is greater than two
+{% endif %}
+{% if 2 > 3 %}
+two is greater than three
+{% endif %}
+{% if 2 < 3 %}
+two is less than three
+{% endif %}
+{% if 3 >= 3 %}
+three is greater than or equal to three
+{% endif %}
+{% if 100 <= 100 %}
+hundred is less than or equal to hundred
+{% endif %}

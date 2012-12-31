@@ -33,8 +33,13 @@ import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryDivide;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThan;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThanEquals;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIs;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIsNot;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryLessThan;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryLessThanEquals;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryModulus;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryMultiply;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryOr;
@@ -85,10 +90,15 @@ public class CoreExtension implements Extension {
 		operators.add(new Operator("or", 10, NodeExpressionBinaryOr.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("==", 20, NodeExpressionBinaryEqual.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("!=", 20, NodeExpressionBinaryNotEqual.class, Operator.Associativity.LEFT));
+		operators.add(new Operator(">", 20, NodeExpressionBinaryGreaterThan.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("<", 20, NodeExpressionBinaryLessThan.class, Operator.Associativity.LEFT));
+		operators.add(new Operator(">=", 20, NodeExpressionBinaryGreaterThanEquals.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("<=", 20, NodeExpressionBinaryLessThanEquals.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("+", 30, NodeExpressionBinaryAdd.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("-", 30, NodeExpressionBinarySubtract.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("*", 60, NodeExpressionBinaryMultiply.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("/", 60, NodeExpressionBinaryDivide.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("%", 60, NodeExpressionBinaryModulus.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("is", 100, NodeExpressionBinaryIs.class, Operator.Associativity.LEFT));
 		operators.add(new Operator("is not", 100, NodeExpressionBinaryIsNot.class, Operator.Associativity.LEFT));
 		return operators;
@@ -273,7 +283,6 @@ public class CoreExtension implements Extension {
 		public Boolean execute(List<Object> data) {
 
 			Integer obj = (Integer) data.get(0);
-			
 			return (obj % 2 == 0);
 		}
 	};
