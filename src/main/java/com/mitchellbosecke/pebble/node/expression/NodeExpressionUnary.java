@@ -10,16 +10,11 @@
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionUnary extends NodeExpressionOperator {
 
-	private final Node node;
-
-	public NodeExpressionUnary(int lineNumber, Node node) {
-		super(lineNumber);
-		this.node = node;
-	}
+	protected NodeExpression node;
 
 	@Override
 	public void compile(Compiler compiler) {
@@ -29,5 +24,9 @@ public abstract class NodeExpressionUnary extends NodeExpressionOperator {
 	}
 
 	public abstract void operator(Compiler compiler);
+	
+	public void setNode(NodeExpression node){
+		this.node = node;
+	}
 
 }

@@ -17,7 +17,6 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.NodeBlockReference;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
@@ -26,6 +25,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
 
 /**
@@ -84,7 +84,11 @@ public class ExpressionParser {
 			stream.next();
 			expression = parseExpression(operator.getPrecedence());
 
-			// TODO: create unary expression
+			NodeExpressionUnary unaryExpression = (NodeExpressionUnary)operator.getNodeInstance();
+			unaryExpression.setLineNumber(stream.current().getLineNumber());
+			unaryExpression.setNode(expression);
+			
+			expression = unaryExpression;
 
 		} else if (token.test(Token.Type.PUNCTUATION, "(")) {
 

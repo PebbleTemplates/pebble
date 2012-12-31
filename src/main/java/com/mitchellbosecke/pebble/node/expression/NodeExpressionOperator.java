@@ -17,8 +17,4 @@ public abstract class NodeExpressionOperator extends NodeExpression {
 		super();
 	}
 
-	public NodeExpressionOperator(int lineNumber) {
-		super(lineNumber);
-	}
-
 }

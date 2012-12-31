@@ -7,21 +7,22 @@
  * Unported License. To view a copy of this license, visit 
  * http://creativecommons.org/licenses/by-sa/3.0/
  ******************************************************************************/
-package com.mitchellbosecke.pebble.node.expression.binary;
+package com.mitchellbosecke.pebble.node.expression.unary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinarySimple;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionBinaryNotEqual extends NodeExpressionBinarySimple {
+public class NodeExpressionUnaryNegative extends NodeExpressionUnary {
 
 	@Override
 	public void operator(Compiler compiler) {
-		compiler.raw("!=");
+		compiler.raw("-");
 	}
 	
 	@Override
 	public void tree(TreeWriter tree) {
-		tree.write("!=").subtree(left).subtree(right, true);
+		tree.write("-").subtree(node, true);
 	}
+
 }

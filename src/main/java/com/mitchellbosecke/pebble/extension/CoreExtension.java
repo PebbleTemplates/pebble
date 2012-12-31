@@ -44,6 +44,9 @@ import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryMul
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryOr;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinarySubtract;
+import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryNegative;
+import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryNot;
+import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryPositive;
 import com.mitchellbosecke.pebble.parser.Operator;
 import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.test.TestFunction;
@@ -80,7 +83,11 @@ public class CoreExtension implements Extension {
 	
 	@Override
 	public List<Operator> getUnaryOperators() {
-		return null;
+		ArrayList<Operator> operators = new ArrayList<>();
+		operators.add(new Operator("not", 50, NodeExpressionUnaryNot.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("+", 500, NodeExpressionUnaryPositive.class, Operator.Associativity.LEFT));
+		operators.add(new Operator("-", 500, NodeExpressionUnaryNegative.class, Operator.Associativity.LEFT));
+		return operators;
 	}
 
 	@Override
