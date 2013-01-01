@@ -20,11 +20,13 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
 
@@ -285,9 +287,21 @@ public class ExpressionParser {
 	private NodeExpression parseFunctionExpression(NodeExpression node) {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
-
+		
+		NodeExpressionConstant functionName = (NodeExpressionConstant)node;
 		NodeExpressionArguments args = parseArguments();
-		return new NodeExpressionFunctionCall(lineNumber, (NodeExpressionConstant) node, args);
+		
+		switch((String)functionName.getValue()){
+			case "parent":
+				String parentName = (String)((NodeExpressionConstant)args.getArgs()[0]).getValue();
+				return new NodeExpressionParentReference(node.getLineNumber(), parentName);
+			case "block":
+				String blockName = (String)((NodeExpressionConstant)args.getArgs()[0]).getValue();
+				return new NodeExpressionBlockReference(node.getLineNumber(), blockName);
+		}
+
+		
+		return new NodeExpressionFunctionCall(lineNumber, functionName, args);
 	}
 
 	private NodeExpression parseFilterExpression(NodeExpression node) {

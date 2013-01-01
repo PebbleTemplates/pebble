@@ -44,8 +44,7 @@ public class CompilerImpl implements Compiler {
 		this.indentation = 0;
 
 		if (node instanceof NodeRoot) {
-			this.className = engine.getTemplateClassName(((NodeRoot) node)
-					.getFilename());
+			this.className = engine.getTemplateClassName(((NodeRoot) node).getFilename());
 		}
 		node.compile(this);
 		return this;
@@ -120,12 +119,11 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplate compileToJava() {
+	public PebbleTemplate compileToJava(String javaSource) {
 
 		/* Creating dynamic java source code file object */
-		DynamicJavaSourceCodeObject fileObject = new DynamicJavaSourceCodeObject(
-				"com.mitchellbosecke.pebble.template." + this.className,
-				getSource());
+		DynamicJavaSourceCodeObject fileObject = new DynamicJavaSourceCodeObject("com.mitchellbosecke.pebble.template."
+				+ this.className, javaSource);
 		JavaFileObject javaFileObjects[] = new JavaFileObject[] { fileObject };
 
 		/* Instantiating the java compiler */
@@ -140,15 +138,13 @@ public class CompilerImpl implements Compiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		StandardJavaFileManager stdFileManager = compiler
-				.getStandardFileManager(null, Locale.getDefault(), null);
+		StandardJavaFileManager stdFileManager = compiler.getStandardFileManager(null, Locale.getDefault(), null);
 
 		/*
 		 * Prepare a list of compilation units (java source code file objects)
 		 * to input to compilation task
 		 */
-		Iterable<? extends JavaFileObject> compilationUnits = Arrays
-				.asList(javaFileObjects);
+		Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(javaFileObjects);
 
 		/* Prepare any compilation options to be used during compilation */
 		// In this example, we are asking the compiler to place the output files
@@ -163,8 +159,8 @@ public class CompilerImpl implements Compiler {
 		 * Create a compilation task from compiler by passing in the required
 		 * input objects prepared above
 		 */
-		CompilationTask compilerTask = compiler.getTask(null, stdFileManager,
-				diagnostics, compilationOptions, null, compilationUnits);
+		CompilationTask compilerTask = compiler.getTask(null, stdFileManager, diagnostics, compilationOptions, null,
+				compilationUnits);
 
 		// Perform the compilation by calling the call method on compilerTask
 		// object.
@@ -173,8 +169,7 @@ public class CompilerImpl implements Compiler {
 		if (!status) {// If compilation error occurs
 			/* Iterate through each compilation problem and print it */
 			for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
-				System.out.format("Error on line %d in %s",
-						diagnostic.getLineNumber(), diagnostic);
+				System.out.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic);
 			}
 		}
 		try {
@@ -185,19 +180,11 @@ public class CompilerImpl implements Compiler {
 
 		try {
 			@SuppressWarnings("unchecked")
-			Class<PebbleTemplate> clazz = (Class<PebbleTemplate>) Class
-					.forName(fileObject.getQualifiedName());
-			AbstractPebbleTemplate template = (AbstractPebbleTemplate) clazz
-					.newInstance();
+			Class<PebbleTemplate> clazz = (Class<PebbleTemplate>) Class.forName(fileObject.getQualifiedName());
+			AbstractPebbleTemplate template = (AbstractPebbleTemplate) clazz.newInstance();
 			template.setSourceCode(getSource());
 			return template;
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

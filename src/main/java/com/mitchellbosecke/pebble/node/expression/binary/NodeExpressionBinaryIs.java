@@ -31,7 +31,7 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
 			method = ((NodeExpressionFunctionCall) right).getMethod();
 			args = ((NodeExpressionFunctionCall) right).getArguments();
 
-		} else {
+		} else if (right instanceof NodeExpressionVariableName){
 
 			/*
 			 * We allow the user to omit the brackets when calling tests that
@@ -44,6 +44,9 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
 			 */
 			NodeExpressionVariableName name = (NodeExpressionVariableName) right;
 			method = new NodeExpressionConstant(name.getLineNumber(), name.getName());
+			
+		} else {
+			method = ((NodeExpressionConstant) right);
 		}
 
 		compiler.raw("applyTest(").string(String.valueOf(method.getValue()));

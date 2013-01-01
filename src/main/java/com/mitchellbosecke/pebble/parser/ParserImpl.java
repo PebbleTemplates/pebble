@@ -58,6 +58,7 @@ public class ParserImpl implements Parser {
 	 * Other
 	 */
 	private String parentClassName;
+	private String parentFileName;
 	private Map<String, NodeBlock> blocks;
 	private Stack<String> blockStack;
 	
@@ -84,6 +85,8 @@ public class ParserImpl implements Parser {
 		this.expressionParser = new ExpressionParser(this);
 
 		this.parentClassName = null;
+		this.parentFileName = null;
+		
 		this.blocks = new HashMap<>();
 		this.blockStack = new Stack<>();
 		
@@ -91,7 +94,7 @@ public class ParserImpl implements Parser {
 
 		NodeBody body = subparse();
 
-		NodeRoot root = new NodeRoot(body, parentClassName, blocks, macros, stream.getFilename());
+		NodeRoot root = new NodeRoot(body, parentClassName, parentFileName, blocks, macros, stream.getFilename());
 
 		return root;
 	}
@@ -222,10 +225,19 @@ public class ParserImpl implements Parser {
 	public String getParentClassName() {
 		return parentClassName;
 	}
+	
 
 	@Override
 	public void setParentClassName(String parent) {
 		this.parentClassName = parent;
+	}
+	
+	public String getParentFileName(){
+		return this.parentFileName;
+	}
+	
+	public void setParentFileName(String parent){
+		this.parentFileName = parent;
 	}
 
 	@Override

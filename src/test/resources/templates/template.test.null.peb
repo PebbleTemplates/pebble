@@ -1,2 +1,0 @@
-{% if null is null() %} null is null. {% endif %}
-{% if obj is null() %} obj is null. {% endif %}

@@ -27,6 +27,8 @@ public interface Parser {
 	public TokenStream getStream();
 
 	public void setParentClassName(String parentClassName);
+	
+	public void setParentFileName(String parentFileName);
 
 	public String getParentClassName();
 

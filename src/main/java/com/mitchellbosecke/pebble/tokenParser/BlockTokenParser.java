@@ -13,8 +13,8 @@ import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBlock;
-import com.mitchellbosecke.pebble.node.NodeBlockReference;
 import com.mitchellbosecke.pebble.node.NodeBody;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
 import com.mitchellbosecke.pebble.utils.Command;
 
 public class BlockTokenParser extends AbstractTokenParser {
@@ -62,7 +62,7 @@ public class BlockTokenParser extends AbstractTokenParser {
 		
 		stream.expect(Token.Type.BLOCK_END);
 
-		return new NodeBlockReference(stream.current().getLineNumber(), name);
+		return new NodeExpressionBlockReference(stream.current().getLineNumber(), name);
 	}
 
 	@Override

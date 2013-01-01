@@ -24,7 +24,7 @@ public class CoreTokenParsersTest extends AbstractTest {
 
 	@Test
 	public void testBlock() {
-		PebbleTemplate template = pebble.loadTemplate("template.grandfather.peb");
+		PebbleTemplate template = pebble.loadTemplate("inheritance/template.grandfather.peb");
 		template.render(null);
 	}
 

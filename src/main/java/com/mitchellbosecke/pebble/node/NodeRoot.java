@@ -22,15 +22,18 @@ public class NodeRoot extends AbstractNode {
 
 	private final String parentClassName;
 
+	private final String parentFileName;
+
 	private final Map<String, NodeBlock> blocks;
 
 	private final Map<String, NodeMacro> macros;
 
-	public NodeRoot(NodeBody body, String parent, Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros,
-			String filename) {
+	public NodeRoot(NodeBody body, String parentClassName, String parentFileName, Map<String, NodeBlock> blocks,
+			Map<String, NodeMacro> macros, String filename) {
 		super(0);
 		this.body = body;
-		this.parentClassName = parent;
+		this.parentClassName = parentClassName;
+		this.parentFileName = parentFileName;
 		this.blocks = blocks;
 		this.macros = macros;
 		this.filename = filename;
@@ -90,8 +93,16 @@ public class NodeRoot extends AbstractNode {
 			compiler.raw("\n\n").subcompile(macro);
 		}
 	}
-	
-	public void tree(TreeWriter tree){
+
+	public void tree(TreeWriter tree) {
 		tree.write("root").subtree(body, true);
+	}
+
+	public boolean hasParent() {
+		return parentClassName != null;
+	}
+
+	public String getParentFileName() {
+		return parentFileName;
 	}
 }

@@ -7,16 +7,18 @@
  * Unported License. To view a copy of this license, visit 
  * http://creativecommons.org/licenses/by-sa/3.0/
  ******************************************************************************/
-package com.mitchellbosecke.pebble.node;
+package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.node.DisplayableNode;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeBlockReference extends AbstractNode implements DisplayableNode{
+public class NodeExpressionBlockReference extends NodeExpression implements DisplayableNode{
 
 	private final String name;
 
-	public NodeBlockReference(int lineNumber, String name) {
+	public NodeExpressionBlockReference(int lineNumber, String name) {
 		super(lineNumber);
 		this.name = name;
 	}

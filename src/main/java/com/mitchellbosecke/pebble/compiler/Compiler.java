@@ -34,7 +34,7 @@ public interface Compiler {
 	
 	public PebbleEngine getEngine();
 	
-	public PebbleTemplate compileToJava();
+	public PebbleTemplate compileToJava(String javaSource);
 	
 	
 }

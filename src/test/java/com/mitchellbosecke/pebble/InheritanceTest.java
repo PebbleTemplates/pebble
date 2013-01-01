@@ -20,7 +20,7 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testSimpleInheritance() {
-		PebbleTemplate template = pebble.loadTemplate("template.parent.peb");
+		PebbleTemplate template = pebble.loadTemplate("inheritance/template.parent.peb");
 		Map<String, Object> context = new HashMap<>();
 		template.render(context);
 	}

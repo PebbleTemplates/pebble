@@ -23,19 +23,19 @@ public class CoreTestsTest extends AbstractTest {
 
 	@Test
 	public void testEven() {
-		PebbleTemplate template = pebble.loadTemplate("template.test.even.peb");
+		PebbleTemplate template = pebble.loadTemplate("test/template.test.even.peb");
 		assertEquals(" two is even.  three is odd. ", template.render());
 	}
 	
 	@Test
 	public void testOdd() {
-		PebbleTemplate template = pebble.loadTemplate("template.test.odd.peb");
+		PebbleTemplate template = pebble.loadTemplate("test/template.test.odd.peb");
 		assertEquals(" two is even.  three is odd. ", template.render());
 	}
 	
 	@Test
 	public void testNull() {
-		PebbleTemplate template = pebble.loadTemplate("template.test.null.peb");
+		PebbleTemplate template = pebble.loadTemplate("test/template.test.null.peb");
 		Map<String,Object> context = new HashMap<>();
 		context.put("obj", null);
 		assertEquals(" null is null.  obj is null. ", template.render(context));
@@ -43,7 +43,7 @@ public class CoreTestsTest extends AbstractTest {
 	
 	@Test
 	public void testEmpty() {
-		PebbleTemplate template = pebble.loadTemplate("template.test.empty.peb");
+		PebbleTemplate template = pebble.loadTemplate("test/template.test.empty.peb");
 		Map<String,Object> context = new HashMap<>();
 		context.put("obj", new ArrayList<String>());
 		assertEquals(" null is empty.  blank is empty.  obj is empty. ", template.render());
@@ -51,7 +51,7 @@ public class CoreTestsTest extends AbstractTest {
 	
 	@Test
 	public void testIterables() {
-		PebbleTemplate template = pebble.loadTemplate("template.test.iterable.peb");
+		PebbleTemplate template = pebble.loadTemplate("test/template.test.iterable.peb");
 		Map<String,Object> context = new HashMap<>();
 		context.put("obj1", new ArrayList<String>());
 		context.put("obj2", new HashMap<String, Object>());
@@ -60,13 +60,13 @@ public class CoreTestsTest extends AbstractTest {
 	
 	@Test
 	public void testIsnt() {
-		PebbleTemplate template = pebble.loadTemplate("template.test.isnt.peb");
+		PebbleTemplate template = pebble.loadTemplate("test/template.test.isnt.peb");
 		assertEquals(" two isnt odd.  null isnt iterable. ", template.render());
 	}
 	
 	@Test()
 	public void testEqualsTest() {
-		PebbleTemplate template = pebble.loadTemplate("template.test.equals.peb");
+		PebbleTemplate template = pebble.loadTemplate("test/template.test.equals.peb");
 		Map<String,Object> context = new HashMap<>();
 		context.put("obj1", new String("test"));
 		context.put("obj2", new String("test"));

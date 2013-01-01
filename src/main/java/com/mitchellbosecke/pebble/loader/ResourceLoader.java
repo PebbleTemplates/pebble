@@ -21,12 +21,12 @@ import org.apache.commons.io.IOUtils;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
-public class LoaderImpl implements Loader {
+public class ResourceLoader implements Loader {
 
 	private Collection<String> paths;
 	private HashMap<String, URL> cache;
 
-	public LoaderImpl(Collection<String> paths) {
+	public ResourceLoader(Collection<String> paths) {
 		this.paths = paths;
 		this.cache = new HashMap<>();
 	}
@@ -84,7 +84,7 @@ public class LoaderImpl implements Loader {
 		URL location = cache.get(name);
 		if (location == null) {
 			for (String path : paths) {
-				location = LoaderImpl.class.getClassLoader().getResource(
+				location = ResourceLoader.class.getClassLoader().getResource(
 						path + "/" + name);
 				if (location != null) {
 					cache.put(name, location);

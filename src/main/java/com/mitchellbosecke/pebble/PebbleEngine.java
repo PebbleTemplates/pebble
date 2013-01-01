@@ -25,7 +25,7 @@ import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.LoaderImpl;
+import com.mitchellbosecke.pebble.loader.ResourceLoader;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.parser.Operator;
@@ -65,7 +65,7 @@ public class PebbleEngine {
 	 */
 	private HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
 	private boolean extensionsInitialized = false;
-	
+
 	/*
 	 * Elements retrieved from extensions
 	 */
@@ -82,7 +82,7 @@ public class PebbleEngine {
 	 *            File system paths where the templates are being stored
 	 */
 	public PebbleEngine(Collection<String> paths) {
-		this(new LoaderImpl(paths));
+		this(new ResourceLoader(paths));
 	}
 
 	/**
@@ -109,22 +109,42 @@ public class PebbleEngine {
 	 * will load the template from the file system, tokenize it, parse it, and
 	 * then compile it to Java.
 	 * 
-	 * @param filename
+	 * @param templateName
 	 *            The name of the template to load
 	 * @return An instance of the template that has been compiled into Java
 	 */
-	public PebbleTemplate loadTemplate(String filename) {
-		String className = this.getTemplateClassName(filename);
+	public PebbleTemplate loadTemplate(String templateName) {
+		String className = this.getTemplateClassName(templateName);
 		PebbleTemplate instance;
-		if (loadedTemplates.containsKey(className))
+		if (loadedTemplates.containsKey(className)) {
 			instance = loadedTemplates.get(className);
-		else {
-			compileSource(loader.getSource(filename), filename);
-			instance = getCompiler().compileToJava();
+		} else if (!requiresCompilation(templateName)) {
+			
+			/* try to load class file if it has already been compiled */
+			// TODO
+			instance = null;
+			
+		} else {
+			/* template has not been compiled, we must compile it */
+			String templateSource = loader.getSource(templateName);
+			NodeRoot root = parse(tokenize(templateSource, templateName));
+			
+			String javaSource = compile(root);
+			
+			// if this template has a parent, lets make sure the parent is compiled first
+			if(root.hasParent()){
+				this.loadTemplate(root.getParentFileName());
+			}
+			
+			instance = getCompiler().compileToJava(javaSource);
 			instance.setEngine(this);
 			loadedTemplates.put(className, instance);
 		}
 		return instance;
+	}
+
+	private boolean requiresCompilation(String templateName) {
+		return true;
 	}
 
 	/**
@@ -137,7 +157,7 @@ public class PebbleEngine {
 	 *            The name of the template (used for meaningful error messages)
 	 * @return The TokenStream which is ready for parsing
 	 */
-	public TokenStream tokenize(String source, String filename) {
+	private TokenStream tokenize(String source, String filename) {
 		return getLexer().tokenize(source, filename);
 	}
 
@@ -149,7 +169,7 @@ public class PebbleEngine {
 	 *            The TokenStream which is ready for parsing
 	 * @return The root Node of the AST
 	 */
-	public NodeRoot parse(TokenStream stream) {
+	private NodeRoot parse(TokenStream stream) {
 		return getParser().parse(stream);
 	}
 
@@ -163,22 +183,6 @@ public class PebbleEngine {
 	 */
 	private String compile(Node node) {
 		return getCompiler().compile(node).getSource();
-	}
-
-	/**
-	 * Low level function to perform the entire compilation process. This
-	 * function should only be used internally. Instead, use the loadTemplate
-	 * method which will ensure that a template isn't loaded more than once.
-	 * 
-	 * @param sourceCode
-	 *            The raw contents of the template
-	 * @param filename
-	 *            The filename of the template (used for meaningful error
-	 *            messages)
-	 */
-	private void compileSource(String sourceCode, String filename) {
-		Node root = parse(tokenize(sourceCode, filename));
-		compile(root);
 	}
 
 	public Loader getLoader() {
@@ -252,35 +256,35 @@ public class PebbleEngine {
 				this.tokenParserBroker.addTokenParser(tokenParser);
 			}
 		}
-		
+
 		// binary operators
-		if(extension.getBinaryOperators() != null){
-			for(Operator operator : extension.getBinaryOperators()){
-				if(!this.binaryOperators.containsKey(operator.getSymbol())){
+		if (extension.getBinaryOperators() != null) {
+			for (Operator operator : extension.getBinaryOperators()) {
+				if (!this.binaryOperators.containsKey(operator.getSymbol())) {
 					this.binaryOperators.put(operator.getSymbol(), operator);
 				}
 			}
 		}
-		
+
 		// unary operators
-		if(extension.getUnaryOperators() != null){
-			for(Operator operator : extension.getUnaryOperators()){
-				if(!this.unaryOperators.containsKey(operator.getSymbol())){
+		if (extension.getUnaryOperators() != null) {
+			for (Operator operator : extension.getUnaryOperators()) {
+				if (!this.unaryOperators.containsKey(operator.getSymbol())) {
 					this.unaryOperators.put(operator.getSymbol(), operator);
 				}
 			}
 		}
-		
+
 		// filters
-		if(extension.getFilters() != null){
-			for(Filter filter : extension.getFilters()){
+		if (extension.getFilters() != null) {
+			for (Filter filter : extension.getFilters()) {
 				this.filters.put(filter.getTag(), filter);
 			}
 		}
-		
+
 		// tests
-		if(extension.getTests() != null){
-			for(Test test : extension.getTests()){
+		if (extension.getTests() != null) {
+			for (Test test : extension.getTests()) {
 				this.tests.put(test.getTag(), test);
 			}
 		}
@@ -293,30 +297,30 @@ public class PebbleEngine {
 		}
 		return this.tokenParserBroker;
 	}
-	
-	public Map<String, Operator> getBinaryOperators(){
-		if(!this.extensionsInitialized){
+
+	public Map<String, Operator> getBinaryOperators() {
+		if (!this.extensionsInitialized) {
 			initExtensions();
 		}
 		return this.binaryOperators;
 	}
-	
-	public Map<String, Operator> getUnaryOperators(){
-		if(!this.extensionsInitialized){
+
+	public Map<String, Operator> getUnaryOperators() {
+		if (!this.extensionsInitialized) {
 			initExtensions();
 		}
 		return this.unaryOperators;
 	}
-	
-	public Map<String, Filter> getFilters(){
-		if(!this.extensionsInitialized){
+
+	public Map<String, Filter> getFilters() {
+		if (!this.extensionsInitialized) {
 			initExtensions();
 		}
 		return this.filters;
 	}
-	
-	public Map<String, Test> getTests(){
-		if(!this.extensionsInitialized){
+
+	public Map<String, Test> getTests() {
+		if (!this.extensionsInitialized) {
 			initExtensions();
 		}
 		return this.tests;
@@ -326,16 +330,20 @@ public class PebbleEngine {
 	 * Gets the name that will be used for the final Java class when loading a
 	 * particular template.
 	 * 
-	 * @param filename
+	 * @param templateName
 	 *            The template that we need a name for
 	 * @return The final name that would be used for creating a Java class
 	 */
-	public String getTemplateClassName(String filename) {
+	public String getTemplateClassName(String templateName) {
+		
+		// if tempalteName is part of a directory path, get just the last segment
+		templateName = templateName.replaceFirst(".*/([^/]+).*", "$1");
+		
 		String classNameHash = "";
 		byte[] bytesOfName;
 		MessageDigest md;
 		try {
-			bytesOfName = filename.getBytes("UTF-8");
+			bytesOfName = templateName.getBytes("UTF-8");
 			md = MessageDigest.getInstance("MD5");
 			md.update(bytesOfName);
 			byte[] hash = md.digest();
