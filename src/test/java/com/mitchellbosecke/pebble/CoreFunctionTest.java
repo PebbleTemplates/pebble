@@ -22,5 +22,11 @@ public class CoreFunctionTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("function/template.child.peb");
 		assertEquals("parent text\n\t\tparent head\n\tchild head\n", template.render());
 	}
+	
+	@Test
+	public void testBlock() {
+		PebbleTemplate template = pebble.loadTemplate("function/template.block.peb");
+		assertEquals("Default Title\nDefault Title", template.render());
+	}
 
 }

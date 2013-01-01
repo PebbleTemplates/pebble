@@ -296,7 +296,7 @@ public class ExpressionParser {
 				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
 			case "block":
 				String blockName = (String)((NodeExpressionConstant)args.getArgs()[0]).getValue();
-				return new NodeExpressionBlockReference(node.getLineNumber(), blockName, true);
+				return new NodeExpressionBlockReference(node.getLineNumber(), blockName.replace("\"", ""), true);
 		}
 
 		
