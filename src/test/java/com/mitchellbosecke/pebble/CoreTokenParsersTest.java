@@ -43,11 +43,8 @@ public class CoreTokenParsersTest extends AbstractTest {
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
 		users.add(new User("Bob"));
-		users.add(new User("Steve"));
-		users.add(new User("Sarah"));
-		users.add(new User("Max"));
 		context.put("users", users);
-		template.render(context);
+		assertEquals("\t\t\tLength: 2\t\t0Alex\t\t1Bob",template.render(context));
 	}
 
 	@Test
