@@ -9,9 +9,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
+import java.util.Date;
+
 
 public interface Loader {
 	
-	public String getSource(String name);
+	public String getSource(String templateName);
+
+	boolean isFresh(String templateName, Date timestamp);
 
 }
