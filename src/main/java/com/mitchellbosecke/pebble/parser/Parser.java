@@ -9,6 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
+import java.util.Map;
+
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
@@ -43,9 +45,21 @@ public interface Parser {
 	public void pushBlockStack(String name);
 
 	public void popBlockStack();
+	
+	public String peekBlockStack();
 
 	public PebbleEngine getEngine();
 
 	public NodeBody subparse(Command<Boolean, Token> stopCondition);
+
+	String getParentFileName();
+
+	Map<String, NodeBlock> getBlocks();
+
+	void setBlocks(Map<String, NodeBlock> blocks);
+
+	Map<String, NodeMacro> getMacros();
+
+	void setMacros(Map<String, NodeMacro> macros);
 
 }

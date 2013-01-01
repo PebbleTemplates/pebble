@@ -35,8 +35,16 @@ public class NodeBlock extends AbstractNode {
 	public void compile(Compiler compiler) {
 		compiler.write(
 				String.format(
-						"public void block_%s(Map<String,Object> context) {\n",
-						this.name)).indent().subcompile(body).raw("\n").outdent()
+						"public String block_%s(Map<String,Object> context) {\n",
+						this.name)).indent();
+		
+		compiler.write("StringBuilder builder = new StringBuilder();\n");
+		
+		compiler.subcompile(body);
+		
+		compiler.write("return builder.toString();");
+		
+		compiler.raw("\n").outdent()
 				.write("}\n");
 
 	}

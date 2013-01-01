@@ -14,7 +14,7 @@ import com.mitchellbosecke.pebble.node.DisplayableNode;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionParentReference extends NodeExpression implements DisplayableNode{
+public class NodeExpressionParentReference extends NodeExpression implements DisplayableNode {
 
 	private final String name;
 
@@ -25,8 +25,7 @@ public class NodeExpressionParentReference extends NodeExpression implements Dis
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("\n").write(String.format(
-				"super.block_%s(context);\n", this.name));
+		compiler.raw(String.format("super.block_%s(context)\n", this.name));
 	}
 
 	@Override

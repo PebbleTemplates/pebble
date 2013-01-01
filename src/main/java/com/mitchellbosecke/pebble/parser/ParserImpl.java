@@ -52,17 +52,23 @@ public class ParserImpl implements Parser {
 	/**
 	 * The TokenStream that we are converting into an Abstract Syntax Tree.
 	 */
-	private TokenStream stream;
 
 	/**
-	 * Other
+	 * STATEFUL DATA
 	 */
+	private TokenStream stream;
 	private String parentClassName;
 	private String parentFileName;
 	private Map<String, NodeBlock> blocks;
 	private Stack<String> blockStack;
-	
 	private Map<String, NodeMacro> macros;
+
+	/**
+	 * Parser stack storing the stateful data. This is so that one Parser
+	 * instance can be used to parse multiple different templates by storing and
+	 * resuming it's state
+	 */
+	private Stack<ParserImpl> parserStack = new Stack<>();
 
 	/**
 	 * Constructor
@@ -74,9 +80,21 @@ public class ParserImpl implements Parser {
 		this.engine = engine;
 	}
 
+	/**
+	 * Private constructor that takes in all stateful data
+	 */
+	private ParserImpl(PebbleEngine engine, TokenStream stream, String parentClassName, String parentFileName,
+			Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros) {
+		this.engine = engine;
+		this.stream = stream;
+		this.parentClassName = parentClassName;
+		this.parentFileName = parentFileName;
+		this.setBlocks(blocks);
+		this.setMacros(macros);
+	}
+
 	@Override
 	public NodeRoot parse(TokenStream stream) {
-		this.stream = stream;
 
 		// token parsers which have come from the extensions
 		this.tokenParserBroker = engine.getTokenParserBroker();
@@ -84,17 +102,37 @@ public class ParserImpl implements Parser {
 		// expression parser
 		this.expressionParser = new ExpressionParser(this);
 
+		/*
+		 * Store the state of this current parser just in case this parser
+		 * instance was already being used to parse a template and this
+		 * particular occurrence is a "sub template"
+		 */
+		parserStack.push(new ParserImpl(engine, stream, parentClassName, parentFileName, getBlocks(), getMacros()));
+
+		this.stream = stream;
+
 		this.parentClassName = null;
 		this.parentFileName = null;
-		
+
 		this.blocks = new HashMap<>();
 		this.blockStack = new Stack<>();
-		
+
 		this.macros = new HashMap<>();
 
 		NodeBody body = subparse();
 
-		NodeRoot root = new NodeRoot(body, parentClassName, parentFileName, blocks, macros, stream.getFilename());
+		NodeRoot root = new NodeRoot(body, parentClassName, parentFileName, getBlocks(), getMacros(),
+				stream.getFilename());
+
+		/*
+		 * Resume the parser state
+		 */
+		Parser oldState = parserStack.pop();
+		this.stream = oldState.getStream();
+		this.parentClassName = oldState.getParentClassName();
+		this.parentFileName = oldState.getParentFileName();
+		this.setBlocks(oldState.getBlocks());
+		this.setMacros(oldState.getMacros());
 
 		return root;
 	}
@@ -225,34 +263,34 @@ public class ParserImpl implements Parser {
 	public String getParentClassName() {
 		return parentClassName;
 	}
-	
 
 	@Override
 	public void setParentClassName(String parent) {
 		this.parentClassName = parent;
 	}
-	
-	public String getParentFileName(){
+
+	@Override
+	public String getParentFileName() {
 		return this.parentFileName;
 	}
-	
-	public void setParentFileName(String parent){
+
+	public void setParentFileName(String parent) {
 		this.parentFileName = parent;
 	}
 
 	@Override
 	public boolean hasBlock(String name) {
-		return blocks.containsKey(name);
+		return getBlocks().containsKey(name);
 	}
 
 	@Override
 	public void setBlock(String name, NodeBlock block) {
-		blocks.put(name, block);
+		getBlocks().put(name, block);
 	}
-	
+
 	@Override
-	public void setMacro(String name, NodeMacro macro){
-		macros.put(name, macro);
+	public void setMacro(String name, NodeMacro macro) {
+		getMacros().put(name, macro);
 	}
 
 	@Override
@@ -265,6 +303,10 @@ public class ParserImpl implements Parser {
 		blockStack.pop();
 	}
 
+	public String peekBlockStack() {
+		return blockStack.lastElement();
+	}
+
 	@Override
 	public ExpressionParser getExpressionParser() {
 		return this.expressionParser;
@@ -273,6 +315,26 @@ public class ParserImpl implements Parser {
 	@Override
 	public PebbleEngine getEngine() {
 		return engine;
+	}
+
+	@Override
+	public Map<String, NodeBlock> getBlocks() {
+		return blocks;
+	}
+
+	@Override
+	public void setBlocks(Map<String, NodeBlock> blocks) {
+		this.blocks = blocks;
+	}
+
+	@Override
+	public Map<String, NodeMacro> getMacros() {
+		return macros;
+	}
+
+	@Override
+	public void setMacros(Map<String, NodeMacro> macros) {
+		this.macros = macros;
 	}
 
 }

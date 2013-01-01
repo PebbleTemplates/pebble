@@ -1,0 +1,4 @@
+parent text
+{% block head %}
+	parent head
+{% endblock head %}

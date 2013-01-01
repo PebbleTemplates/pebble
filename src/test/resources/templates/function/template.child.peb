@@ -1,0 +1,5 @@
+{% extends "function/template.parent.peb" %}
+{% block head %}
+	{{ parent() }}
+	child head
+{% endblock head %}

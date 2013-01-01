@@ -19,14 +19,8 @@ public class CoreFunctionTest extends AbstractTest {
 
 	@Test
 	public void testParent() {
-		PebbleTemplate template = pebble.loadTemplate("template.math.peb");
-		assertEquals("61\n1", template.render());
-	}
-	
-	@Test
-	public void testBlock() {
-		PebbleTemplate template = pebble.loadTemplate("template.math.peb");
-		assertEquals("61\n1", template.render());
+		PebbleTemplate template = pebble.loadTemplate("function/template.child.peb");
+		assertEquals("parent text\n\t\tparent head\n\tchild head\n", template.render());
 	}
 
 }

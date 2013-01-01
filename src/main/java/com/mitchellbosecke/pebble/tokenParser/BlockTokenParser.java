@@ -62,7 +62,7 @@ public class BlockTokenParser extends AbstractTokenParser {
 		
 		stream.expect(Token.Type.BLOCK_END);
 
-		return new NodeExpressionBlockReference(stream.current().getLineNumber(), name);
+		return new NodeExpressionBlockReference(stream.current().getLineNumber(), name, false);
 	}
 
 	@Override

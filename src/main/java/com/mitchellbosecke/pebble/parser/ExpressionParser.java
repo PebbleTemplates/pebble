@@ -293,11 +293,10 @@ public class ExpressionParser {
 		
 		switch((String)functionName.getValue()){
 			case "parent":
-				String parentName = (String)((NodeExpressionConstant)args.getArgs()[0]).getValue();
-				return new NodeExpressionParentReference(node.getLineNumber(), parentName);
+				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
 			case "block":
 				String blockName = (String)((NodeExpressionConstant)args.getArgs()[0]).getValue();
-				return new NodeExpressionBlockReference(node.getLineNumber(), blockName);
+				return new NodeExpressionBlockReference(node.getLineNumber(), blockName, true);
 		}
 
 		

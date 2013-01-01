@@ -14,19 +14,25 @@ import com.mitchellbosecke.pebble.node.DisplayableNode;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionBlockReference extends NodeExpression implements DisplayableNode{
+public class NodeExpressionBlockReference extends NodeExpression implements DisplayableNode {
 
 	private final String name;
 
-	public NodeExpressionBlockReference(int lineNumber, String name) {
+	private final boolean output;
+
+	public NodeExpressionBlockReference(int lineNumber, String name, boolean output) {
 		super(lineNumber);
 		this.name = name;
+		this.output = output;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("\n").write(String.format(
-				"block_%s(context);\n", this.name));
+		if (!this.output) {
+			compiler.raw("\n").write(String.format("builder.append(block_%s(context));\n", this.name));
+		} else {
+			compiler.raw(String.format("block_%s(context)\n", this.name));
+		}
 	}
 
 	@Override
