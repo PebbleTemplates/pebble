@@ -25,30 +25,37 @@ public class ForTokenParser extends AbstractTokenParser {
 	public Node parse(Token token) {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
-		
+
 		// skip the 'for' token
 		stream.next();
 
 		// get the iteration variable
 		NodeExpressionDeclaration iterationVariable = this.parser.getExpressionParser().parseDeclarationExpression();
-		
+
 		stream.expect(Token.Type.NAME, "in");
-		
+
 		// get the iterable variable
 		NodeExpression iterable = this.parser.getExpressionParser().parseExpression();
-		
+
 		stream.expect(Token.Type.BLOCK_END);
-		
-		NodeBody body = this.parser.subparse(decideForEnd);
-		
-		
-		// skip the 'endfor' token for now
-		//TODO: handle else
+
+		NodeBody body = this.parser.subparse(decideForFork);
+
+		NodeBody elseBody = null;
+
+		if (stream.current().test(Token.Type.NAME, "else")) {
+			// skip the 'else' token
+			stream.next();
+			stream.expect(Token.Type.BLOCK_END);
+			elseBody = this.parser.subparse(decideForEnd);
+		}
+
+		// skip the 'endfor' token
 		stream.next();
-		
+
 		stream.expect(Token.Type.BLOCK_END);
-		
-		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionVariableName)iterable, body);
+
+		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionVariableName) iterable, body, elseBody);
 	}
 
 	private Command<Boolean, Token> decideForFork = new Command<Boolean, Token>() {

@@ -30,7 +30,7 @@ public class CoreTokenParsersTest extends AbstractTest {
 
 	@Test
 	public void testIf() {
-		PebbleTemplate template = pebble.loadTemplate("template.if.peb");
+		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.if.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("steve", true);
 		template.render(context);
@@ -38,7 +38,7 @@ public class CoreTokenParsersTest extends AbstractTest {
 
 	@Test
 	public void testFor() {
-		PebbleTemplate template = pebble.loadTemplate("template.for.peb");
+		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.for.peb");
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
@@ -51,28 +51,36 @@ public class CoreTokenParsersTest extends AbstractTest {
 	}
 
 	@Test
+	public void testForElse() {
+		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.for.else.peb");
+		Map<String, Object> context = new HashMap<>();
+		List<User> users = new ArrayList<>();
+		context.put("users", users);
+		assertEquals("EMPTY\n", template.render(context));
+	}
+
+	@Test
 	public void testMacro() {
-		PebbleTemplate template = pebble.loadTemplate("template.macro.peb");
+		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.macro.peb");
 		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n",
 				template.render(new HashMap<String, Object>()));
 	}
-	
+
 	@Test
 	public void testMacroFromAnotherFile() {
-		PebbleTemplate template = pebble.loadTemplate("template.macro2.peb");
-		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n",
-				template.render());
+		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.macro2.peb");
+		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", template.render());
 	}
-	
+
 	@Test
 	public void testInclude() {
-		PebbleTemplate template = pebble.loadTemplate("template.include1.peb");
-		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n",template.render());
+		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.include1.peb");
+		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", template.render());
 	}
-	
+
 	@Test
 	public void testSet() {
-		PebbleTemplate template = pebble.loadTemplate("template.set.peb");
+		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.set.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("name", "steve");
 		assertEquals("alex", template.render(context));

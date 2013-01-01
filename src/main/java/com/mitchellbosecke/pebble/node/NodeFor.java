@@ -16,24 +16,44 @@ import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeFor extends AbstractNode {
 
-	private NodeExpressionDeclaration iterationVariable;
+	private final NodeExpressionDeclaration iterationVariable;
 
-	private NodeExpressionVariableName iterable;
+	private final NodeExpressionVariableName iterable;
 
-	private NodeBody body;
+	private final NodeBody body;
+
+	private final NodeBody elseBody;
 
 	public NodeFor(int lineNumber, NodeExpressionDeclaration iterationVariable, NodeExpressionVariableName iterable,
-			NodeBody body) {
+			NodeBody body, NodeBody elseBody) {
 		super(lineNumber);
 		this.iterationVariable = iterationVariable;
 		this.iterable = iterable;
 		this.body = body;
+		this.elseBody = elseBody;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.raw("\n").write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){\n");
+		
+		if(elseBody != null){
+			compiler.raw("\n").write("if (((Iterable)").subcompile(iterable).raw(").iterator().hasNext()){\n").indent();
+			
+			compileForLoop(compiler);
+	
+			compiler.raw("\n").outdent().write("} else {\n").indent().subcompile(elseBody);
+
+	
+			compiler.raw("\n").outdent().write("}\n");
+		}else{
+			compileForLoop(compiler);
+		}
+	}
+
+	private void compileForLoop(Compiler compiler) {
+		compiler.raw("\n").write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable)
+				.raw("){\n");
 
 		compiler.indent().write("context.put(").string(iterationVariable.getName()).raw(",")
 				.raw(iterationVariable.getName()).raw(");\n").subcompile(body);
@@ -43,9 +63,8 @@ public class NodeFor extends AbstractNode {
 		// remove iteration variable from context as it is no longer in the
 		// scope once we leave the for loop.
 		compiler.write("context.remove(").string(iterationVariable.getName()).raw(");").raw("\n");
-
 	}
-	
+
 	@Override
 	public void tree(TreeWriter tree) {
 		tree.write("for").subtree(iterationVariable).subtree(iterable).subtree(body, true);
