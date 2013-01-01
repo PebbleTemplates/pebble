@@ -9,13 +9,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
 
@@ -24,11 +22,9 @@ import com.mitchellbosecke.pebble.error.LoaderException;
 public class ResourceLoader implements Loader {
 
 	private Collection<String> paths;
-	private HashMap<String, URL> cache;
 
 	public ResourceLoader(Collection<String> paths) {
 		this.paths = paths;
-		this.cache = new HashMap<>();
 	}
 
 	@Override
@@ -45,56 +41,26 @@ public class ResourceLoader implements Loader {
 		return writer.toString();
 	}
 
-	@Override
-	public String getCacheKey(String name) {
-		return findTemplateLocation(name).toString();
-	}
-
-	@Override
-	public boolean isFresh(String name, Date timestamp) {
-		URL location = findTemplateLocation(name);
-		Date lastModified;
-		try {
-			lastModified = new Date(location.openConnection().getLastModified());
-		} catch (IOException e) {
-			throw new LoaderException(
-					"Could not determine last modified time of \"" + name
-							+ "\"");
-		}
-		return lastModified.before(timestamp);
-	}
-
-	public Collection<String> getPaths() {
-		return paths;
-	}
-
-	public void setPaths(Collection<String> paths) {
-		// invalidate the cache
-		this.cache.clear();
-		this.paths = paths;
-	}
-
 	public void addPath(String path) {
-		// invalidate the cache
-		this.cache.clear();
+		if(this.paths == null){
+			this.paths = new ArrayList<>();
+		}
 		this.paths.add(path);
 	}
 
-	public URL findTemplateLocation(String name) {
-		URL location = cache.get(name);
-		if (location == null) {
-			for (String path : paths) {
-				location = ResourceLoader.class.getClassLoader().getResource(
-						path + "/" + name);
-				if (location != null) {
-					cache.put(name, location);
-					break;
-				}
+	private URL findTemplateLocation(String name) {
+		URL location = null;
+		
+		for (String path : paths) {
+			location = ResourceLoader.class.getClassLoader().getResource(path + "/" + name);
+			if(location != null){
+				break;
 			}
 		}
-		if (location == null)
-			throw new LoaderException("Could not find template \"" + name
-					+ "\"");
+
+		if (location == null){
+			throw new LoaderException("Could not find template \"" + name + "\"");
+		}
 		return location;
 	}
 

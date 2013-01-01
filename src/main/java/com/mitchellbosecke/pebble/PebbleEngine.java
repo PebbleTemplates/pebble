@@ -136,7 +136,7 @@ public class PebbleEngine {
 				this.loadTemplate(root.getParentFileName());
 			}
 			
-			instance = getCompiler().compileToJava(javaSource);
+			instance = getCompiler().compileToJava(javaSource, getTemplateClassName(templateName));
 			instance.setEngine(this);
 			loadedTemplates.put(className, instance);
 		}

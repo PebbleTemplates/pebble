@@ -23,7 +23,6 @@ import javax.tools.ToolProvider;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -32,7 +31,6 @@ public class CompilerImpl implements Compiler {
 	private final PebbleEngine engine;
 	private StringBuilder builder;
 	private int indentation;
-	private String className;
 
 	public CompilerImpl(PebbleEngine engine) {
 		this.engine = engine;
@@ -43,9 +41,6 @@ public class CompilerImpl implements Compiler {
 		this.builder = new StringBuilder();
 		this.indentation = 0;
 
-		if (node instanceof NodeRoot) {
-			this.className = engine.getTemplateClassName(((NodeRoot) node).getFilename());
-		}
 		node.compile(this);
 		return this;
 	}
@@ -119,11 +114,11 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplate compileToJava(String javaSource) {
+	public PebbleTemplate compileToJava(String javaSource, String className) {
 
 		/* Creating dynamic java source code file object */
 		DynamicJavaSourceCodeObject fileObject = new DynamicJavaSourceCodeObject("com.mitchellbosecke.pebble.template."
-				+ this.className, javaSource);
+				+ className, javaSource);
 		JavaFileObject javaFileObjects[] = new JavaFileObject[] { fileObject };
 
 		/* Instantiating the java compiler */
