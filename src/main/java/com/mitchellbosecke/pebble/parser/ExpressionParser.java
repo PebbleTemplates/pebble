@@ -282,7 +282,7 @@ public class ExpressionParser {
 		return node;
 	}
 
-	public NodeExpression parseFunctionExpression(NodeExpression node) {
+	private NodeExpression parseFunctionExpression(NodeExpression node) {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -290,7 +290,7 @@ public class ExpressionParser {
 		return new NodeExpressionFunctionCall(lineNumber, (NodeExpressionConstant) node, args);
 	}
 
-	public NodeExpression parseFilterExpression(NodeExpression node) {
+	private NodeExpression parseFilterExpression(NodeExpression node) {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
