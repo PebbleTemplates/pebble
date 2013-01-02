@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
+import java.io.PrintWriter;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -20,5 +21,7 @@ public interface PebbleTemplate {
 	public String render(Map<String, Object> model);
 
 	public void setEngine(PebbleEngine engine);
+
+	void render(Map<String, Object> context, PrintWriter writer);
 
 }

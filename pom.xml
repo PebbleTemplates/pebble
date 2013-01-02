@@ -1,12 +1,6 @@
-<!--
-  This file is part of Pebble.
-  
-  Copyright (c) 2012 Mitchell Bosecke.
-  
-  This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 
-  Unported License. To view a copy of this license, visit 
-  http://creativecommons.org/licenses/by-sa/3.0/
--->
+<!-- This file is part of Pebble. Copyright (c) 2012 Mitchell Bosecke. This 
+	work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported 
+	License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -16,8 +10,8 @@
 	<name>Pebble</name>
 	<description>Templating engine for Java.</description>
 	<properties>
-    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  	</properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -32,6 +26,12 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -48,14 +48,40 @@
 			<version>3.1</version>
 		</dependency>
 		<dependency>
-  			<groupId>com.fasterxml.jackson.core</groupId>
-	 		<artifactId>jackson-databind</artifactId>
-	  		<version>2.1.1</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

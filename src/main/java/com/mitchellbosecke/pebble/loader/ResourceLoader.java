@@ -20,10 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
 public class ResourceLoader implements Loader {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);
 
 	private Collection<String> paths;
 
@@ -71,6 +75,7 @@ public class ResourceLoader implements Loader {
 		URL location = locationCache.containsKey(templateName) ? locationCache.get(templateName) : null;
 
 		for (String path : paths) {
+			logger.debug("Looking for template in {}.", path + "/" + templateName);
 			location = ResourceLoader.class.getClassLoader().getResource(path + "/" + templateName);
 			if (location != null) {
 				locationCache.put(templateName, location);

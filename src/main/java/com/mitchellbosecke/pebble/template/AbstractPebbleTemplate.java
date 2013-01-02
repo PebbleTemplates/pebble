@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,6 +45,11 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		this.builder = new StringBuilder();
 		buildContent();
 		return builder.toString();
+	}
+	
+	@Override
+	public void render(Map<String, Object> context, PrintWriter writer) {
+		writer.write(render(context));
 	}
 
 	@Override
