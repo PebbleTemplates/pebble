@@ -8,7 +8,6 @@ Pebble is not even in an alpha stage. It is not yet ready for use.
 ## Roadmap
 
 ### Version 0.1-alpha
-- Expected January 2013
 - tags: block, extends, for, if, import, include, macro, set
 - filters: abbreviate, capitalize, date, default, format, json, lower, number, trim, upper, urlencode
 - functions: block, parent
