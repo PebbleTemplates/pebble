@@ -9,19 +9,18 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import java.io.PrintWriter;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.PebbleException;
 
 public interface PebbleTemplate {
 	
-	public String render();
+	public String render() throws PebbleException;
 
-	public String render(Map<String, Object> model);
+	public String render(Map<String, Object> model) throws PebbleException;
 
 	public void setEngine(PebbleEngine engine);
 
-	void render(Map<String, Object> context, PrintWriter writer);
 
 }

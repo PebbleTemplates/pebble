@@ -9,7 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.error;
 
-public class PebbleException extends RuntimeException {
+public class PebbleException extends Exception {
 
 	private static final long serialVersionUID = -2855774187093732189L;
 

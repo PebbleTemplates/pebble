@@ -16,137 +16,142 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class GetAttributeTest extends AbstractTest {
 
 	@Test
-	public void testOneLayerAttributeNesting() {
+	public void testOneLayerAttributeNesting() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject());
 		assertEquals(template.render(model), "hello Steve");
 	}
-	
+
 	@Test
-	public void testMultiLayerAttributeNesting() {
+	public void testMultiLayerAttributeNesting() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.nestedAttributes.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject3());
 		assertEquals(template.render(model), "hello Steve");
 	}
-	
+
 	@Test
-	public void testHashmapAttribute() {
+	public void testHashmapAttribute() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
-		Map<String,String> map = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("name", "Steve");
 		model.put("object", map);
 		assertEquals("hello Steve", template.render(model));
 	}
-	
+
 	@Test
-	public void testMethodAttribute() {
+	public void testMethodAttribute() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject4());
 		assertEquals("hello Steve", template.render(model));
 	}
-	
+
 	@Test
-	public void testGetMethodAttribute() {
+	public void testGetMethodAttribute() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject5());
 		assertEquals("hello Steve", template.render(model));
 	}
-	
+
 	@Test
-	public void testIsMethodAttribute() {
+	public void testIsMethodAttribute() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject6());
 		assertEquals("hello Steve", template.render(model));
 	}
-	
+
 	@Test
-	public void testComplexNestedAttributes() {
+	public void testComplexNestedAttributes() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.complexAttributes.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new ComplexObject());
 		assertEquals("hello Steve. My name is Steve.", template.render(model));
 	}
-	
-	@Test(expected = PebbleException.class)
-	public void testNullObject() {
+
+	@Test(expected = NullPointerException.class)
+	public void testNullObject() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		template.render(model);
 	}
-	
-	@Test(expected = PebbleException.class)
-	public void testNonExistingAttribute() {
+
+	@Test(expected = AttributeNotFoundException.class)
+	public void testNonExistingAttribute() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new Object());
 		template.render(model);
 	}
-	
-	//TODO: should be a clean PebbleException here, not a null pointer?
+
 	@Test(expected = NullPointerException.class)
-	public void testNullAttribute() {
+	public void testNullAttribute() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject7());
 		assertEquals("hello null", template.render(model));
 	}
-	
+
 	@Test()
-	public void testPrimitiveAttribute() {
+	public void testPrimitiveAttribute() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
-		Map<String,Object> model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject8());
 		assertEquals("hello true", template.render(model));
 	}
-	
-	
-	public class SimpleObject{
+
+	public class SimpleObject {
 		public final String name = "Steve";
 	}
-	
-	public class SimpleObject2{
+
+	public class SimpleObject2 {
 		public final SimpleObject simpleObject = new SimpleObject();
 	}
-	
-	public class SimpleObject3{
+
+	public class SimpleObject3 {
 		public final SimpleObject2 simpleObject2 = new SimpleObject2();
 	}
-	
-	public class SimpleObject4{
-		public String name(){ return "Steve"; }
+
+	public class SimpleObject4 {
+		public String name() {
+			return "Steve";
+		}
 	}
-	
-	public class SimpleObject5{
-		public String getName(){ return "Steve"; }
+
+	public class SimpleObject5 {
+		public String getName() {
+			return "Steve";
+		}
 	}
-	
-	public class SimpleObject6{
-		public String isName(){ return "Steve"; }
+
+	public class SimpleObject6 {
+		public String isName() {
+			return "Steve";
+		}
 	}
-	
-	public class SimpleObject7{
+
+	public class SimpleObject7 {
 		public String name = null;
 	}
-	
-	public class SimpleObject8{
+
+	public class SimpleObject8 {
 		public boolean name = true;
 	}
-	
-	public class ComplexObject{
-		public final Map<String,Object> map = new HashMap<>();
-		
+
+	public class ComplexObject {
+		public final Map<String, Object> map = new HashMap<>();
+
 		{
 			map.put("SimpleObject2", new SimpleObject2());
 			map.put("SimpleObject6", new SimpleObject6());

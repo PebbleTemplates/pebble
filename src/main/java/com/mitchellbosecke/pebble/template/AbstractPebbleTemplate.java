@@ -9,7 +9,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
@@ -32,24 +32,19 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	protected Map<String, Object> context;
 	protected PebbleEngine engine;
 
-	public abstract void buildContent();
-	
+	public abstract void buildContent() throws PebbleException;
+
 	@Override
-	public String render(){
-		return render(new HashMap<String,Object>());
+	public String render() throws PebbleException {
+		return render(new HashMap<String, Object>());
 	}
 
 	@Override
-	public String render(Map<String, Object> context) {
+	public String render(Map<String, Object> context) throws PebbleException {
 		this.context = context;
 		this.builder = new StringBuilder();
 		buildContent();
 		return builder.toString();
-	}
-	
-	@Override
-	public void render(Map<String, Object> context, PrintWriter writer) {
-		writer.write(render(context));
 	}
 
 	@Override
@@ -57,14 +52,16 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		this.engine = engine;
 	}
 
-	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute) {
+	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute)
+			throws AttributeNotFoundException {
 		return getAttribute(type, object, attribute, new Object[0]);
 	}
 
-	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute, Object... args) {
+	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute,
+			Object... args) throws AttributeNotFoundException {
 
 		if (object == null) {
-			throw new PebbleException(String.format("Can not get attribute [%s] of null object.", attribute));
+			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attribute));
 		}
 
 		Class<?> clazz = object.getClass();
@@ -112,7 +109,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 					Object param : args) {
 						paramTypes.add(Object.class);
 					}
-					
+
 					method = clazz.getMethod("macro" + attribute, paramTypes.toArray(new Class[paramTypes.size()]));
 					found = true;
 				} catch (NoSuchMethodException | SecurityException e) {
@@ -154,34 +151,35 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		}
 
 		if (!found) {
-			throw new PebbleException(String.format("Attribute [%s] of [%s] does not exist or can not be accessed.",
-					attribute, clazz));
+			throw new AttributeNotFoundException(String.format(
+					"Attribute [%s] of [%s] does not exist or can not be accessed.", attribute, clazz));
 		}
 		return result;
 
 	}
-	
-	public Object applyFilter(String filterName, Object ... args){
+
+	public Object applyFilter(String filterName, Object... args) {
 		List<Object> arguments = new ArrayList<>();
 
 		Collections.addAll(arguments, args);
-		
-		Map<String,Filter> filters = engine.getFilters();
+
+		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
 		return filter.apply(arguments);
 	}
-	
-	public boolean applyTest(String testName, Object ... args){
+
+	public boolean applyTest(String testName, Object... args) {
 		ArrayList<Object> arguments = new ArrayList<>();
-		
-		// if args is null, it's because there was ONE argument and that argument happens to be null
-		if(args == null){
+
+		// if args is null, it's because there was ONE argument and that
+		// argument happens to be null
+		if (args == null) {
 			arguments.add(null);
-		}else{
+		} else {
 			Collections.addAll(arguments, args);
 		}
-		
-		Map<String,Test> tests = engine.getTests();
+
+		Map<String, Test> tests = engine.getTests();
 		Test test = tests.get(testName);
 		return test.apply(arguments);
 	}

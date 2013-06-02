@@ -10,6 +10,8 @@
 package com.mitchellbosecke.pebble.compiler;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -21,12 +23,17 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CompilerImpl implements Compiler {
+
+	private static final Logger logger = LoggerFactory.getLogger(CompilerImpl.class);
 
 	private final PebbleEngine engine;
 	private StringBuilder builder;
@@ -116,8 +123,10 @@ public class CompilerImpl implements Compiler {
 	@Override
 	public PebbleTemplate compileToJava(String javaSource, String className) {
 
+		String compiledTemplatesPath = engine.getCompiledTemplateDirectory();
+
 		/* Creating dynamic java source code file object */
-		DynamicJavaSourceCodeObject fileObject = new DynamicJavaSourceCodeObject("com.mitchellbosecke.pebble.template."
+		StringSourceCodeObject fileObject = new StringSourceCodeObject("com.mitchellbosecke.pebble.template."
 				+ className, javaSource);
 		JavaFileObject javaFileObjects[] = new JavaFileObject[] { fileObject };
 
@@ -142,9 +151,10 @@ public class CompilerImpl implements Compiler {
 		Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(javaFileObjects);
 
 		/* Prepare any compilation options to be used during compilation */
-		// In this example, we are asking the compiler to place the output files
-		// under bin folder.
-		String[] compileOptions = new String[] { "-d", "target/classes" };
+		compiledTemplatesPath = compiledTemplatesPath.replace(" ", "\\ ");
+
+		logger.info(String.format("Compiling to %s", compiledTemplatesPath));
+		String[] compileOptions = new String[] { "-d", compiledTemplatesPath };
 		Iterable<String> compilationOptions = Arrays.asList(compileOptions);
 
 		/* Create a diagnostic controller, which holds the compilation problems */
@@ -164,7 +174,7 @@ public class CompilerImpl implements Compiler {
 		if (!status) {// If compilation error occurs
 			/* Iterate through each compilation problem and print it */
 			for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
-				System.out.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic);
+				logger.error(String.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic));
 			}
 		}
 		try {
@@ -174,14 +184,23 @@ public class CompilerImpl implements Compiler {
 		}
 
 		try {
+			URL compiledTemplateDirectory = this.getClass().getResource(compiledTemplatesPath);
+			URLClassLoader classLoader = new URLClassLoader(new URL[] { compiledTemplateDirectory });
+
 			@SuppressWarnings("unchecked")
-			Class<PebbleTemplate> clazz = (Class<PebbleTemplate>) Class.forName(fileObject.getQualifiedName());
+			Class<PebbleTemplate> clazz = (Class<PebbleTemplate>) classLoader.loadClass(fileObject.getQualifiedName());
+
 			AbstractPebbleTemplate template = (AbstractPebbleTemplate) clazz.newInstance();
 			template.setSourceCode(getSource());
 			return template;
-		} catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+		} catch (IllegalAccessException | InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			
 		}
 
 		return null;

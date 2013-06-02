@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -25,21 +26,21 @@ import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
-public class ResourceLoader implements Loader {
-	
-	private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);
+public class FileSystemResourceLoader implements Loader {
+
+	private static final Logger logger = LoggerFactory.getLogger(FileSystemResourceLoader.class);
 
 	private Collection<String> paths;
 
 	private Map<String, URL> locationCache;
 
-	public ResourceLoader(Collection<String> paths) {
+	public FileSystemResourceLoader(Collection<String> paths) {
 		this.paths = paths;
 		locationCache = new HashMap<>();
 	}
 
 	@Override
-	public String getSource(String templateName) {
+	public String getSource(String templateName) throws LoaderException {
 		URL location = findTemplateLocation(templateName);
 		StringWriter writer;
 		try {
@@ -53,7 +54,7 @@ public class ResourceLoader implements Loader {
 	}
 
 	@Override
-	public boolean isFresh(String templateName, Date timestamp) {
+	public boolean isFresh(String templateName, Date timestamp) throws LoaderException {
 		URL location = findTemplateLocation(templateName);
 		Date lastModified;
 		try {
@@ -71,12 +72,13 @@ public class ResourceLoader implements Loader {
 		this.paths.add(path);
 	}
 
-	private URL findTemplateLocation(String templateName) {
+	private URL findTemplateLocation(String templateName) throws LoaderException {
 		URL location = locationCache.containsKey(templateName) ? locationCache.get(templateName) : null;
 
 		for (String path : paths) {
-			logger.debug("Looking for template in {}.", path + "/" + templateName);
-			location = ResourceLoader.class.getClassLoader().getResource(path + "/" + templateName);
+			path = path.endsWith(String.valueOf(File.separatorChar)) ? path : path + File.separatorChar;
+			logger.info("Looking for template in {}.", path + templateName);
+			location = FileSystemResourceLoader.class.getClassLoader().getResource(path + templateName);
 			if (location != null) {
 				locationCache.put(templateName, location);
 				break;

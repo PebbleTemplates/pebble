@@ -119,9 +119,10 @@ public class LexerImpl implements Lexer {
 	 *            The raw contents of the template
 	 * @param name
 	 *            The name of the template (used for meaningful error messages)
+	 * @throws SyntaxException 
 	 */
 	@Override
-	public TokenStream tokenize(String source, String name) {
+	public TokenStream tokenize(String source, String name) throws SyntaxException {
 
 		// standardize the character used for line breaks
 		this.source = source.replaceAll("(\r\n|\n)", "\n");
@@ -225,8 +226,9 @@ public class LexerImpl implements Lexer {
 
 	/**
 	 * Tokenizes between block tags.
+	 * @throws SyntaxException 
 	 */
-	private void lexBlock() {
+	private void lexBlock() throws SyntaxException {
 		Matcher matcher = regexBlockClose.matcher(source.substring(cursor));
 
 		// check if we are at the block closing tag
@@ -242,8 +244,9 @@ public class LexerImpl implements Lexer {
 
 	/**
 	 * Tokenizes between variable tags.
+	 * @throws SyntaxException 
 	 */
-	private void lexVariable() {
+	private void lexVariable() throws SyntaxException {
 		Matcher matcher = regexVariableClose.matcher(source.substring(cursor));
 
 		// check if we are at the variable closing tag
@@ -262,8 +265,9 @@ public class LexerImpl implements Lexer {
 	 * 
 	 * Simply find the closing tag for the comment and move the cursor to that
 	 * point.
+	 * @throws SyntaxException 
 	 */
-	private void lexComment() {
+	private void lexComment() throws SyntaxException {
 
 		// all we need to do is find the end of the comment.
 		Matcher matcher = regexCommentClose.matcher(source);
@@ -282,8 +286,9 @@ public class LexerImpl implements Lexer {
 	/**
 	 * Tokenizing an expression which can be found within both block and
 	 * variable tags.
+	 * @throws SyntaxException 
 	 */
-	private void lexExpression() {
+	private void lexExpression() throws SyntaxException {
 		String token;
 
 		// whitespace

@@ -57,7 +57,7 @@ public class NodeExpressionGetAttributeOrMethod extends NodeExpression {
 				compiler.raw(",").subcompile(arg);
 			}
 		}
-		compiler.raw(")");
+		compiler.raw(") ");
 	}
 
 	public void tree(TreeWriter tree) {

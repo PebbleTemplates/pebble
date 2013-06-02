@@ -20,24 +20,27 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.mitchellbosecke.pebble.error.LoaderException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreFiltersTest extends AbstractTest {
 
 	@Test
-	public void testLower() {
+	public void testLower() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.lower.peb");
 		assertEquals("template", template.render());
 	}
 
 	@Test
-	public void testUpper() {
+	public void testUpper() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.upper.peb");
 		assertEquals("TEMPLATE", template.render());
 	}
 
 	@Test
-	public void testDate() throws ParseException {
+	public void testDate() throws ParseException, PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.date.peb");
 		Map<String, Object> context = new HashMap<>();
 		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
@@ -49,13 +52,13 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testUrlEncode() {
+	public void testUrlEncode() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.url_encode.peb");
 		assertEquals("The+string+%C3%BC%40foo-bar", template.render());
 	}
 
 	@Test
-	public void testFormat() {
+	public void testFormat() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.format.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("foo", "foo");
@@ -63,7 +66,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNumberFormat() {
+	public void testNumberFormat() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.number_format.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("currencyFormat", "$#,###,###,##0.00");
@@ -71,33 +74,33 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testAbbreviate() {
+	public void testAbbreviate() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.abbreviate.peb");
 		assertEquals("This is a tes...", template.render());
 	}
 
 	@Test
-	public void testCapitalize() {
+	public void testCapitalize() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.capitalize.peb");
 		assertEquals("This should be capitalized.", template.render());
 	}
 
 	@Test
-	public void testTrim() {
+	public void testTrim() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.trim.peb");
 		assertEquals("This should be trimmed.", template.render());
 	}
 
 	@Test
-	public void testJsonEncode() {
+	public void testJsonEncode() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.json_encode.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", new User("Alex"));
 		assertEquals("{\"username\":\"Alex\"}", template.render(context));
 	}
-	
+
 	@Test
-	public void testDefault() {
+	public void testDefault() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("filter/template.filter.default.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);

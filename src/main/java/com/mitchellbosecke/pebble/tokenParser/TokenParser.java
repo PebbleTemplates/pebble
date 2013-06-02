@@ -9,13 +9,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
+import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.parser.Parser;
 
 public interface TokenParser {
 	
-	public Node parse(Token token);
+	public Node parse(Token token) throws SyntaxException;
 	
 	public String getTag();
 	

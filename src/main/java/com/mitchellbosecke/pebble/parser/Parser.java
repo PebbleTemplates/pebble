@@ -12,6 +12,7 @@ package com.mitchellbosecke.pebble.parser;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeBlock;
@@ -22,9 +23,9 @@ import com.mitchellbosecke.pebble.utils.Command;
 
 public interface Parser {
 
-	public NodeRoot parse(TokenStream stream);
+	public NodeRoot parse(TokenStream stream) throws SyntaxException;
 
-	public NodeBody subparse();
+	public NodeBody subparse() throws SyntaxException;
 
 	public TokenStream getStream();
 
@@ -50,7 +51,7 @@ public interface Parser {
 
 	public PebbleEngine getEngine();
 
-	public NodeBody subparse(Command<Boolean, Token> stopCondition);
+	public NodeBody subparse(Command<Boolean, Token> stopCondition) throws SyntaxException;
 
 	String getParentFileName();
 

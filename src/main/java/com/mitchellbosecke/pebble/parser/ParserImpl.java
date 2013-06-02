@@ -94,7 +94,7 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public NodeRoot parse(TokenStream stream) {
+	public NodeRoot parse(TokenStream stream) throws SyntaxException {
 
 		// token parsers which have come from the extensions
 		this.tokenParserBroker = engine.getTokenParserBroker();
@@ -138,7 +138,7 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public NodeBody subparse() {
+	public NodeBody subparse() throws SyntaxException {
 		return subparse(null);
 	}
 
@@ -150,7 +150,7 @@ public class ParserImpl implements Parser {
 	 * @param stopCondition	A stopping condition provided by a token parser
 	 * @return Node		The root node of the generated Abstract Syntax Tree
 	 */
-	public NodeBody subparse(Command<Boolean, Token> stopCondition) {
+	public NodeBody subparse(Command<Boolean, Token> stopCondition) throws SyntaxException {
 
 		// these nodes will be the children of the root node
 		List<Node> nodes = new ArrayList<>();

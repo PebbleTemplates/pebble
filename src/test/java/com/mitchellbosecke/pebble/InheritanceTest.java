@@ -14,12 +14,13 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class InheritanceTest extends AbstractTest {
 
 	@Test
-	public void testSimpleInheritance() {
+	public void testSimpleInheritance() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("inheritance/template.parent.peb");
 		Map<String, Object> context = new HashMap<>();
 		template.render(context);

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:component-scan base-package="com.mitchellbosecke.pebble.controller" />
+
+	<!-- Configures the @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<!-- Forwards requests to the "/" resource to the "welcome" view -->
+	<mvc:view-controller path="/" view-name="home" />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources/ directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Pebble -->
+	<bean id ="templateResolver" class="com.mitchellbosecke.pebble.spring.ServletContextResourceLoader">
+		<property name="prefix" value="/WEB-INF/views/"/>
+		<property name="suffix" value=".peb"/>	
+	</bean> 
+	
+	<bean id="pebbleEngine" class="com.mitchellbosecke.pebble.PebbleEngine">
+		<constructor-arg index="0" ref="templateResolver" />
+	</bean>
+	
+	<bean id="pebbleConfig" class="com.mitchellbosecke.pebble.spring.PebbleConfigurer">
+		<property name="pebbleEngine" ref="pebbleEngine" />
+	</bean>
+	
+	<bean id="viewResolver" class="com.mitchellbosecke.pebble.spring.PebbleViewResolver">
+	</bean>
+
+</beans>

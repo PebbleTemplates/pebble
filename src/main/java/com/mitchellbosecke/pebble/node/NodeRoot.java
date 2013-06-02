@@ -71,7 +71,7 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {
-		compiler.raw("\n\n").write("public void buildContent() {").raw("\n").indent();
+		compiler.raw("\n\n").write("public void buildContent() throws com.mitchellbosecke.pebble.error.PebbleException {").raw("\n").indent();
 
 		body.compile(compiler);
 

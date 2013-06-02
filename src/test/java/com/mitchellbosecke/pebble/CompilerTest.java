@@ -9,19 +9,22 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 
+import com.mitchellbosecke.pebble.error.LoaderException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CompilerTest extends AbstractTest {
 
 	@Test
-	public void testCompile() {
+	public void testCompile() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.singleVariable.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("test", "TEST");
@@ -29,7 +32,7 @@ public class CompilerTest extends AbstractTest {
 	}
 
 	@Test
-	public void testEscapeCharactersText() {
+	public void testEscapeCharactersText() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.escapeCharacters.peb");
 		Map<String, Object> context = new HashMap<>();
 		template.render(context);

@@ -11,11 +11,13 @@ package com.mitchellbosecke.pebble.loader;
 
 import java.util.Date;
 
+import com.mitchellbosecke.pebble.error.LoaderException;
+
 
 public interface Loader {
 	
-	public String getSource(String templateName);
+	public String getSource(String templateName) throws LoaderException;
 
-	boolean isFresh(String templateName, Date timestamp);
+	boolean isFresh(String templateName, Date timestamp) throws LoaderException;
 
 }

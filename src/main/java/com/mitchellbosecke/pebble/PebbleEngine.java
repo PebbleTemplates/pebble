@@ -18,14 +18,16 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
+import com.mitchellbosecke.pebble.error.LoaderException;
+import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.extension.CoreExtension;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
+import com.mitchellbosecke.pebble.loader.FileSystemResourceLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.ResourceLoader;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.parser.Operator;
@@ -54,6 +56,7 @@ public class PebbleEngine {
 	private final Class<?> templateInterfaceClass;
 	private final Class<?> templateAbstractClass;
 	private final String templateClassPrefix;
+	private String compiledTemplateDirectory;
 
 	/*
 	 * Templates that have already been compiled into Java
@@ -74,6 +77,7 @@ public class PebbleEngine {
 	private Map<String, Operator> binaryOperators;
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
+	
 
 	/**
 	 * Constructor for the Pebble Engine give file system paths to templates.
@@ -81,8 +85,8 @@ public class PebbleEngine {
 	 * @param paths
 	 *            File system paths where the templates are being stored
 	 */
-	public PebbleEngine(Collection<String> paths) {
-		this(new ResourceLoader(paths));
+	public PebbleEngine(Collection<String> templatePaths, String compiledTemplateDirectory) {
+		this(new FileSystemResourceLoader(templatePaths), compiledTemplateDirectory);
 	}
 
 	/**
@@ -91,11 +95,13 @@ public class PebbleEngine {
 	 * @param loader
 	 *            The template loader for this engine
 	 */
-	public PebbleEngine(Loader loader) {
+	public PebbleEngine(Loader loader, String compiledTemplateDirectory) {
 		this.setLoader(loader);
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
+		
+		this.compiledTemplateDirectory = compiledTemplateDirectory;
 
 		this.addExtension(new CoreExtension());
 
@@ -112,8 +118,10 @@ public class PebbleEngine {
 	 * @param templateName
 	 *            The name of the template to load
 	 * @return An instance of the template that has been compiled into Java
+	 * @throws SyntaxException 
+	 * @throws LoaderException 
 	 */
-	public PebbleTemplate loadTemplate(String templateName) {
+	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException {
 		String className = this.getTemplateClassName(templateName);
 		PebbleTemplate instance;
 		if (loadedTemplates.containsKey(className)) {
@@ -157,8 +165,9 @@ public class PebbleEngine {
 	 * @param filename
 	 *            The name of the template (used for meaningful error messages)
 	 * @return The TokenStream which is ready for parsing
+	 * @throws SyntaxException 
 	 */
-	private TokenStream tokenize(String source, String filename) {
+	private TokenStream tokenize(String source, String filename) throws SyntaxException {
 		return getLexer().tokenize(source, filename);
 	}
 
@@ -169,8 +178,9 @@ public class PebbleEngine {
 	 * @param stream
 	 *            The TokenStream which is ready for parsing
 	 * @return The root Node of the AST
+	 * @throws SyntaxException 
 	 */
-	private NodeRoot parse(TokenStream stream) {
+	private NodeRoot parse(TokenStream stream) throws SyntaxException {
 		return getParser().parse(stream);
 	}
 
@@ -368,5 +378,13 @@ public class PebbleEngine {
 
 	public Class<?> getTemplateAbstractClass() {
 		return templateAbstractClass;
+	}
+
+	public String getCompiledTemplateDirectory() {
+		return compiledTemplateDirectory;
+	}
+
+	public void setCompiledTemplateDirectory(String compiledTemplateDirectory) {
+		this.compiledTemplateDirectory = compiledTemplateDirectory;
 	}
 }

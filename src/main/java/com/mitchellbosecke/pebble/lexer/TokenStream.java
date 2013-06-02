@@ -55,8 +55,9 @@ public class TokenStream {
 	 * @param type
 	 *            The type of token that we expect
 	 * @return The current token
+	 * @throws SyntaxException 
 	 */
-	public Token expect(Token.Type type) {
+	public Token expect(Token.Type type) throws SyntaxException {
 		return expect(type, null, null);
 	}
 	
@@ -67,8 +68,9 @@ public class TokenStream {
 	 * @param type
 	 *            The type of token that we expect
 	 * @return The current token
+	 * @throws SyntaxException 
 	 */
-	public Token expect(Token.Type type, String value) {
+	public Token expect(Token.Type type, String value) throws SyntaxException {
 		return expect(type, value, null);
 	}
 
@@ -86,8 +88,9 @@ public class TokenStream {
 	 * @param message
 	 *            The message of the exception if the expectation fails
 	 * @return The current token
+	 * @throws SyntaxException 
 	 */
-	public Token expect(Token.Type type, String value, String message) {
+	public Token expect(Token.Type type, String value, String message) throws SyntaxException {
 		// TODO: message isn't used
 		Token token = tokens.get(current);
 		if (value == null) {

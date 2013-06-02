@@ -25,7 +25,7 @@ import com.mitchellbosecke.pebble.utils.Pair;
 public class IfTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) {
+	public Node parse(Token token) throws SyntaxException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 		

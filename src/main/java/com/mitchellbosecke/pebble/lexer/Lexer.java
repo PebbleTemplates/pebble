@@ -9,8 +9,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.lexer;
 
+import com.mitchellbosecke.pebble.error.SyntaxException;
+
 
 public interface Lexer {
 
-	public TokenStream tokenize(String source, String name);
+	public TokenStream tokenize(String source, String name) throws SyntaxException;
 }

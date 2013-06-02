@@ -56,8 +56,9 @@ public class ExpressionParser {
 	 * The public entry point for parsing an expression.
 	 * 
 	 * @return NodeExpression the expression that has been parsed.
+	 * @throws SyntaxException 
 	 */
-	public NodeExpression parseExpression() {
+	public NodeExpression parseExpression() throws SyntaxException {
 		return parseExpression(0);
 	}
 
@@ -69,8 +70,9 @@ public class ExpressionParser {
 	 * @see http://en.wikipedia.org/wiki/Operator-precedence_parser
 	 * 
 	 * @return The NodeExpression representing the parsed expression.
+	 * @throws SyntaxException 
 	 */
-	private NodeExpression parseExpression(int minPrecedence) {
+	private NodeExpression parseExpression(int minPrecedence) throws SyntaxException {
 
 		this.stream = parser.getStream();
 		Token token = stream.current();
@@ -178,8 +180,9 @@ public class ExpressionParser {
 	 * binary operator. Ex. "var.field", "true", "12", etc.
 	 * 
 	 * @return NodeExpression The expression that it found.
+	 * @throws SyntaxException 
 	 */
-	private NodeExpression subparseExpression() {
+	private NodeExpression subparseExpression() throws SyntaxException {
 		Token token = stream.current();
 		NodeExpression node = null;
 
@@ -255,8 +258,9 @@ public class ExpressionParser {
 	 *            The expression that we have already discovered
 	 * @return Either the original expression that was passed in or a slightly
 	 *         modified version of it, depending on what was discovered.
+	 * @throws SyntaxException 
 	 */
-	private NodeExpression parsePostfixExpression(NodeExpression node) {
+	private NodeExpression parsePostfixExpression(NodeExpression node) throws SyntaxException {
 		Token current;
 		while (true) {
 			current = stream.current();
@@ -284,7 +288,7 @@ public class ExpressionParser {
 		return node;
 	}
 
-	private NodeExpression parseFunctionExpression(NodeExpression node) {
+	private NodeExpression parseFunctionExpression(NodeExpression node) throws SyntaxException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 		
@@ -303,7 +307,7 @@ public class ExpressionParser {
 		return new NodeExpressionFunctionCall(lineNumber, functionName, args);
 	}
 
-	private NodeExpression parseFilterExpression(NodeExpression node) {
+	private NodeExpression parseFilterExpression(NodeExpression node) throws SyntaxException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -341,8 +345,9 @@ public class ExpressionParser {
 	 * @param node
 	 *            The expression parsed so far
 	 * @return NodeExpression The parsed subscript expression
+	 * @throws SyntaxException 
 	 */
-	private NodeExpression parseSubscriptExpression(NodeExpression node) {
+	private NodeExpression parseSubscriptExpression(NodeExpression node) throws SyntaxException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -370,11 +375,11 @@ public class ExpressionParser {
 		return node;
 	}
 
-	public NodeExpressionArguments parseArguments() {
+	public NodeExpressionArguments parseArguments() throws SyntaxException {
 		return parseArguments(false);
 	}
 
-	public NodeExpressionArguments parseArguments(boolean isMethodDefinition) {
+	public NodeExpressionArguments parseArguments(boolean isMethodDefinition) throws SyntaxException {
 		List<NodeExpression> vars = new ArrayList<>();
 		this.stream = this.parser.getStream();
 
@@ -402,7 +407,7 @@ public class ExpressionParser {
 		return new NodeExpressionArguments(lineNumber, vars.toArray(new NodeExpression[vars.size()]));
 	}
 
-	public NodeExpressionDeclaration parseDeclarationExpression() {
+	public NodeExpressionDeclaration parseDeclarationExpression() throws SyntaxException {
 
 		// set the stream because this function may be called externally
 		this.stream = this.parser.getStream();

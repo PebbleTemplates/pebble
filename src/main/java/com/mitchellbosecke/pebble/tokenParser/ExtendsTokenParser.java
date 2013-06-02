@@ -18,7 +18,7 @@ import com.mitchellbosecke.pebble.node.Node;
 public class ExtendsTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) {
+	public Node parse(Token token) throws SyntaxException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 		PebbleEngine engine = this.parser.getEngine();
