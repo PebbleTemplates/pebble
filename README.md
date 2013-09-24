@@ -22,7 +22,7 @@ Pebble has been *highly* influenced by the [Twig templating engine](http://twig.
 
 ## License
 
-    Copyright (C) 2012 by Mitchell Bosecke
+    Copyright (C) 2013 by Mitchell Bosecke
 
     Some rights reserved.
 
