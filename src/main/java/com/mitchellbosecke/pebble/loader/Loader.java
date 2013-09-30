@@ -18,6 +18,6 @@ public interface Loader {
 	
 	public String getSource(String templateName) throws LoaderException;
 
-	boolean isFresh(String templateName, Date timestamp) throws LoaderException;
+	//boolean isFresh(String templateName, Date timestamp) throws LoaderException;
 
 }

@@ -10,9 +10,8 @@
 package com.mitchellbosecke.pebble.compiler;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.tools.Diagnostic;
@@ -20,7 +19,6 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import org.slf4j.Logger;
@@ -123,12 +121,7 @@ public class CompilerImpl implements Compiler {
 	@Override
 	public PebbleTemplate compileToJava(String javaSource, String className) {
 
-		String compiledTemplatesPath = engine.getCompiledTemplateDirectory();
-
-		/* Creating dynamic java source code file object */
-		StringSourceCodeObject fileObject = new StringSourceCodeObject("com.mitchellbosecke.pebble.template."
-				+ className, javaSource);
-		JavaFileObject javaFileObjects[] = new JavaFileObject[] { fileObject };
+		String fullClassName = PebbleTemplate.COMPILED_PACKAGE_NAME + "." + className;
 
 		/* Instantiating the java compiler */
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -142,20 +135,25 @@ public class CompilerImpl implements Compiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		StandardJavaFileManager stdFileManager = compiler.getStandardFileManager(null, Locale.getDefault(), null);
+		// StandardJavaFileManager stdFileManager =
+		// compiler.getStandardFileManager(null, Locale.getDefault(), null);
+		ClassFileManager fileManager = ClassFileManager.getInstance(compiler.getStandardFileManager(null,
+				Locale.getDefault(), null));
 
 		/*
 		 * Prepare a list of compilation units (java source code file objects)
 		 * to input to compilation task
 		 */
-		Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(javaFileObjects);
+		List<JavaFileObject> compilationUnits = new ArrayList<>();
+		compilationUnits.add(new StringSourceFileObject(fullClassName, javaSource));
 
 		/* Prepare any compilation options to be used during compilation */
-		compiledTemplatesPath = compiledTemplatesPath.replace(" ", "\\ ");
+		// compiledTemplatesPath = compiledTemplatesPath.replace(" ", "\\ ");
 
-		logger.info(String.format("Compiling to %s", compiledTemplatesPath));
-		String[] compileOptions = new String[] { "-d", compiledTemplatesPath };
-		Iterable<String> compilationOptions = Arrays.asList(compileOptions);
+		// logger.info(String.format("Compiling to %s", compiledTemplatesPath));
+		// String[] compileOptions = new String[] { "-d", compiledTemplatesPath
+		// };
+		// Iterable<String> compilationOptions = Arrays.asList(compileOptions);
 
 		/* Create a diagnostic controller, which holds the compilation problems */
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -164,8 +162,7 @@ public class CompilerImpl implements Compiler {
 		 * Create a compilation task from compiler by passing in the required
 		 * input objects prepared above
 		 */
-		CompilationTask compilerTask = compiler.getTask(null, stdFileManager, diagnostics, compilationOptions, null,
-				compilationUnits);
+		CompilationTask compilerTask = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
 
 		// Perform the compilation by calling the call method on compilerTask
 		// object.
@@ -178,19 +175,20 @@ public class CompilerImpl implements Compiler {
 			}
 		}
 		try {
-			stdFileManager.close();// Close the file manager
+			fileManager.close();// Close the file manager
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			URL compiledTemplateDirectory = this.getClass().getResource(compiledTemplatesPath);
-			URLClassLoader classLoader = new URLClassLoader(new URL[] { compiledTemplateDirectory });
 
-			@SuppressWarnings("unchecked")
-			Class<PebbleTemplate> clazz = (Class<PebbleTemplate>) classLoader.loadClass(fileObject.getQualifiedName());
+			// PebbleClassLoader pebbleClassLoader =
+			// PebbleClassLoader.getInstance();
+			// pebbleClassLoader.register(fullClassName,
+			// fileManager.getCompiledJavaClassObject());
 
-			AbstractPebbleTemplate template = (AbstractPebbleTemplate) clazz.newInstance();
+			AbstractPebbleTemplate template = (AbstractPebbleTemplate) fileManager.getClassLoader(null)
+					.loadClass(fullClassName).newInstance();
 			template.setSourceCode(getSource());
 			return template;
 		} catch (IllegalAccessException | InstantiationException e) {
@@ -200,7 +198,6 @@ public class CompilerImpl implements Compiler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			
 		}
 
 		return null;

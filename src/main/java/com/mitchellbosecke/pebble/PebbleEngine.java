@@ -26,7 +26,7 @@ import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.loader.FileSystemResourceLoader;
+import com.mitchellbosecke.pebble.loader.ResourceLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
@@ -86,7 +86,7 @@ public class PebbleEngine {
 	 *            File system paths where the templates are being stored
 	 */
 	public PebbleEngine(Collection<String> templatePaths, String compiledTemplateDirectory) {
-		this(new FileSystemResourceLoader(templatePaths), compiledTemplateDirectory);
+		this(new ResourceLoader(templatePaths), compiledTemplateDirectory);
 	}
 
 	/**

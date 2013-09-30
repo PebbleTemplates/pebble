@@ -12,6 +12,7 @@ package com.mitchellbosecke.pebble.node;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeRoot extends AbstractNode {
@@ -58,7 +59,7 @@ public class NodeRoot extends AbstractNode {
 		String parentClass = this.parentClassName == null ? compiler.getEngine().getTemplateAbstractClass().getName()
 				: parentClassName;
 
-		compiler.write("package com.mitchellbosecke.pebble.template;")
+		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME))
 				.raw("\n\n")
 				.write("import java.util.Map;")
 				.raw("\n")

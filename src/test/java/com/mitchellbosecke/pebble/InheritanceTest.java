@@ -21,7 +21,7 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testSimpleInheritance() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("inheritance/template.parent.peb");
+		PebbleTemplate template = pebble.loadTemplate("inheritance/template.parent2.peb");
 		Map<String, Object> context = new HashMap<>();
 		template.render(context);
 	}

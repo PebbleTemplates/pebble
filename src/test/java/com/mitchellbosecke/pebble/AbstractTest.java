@@ -29,7 +29,7 @@ public abstract class AbstractTest {
 		Collection<String> paths = new ArrayList<>();
 		paths.add("templates");
 		paths.add("misc");
-		pebble = new PebbleEngine(paths, "compiled");
+		pebble = new PebbleEngine(paths, "target/classes");
 		loader = pebble.getLoader();
 		lexer = pebble.getLexer();
 		parser = pebble.getParser();

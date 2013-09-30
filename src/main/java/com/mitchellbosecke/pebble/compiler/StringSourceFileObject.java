@@ -22,7 +22,7 @@ import javax.tools.SimpleJavaFileObject;
  * JavaFileObject
  * 
  */
-public class StringSourceCodeObject extends SimpleJavaFileObject {
+public class StringSourceFileObject extends SimpleJavaFileObject {
 	private String qualifiedName;
 	private String sourceCode;
 
@@ -36,7 +36,7 @@ public class StringSourceCodeObject extends SimpleJavaFileObject {
 	 * @param code
 	 *            the source code string
 	 */
-	protected StringSourceCodeObject(String name, String code) {
+	protected StringSourceFileObject(String name, String code) {
 		super(URI.create("string:///" + name.replaceAll("\\.", "/")
 				+ Kind.SOURCE.extension), Kind.SOURCE);
 		this.qualifiedName = name;

@@ -16,6 +16,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 
 public interface PebbleTemplate {
 	
+	public final static String COMPILED_PACKAGE_NAME = "com.mitchellbosecke.pebble.template.compiled";
+	
 	public String render() throws PebbleException;
 
 	public String render(Map<String, Object> model) throws PebbleException;
