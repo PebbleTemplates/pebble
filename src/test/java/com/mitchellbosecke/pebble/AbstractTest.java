@@ -15,6 +15,7 @@ import java.util.Collection;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.PebbleDefaultLoader;
 import com.mitchellbosecke.pebble.parser.Parser;
 
 public abstract class AbstractTest {
@@ -28,8 +29,9 @@ public abstract class AbstractTest {
 	public AbstractTest() {
 		Collection<String> paths = new ArrayList<>();
 		paths.add("templates");
-		paths.add("misc");
-		pebble = new PebbleEngine(paths, "target/classes");
+		Loader templateLoader = new PebbleDefaultLoader();
+		templateLoader.setPrefix("templates");
+		pebble = new PebbleEngine(templateLoader);
 		loader = pebble.getLoader();
 		lexer = pebble.getLexer();
 		parser = pebble.getParser();

@@ -16,9 +16,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CompilerTest extends AbstractTest {

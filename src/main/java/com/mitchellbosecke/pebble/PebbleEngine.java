@@ -12,7 +12,6 @@ package com.mitchellbosecke.pebble;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +25,6 @@ import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.loader.ResourceLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
@@ -56,7 +54,6 @@ public class PebbleEngine {
 	private final Class<?> templateInterfaceClass;
 	private final Class<?> templateAbstractClass;
 	private final String templateClassPrefix;
-	private String compiledTemplateDirectory;
 
 	/*
 	 * Templates that have already been compiled into Java
@@ -77,16 +74,9 @@ public class PebbleEngine {
 	private Map<String, Operator> binaryOperators;
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
-	
 
-	/**
-	 * Constructor for the Pebble Engine give file system paths to templates.
-	 * 
-	 * @param paths
-	 *            File system paths where the templates are being stored
-	 */
-	public PebbleEngine(Collection<String> templatePaths, String compiledTemplateDirectory) {
-		this(new ResourceLoader(templatePaths), compiledTemplateDirectory);
+	public PebbleEngine() {
+		this(null);
 	}
 
 	/**
@@ -95,13 +85,11 @@ public class PebbleEngine {
 	 * @param loader
 	 *            The template loader for this engine
 	 */
-	public PebbleEngine(Loader loader, String compiledTemplateDirectory) {
+	public PebbleEngine(Loader loader) {
 		this.setLoader(loader);
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
-		
-		this.compiledTemplateDirectory = compiledTemplateDirectory;
 
 		this.addExtension(new CoreExtension());
 
@@ -118,8 +106,8 @@ public class PebbleEngine {
 	 * @param templateName
 	 *            The name of the template to load
 	 * @return An instance of the template that has been compiled into Java
-	 * @throws SyntaxException 
-	 * @throws LoaderException 
+	 * @throws SyntaxException
+	 * @throws LoaderException
 	 */
 	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException {
 		String className = this.getTemplateClassName(templateName);
@@ -127,23 +115,24 @@ public class PebbleEngine {
 		if (loadedTemplates.containsKey(className)) {
 			instance = loadedTemplates.get(className);
 		} else if (!requiresCompilation(templateName)) {
-			
+
 			/* try to load class file if it has already been compiled */
 			// TODO
 			instance = null;
-			
+
 		} else {
 			/* template has not been compiled, we must compile it */
 			String templateSource = loader.getSource(templateName);
 			NodeRoot root = parse(tokenize(templateSource, templateName));
-			
+
 			String javaSource = compile(root);
-			
-			// if this template has a parent, lets make sure the parent is compiled first
-			if(root.hasParent()){
+
+			// if this template has a parent, lets make sure the parent is
+			// compiled first
+			if (root.hasParent()) {
 				this.loadTemplate(root.getParentFileName());
 			}
-			
+
 			instance = getCompiler().compileToJava(javaSource, className);
 			instance.setEngine(this);
 			loadedTemplates.put(className, instance);
@@ -152,7 +141,7 @@ public class PebbleEngine {
 	}
 
 	private boolean requiresCompilation(String templateName) {
-		
+
 		return true;
 	}
 
@@ -165,7 +154,7 @@ public class PebbleEngine {
 	 * @param filename
 	 *            The name of the template (used for meaningful error messages)
 	 * @return The TokenStream which is ready for parsing
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	private TokenStream tokenize(String source, String filename) throws SyntaxException {
 		return getLexer().tokenize(source, filename);
@@ -178,7 +167,7 @@ public class PebbleEngine {
 	 * @param stream
 	 *            The TokenStream which is ready for parsing
 	 * @return The root Node of the AST
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	private NodeRoot parse(TokenStream stream) throws SyntaxException {
 		return getParser().parse(stream);
@@ -346,10 +335,11 @@ public class PebbleEngine {
 	 * @return The final name that would be used for creating a Java class
 	 */
 	public String getTemplateClassName(String templateName) {
-		
-		// if tempalteName is part of a directory path, get just the last segment
+
+		// if tempalteName is part of a directory path, get just the last
+		// segment
 		templateName = templateName.replaceFirst(".*/([^/]+).*", "$1");
-		
+
 		String classNameHash = "";
 		byte[] bytesOfName;
 		MessageDigest md;
@@ -378,13 +368,5 @@ public class PebbleEngine {
 
 	public Class<?> getTemplateAbstractClass() {
 		return templateAbstractClass;
-	}
-
-	public String getCompiledTemplateDirectory() {
-		return compiledTemplateDirectory;
-	}
-
-	public void setCompiledTemplateDirectory(String compiledTemplateDirectory) {
-		this.compiledTemplateDirectory = compiledTemplateDirectory;
 	}
 }

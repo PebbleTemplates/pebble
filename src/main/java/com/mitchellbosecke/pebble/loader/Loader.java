@@ -9,15 +9,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
-import java.util.Date;
-
 import com.mitchellbosecke.pebble.error.LoaderException;
 
-
 public interface Loader {
-	
+
 	public String getSource(String templateName) throws LoaderException;
 
-	//boolean isFresh(String templateName, Date timestamp) throws LoaderException;
+	public void setPrefix(String prefix);
+
+	public void setSuffix(String suffix);
 
 }

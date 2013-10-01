@@ -48,11 +48,18 @@ public class ClassFileManager extends ForwardingJavaFileManager<JavaFileManager>
 	@Override
 	public ClassLoader getClassLoader(Location location) {
 
-		return new SecureClassLoader() {
+		return new SecureClassLoader(ClassFileManager.class.getClassLoader()) {
 			@Override
 			protected Class<?> findClass(String name) throws ClassNotFoundException {
-				byte[] b = classObjects.get(name).getBytes();
-				return super.defineClass(name, b, 0, b.length);
+				ByteArrayJavaFileObject classObject = classObjects.get(name);
+
+				if (classObject == null) {
+					return super.loadClass(name);
+				} else {
+					byte[] b = classObject.getBytes();
+					return super.defineClass(name, b, 0, b.length);
+				}
+
 			}
 		};
 	}
@@ -84,10 +91,9 @@ public class ClassFileManager extends ForwardingJavaFileManager<JavaFileManager>
 	public String inferBinaryName(Location location, JavaFileObject file) {
 		if (file instanceof ByteArrayJavaFileObject) {
 			return ((ByteArrayJavaFileObject) file).getBinaryName();
-		} else { 
+		} else {
 			return fileManager.inferBinaryName(location, file);
 		}
 	}
 
-	
 }

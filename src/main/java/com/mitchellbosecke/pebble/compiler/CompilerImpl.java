@@ -9,8 +9,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.compiler;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -147,13 +150,22 @@ public class CompilerImpl implements Compiler {
 		List<JavaFileObject> compilationUnits = new ArrayList<>();
 		compilationUnits.add(new StringSourceFileObject(fullClassName, javaSource));
 
-		/* Prepare any compilation options to be used during compilation */
-		// compiledTemplatesPath = compiledTemplatesPath.replace(" ", "\\ ");
+		// prepare compilation options
+		List<String> compilationOptions = new ArrayList<>();
 
-		// logger.info(String.format("Compiling to %s", compiledTemplatesPath));
-		// String[] compileOptions = new String[] { "-d", compiledTemplatesPath
-		// };
-		// Iterable<String> compilationOptions = Arrays.asList(compileOptions);
+		// build classpath
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			sb.append(System.getProperty("java.class.path")).append(File.pathSeparator)
+					.append(PebbleTemplate.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		String classpath = sb.toString();
+		compilationOptions.addAll(Arrays.asList("-classpath", classpath));
 
 		/* Create a diagnostic controller, which holds the compilation problems */
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -162,7 +174,8 @@ public class CompilerImpl implements Compiler {
 		 * Create a compilation task from compiler by passing in the required
 		 * input objects prepared above
 		 */
-		CompilationTask compilerTask = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
+		CompilationTask compilerTask = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
+				compilationUnits);
 
 		// Perform the compilation by calling the call method on compilerTask
 		// object.
@@ -181,14 +194,8 @@ public class CompilerImpl implements Compiler {
 		}
 
 		try {
-
-			// PebbleClassLoader pebbleClassLoader =
-			// PebbleClassLoader.getInstance();
-			// pebbleClassLoader.register(fullClassName,
-			// fileManager.getCompiledJavaClassObject());
-
-			AbstractPebbleTemplate template = (AbstractPebbleTemplate) fileManager.getClassLoader(null)
-					.loadClass(fullClassName).newInstance();
+			ClassLoader cl = fileManager.getClassLoader(null);
+			AbstractPebbleTemplate template = (AbstractPebbleTemplate) cl.loadClass(fullClassName).newInstance();
 			template.setSourceCode(getSource());
 			return template;
 		} catch (IllegalAccessException | InstantiationException e) {
