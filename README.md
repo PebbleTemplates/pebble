@@ -1,4 +1,4 @@
-#Pebble (Current Version: 0.0.1)
+#Pebble (Current Version: v0.0.1-alpha)
 
 Pebble is a java templating engine. It started as a port of the [Twig templating engine](http://twig.sensiolabs.org/) for PHP.
 
