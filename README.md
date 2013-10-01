@@ -6,11 +6,11 @@ Pebble is in early development stages. It is not ready for production use.
 
 ## Release Notes
 
-### Version 0.0.2 (Coming Soon)
+### v0.0.2-alpha (Coming Soon)
 - Dedicated website with documentation
 - Code cleanup and more tests
 
-### Version 0.0.1 (September 30th 2013)
+### v0.0.1-alpha (September 30th 2013)
 - tags: block, extends, for, if, import, include, macro, set
 - filters: abbreviate, capitalize, date, default, format, json, lower, number, trim, upper, urlencode
 - functions: block, parent
