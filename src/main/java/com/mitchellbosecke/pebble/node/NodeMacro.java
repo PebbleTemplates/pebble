@@ -15,6 +15,8 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeMacro extends AbstractNode {
+	
+	public static final String MACRO_PREFIX = "macro_";
 
 	private final NodeExpressionArguments args;
 
@@ -31,7 +33,7 @@ public class NodeMacro extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.write(String.format("public String macro%s", name)).subcompile(args).raw("{\n\n").indent();
+		compiler.write(String.format("public String %s%s", MACRO_PREFIX, name)).subcompile(args).raw("{\n\n").indent();
 
 		// create a context that is local to this macro
 		compiler.write("Map<String,Object> context = new HashMap<>();").raw("\n");

@@ -18,6 +18,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.error.LoaderException;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.extension.CoreExtension;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -109,17 +110,11 @@ public class PebbleEngine {
 	 * @throws SyntaxException
 	 * @throws LoaderException
 	 */
-	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException {
+	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException, PebbleException {
 		String className = this.getTemplateClassName(templateName);
 		PebbleTemplate instance;
 		if (loadedTemplates.containsKey(className)) {
 			instance = loadedTemplates.get(className);
-		} else if (!requiresCompilation(templateName)) {
-
-			/* try to load class file if it has already been compiled */
-			// TODO
-			instance = null;
-
 		} else {
 			/* template has not been compiled, we must compile it */
 			String templateSource = loader.getSource(templateName);
@@ -138,11 +133,6 @@ public class PebbleEngine {
 			loadedTemplates.put(className, instance);
 		}
 		return instance;
-	}
-
-	private boolean requiresCompilation(String templateName) {
-
-		return true;
 	}
 
 	/**

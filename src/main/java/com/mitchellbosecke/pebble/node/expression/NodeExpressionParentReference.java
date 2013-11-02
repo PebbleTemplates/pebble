@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.DisplayableNode;
+import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
@@ -25,7 +26,7 @@ public class NodeExpressionParentReference extends NodeExpression implements Dis
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(String.format("super.block_%s(context)\n", this.name));
+		compiler.raw(String.format("super.%s%s(context)\n", NodeBlock.BLOCK_PREFIX, this.name));
 	}
 
 	@Override

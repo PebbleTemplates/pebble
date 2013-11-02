@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -122,7 +123,7 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplate compileToJava(String javaSource, String className) {
+	public PebbleTemplate compileToJava(String javaSource, String className) throws PebbleException {
 
 		String fullClassName = PebbleTemplate.COMPILED_PACKAGE_NAME + "." + className;
 
@@ -138,8 +139,6 @@ public class CompilerImpl implements Compiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		// StandardJavaFileManager stdFileManager =
-		// compiler.getStandardFileManager(null, Locale.getDefault(), null);
 		ClassFileManager fileManager = ClassFileManager.getInstance(compiler.getStandardFileManager(null,
 				Locale.getDefault(), null));
 
@@ -177,8 +176,6 @@ public class CompilerImpl implements Compiler {
 		CompilationTask compilerTask = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
 				compilationUnits);
 
-		// Perform the compilation by calling the call method on compilerTask
-		// object.
 		boolean status = compilerTask.call();
 
 		if (!status) {// If compilation error occurs
@@ -186,6 +183,8 @@ public class CompilerImpl implements Compiler {
 			for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
 				logger.error(String.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic));
 			}
+			
+			throw new PebbleException("Compilation error occurred.");
 		}
 		try {
 			fileManager.close();// Close the file manager

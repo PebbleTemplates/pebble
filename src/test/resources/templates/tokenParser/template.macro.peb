@@ -1,5 +1,4 @@
-{% import _self as forms %}
-{{ forms.input("company", "forcorp", "text") }}
+{{ this.input("company", "forcorp", "text") }}
 {% macro input(name, value, type) %}
 	<input name="{{ name }}" value="{{ value }}" type="{{ type }}" />
 {% endmacro %}

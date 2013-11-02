@@ -1,4 +1,5 @@
 {% extends "function/template.parent.peb" %}
+child text
 {% block head %}
 	{{ parent() }}
 	child head

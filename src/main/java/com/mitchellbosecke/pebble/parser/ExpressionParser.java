@@ -18,6 +18,7 @@ import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeExpression;
+import com.mitchellbosecke.pebble.node.NodeTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
@@ -241,9 +242,30 @@ public class ExpressionParser {
 		return parsePostfixExpression(node);
 	}
 
-	private NodeExpression parseTernaryExpression(NodeExpression expression) {
+	private NodeExpression parseTernaryExpression(NodeExpression expression) throws SyntaxException {
 		while (this.stream.current().test(Token.Type.PUNCTUATION, "?")) {
-			// TODO implement creating a ternary expression
+			
+			int lineNumber = stream.current().getLineNumber();
+
+			stream.next();
+			
+			NodeExpression expression2 = null;
+			NodeExpression expression3 = null;
+			
+			if(!stream.current().test(Token.Type.PUNCTUATION, ":")){
+				expression2 = parseExpression();
+				
+				if(stream.current().test(Token.Type.PUNCTUATION, ":")){
+					stream.next();
+					expression3 = parseExpression();
+				}
+			}else{
+				stream.next();
+				expression2 = expression;
+				expression3 = parseExpression();
+			}
+			
+			expression = new NodeTernary(lineNumber, expression, expression2, expression3);
 		}
 
 		return expression;
@@ -397,7 +419,7 @@ public class ExpressionParser {
 				Token token = stream.expect(Token.Type.NAME);
 				vars.add(new NodeExpressionDeclaration(token.getLineNumber(), token.getValue()));
 			} else {
-				vars.add(subparseExpression());
+				vars.add(parseExpression());
 			}
 
 		}

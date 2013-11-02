@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.compiler;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -34,7 +35,7 @@ public interface Compiler {
 	
 	public PebbleEngine getEngine();
 	
-	public PebbleTemplate compileToJava(String javaSource, String className);
+	public PebbleTemplate compileToJava(String javaSource, String className) throws PebbleException;
 	
 	
 }

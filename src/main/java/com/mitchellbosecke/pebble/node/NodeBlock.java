@@ -14,6 +14,8 @@ import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeBlock extends AbstractNode {
 
+	public static final String BLOCK_PREFIX = "block_";
+	
 	private NodeBody body;
 	private String name;
 	
@@ -35,8 +37,8 @@ public class NodeBlock extends AbstractNode {
 	public void compile(Compiler compiler) {
 		compiler.write(
 				String.format(
-						"public String block_%s(Map<String,Object> context) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
-						this.name)).indent();
+						"public String %s%s(Map<String,Object> context) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
+						BLOCK_PREFIX, this.name)).indent();
 		
 		compiler.write("StringBuilder builder = new StringBuilder();\n");
 		

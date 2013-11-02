@@ -19,23 +19,29 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class CoreOperatorTest extends AbstractTest {
 
 	@Test
+	public void testUnary() throws PebbleException {
+		PebbleTemplate template = pebble.loadTemplate("template.operators.unary.peb");
+		assertEquals("yes\nyes\n", template.render());
+	}
+
+	@Test
 	public void testBinary() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.math.peb");
+		PebbleTemplate template = pebble.loadTemplate("template.operators.binary.peb");
 		assertEquals("61\n1", template.render());
 	}
 
 	@Test
-	public void testLogic() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.math2.peb");
-		assertEquals("three is greater than two\n" + "two is less than three\n"
-				+ "three is greater than or equal to three\n" + "hundred is less than or equal to hundred\n",
-				template.render());
+	public void testTernary() throws PebbleException {
+		PebbleTemplate template = pebble.loadTemplate("template.operators.ternary.peb");
+		assertEquals("11", template.render());
 	}
 
 	@Test
-	public void testUnary() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.math.unary.peb");
-		assertEquals("yes\nyes\n", template.render());
+	public void testComparisons() throws PebbleException {
+		PebbleTemplate template = pebble.loadTemplate("template.operators.comparisons.peb");
+		assertEquals("three is greater than two\n" + "two is less than three\n"
+				+ "three is greater than or equal to three\n" + "hundred is less than or equal to hundred\n"
+				+ "two equals two\n", template.render());
 	}
 
 }

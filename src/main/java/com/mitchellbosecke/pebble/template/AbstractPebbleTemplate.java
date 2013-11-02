@@ -22,6 +22,7 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.filter.Filter;
+import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.test.Test;
 
@@ -97,7 +98,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 
-			// macro methods are prefixed with the word 'macro' to avoid
+			// macro methods are prefixed with a prefix to avoid
 			// conflicts.
 			if (method == null) {
 				try {
@@ -110,7 +111,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 						paramTypes.add(Object.class);
 					}
 
-					method = clazz.getMethod("macro" + attribute, paramTypes.toArray(new Class[paramTypes.size()]));
+					method = clazz.getMethod(NodeMacro.MACRO_PREFIX + attribute, paramTypes.toArray(new Class[paramTypes.size()]));
 					found = true;
 				} catch (NoSuchMethodException | SecurityException e) {
 				}
