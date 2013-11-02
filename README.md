@@ -1,20 +1,22 @@
-#Pebble (Current Version: 0.0)
-======
+#Pebble (Current Version: v0.0.1-alpha)
 
 Pebble is a java templating engine. It started as a port of the [Twig templating engine](http://twig.sensiolabs.org/) for PHP.
 
-Pebble is not even in an alpha stage. It is not yet ready for use.
+Pebble is in early development stages. It is not ready for production use.
 
-## Roadmap
+## Release Notes
 
-### Version 0.1-alpha
+### v0.0.2-alpha (Coming Soon)
+- Dedicated website with documentation
+- Code cleanup and more tests
+
+### v0.0.1-alpha (September 30th 2013)
 - tags: block, extends, for, if, import, include, macro, set
 - filters: abbreviate, capitalize, date, default, format, json, lower, number, trim, upper, urlencode
 - functions: block, parent
 - tests: empty, even, null, odd, iterable, equalTo
 - operators: in, is, is not, +, -, /, *, %, and, or, (), ==, !=, <, >, <=, >=, |, .
-- extensive unit tests
-- dedicated website and documentation
+- unit tests
 
 ## Attribution
 
