@@ -52,9 +52,9 @@ public class PebbleEngine {
 	/*
 	 * Settings
 	 */
-	private final Class<?> templateInterfaceClass;
-	private final Class<?> templateAbstractClass;
-	private final String templateClassPrefix;
+	private final Class<?> templateInterfaceClass = PebbleTemplate.class;
+	private final Class<?> templateAbstractClass = AbstractPebbleTemplate.class;
+	private final String templateClassPrefix = "PebbleTemplate";
 
 	/*
 	 * Templates that have already been compiled into Java
@@ -93,10 +93,6 @@ public class PebbleEngine {
 		compiler = new CompilerImpl(this);
 
 		this.addExtension(new CoreExtension());
-
-		this.templateInterfaceClass = PebbleTemplate.class;
-		this.templateAbstractClass = AbstractPebbleTemplate.class;
-		this.templateClassPrefix = "PebbleTemplate";
 	}
 
 	/**

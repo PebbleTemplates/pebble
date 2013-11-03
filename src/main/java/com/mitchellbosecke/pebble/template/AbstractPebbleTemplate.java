@@ -147,6 +147,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 					}
 					found = true;
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					found = false;
 				}
 			}
 		}

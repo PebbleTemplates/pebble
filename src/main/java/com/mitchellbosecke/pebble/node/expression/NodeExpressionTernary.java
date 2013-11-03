@@ -7,18 +7,19 @@
  * Unported License. To view a copy of this license, visit 
  * http://creativecommons.org/licenses/by-sa/3.0/
  ******************************************************************************/
-package com.mitchellbosecke.pebble.node;
+package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeTernary extends NodeExpression {
+public class NodeExpressionTernary extends NodeExpression {
 
 	private final NodeExpression expression1;
 	private final NodeExpression expression2;
 	private final NodeExpression expression3;
 
-	public NodeTernary(int lineNumber, NodeExpression expression1, NodeExpression expression2, NodeExpression expression3) {
+	public NodeExpressionTernary(int lineNumber, NodeExpression expression1, NodeExpression expression2, NodeExpression expression3) {
 
 		super(lineNumber);
 		this.expression1 = expression1;

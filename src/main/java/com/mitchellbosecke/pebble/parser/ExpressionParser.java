@@ -18,7 +18,6 @@ import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodeTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
@@ -30,6 +29,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMe
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 
 /**
  * Parses expressions.
@@ -265,7 +265,7 @@ public class ExpressionParser {
 				expression3 = parseExpression();
 			}
 			
-			expression = new NodeTernary(lineNumber, expression, expression2, expression3);
+			expression = new NodeExpressionTernary(lineNumber, expression, expression2, expression3);
 		}
 
 		return expression;
