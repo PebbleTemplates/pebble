@@ -26,7 +26,7 @@ public class NodeExpressionParentReference extends NodeExpression implements Dis
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(String.format("super.%s%s(context)\n", NodeBlock.BLOCK_PREFIX, this.name));
+		compiler.raw(String.format("super.%s%s()\n", NodeBlock.BLOCK_PREFIX, this.name));
 	}
 
 	@Override

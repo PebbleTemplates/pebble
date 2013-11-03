@@ -37,14 +37,14 @@ public class NodeBlock extends AbstractNode {
 	public void compile(Compiler compiler) {
 		compiler.write(
 				String.format(
-						"public String %s%s(Map<String,Object> context) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
+						"public String %s%s() throws com.mitchellbosecke.pebble.error.PebbleException {\n",
 						BLOCK_PREFIX, this.name)).indent();
 		
 		compiler.write("StringBuilder builder = new StringBuilder();\n");
 		
 		compiler.subcompile(body);
 		
-		compiler.write("return builder.toString();");
+		compiler.raw("\n").write("return builder.toString();");
 		
 		compiler.raw("\n").outdent()
 				.write("}\n");

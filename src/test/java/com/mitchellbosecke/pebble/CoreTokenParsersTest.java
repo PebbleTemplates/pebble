@@ -96,5 +96,4 @@ public class CoreTokenParsersTest extends AbstractTest {
 			return username;
 		}
 	}
-
 }

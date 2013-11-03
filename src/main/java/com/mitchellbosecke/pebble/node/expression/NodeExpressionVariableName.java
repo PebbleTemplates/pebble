@@ -24,8 +24,8 @@ public class NodeExpressionVariableName extends NodeExpression {
 
 	@Override
 	public void compile(Compiler compiler) {
-		if("this".equals(name)){
-			compiler.raw(name);
+		if("_self".equals(name)){
+			compiler.raw("this");
 		}else{
 			compiler.raw("context.get(").string(name).raw(")");
 		}

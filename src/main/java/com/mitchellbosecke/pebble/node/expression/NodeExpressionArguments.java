@@ -9,17 +9,31 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionArguments extends NodeExpression {
 
-	private final NodeExpression[] args;
+	private NodeExpression[] args;
 
 	public NodeExpressionArguments(int lineNumber, NodeExpression[] args) {
 		super(lineNumber);
 		this.args = args;
+	}
+	
+	/**
+	 * NodeMacro will use this method to add a secret _context argument
+	 * when compiling macro declarations.
+	 */
+	public void addArgument(NodeExpressionDeclaration declaration){
+		List<NodeExpression> arguments = new ArrayList<>(Arrays.asList(args));
+		arguments.add(declaration);
+		this.args = arguments.toArray(new NodeExpression[arguments.size()]);
 	}
 
 	@Override

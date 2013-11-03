@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +66,9 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attribute));
 		}
 
+		// hold onto original name for error reporting
+		String originalAttributeName = attribute;
+
 		Class<?> clazz = object.getClass();
 
 		Object result = null;
@@ -89,6 +93,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		if (result == null) {
 
+			boolean passContextAsArgument = false;
+
 			Method method = null;
 
 			// check if attribute is a method
@@ -98,21 +104,29 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 
-			// macro methods are prefixed with a prefix to avoid
-			// conflicts.
+			// Check for macro
 			if (method == null) {
 				try {
 
 					// in order to use reflection we need to know the EXACT
-					// number of arguments the intended method takes
+					// number and types of arguments the intended method takes
 					List<Class<?>> paramTypes = new ArrayList<>();
+
 					for (@SuppressWarnings("unused")
 					Object param : args) {
 						paramTypes.add(Object.class);
 					}
+					
+					/*
+					 * Add an extra parameter to account for the secret _context
+					 * object that we will pass
+					 */
+					paramTypes.add(Object.class);
 
-					method = clazz.getMethod(NodeMacro.MACRO_PREFIX + attribute, paramTypes.toArray(new Class[paramTypes.size()]));
+					method = clazz.getMethod(NodeMacro.MACRO_PREFIX + attribute,
+							paramTypes.toArray(new Class[paramTypes.size()]));
 					found = true;
+					passContextAsArgument = true;
 				} catch (NoSuchMethodException | SecurityException e) {
 				}
 			}
@@ -140,6 +154,11 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 			if (method != null) {
 				try {
+					if (passContextAsArgument) {
+						List<Object> arguments = new ArrayList<>(Arrays.asList(args));
+						arguments.add(context);
+						args = arguments.toArray();
+					}
 					if (args.length > 0) {
 						result = method.invoke(object, args);
 					} else {
@@ -147,14 +166,16 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 					}
 					found = true;
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					found = false;
+					if (e instanceof InvocationTargetException) {
+						((InvocationTargetException) e).getTargetException().printStackTrace();
+					}
 				}
 			}
 		}
 
 		if (!found) {
 			throw new AttributeNotFoundException(String.format(
-					"Attribute [%s] of [%s] does not exist or can not be accessed.", attribute, clazz));
+					"Attribute [%s] of [%s] does not exist or can not be accessed.", originalAttributeName, clazz));
 		}
 		return result;
 

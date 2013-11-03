@@ -19,6 +19,11 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 
 	private final String name;
 
+	/*
+	 * output is true if the block is referenced in an expression using the
+	 * block() function, otherwise it is false if it is referenced using block
+	 * tags, ie. {% block name %}
+	 */
 	private final boolean output;
 
 	public NodeExpressionBlockReference(int lineNumber, String name, boolean output) {
@@ -30,9 +35,9 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 	@Override
 	public void compile(Compiler compiler) {
 		if (!this.output) {
-			compiler.raw("\n").write(String.format("builder.append(block_%s(context));\n", this.name));
+			compiler.raw("\n").write(String.format("builder.append(block_%s());\n", this.name));
 		} else {
-			compiler.raw(String.format("%s%s(context)\n", NodeBlock.BLOCK_PREFIX, this.name));
+			compiler.raw(String.format("%s%s()\n", NodeBlock.BLOCK_PREFIX, this.name));
 		}
 	}
 
