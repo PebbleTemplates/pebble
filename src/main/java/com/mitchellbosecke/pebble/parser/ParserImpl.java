@@ -61,7 +61,7 @@ public class ParserImpl implements Parser {
 	private String parentFileName;
 	private Map<String, NodeBlock> blocks;
 	private Stack<String> blockStack;
-	private Map<String, NodeMacro> macros;
+	private Map<String, List<NodeMacro>> macros; // list allows for overloading same name
 
 	/**
 	 * Parser stack storing the stateful data. This is so that one Parser
@@ -84,7 +84,7 @@ public class ParserImpl implements Parser {
 	 * Private constructor that takes in all stateful data
 	 */
 	private ParserImpl(PebbleEngine engine, TokenStream stream, String parentClassName, String parentFileName,
-			Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros) {
+			Map<String, NodeBlock> blocks, Map<String, List<NodeMacro>> macros) {
 		this.engine = engine;
 		this.stream = stream;
 		this.parentClassName = parentClassName;
@@ -117,7 +117,7 @@ public class ParserImpl implements Parser {
 		this.blocks = new HashMap<>();
 		this.blockStack = new Stack<>();
 
-		this.macros = new HashMap<>();
+		this.setMacros(new HashMap<String,List<NodeMacro>>());
 
 		NodeBody body = subparse();
 
@@ -289,11 +289,6 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public void setMacro(String name, NodeMacro macro) {
-		getMacros().put(name, macro);
-	}
-
-	@Override
 	public void pushBlockStack(String name) {
 		blockStack.push(name);
 	}
@@ -328,12 +323,24 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public Map<String, NodeMacro> getMacros() {
+	public Map<String, List<NodeMacro>> getMacros() {
 		return macros;
 	}
 
 	@Override
-	public void setMacros(Map<String, NodeMacro> macros) {
+	public void addMacro(String name, NodeMacro macro) {
+		Map<String, List<NodeMacro>> existingMacros = getMacros();
+		List<NodeMacro> macros;
+		if(getMacros().containsKey(name)){
+			macros = getMacros().get(name);
+		}else{
+			macros = new ArrayList<NodeMacro>();
+			existingMacros.put(name, macros);
+		}
+		macros.add(macro);
+	}
+
+	public void setMacros(Map<String, List<NodeMacro>> macros) {
 		this.macros = macros;
 	}
 

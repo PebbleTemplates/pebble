@@ -60,7 +60,8 @@ public class CoreTokenParsersTest extends AbstractTest {
 	@Test
 	public void testMacro() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.macro.peb");
-		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n",
+		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n"
+				+ "	<input name=\"company\" value=\"forcorp\" type=\"text\" data-overload=\"overloaded\"/>\n",
 				template.render(new HashMap<String, Object>()));
 	}
 

@@ -43,7 +43,7 @@ public class MacroTokenParser extends AbstractTokenParser {
 		
 		stream.expect(Token.Type.BLOCK_END);
 
-		this.parser.setMacro(macroName, new NodeMacro(lineNumber, macroName, args, body));
+		this.parser.addMacro(macroName, new NodeMacro(lineNumber, macroName, args, body));
 		return null;
 	}
 

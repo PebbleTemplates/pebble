@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
+import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -39,8 +40,6 @@ public interface Parser {
 
 	public void setBlock(String name, NodeBlock block);
 
-	public void setMacro(String name, NodeMacro macro);
-
 	public boolean hasBlock(String name);
 
 	public void pushBlockStack(String name);
@@ -59,8 +58,8 @@ public interface Parser {
 
 	void setBlocks(Map<String, NodeBlock> blocks);
 
-	Map<String, NodeMacro> getMacros();
-
-	void setMacros(Map<String, NodeMacro> macros);
+	Map<String,  List<NodeMacro>> getMacros();
+	
+	public void addMacro(String name, NodeMacro macro);
 
 }

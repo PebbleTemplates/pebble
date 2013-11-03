@@ -55,11 +55,12 @@ public class PebbleEngine {
 	private final Class<?> templateInterfaceClass = PebbleTemplate.class;
 	private final Class<?> templateAbstractClass = AbstractPebbleTemplate.class;
 	private final String templateClassPrefix = "PebbleTemplate";
+	private boolean cacheTemplates = true;
 
 	/*
 	 * Templates that have already been compiled into Java
 	 */
-	private HashMap<String, PebbleTemplate> loadedTemplates = new HashMap<>();
+	private HashMap<String, PebbleTemplate> cachedTemplates = new HashMap<>();
 
 	/*
 	 * Extensions
@@ -109,8 +110,8 @@ public class PebbleEngine {
 	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException, PebbleException {
 		String className = this.getTemplateClassName(templateName);
 		PebbleTemplate instance;
-		if (loadedTemplates.containsKey(className)) {
-			instance = loadedTemplates.get(className);
+		if (cacheTemplates && cachedTemplates.containsKey(className)) {
+			instance = cachedTemplates.get(className);
 		} else {
 			/* template has not been compiled, we must compile it */
 			String templateSource = loader.getSource(templateName);
@@ -126,7 +127,7 @@ public class PebbleEngine {
 
 			instance = getCompiler().compileToJava(javaSource, className);
 			instance.setEngine(this);
-			loadedTemplates.put(className, instance);
+			cachedTemplates.put(className, instance);
 		}
 		return instance;
 	}
@@ -354,5 +355,13 @@ public class PebbleEngine {
 
 	public Class<?> getTemplateAbstractClass() {
 		return templateAbstractClass;
+	}
+
+	public boolean isCacheTemplates() {
+		return cacheTemplates;
+	}
+
+	public void setCacheTemplates(boolean cacheTemplates) {
+		this.cacheTemplates = cacheTemplates;
 	}
 }

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
@@ -27,10 +28,10 @@ public class NodeRoot extends AbstractNode {
 
 	private final Map<String, NodeBlock> blocks;
 
-	private final Map<String, NodeMacro> macros;
+	private final Map<String, List<NodeMacro>> macros;
 
 	public NodeRoot(NodeBody body, String parentClassName, String parentFileName, Map<String, NodeBlock> blocks,
-			Map<String, NodeMacro> macros, String filename) {
+			Map<String, List<NodeMacro>> macros, String filename) {
 		super(0);
 		this.body = body;
 		this.parentClassName = parentClassName;
@@ -90,8 +91,10 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileMacroMethods(Compiler compiler) {
-		for (NodeMacro macro : macros.values()) {
-			compiler.raw("\n\n").subcompile(macro);
+		for (List<NodeMacro> overloadedMacros : macros.values()) {
+			for(NodeMacro macro: overloadedMacros){
+				compiler.raw("\n\n").subcompile(macro);
+			}
 		}
 	}
 
