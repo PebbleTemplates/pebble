@@ -8,7 +8,9 @@ Pebble is in early development stages. It is not ready for production use.
 
 ### v0.0.2-alpha (Coming Soon)
 - Dedicated website with documentation
-- Code cleanup and more tests
+- Code cleanup and more unit tests
+- Ternary operator
+- Macro overloading
 
 ### v0.0.1-alpha (September 30th 2013)
 - tags: block, extends, for, if, import, include, macro, set
