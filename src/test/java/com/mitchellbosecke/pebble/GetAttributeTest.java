@@ -27,7 +27,7 @@ public class GetAttributeTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject());
-		assertEquals(template.render(model), "hello Steve");
+		assertEquals("hello Steve" ,template.render(model));
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class GetAttributeTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("template.nestedAttributes.peb");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject3());
-		assertEquals(template.render(model), "hello Steve");
+		assertEquals("hello Steve", template.render(model));
 	}
 
 	@Test

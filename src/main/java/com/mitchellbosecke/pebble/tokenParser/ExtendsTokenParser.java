@@ -9,7 +9,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
@@ -21,12 +20,11 @@ public class ExtendsTokenParser extends AbstractTokenParser {
 	public Node parse(Token token) throws SyntaxException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
-		PebbleEngine engine = this.parser.getEngine();
 		
 		// skip the 'extends' token
 		stream.next();
 		
-		if (this.parser.getParentClassName() != null) {
+		if (this.parser.getParentFileName() != null) {
 			throw new SyntaxException("Multiple extend tags are not allowed.",
 					lineNumber, parser.getStream().getFilename());
 		}
@@ -34,7 +32,6 @@ public class ExtendsTokenParser extends AbstractTokenParser {
 		
 		String templateName = stream.current().getValue().replace("\"", "");
 		this.parser.setParentFileName(templateName);
-		this.parser.setParentClassName(engine.getTemplateClassName(templateName));
 		
 		// consume the parent name
 		stream.next();

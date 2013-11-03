@@ -9,8 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -21,9 +20,10 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testSimpleInheritance() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("inheritance/template.parent2.peb");
-		Map<String, Object> context = new HashMap<>();
-		template.render(context);
+		PebbleTemplate template = pebble.loadTemplate("inheritance/template.parent.peb");
+		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tPARENT HEAD\n"
+				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
+				+ "GRANDFATHER TEXT BELOW FOOT", template.render());
 	}
 
 }

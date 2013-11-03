@@ -29,12 +29,8 @@ public interface Parser {
 	public NodeBody subparse() throws SyntaxException;
 
 	public TokenStream getStream();
-
-	public void setParentClassName(String parentClassName);
 	
 	public void setParentFileName(String parentFileName);
-
-	public String getParentClassName();
 
 	public ExpressionParser getExpressionParser();
 

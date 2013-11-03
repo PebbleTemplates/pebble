@@ -57,11 +57,11 @@ public class ParserImpl implements Parser {
 	 * STATEFUL DATA
 	 */
 	private TokenStream stream;
-	private String parentClassName;
 	private String parentFileName;
 	private Map<String, NodeBlock> blocks;
 	private Stack<String> blockStack;
-	private Map<String, List<NodeMacro>> macros; // list allows for overloading same name
+	private Map<String, List<NodeMacro>> macros; // list allows for overloading
+													// same name
 
 	/**
 	 * Parser stack storing the stateful data. This is so that one Parser
@@ -83,11 +83,10 @@ public class ParserImpl implements Parser {
 	/**
 	 * Private constructor that takes in all stateful data
 	 */
-	private ParserImpl(PebbleEngine engine, TokenStream stream, String parentClassName, String parentFileName,
-			Map<String, NodeBlock> blocks, Map<String, List<NodeMacro>> macros) {
+	private ParserImpl(PebbleEngine engine, TokenStream stream, String parentFileName, Map<String, NodeBlock> blocks,
+			Map<String, List<NodeMacro>> macros) {
 		this.engine = engine;
 		this.stream = stream;
-		this.parentClassName = parentClassName;
 		this.parentFileName = parentFileName;
 		this.setBlocks(blocks);
 		this.setMacros(macros);
@@ -107,19 +106,20 @@ public class ParserImpl implements Parser {
 		 * instance was already being used to parse a template and this
 		 * particular occurrence is a "sub template"
 		 */
-		parserStack.push(new ParserImpl(engine, stream, parentClassName, parentFileName, getBlocks(), getMacros()));
+		parserStack.push(new ParserImpl(engine, stream, parentFileName, getBlocks(), getMacros()));
 
 		this.stream = stream;
 
-		this.parentClassName = null;
 		this.parentFileName = null;
 
 		this.blocks = new HashMap<>();
 		this.blockStack = new Stack<>();
 
-		this.setMacros(new HashMap<String,List<NodeMacro>>());
+		this.setMacros(new HashMap<String, List<NodeMacro>>());
 
 		NodeBody body = subparse();
+
+		String parentClassName = parentFileName == null ? null : engine.getTemplateClassName(parentFileName);
 
 		NodeRoot root = new NodeRoot(body, parentClassName, parentFileName, getBlocks(), getMacros(),
 				stream.getFilename());
@@ -129,7 +129,6 @@ public class ParserImpl implements Parser {
 		 */
 		Parser oldState = parserStack.pop();
 		this.stream = oldState.getStream();
-		this.parentClassName = oldState.getParentClassName();
 		this.parentFileName = oldState.getParentFileName();
 		this.setBlocks(oldState.getBlocks());
 		this.setMacros(oldState.getMacros());
@@ -260,16 +259,6 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public String getParentClassName() {
-		return parentClassName;
-	}
-
-	@Override
-	public void setParentClassName(String parent) {
-		this.parentClassName = parent;
-	}
-
-	@Override
 	public String getParentFileName() {
 		return this.parentFileName;
 	}
@@ -331,9 +320,9 @@ public class ParserImpl implements Parser {
 	public void addMacro(String name, NodeMacro macro) {
 		Map<String, List<NodeMacro>> existingMacros = getMacros();
 		List<NodeMacro> macros;
-		if(getMacros().containsKey(name)){
+		if (getMacros().containsKey(name)) {
 			macros = getMacros().get(name);
-		}else{
+		} else {
 			macros = new ArrayList<NodeMacro>();
 			existingMacros.put(name, macros);
 		}
