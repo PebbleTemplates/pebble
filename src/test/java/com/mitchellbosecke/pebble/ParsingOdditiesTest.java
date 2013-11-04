@@ -11,8 +11,6 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -23,15 +21,19 @@ public class ParsingOdditiesTest extends AbstractTest {
 	@Test
 	public void testExpressionInArguments() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.expressionInArguments.peb");
-		assertEquals("	2",
-				template.render(new HashMap<String, Object>()));
+		assertEquals("	2", template.render());
 	}
-	
+
 	@Test
 	public void testStringWithEscapeCharacter() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.stringWithEscapeCharacter.peb");
-		assertEquals("testtestte\"st",
-				template.render(new HashMap<String, Object>()));
+		assertEquals("testtestte\"st", template.render());
+	}
+
+	@Test
+	public void testStringConstantWithLinebreak() throws PebbleException {
+		PebbleTemplate template = pebble.loadTemplate("template.stringConstantWithLineBreak.peb");
+		assertEquals("test\ntest", template.render());
 	}
 
 }

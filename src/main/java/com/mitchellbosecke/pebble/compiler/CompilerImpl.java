@@ -89,7 +89,7 @@ public class CompilerImpl implements Compiler {
 		string = string.replaceAll("(\\n|\\r|\\f)", "\\\\n");
 		// tab characters
 		string = string.replaceAll("(\\t)", "\\\\t");
-		builder.append("\"" + string + "\"");
+		builder.append("\"").append(string).append("\"");
 		return this;
 	}
 

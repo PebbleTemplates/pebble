@@ -27,9 +27,10 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 
 /**
  * Parses expressions.
@@ -228,7 +229,7 @@ public class ExpressionParser {
 				break;
 
 			case STRING:
-				node = new NodeExpressionConstant(token.getLineNumber(), "\"" + token.getValue() + "\"");
+				node = new NodeExpressionString(token.getLineNumber(),(String)token.getValue());
 				break;
 
 			// not found, syntax error
@@ -321,8 +322,8 @@ public class ExpressionParser {
 			case "parent":
 				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
 			case "block":
-				String blockName = (String)((NodeExpressionConstant)args.getArgs()[0]).getValue();
-				return new NodeExpressionBlockReference(node.getLineNumber(), blockName.replace("\"", ""), true);
+				String blockName = (String)((NodeExpressionString)args.getArgs()[0]).getValue();
+				return new NodeExpressionBlockReference(node.getLineNumber(), blockName, true);
 		}
 
 		
