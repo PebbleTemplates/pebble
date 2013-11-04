@@ -30,7 +30,7 @@ public class ExtendsTokenParser extends AbstractTokenParser {
 		}
 		
 		
-		String templateName = stream.current().getValue().replace("\"", "");
+		String templateName = stream.current().getValue();
 		this.parser.setParentFileName(templateName);
 		
 		// consume the parent name

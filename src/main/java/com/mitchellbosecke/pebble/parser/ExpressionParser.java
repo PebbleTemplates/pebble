@@ -228,7 +228,7 @@ public class ExpressionParser {
 				break;
 
 			case STRING:
-				node = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
+				node = new NodeExpressionConstant(token.getLineNumber(), "\"" + token.getValue() + "\"");
 				break;
 
 			// not found, syntax error

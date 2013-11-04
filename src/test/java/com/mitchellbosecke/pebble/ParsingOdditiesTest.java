@@ -26,5 +26,12 @@ public class ParsingOdditiesTest extends AbstractTest {
 		assertEquals("	2",
 				template.render(new HashMap<String, Object>()));
 	}
+	
+	@Test
+	public void testStringWithEscapeCharacter() throws PebbleException {
+		PebbleTemplate template = pebble.loadTemplate("template.stringWithEscapeCharacter.peb");
+		assertEquals("testtestte\"st",
+				template.render(new HashMap<String, Object>()));
+	}
 
 }

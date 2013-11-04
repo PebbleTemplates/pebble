@@ -89,7 +89,7 @@ public class LexerImpl implements Lexer {
 	 */
 	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
 	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
-	private static final Pattern REGEX_STRING = Pattern.compile("\".*?\"");
+	private static final Pattern REGEX_STRING = Pattern.compile("(\"|').*?(?<!\\\\)(\"|')");
 	private static final String PUNCTUATION = "()[]{}?:.,|=";
 
 	/**
@@ -360,9 +360,10 @@ public class LexerImpl implements Lexer {
 		// strings
 		matcher = REGEX_STRING.matcher(source.substring(cursor));
 		if (matcher.lookingAt()) {
-			token = source.substring(cursor, cursor + matcher.end());
+			token = source.substring(cursor + 1, cursor + matcher.end() - 1);
+			
 			pushToken(Token.Type.STRING, token);
-			moveCursor(token);
+			moveCursor("\"" + token + "\"");
 			return;
 		}
 
