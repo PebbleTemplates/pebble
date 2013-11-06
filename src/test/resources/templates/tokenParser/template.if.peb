@@ -1,5 +1,0 @@
-{% if false or steve == true  %}
-    <p>winner</p>
-{% else %}
-	<p>failure</p>
-{% endif %}

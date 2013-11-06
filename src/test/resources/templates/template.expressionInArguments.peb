@@ -1,4 +1,0 @@
-{{ _self.input(1 + 1) }}
-{% macro input(value) %}
-	{{value}}
-{% endmacro %}

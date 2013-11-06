@@ -14,25 +14,36 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class ParsingOdditiesTest extends AbstractTest {
 
 	@Test
 	public void testExpressionInArguments() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.expressionInArguments.peb");
-		assertEquals("	2", template.render());
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.loadTemplate("{{ _self.input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+		assertEquals("2", template.render());
 	}
 
 	@Test
 	public void testStringWithEscapeCharacter() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.stringWithEscapeCharacter.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.loadTemplate("{{ 'test' }}{{ \"test\" }}{{ 'te\\\"st' }}");
 		assertEquals("testtestte\"st", template.render());
 	}
 
 	@Test
 	public void testStringConstantWithLinebreak() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.stringConstantWithLineBreak.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.loadTemplate("{{ 'test\ntest' }}");
 		assertEquals("test\ntest", template.render());
 	}
 

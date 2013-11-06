@@ -1,2 +1,0 @@
-{% if 2 is even %} two is even. {% else %} two is odd. {% endif %}
-{% if 3 is even %} three is even. {% else %} three is odd. {% endif %}

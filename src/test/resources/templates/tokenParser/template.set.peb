@@ -1,2 +1,0 @@
-{% set name = "alex"  %}
-{{ name }}

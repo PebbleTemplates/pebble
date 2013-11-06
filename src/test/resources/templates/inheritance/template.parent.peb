@@ -1,5 +1,0 @@
-{% extends "inheritance/template.grandfather.peb" %}
-
-{% block head %}
-	PARENT HEAD
-{% endblock head %}

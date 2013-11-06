@@ -18,59 +18,88 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreTestsTest extends AbstractTest {
 
 	@Test
 	public void testEven() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("test/template.test.even.peb");
-		assertEquals(" two is even.  three is odd. ", template.render());
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if 2 is even %}yes{% else %}no{% endif %}{% if 3 is even %}no{% else %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("yesyes", template.render());
 	}
 
 	@Test
 	public void testOdd() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("test/template.test.odd.peb");
-		assertEquals(" two is even.  three is odd. ", template.render());
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if 2 is odd %}no{% else %}yes{% endif %}{% if 3 is odd %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("yesyes", template.render());
 	}
 
 	@Test
 	public void testNull() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("test/template.test.null.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if null is null %}yes{% endif %}{% if obj is null %}yes{% endif %}{% if 2 is null %}no{% else %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
-		assertEquals(" null is null.  obj is null. ", template.render(context));
+		assertEquals("yesyesyes", template.render(context));
 	}
 
 	@Test
 	public void testEmpty() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("test/template.test.empty.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if null is empty() %}yes{% endif %}{% if '  ' is empty() %}yes{% endif %}{% if obj is empty() %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", new ArrayList<String>());
-		assertEquals(" null is empty.  blank is empty.  obj is empty. ", template.render());
+		assertEquals("yesyesyes", template.render());
 	}
 
 	@Test
 	public void testIterables() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("test/template.test.iterable.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if null is iterable() %}no{% else %}yes{% endif %}{% if obj1 is iterable() %}yes{% else %}no{% endif %}{% if obj2 is iterable() %}no{% else %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj1", new ArrayList<String>());
 		context.put("obj2", new HashMap<String, Object>());
-		assertEquals(" null is not iterable.  one is iterable.  two is not iterable. ", template.render(context));
+		assertEquals("yesyesyes", template.render(context));
 	}
 
 	@Test
 	public void testIsnt() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("test/template.test.isnt.peb");
-		assertEquals(" two isnt odd.  null isnt iterable. ", template.render());
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if 2 is not odd %}yes{% else %}no{% endif %}{% if null is not iterable() %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("yesyes", template.render());
 	}
 
 	@Test()
-	public void testEqualsTest() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("test/template.test.equals.peb");
+	public void testEqualToTest() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if 'test' is equalTo(obj2) %}yes{% endif %}{% if 'blue' is equalTo('red') %}no{% else %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
-		context.put("obj1", new String("test"));
 		context.put("obj2", new String("test"));
-		assertEquals("true\n\nfalse\n", template.render(context));
+		assertEquals("yesyes", template.render(context));
 	}
 }

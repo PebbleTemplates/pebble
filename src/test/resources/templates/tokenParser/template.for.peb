@@ -1,6 +1,0 @@
-{% for user in users %}
-	{% if loop.index == 0 %}
-		Length: {{ loop.length }}
-	{% endif %}
-	{{ loop.index }}{{ user.username }}
-{% endfor %}

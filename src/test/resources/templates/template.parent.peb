@@ -1,0 +1,5 @@
+{% extends "template.grandfather.peb" %}
+
+{% block head %}
+	PARENT HEAD
+{% endblock head %}

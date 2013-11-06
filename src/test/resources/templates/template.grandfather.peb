@@ -1,0 +1,13 @@
+GRANDFATHER TEXT ABOVE HEAD
+
+{% block head %}
+	GRANDFATHER HEAD
+{% endblock head %}
+
+GRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT
+
+{% block foot %}
+	GRANDFATHER FOOT
+{% endblock foot %}
+
+GRANDFATHER TEXT BELOW FOOT

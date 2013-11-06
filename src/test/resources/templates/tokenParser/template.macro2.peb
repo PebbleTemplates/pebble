@@ -1,2 +1,0 @@
-{% import "tokenParser/template.macro.peb" as forms %}
-{{ forms.input("company", "forcorp", "text") }}

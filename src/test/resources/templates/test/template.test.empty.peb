@@ -1,3 +1,0 @@
-{% if null is empty() %} null is empty. {% endif %}
-{% if "  " is empty() %} blank is empty. {% endif %}
-{% if obj is empty() %} obj is empty. {% endif %}

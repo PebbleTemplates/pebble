@@ -1,5 +1,0 @@
-{% for user in users %}
-	{{ user.username }}
-{% else %}
-EMPTY
-{% endfor %}

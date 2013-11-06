@@ -18,13 +18,18 @@ import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class GetAttributeTest extends AbstractTest {
 
 	@Test
 	public void testOneLayerAttributeNesting() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject());
 		assertEquals("hello Steve" ,template.render(model));
@@ -32,7 +37,10 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test
 	public void testMultiLayerAttributeNesting() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.nestedAttributes.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.simpleObject2.simpleObject.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject3());
 		assertEquals("hello Steve", template.render(model));
@@ -40,7 +48,10 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test
 	public void testHashmapAttribute() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		Map<String, String> map = new HashMap<>();
 		map.put("name", "Steve");
@@ -50,7 +61,10 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test
 	public void testMethodAttribute() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject4());
 		assertEquals("hello Steve", template.render(model));
@@ -58,7 +72,10 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test
 	public void testGetMethodAttribute() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject5());
 		assertEquals("hello Steve", template.render(model));
@@ -66,7 +83,10 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test
 	public void testIsMethodAttribute() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject6());
 		assertEquals("hello Steve", template.render(model));
@@ -74,7 +94,11 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test
 	public void testComplexNestedAttributes() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.complexAttributes.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		String source = "hello {{ object.map.SimpleObject2.simpleObject.name }}. My name is {{ object.map.SimpleObject6.name }}.";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new ComplexObject());
 		assertEquals("hello Steve. My name is Steve.", template.render(model));
@@ -82,14 +106,20 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testNullObject() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		template.render(model);
 	}
 
 	@Test(expected = AttributeNotFoundException.class)
 	public void testNonExistingAttribute() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new Object());
 		template.render(model);
@@ -97,7 +127,10 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testNullAttribute() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject7());
 		assertEquals("hello null", template.render(model));
@@ -105,7 +138,10 @@ public class GetAttributeTest extends AbstractTest {
 
 	@Test()
 	public void testPrimitiveAttribute() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.singleAttribute.peb");
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		
+		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject8());
 		assertEquals("hello true", template.render(model));

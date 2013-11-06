@@ -1,3 +1,0 @@
-{% if null is iterable() %} null is iterable. {% else %} null is not iterable. {% endif %}
-{% if obj1 is iterable() %} one is iterable. {% else %} one is not iterable. {% endif %}
-{% if obj2 is iterable() %} two is iterable. {% else %} two is not iterable. {% endif %}

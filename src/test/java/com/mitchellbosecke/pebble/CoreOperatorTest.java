@@ -14,34 +14,50 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreOperatorTest extends AbstractTest {
 
 	@Test
-	public void testUnary() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.operators.unary.peb");
-		assertEquals("yes\nyes\n", template.render());
+	public void testUnaryOperators() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if -2 == -+(5 - 3) %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("yes", template.render());
 	}
 
 	@Test
-	public void testBinary() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.operators.binary.peb");
-		assertEquals("61\n1", template.render());
+	public void testBinaryOperators() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{{ 8 + 5 * 4 - (6 + 10 / 2)  + 44 }}-{{ 10%3 }}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("61-1", template.render());
 	}
 
 	@Test
 	public void testTernary() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.operators.ternary.peb");
-		assertEquals("11", template.render());
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{{ true ? 1 : 2 }}-{{ 1 + 4 == 5 ?(2-1) : 2 }}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("1-1", template.render());
 	}
 
 	@Test
 	public void testComparisons() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.operators.comparisons.peb");
-		assertEquals("three is greater than two\n" + "two is less than three\n"
-				+ "three is greater than or equal to three\n" + "hundred is less than or equal to hundred\n"
-				+ "two equals two\n", template.render());
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if 3 > 2 %}yes{% endif %}{% if 2 > 3 %}no{% endif %}{% if 2 < 3 %}yes{% endif %}{% if 3 >= 3 %}yes{% endif %}{% if 100 <= 100 %}yes{% endif %}{% if 2 == 2 %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("yesyesyesyesyes", template.render());
 	}
 
 }

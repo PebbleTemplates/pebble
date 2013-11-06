@@ -1,5 +1,0 @@
-{{ realDate | date("MM/dd/yyyy") }}
-
-{{ realDate | date(format) }}
-
-{{ stringDate | date("yyyy-MMMM-d", "yyyy/MMMM/d") }}

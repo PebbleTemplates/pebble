@@ -19,13 +19,13 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class CoreFunctionTest extends AbstractTest {
 
 	@Test
-	public void testParent() throws PebbleException {
+	public void testParentFunction() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("function/template.child.peb");
 		assertEquals("parent text\n\t\tparent head\n\tchild head\n", template.render());
 	}
 
 	@Test
-	public void testBlock() throws PebbleException {
+	public void testBlockFunction() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("function/template.block.peb");
 		assertEquals("Default Title\nDefault Title", template.render());
 	}

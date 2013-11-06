@@ -19,47 +19,61 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreTokenParsersTest extends AbstractTest {
 
 	@Test
 	public void testBlock() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("inheritance/template.grandfather.peb");
+		PebbleTemplate template = pebble.loadTemplate("template.grandfather.peb");
 		template.render(null);
 	}
 
 	@Test
 	public void testIf() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.if.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% if false or steve == true  %}yes{% else %}p>no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
-		context.put("steve", true);
+		context.put("yes", true);
 		template.render(context);
 	}
 
 	@Test
 	public void testFor() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.for.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% for user in users %}{% if loop.index == 0 %}Length: {{ loop.length }}{% endif %}{{ loop.index }}{{ user.username }}{% endfor %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
 		users.add(new User("Bob"));
 		context.put("users", users);
-		assertEquals("\t\t\tLength: 2\t\t0Alex\t\t1Bob", template.render(context));
+		assertEquals("Length: 20Alex1Bob", template.render(context));
 	}
 
 	@Test
 	public void testForElse() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.for.else.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% for user in users %}{{ user.username }}{% else %}yes{% endfor %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		context.put("users", users);
-		assertEquals("EMPTY\n", template.render(context));
+		assertEquals("yes", template.render(context));
 	}
 
 	@Test
 	public void testMacro() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.macro.peb");
+		PebbleTemplate template = pebble.loadTemplate("template.macro1.peb");
 		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n"
 				+ "	<input name=\"company\" value=\"forcorp\" type=\"text\" data-overload=\"overloaded\"/>\n",
 				template.render(new HashMap<String, Object>()));
@@ -67,19 +81,23 @@ public class CoreTokenParsersTest extends AbstractTest {
 
 	@Test
 	public void testMacroFromAnotherFile() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.macro2.peb");
+		PebbleTemplate template = pebble.loadTemplate("template.macro2.peb");
 		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", template.render());
 	}
 
 	@Test
 	public void testInclude() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.include1.peb");
+		PebbleTemplate template = pebble.loadTemplate("template.include1.peb");
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", template.render());
 	}
 
 	@Test
 	public void testSet() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("tokenParser/template.set.peb");
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		String source = "{% set name = 'alex'  %}{{ name }}";
+		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("name", "steve");
 		assertEquals("alex", template.render(context));
