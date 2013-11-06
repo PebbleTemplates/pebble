@@ -89,7 +89,7 @@ public class LexerImpl implements Lexer {
 	 */
 	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
 	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
-	private static final Pattern REGEX_STRING = Pattern.compile("(\"|').*?(?<!\\\\)(\"|')", Pattern.DOTALL);
+	private static final Pattern REGEX_STRING = Pattern.compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))", Pattern.DOTALL);
 	private static final String PUNCTUATION = "()[]{}?:.,|=";
 
 	/**
@@ -364,11 +364,18 @@ public class LexerImpl implements Lexer {
 
 			moveCursor(token);
 			
+			char quotationType = token.charAt(0);
+			
 			// remove first and last quotation marks
 			token = token.substring(1, token.length()-1);
 			
 			// remove backslashes used to escape inner quotation marks
-			token = token.replaceAll("\\\\(\"|')", "$1");
+			if(quotationType == '\''){
+				token = token.replaceAll("\\\\(')", "$1");
+			}else if (quotationType == '"'){
+				token = token.replaceAll("\\\\(\")", "$1");
+			}
+			
 			
 			pushToken(Token.Type.STRING, token);
 			return;
