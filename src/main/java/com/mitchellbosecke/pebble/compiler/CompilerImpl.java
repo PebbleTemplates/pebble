@@ -139,7 +139,7 @@ public class CompilerImpl implements Compiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		ClassFileManager fileManager = ClassFileManager.getInstance(compiler.getStandardFileManager(null,
+		InMemoryForwardingFileManager fileManager = InMemoryForwardingFileManager.getInstance(compiler.getStandardFileManager(null,
 				Locale.getDefault(), null));
 
 		/*
@@ -184,7 +184,7 @@ public class CompilerImpl implements Compiler {
 				logger.error(String.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic));
 			}
 			
-			throw new PebbleException("Compilation error occurred.");
+			throw new PebbleException("Compilation error occurred");
 		}
 		try {
 			fileManager.close();// Close the file manager
