@@ -26,8 +26,6 @@ public class InMemoryForwardingFileManager extends
 
 	private static InMemoryForwardingFileManager instance;
 
-	private final StandardJavaFileManager fileManager;
-
 	/**
 	 * Instance of JavaClassObject that will store the compiled bytecode of our
 	 * class
@@ -42,7 +40,6 @@ public class InMemoryForwardingFileManager extends
 	private InMemoryForwardingFileManager(
 			StandardJavaFileManager standardManager) {
 		super(standardManager);
-		fileManager = standardManager;
 	}
 
 	public static InMemoryForwardingFileManager getInstance(
@@ -103,7 +100,7 @@ public class InMemoryForwardingFileManager extends
 			out.addAll(new ArrayList<>(javaFileObjects.values()));
 		}
 
-		for (JavaFileObject obj : fileManager.list(location, packageName,
+		for (JavaFileObject obj : super.list(location, packageName,
 				kinds, recurse)) {
 			out.add(obj);
 		}
@@ -116,18 +113,14 @@ public class InMemoryForwardingFileManager extends
 		if (file instanceof ByteArrayJavaFileObject) {
 			return ((ByteArrayJavaFileObject) file).getBinaryName();
 		} else {
-			return fileManager.inferBinaryName(location, file);
+			return super.inferBinaryName(location, file);
 		}
 	}
-
+	
 	@Override
-	public boolean hasLocation(Location location) {
-		return super.hasLocation(location);
-	}
-
-	@Override
-	public boolean isSameFile(FileObject obj1, FileObject obj2) {
-		return super.isSameFile(obj1, obj2);
+	public void close() throws IOException{
+		//instance = null;
+		super.close();
 	}
 
 }
