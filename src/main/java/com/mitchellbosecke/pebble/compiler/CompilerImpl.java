@@ -192,21 +192,20 @@ public class CompilerImpl implements Compiler {
 			e.printStackTrace();
 		}
 
+		AbstractPebbleTemplate template;
 		try {
+			
 			ClassLoader cl = fileManager.getClassLoader(null);
-			AbstractPebbleTemplate template = (AbstractPebbleTemplate) cl.loadClass(fullClassName).newInstance();
+			template = (AbstractPebbleTemplate) cl.loadClass(fullClassName).newInstance();
 			template.setSourceCode(getSource());
-			return template;
+			
 		} catch (IllegalAccessException | InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new PebbleException("Compilation error occurred");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-		}
+			throw new PebbleException(String.format("Could not find generated class: %s", fullClassName));
+		} 
 
-		return null;
+		return template;
 	}
 
 }

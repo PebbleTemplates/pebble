@@ -5,6 +5,9 @@
 *.war
 *.ear
 
+# Mac OS X
+.DS_Store
+
 # Eclipse #
 .project
 .classpath

@@ -13,10 +13,16 @@ import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class InMemoryForwardingFileManager extends
 		ForwardingJavaFileManager<StandardJavaFileManager> {
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(InMemoryForwardingFileManager.class);
 
 	private static InMemoryForwardingFileManager instance;
 
@@ -26,7 +32,7 @@ public class InMemoryForwardingFileManager extends
 	 * Instance of JavaClassObject that will store the compiled bytecode of our
 	 * class
 	 */
-	private final Map<String, ByteArrayJavaFileObject> classObjects = new HashMap<>();
+	private final Map<String, ByteArrayJavaFileObject> javaFileObjects = new HashMap<>();
 
 	/**
 	 * Will initialize the manager with the specified standard java file manager
@@ -52,45 +58,25 @@ public class InMemoryForwardingFileManager extends
 
 		return new SecureClassLoader(
 				InMemoryForwardingFileManager.class.getClassLoader()) {
+
 			@Override
 			protected Class<?> findClass(String name)
 					throws ClassNotFoundException {
-				ByteArrayJavaFileObject classObject = classObjects.get(name);
+				logger.debug(String.format("Finding class: %s", name));
 
-				if (classObject == null) {
-					return super.loadClass(name);
-				} else {
-					byte[] b = classObject.getBytes();
-					return super.defineClass(name, b, 0, b.length);
+				ByteArrayJavaFileObject fileObject = javaFileObjects.get(name);
+				Class<?> clazz;
+				if(fileObject != null){
+					byte[] bytes = fileObject.getBytes();
+					clazz = defineClass(name, bytes, 0, bytes.length);
+				}else{
+					throw new ClassNotFoundException(name);
 				}
+				
+				return clazz;
 
 			}
 		};
-	}
-	
-	@Override
-	public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException{
-		return super.getFileForInput(location, packageName, relativeName);
-	}
-
-	@Override
-	public FileObject getFileForOutput(Location location, String packageName,
-			String relativeName, FileObject sibling) throws IOException {
-		if (packageName.startsWith(PebbleTemplate.COMPILED_PACKAGE_NAME)) {
-			ByteArrayJavaFileObject buffer = new ByteArrayJavaFileObject(
-					relativeName, Kind.CLASS);
-			classObjects.put(relativeName, buffer);
-			return buffer;
-		} else {
-			return super.getFileForOutput(location, packageName, relativeName,
-					sibling);
-		}
-	}
-	
-	@Override
-	public JavaFileObject getJavaFileForInput(Location location,
-			String className, Kind kind) throws IOException {
-		return super.getJavaFileForInput(location, className, kind);
 	}
 
 	@Override
@@ -99,7 +85,7 @@ public class InMemoryForwardingFileManager extends
 		if (kind == Kind.CLASS) {
 			ByteArrayJavaFileObject buffer = new ByteArrayJavaFileObject(
 					className, kind);
-			classObjects.put(className, buffer);
+			javaFileObjects.put(className, buffer);
 			return buffer;
 		} else {
 			return super.getJavaFileForOutput(location, className, kind,
@@ -110,17 +96,18 @@ public class InMemoryForwardingFileManager extends
 	@Override
 	public Iterable<JavaFileObject> list(Location location, String packageName,
 			Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
-		
+
 		ArrayList<JavaFileObject> out = new ArrayList<>();
 
 		if (packageName.startsWith(PebbleTemplate.COMPILED_PACKAGE_NAME)) {
-			out.addAll(new ArrayList<>(classObjects.values()));
-		} 
-		
-		for(JavaFileObject obj : fileManager.list(location, packageName, kinds, recurse)){
+			out.addAll(new ArrayList<>(javaFileObjects.values()));
+		}
+
+		for (JavaFileObject obj : fileManager.list(location, packageName,
+				kinds, recurse)) {
 			out.add(obj);
 		}
-		
+
 		return out;
 	}
 
@@ -132,15 +119,15 @@ public class InMemoryForwardingFileManager extends
 			return fileManager.inferBinaryName(location, file);
 		}
 	}
-	
+
 	@Override
-	public boolean hasLocation(Location location){
+	public boolean hasLocation(Location location) {
 		return super.hasLocation(location);
 	}
-	
+
 	@Override
-	public boolean isSameFile(FileObject obj1, FileObject obj2){
-		return super.isSameFile( obj1, obj2 );
+	public boolean isSameFile(FileObject obj1, FileObject obj2) {
+		return super.isSameFile(obj1, obj2);
 	}
 
 }

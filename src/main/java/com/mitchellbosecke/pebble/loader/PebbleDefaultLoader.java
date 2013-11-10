@@ -61,7 +61,7 @@ public class PebbleDefaultLoader implements Loader {
 					+ File.separatorChar;
 
 			String location = path + templateName + (getSuffix() == null ? "" : getSuffix());
-			logger.info("Looking for template in {}.", location);
+			logger.debug("Looking for template in {}.", location);
 
 			// try ContextClassLoader
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
