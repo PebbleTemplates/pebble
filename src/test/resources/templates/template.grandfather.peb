@@ -2,7 +2,7 @@ GRANDFATHER TEXT ABOVE HEAD
 
 {% block head %}
 	GRANDFATHER HEAD
-{% endblock head %}
+{% endblock %}
 
 GRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT
 

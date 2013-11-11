@@ -37,7 +37,6 @@ public class BlockTokenParser extends AbstractTokenParser {
 		NodeBlock block = new NodeBlock(lineNumber, name);
 
 		this.parser.setBlock(name, block);
-		// this.parser.setLocalScope();
 		this.parser.pushBlockStack(name);
 
 		stream.expect(Token.Type.BLOCK_END);
@@ -53,13 +52,14 @@ public class BlockTokenParser extends AbstractTokenParser {
 		// skip the 'endblock' token
 		stream.next();
 		
-		// check for a proper endblock name
-		stream.expect(Token.Type.NAME, name, String.format("Unexpected endblock. Expected '%s' but was given '%s'.",
-				name, stream.current().getValue()));
+		// check if user included block name in endblock
+		Token current = stream.current();
+		if(current.test(Token.Type.NAME, name)){
+			stream.next();
+		}
 
 		block.setBody(blockBody);
 		this.parser.popBlockStack();
-		// this.parser.popLocalScope();
 		
 		stream.expect(Token.Type.BLOCK_END);
 
