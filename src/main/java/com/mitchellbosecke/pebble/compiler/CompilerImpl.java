@@ -11,7 +11,9 @@ package com.mitchellbosecke.pebble.compiler;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -139,8 +141,8 @@ public class CompilerImpl implements Compiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		InMemoryForwardingFileManager fileManager = InMemoryForwardingFileManager.getInstance(compiler.getStandardFileManager(null,
-				Locale.getDefault(), null));
+		InMemoryForwardingFileManager fileManager = InMemoryForwardingFileManager.getInstance(compiler
+				.getStandardFileManager(null, Locale.getDefault(), null));
 
 		/*
 		 * Prepare a list of compilation units (java source code file objects)
@@ -156,8 +158,13 @@ public class CompilerImpl implements Compiler {
 		StringBuilder sb = new StringBuilder();
 
 		try {
+			URL urlLocationOfPebbleTemplate = PebbleTemplate.class.getProtectionDomain().getCodeSource().getLocation();
+
+			// replace spaces
+			String locationOfPebbleTemplate = urlLocationOfPebbleTemplate.toString().replace(" ", "%20");
+
 			sb.append(System.getProperty("java.class.path")).append(File.pathSeparator)
-					.append(PebbleTemplate.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+					.append(new URI(locationOfPebbleTemplate).getPath());
 		} catch (URISyntaxException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -183,7 +190,7 @@ public class CompilerImpl implements Compiler {
 			for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
 				logger.error(String.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic));
 			}
-			
+
 			throw new PebbleException("Compilation error occurred");
 		}
 		try {
@@ -194,16 +201,16 @@ public class CompilerImpl implements Compiler {
 
 		AbstractPebbleTemplate template;
 		try {
-			
+
 			ClassLoader cl = fileManager.getClassLoader(null);
 			template = (AbstractPebbleTemplate) cl.loadClass(fullClassName).newInstance();
 			template.setSourceCode(getSource());
-			
+
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new PebbleException("Compilation error occurred");
 		} catch (ClassNotFoundException e) {
 			throw new PebbleException(String.format("Could not find generated class: %s", fullClassName));
-		} 
+		}
 
 		return template;
 	}
