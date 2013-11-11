@@ -61,7 +61,7 @@ import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.utils.Command;
 
-public class CoreExtension implements Extension {
+public class CoreExtension extends AbstractExtension {
 
 	@Override
 	public void initRuntime(PebbleEngine engine) {

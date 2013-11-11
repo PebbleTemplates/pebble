@@ -21,6 +21,7 @@ import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.extension.CoreExtension;
+import com.mitchellbosecke.pebble.extension.EscaperExtension;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.lexer.Lexer;
@@ -93,7 +94,10 @@ public class PebbleEngine {
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
 
+		// register default extensions
 		this.addExtension(new CoreExtension());
+		this.addExtension(new EscaperExtension());
+		
 	}
 
 	/**
