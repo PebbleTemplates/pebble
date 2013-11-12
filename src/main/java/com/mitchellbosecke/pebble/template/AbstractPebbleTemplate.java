@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,13 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	protected StringBuilder builder = new StringBuilder();
 	protected Map<String, Object> context;
 	protected PebbleEngine engine;
+	
+	/*
+	 * These are variables used to help with for loops
+	 */
+	protected Map<String, Object> currentLoop;
+	protected int currentLoopLength;
+	protected Iterator<?> currentLoopIterator;
 
 	public abstract void buildContent() throws PebbleException;
 

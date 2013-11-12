@@ -53,18 +53,19 @@ public class NodeFor extends AbstractNode {
 	private void compileForLoop(Compiler compiler) {
 
 		// create the special "loop" variable
-		compiler.raw("\n").write("Map loop = new HashMap<>();");
-		compiler.write("loop.put(\"index\", 0);\n");
+		compiler.raw("\n").write("currentLoop = new HashMap<>();\n");
+		compiler.write("currentLoop.put(\"index\", 0);\n");
 
-		compiler.write("int _loopLength = 0;\n");
-		compiler.write("java.util.Iterator _loopIterator = ((Iterable)").subcompile(iterable).raw(").iterator();\n");
-		compiler.write("while(_loopIterator.hasNext()){\n");
-		compiler.write("_loopIterator.next();\n");
-		compiler.write("_loopLength++;\n");
+		// iterate through loop first to calculate length
+		compiler.write("currentLoopLength = 0;\n");
+		compiler.write("currentLoopIterator = ((Iterable)").subcompile(iterable).raw(").iterator();\n");
+		compiler.write("while(currentLoopIterator.hasNext()){\n");
+		compiler.write("currentLoopIterator.next();\n");
+		compiler.write("currentLoopLength++;\n");
 		compiler.write("};\n");
 
-		compiler.write("loop.put(\"length\", _loopLength);\n");
-		compiler.write("context.put(\"loop\", loop);\n");
+		compiler.write("currentLoop.put(\"length\", currentLoopLength);\n");
+		compiler.write("context.put(\"loop\", currentLoop);\n");
 
 		// start the for loop
 		compiler.write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){\n")
@@ -74,7 +75,7 @@ public class NodeFor extends AbstractNode {
 				.raw(");\n").subcompile(body);
 		
 		// increment the special loop.index variable
-				compiler.write("loop.put(\"index\", (int)loop.get(\"index\") + 1);\n");
+		compiler.write("currentLoop.put(\"index\", (int)currentLoop.get(\"index\") + 1);\n");
 
 		compiler.outdent().raw("\n").write("}\n");
 
