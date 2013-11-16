@@ -1,7 +1,7 @@
-#Pebble (Current Version: v0.0.1-alpha)
+#Pebble
 
-Pebble is a java templating engine. For more information please visit the [website](http://www.mitchellbosecke.com/pebble).
-Pebble started as a port of the [Twig templating engine](http://twig.sensiolabs.org/).
+Pebble is a java templating engine; it started as a port of the [Twig templating engine](http://twig.sensiolabs.org/).
+For more information please visit the [website](http://www.mitchellbosecke.com/pebble).
 
 Pebble is in early development stages. It is not ready for production use.
 
