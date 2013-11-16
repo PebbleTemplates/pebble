@@ -1,13 +1,12 @@
 <!-- This file is part of Pebble. Copyright (c) 2012 Mitchell Bosecke. This 
 	work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported 
 	License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mitchellbosecke</groupId>
 	<artifactId>pebble</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	
 	<name>Pebble</name>
 	<description>Templating engine for Java.</description>
@@ -109,5 +108,6 @@
 		<connection>scm:git:git://github.com/mbosecke/pebble.git</connection>
 		<developerConnection>scm:git:git@github.com:mbosecke/pebble.git</developerConnection>
 		<url>http://github.com/mbosecke/pebble</url>
-	</scm>
+	  <tag>v0.0.2-alpha</tag>
+  </scm>
 </project>
