@@ -1,6 +1,3 @@
-<!-- This file is part of Pebble. Copyright (c) 2012 Mitchell Bosecke. This 
-	work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported 
-	License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
@@ -8,13 +5,30 @@
 	<groupId>com.mitchellbosecke</groupId>
 	<artifactId>pebble</artifactId>
 	<version>0.0.3-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	
 	<name>Pebble</name>
 	<description>Templating engine for Java.</description>
+	<url>http://www.mitchellbosecke.com/pebble</url>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
+	<licenses>
+		<license>
+			<name>BSD 3-Clause License</name>
+			<url>http://opensource.org/licenses/BSD-3-Clause</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<developers>
+		<developer>
+			<name>Mitchell Bösecke</name>
+			<email>mitchellbosecke@gmail.com</email>
+		</developer>
+	</developers>
 	
 	<build>
 		<plugins>
@@ -108,6 +122,6 @@
 	<scm>
 		<connection>scm:git:git://github.com/mbosecke/pebble.git</connection>
 		<developerConnection>scm:git:git@github.com:mbosecke/pebble.git</developerConnection>
-		<url>http://github.com/mbosecke/pebble</url>
+		<url>http://github.com/mbosecke/pebble.git</url>
 	</scm>
 </project>
