@@ -27,14 +27,15 @@ import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.test.Test;
+import com.mitchellbosecke.pebble.utils.Context;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	private String sourceCode;
 	protected StringBuilder builder = new StringBuilder();
-	protected Map<String, Object> context;
+	protected Context context;
 	protected PebbleEngine engine;
-	
+
 	/*
 	 * These are variables used to help with for loops
 	 */
@@ -51,7 +52,13 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	@Override
 	public String render(Map<String, Object> context) throws PebbleException {
-		this.context = context;
+
+		this.context = new Context(engine.isStrictVariables());
+		
+		if(context != null){
+			this.context.putAll(context);
+		}
+
 		this.builder = new StringBuilder();
 		buildContent();
 		return builder.toString();
@@ -62,16 +69,18 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		this.engine = engine;
 	}
 
-	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute)
-			throws AttributeNotFoundException {
+	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type,
+			Object object, String attribute) throws AttributeNotFoundException {
 		return getAttribute(type, object, attribute, new Object[0]);
 	}
 
-	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute,
-			Object... args) throws AttributeNotFoundException {
+	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type,
+			Object object, String attribute, Object... args)
+			throws AttributeNotFoundException {
 
 		if (object == null) {
-			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attribute));
+			throw new NullPointerException(String.format(
+					"Can not get attribute [%s] of null object.", attribute));
 		}
 
 		// hold onto original name for error reporting
@@ -85,7 +94,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		if (!NodeExpressionGetAttributeOrMethod.Type.METHOD.equals(type)) {
 
 			// is object a hash map?
-			if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
+			if (object instanceof Map
+					&& ((Map<?, ?>) object).containsKey(attribute)) {
 				result = ((Map<?, ?>) object).get(attribute);
 				found = true;
 			}
@@ -95,7 +105,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 				Field field = clazz.getField(attribute);
 				result = field.get(object);
 				found = true;
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			} catch (NoSuchFieldException | SecurityException
+					| IllegalArgumentException | IllegalAccessException e) {
 			}
 		}
 
@@ -124,14 +135,15 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 					Object param : args) {
 						paramTypes.add(Object.class);
 					}
-					
+
 					/*
 					 * Add an extra parameter to account for the secret _context
 					 * object that we will pass
 					 */
 					paramTypes.add(Object.class);
 
-					method = clazz.getMethod(NodeMacro.MACRO_PREFIX + attribute,
+					method = clazz.getMethod(
+							NodeMacro.MACRO_PREFIX + attribute,
 							paramTypes.toArray(new Class[paramTypes.size()]));
 					found = true;
 					passContextAsArgument = true;
@@ -140,7 +152,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			}
 
 			// capitalize first letter of attribute for the following attempts
-			attribute = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
+			attribute = Character.toUpperCase(attribute.charAt(0))
+					+ attribute.substring(1);
 
 			// check get method
 			if (method == null) {
@@ -163,7 +176,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			if (method != null) {
 				try {
 					if (passContextAsArgument) {
-						List<Object> arguments = new ArrayList<>(Arrays.asList(args));
+						List<Object> arguments = new ArrayList<>(
+								Arrays.asList(args));
 						arguments.add(context);
 						args = arguments.toArray();
 					}
@@ -173,33 +187,53 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 						result = method.invoke(object);
 					}
 					found = true;
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
 					if (e instanceof InvocationTargetException) {
-						((InvocationTargetException) e).getTargetException().printStackTrace();
+						((InvocationTargetException) e).getTargetException()
+								.printStackTrace();
 					}
 				}
 			}
 		}
 
 		if (!found) {
-			throw new AttributeNotFoundException(String.format(
-					"Attribute [%s] of [%s] does not exist or can not be accessed.", originalAttributeName, clazz));
+			if(engine.isStrictVariables()){
+				throw new AttributeNotFoundException(
+					String.format(
+							"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+							originalAttributeName, clazz));
+			}else{
+				result = null;
+			}
 		}
 		return result;
 
 	}
 
-	public Object applyFilter(String filterName, Object... args) {
+	protected Object applyFilter(String filterName, Object... args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
 
 		Collections.addAll(arguments, args);
 
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
+		
+		if (filter == null){
+			throw new PebbleException(String.format("Filter [%s] does not exist.", filterName));
+		}
 		return filter.apply(arguments);
 	}
+	
+	protected String printVariable(Object var){
+		if (var == null){
+			return "";
+		}else{
+			return String.valueOf(var);
+		}
+	}
 
-	public boolean applyTest(String testName, Object... args) {
+	protected boolean applyTest(String testName, Object... args) {
 		ArrayList<Object> arguments = new ArrayList<>();
 
 		// if args is null, it's because there was ONE argument and that

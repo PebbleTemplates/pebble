@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -111,18 +110,20 @@ public class GetAttributeTest extends AbstractTest {
 		template.render(model);
 	}
 
-	@Test(expected = AttributeNotFoundException.class)
+	@Test
 	public void testNonExistingAttribute() throws PebbleException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		
+		// EngineTest.java will perform the same test but with strict variables on
+		
 		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new Object());
-		template.render(model);
+		assertEquals("hello ", template.render(model));
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testNullAttribute() throws PebbleException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
@@ -130,7 +131,7 @@ public class GetAttributeTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("hello {{ object.name }}");
 		Map<String, Object> model = new HashMap<>();
 		model.put("object", new SimpleObject7());
-		assertEquals("hello null", template.render(model));
+		assertEquals("hello ", template.render(model));
 	}
 
 	@Test()

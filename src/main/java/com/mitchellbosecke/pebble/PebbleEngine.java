@@ -57,6 +57,7 @@ public class PebbleEngine {
 	private final Class<?> templateAbstractClass = AbstractPebbleTemplate.class;
 	private final String templateClassPrefix = "PebbleTemplate";
 	private boolean cacheTemplates = true;
+	private boolean strictVariables = false;
 
 	/*
 	 * Templates that have already been compiled into Java
@@ -367,5 +368,13 @@ public class PebbleEngine {
 
 	public void setCacheTemplates(boolean cacheTemplates) {
 		this.cacheTemplates = cacheTemplates;
+	}
+
+	public boolean isStrictVariables() {
+		return strictVariables;
+	}
+
+	public void setStrictVariables(boolean strictVariables) {
+		this.strictVariables = strictVariables;
 	}
 }

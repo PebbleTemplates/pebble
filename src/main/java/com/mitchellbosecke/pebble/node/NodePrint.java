@@ -24,10 +24,8 @@ public class NodePrint extends AbstractNode implements DisplayableNode{
 	@Override
 	public void compile(Compiler compiler) {
 		
-		// the compile form first casts the expression to an Object
-		// just in case it's a primitive and we can't call toString
-		compiler.raw("\n").write("builder.append(((Object)").subcompile(expression)
-				.raw(").toString());");
+		compiler.raw("\n").write("builder.append(printVariable(").subcompile(expression)
+				.raw("));");
 	}
 	
 	@Override
