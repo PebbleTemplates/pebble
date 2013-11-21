@@ -24,5 +24,4 @@ public interface PebbleTemplate {
 
 	public void setEngine(PebbleEngine engine);
 
-
 }

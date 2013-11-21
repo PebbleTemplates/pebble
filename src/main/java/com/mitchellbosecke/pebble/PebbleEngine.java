@@ -45,17 +45,21 @@ public class PebbleEngine {
 	/*
 	 * Major components
 	 */
-	private Loader loader;
-	private Parser parser;
-	private Lexer lexer;
-	private Compiler compiler;
+	private final Loader loader;
+	private final Parser parser;
+	private final Lexer lexer;
+	private final Compiler compiler;
 
 	/*
-	 * Settings
+	 * Final Settings
 	 */
 	private final Class<?> templateInterfaceClass = PebbleTemplate.class;
 	private final Class<?> templateAbstractClass = AbstractPebbleTemplate.class;
 	private final String templateClassPrefix = "PebbleTemplate";
+	
+	/*
+	 * User Editable Settings
+	 */
 	private boolean cacheTemplates = true;
 	private boolean strictVariables = false;
 
@@ -90,7 +94,7 @@ public class PebbleEngine {
 	 *            The template loader for this engine
 	 */
 	public PebbleEngine(Loader loader) {
-		this.setLoader(loader);
+		this.loader = loader;
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
@@ -181,32 +185,16 @@ public class PebbleEngine {
 		return loader;
 	}
 
-	public void setLoader(Loader loader) {
-		this.loader = loader;
-	}
-
 	public Parser getParser() {
 		return parser;
-	}
-
-	public void setParser(Parser parser) {
-		this.parser = parser;
 	}
 
 	public Lexer getLexer() {
 		return lexer;
 	}
 
-	public void setLexer(Lexer lexer) {
-		this.lexer = lexer;
-	}
-
 	public Compiler getCompiler() {
 		return compiler;
-	}
-
-	public void setCompiler(Compiler compiler) {
-		this.compiler = compiler;
 	}
 
 	public void addExtension(Extension extension) {

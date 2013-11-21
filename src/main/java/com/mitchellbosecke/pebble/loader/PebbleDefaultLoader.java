@@ -50,7 +50,7 @@ public class PebbleDefaultLoader implements Loader {
 		return source;
 	}
 
-	protected Reader getReader(String templateName) throws LoaderException {
+	private Reader getReader(String templateName) throws LoaderException {
 
 		Reader reader = readerCache.containsKey(templateName) ? readerCache.get(templateName) : null;
 

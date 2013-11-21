@@ -573,19 +573,19 @@ public class LexerImpl implements Lexer {
 		 */
 		Collections.sort(operators, new StringLengthComparator());
 
-		String regex = "^";
+		StringBuilder regex = new StringBuilder("^");
 
 		boolean isFirst = true;
 		for (String operator : operators) {
 			if (isFirst) {
 				isFirst = false;
 			} else {
-				regex += "|";
+				regex.append("|");
 			}
-			regex += Pattern.quote(operator);
+			regex.append(Pattern.quote(operator));
 		}
 
-		return Pattern.compile(regex);
+		return Pattern.compile(regex.toString());
 	}
 
 }
