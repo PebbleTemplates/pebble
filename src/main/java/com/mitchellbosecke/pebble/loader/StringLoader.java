@@ -9,9 +9,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
-import java.io.Reader;
-import java.io.StringReader;
-
 import com.mitchellbosecke.pebble.error.LoaderException;
 
 public class StringLoader implements Loader {
@@ -21,17 +18,6 @@ public class StringLoader implements Loader {
 		return templateName;
 	}
 
-	/**
-	 * Template name is actually the source
-	 * 
-	 */
-	protected Reader getReader(String templateName) throws LoaderException {
-
-		Reader reader = new StringReader(templateName);
-
-		return reader;
-	}
-
 	@Override
 	public void setPrefix(String prefix) {
 
@@ -39,6 +25,11 @@ public class StringLoader implements Loader {
 
 	@Override
 	public void setSuffix(String suffix) {
+
+	}
+
+	@Override
+	public void setCharset(String charset) {
 
 	}
 

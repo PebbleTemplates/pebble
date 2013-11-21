@@ -14,6 +14,8 @@ import com.mitchellbosecke.pebble.error.LoaderException;
 public interface Loader {
 
 	public String getSource(String templateName) throws LoaderException;
+	
+	public void setCharset(String charset);
 
 	public void setPrefix(String prefix);
 

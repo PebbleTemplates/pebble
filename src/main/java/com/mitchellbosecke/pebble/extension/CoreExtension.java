@@ -62,9 +62,12 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.utils.Command;
 
 public class CoreExtension extends AbstractExtension {
+	
+	private String charset = "UTF-8";
 
 	@Override
 	public void initRuntime(PebbleEngine engine) {
+		charset = engine.getCharset();
 	}
 
 	@Override
@@ -164,7 +167,7 @@ public class CoreExtension extends AbstractExtension {
 			// first argument should be a string
 			String arg = (String) data.get(0);
 			try {
-				arg = URLEncoder.encode(arg, "UTF-8");
+				arg = URLEncoder.encode(arg, charset);
 			} catch (UnsupportedEncodingException e) {
 			}
 			return arg;

@@ -34,6 +34,8 @@ public class PebbleDefaultLoader implements Loader {
 	private String prefix;
 
 	private String suffix;
+	
+	private String charset = "UTF-8";
 
 	private Map<String, Reader> readerCache = new HashMap<>();
 
@@ -90,7 +92,7 @@ public class PebbleDefaultLoader implements Loader {
 			}
 
 			try {
-				reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+				reader = new BufferedReader(new InputStreamReader(is, charset));
 			} catch (UnsupportedEncodingException e) {
 			}
 		}
@@ -104,6 +106,7 @@ public class PebbleDefaultLoader implements Loader {
 		return suffix;
 	}
 
+	@Override
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}
@@ -112,8 +115,17 @@ public class PebbleDefaultLoader implements Loader {
 		return prefix;
 	}
 
+	@Override
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
+	public String getCharset(){
+		return charset;
+	}
+	
+	@Override
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
 }

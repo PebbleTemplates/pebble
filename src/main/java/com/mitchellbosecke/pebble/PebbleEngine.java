@@ -62,6 +62,7 @@ public class PebbleEngine {
 	 */
 	private boolean cacheTemplates = true;
 	private boolean strictVariables = false;
+	private String charset = "UTF-8";
 
 	/*
 	 * Templates that have already been compiled into Java
@@ -119,6 +120,9 @@ public class PebbleEngine {
 	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException, PebbleException {
 		String className = this.getTemplateClassName(templateName);
 		PebbleTemplate instance;
+		
+		loader.setCharset(charset);
+		
 		if (cacheTemplates && cachedTemplates.containsKey(className)) {
 			instance = cachedTemplates.get(className);
 		} else {
@@ -324,7 +328,7 @@ public class PebbleEngine {
 		byte[] bytesOfName;
 		MessageDigest md;
 		try {
-			bytesOfName = templateName.getBytes("UTF-8");
+			bytesOfName = templateName.getBytes(getCharset());
 			md = MessageDigest.getInstance("MD5");
 			md.update(bytesOfName);
 			byte[] hash = md.digest();
@@ -364,5 +368,13 @@ public class PebbleEngine {
 
 	public void setStrictVariables(boolean strictVariables) {
 		this.strictVariables = strictVariables;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 }
