@@ -45,7 +45,7 @@ public class PebbleEngine {
 	/*
 	 * Major components
 	 */
-	private final Loader loader;
+	private Loader loader;
 	private final Parser parser;
 	private final Lexer lexer;
 	private final Compiler compiler;
@@ -83,8 +83,8 @@ public class PebbleEngine {
 	private Map<String, Operator> binaryOperators;
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
-
-	public PebbleEngine() {
+	
+	public PebbleEngine(){
 		this(null);
 	}
 
@@ -118,6 +118,11 @@ public class PebbleEngine {
 	 * @throws LoaderException
 	 */
 	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException, PebbleException {
+		
+		if(this.loader == null){
+			throw new LoaderException("Loader has not yet been specified.");
+		}
+		
 		String className = this.getTemplateClassName(templateName);
 		PebbleTemplate instance;
 		
@@ -185,6 +190,10 @@ public class PebbleEngine {
 		return getCompiler().compile(node).getSource();
 	}
 
+	public void setLoader(Loader loader){
+		this.loader = loader;
+	}
+	
 	public Loader getLoader() {
 		return loader;
 	}
