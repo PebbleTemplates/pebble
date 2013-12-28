@@ -58,7 +58,7 @@ public class PebbleEngine {
 	private final Class<?> templateInterfaceClass = PebbleTemplate.class;
 	private final Class<?> templateAbstractClass = AbstractPebbleTemplate.class;
 	private final String templateClassPrefix = "PebbleTemplate";
-	
+
 	/*
 	 * User Editable Settings
 	 */
@@ -85,8 +85,8 @@ public class PebbleEngine {
 	private Map<String, Operator> binaryOperators;
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
-	
-	public PebbleEngine(){
+
+	public PebbleEngine() {
 		this(null);
 	}
 
@@ -106,7 +106,7 @@ public class PebbleEngine {
 		// register default extensions
 		this.addExtension(new CoreExtension());
 		this.addExtension(new EscaperExtension());
-		
+
 	}
 
 	/**
@@ -123,28 +123,31 @@ public class PebbleEngine {
 	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException, PebbleException {
 		return loadTemplate(templateName, true);
 	}
-	
+
 	/**
 	 * 
 	 * @param templateName
-	 * @param isPrimary			Whether the template is the bottom template in a chain of inheritance. 
-	 * 							If it isn't, i.e. it is a parent template, then we do not check the cache
-	 * 							and we avoid clearing the file manager.
+	 * @param isPrimary
+	 *            Whether the template is the bottom template in a chain of
+	 *            inheritance. If it isn't, i.e. it is a parent template, then
+	 *            we do not check the cache and we avoid clearing the file
+	 *            manager.
 	 * @return
 	 * @throws SyntaxException
 	 * @throws LoaderException
 	 * @throws PebbleException
 	 */
-	private PebbleTemplate loadTemplate(String templateName, boolean isPrimary) throws SyntaxException, LoaderException, PebbleException {
-		if(this.loader == null){
+	private PebbleTemplate loadTemplate(String templateName, boolean isPrimary) throws SyntaxException,
+			LoaderException, PebbleException {
+		if (this.loader == null) {
 			throw new LoaderException("Loader has not yet been specified.");
 		}
-		
+
 		String className = this.getTemplateClassName(templateName);
 		PebbleTemplate instance;
-		
+
 		loader.setCharset(charset);
-		
+
 		if (isPrimary && cacheTemplates && cachedTemplates.containsKey(className)) {
 			instance = cachedTemplates.get(className);
 		} else {
@@ -162,9 +165,12 @@ public class PebbleEngine {
 
 			instance = getCompiler().compileToJava(javaSource, className);
 			instance.setEngine(this);
-			cachedTemplates.put(className, instance);
+
+			if (isPrimary) {
+				cachedTemplates.put(className, instance);
+			}
 		}
-		if(isPrimary){
+		if (isPrimary) {
 			fileManager.clear();
 		}
 		return instance;
@@ -210,10 +216,10 @@ public class PebbleEngine {
 		return getCompiler().compile(node).getSource();
 	}
 
-	public void setLoader(Loader loader){
+	public void setLoader(Loader loader) {
 		this.loader = loader;
 	}
-	
+
 	public Loader getLoader() {
 		return loader;
 	}
@@ -229,8 +235,8 @@ public class PebbleEngine {
 	public Compiler getCompiler() {
 		return compiler;
 	}
-	
-	public InMemoryForwardingFileManager getFileManager(){
+
+	public InMemoryForwardingFileManager getFileManager() {
 		return fileManager;
 	}
 

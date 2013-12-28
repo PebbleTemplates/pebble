@@ -28,7 +28,10 @@ public abstract class AbstractTest {
 		paths.add("templates");
 		Loader templateLoader = new PebbleDefaultLoader();
 		templateLoader.setPrefix("templates");
+		
+		// main testing engine uses all default settings
 		pebble = new PebbleEngine(templateLoader);
+		
 		loader = pebble.getLoader();
 		lexer = pebble.getLexer();
 		parser = pebble.getParser();

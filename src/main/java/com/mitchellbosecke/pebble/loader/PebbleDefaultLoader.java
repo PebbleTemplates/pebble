@@ -18,8 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -37,8 +35,6 @@ public class PebbleDefaultLoader implements Loader {
 
 	private String charset = "UTF-8";
 
-	private Map<String, Reader> readerCache = new HashMap<>();
-
 	@Override
 	public String getSource(String templateName) throws LoaderException {
 		Reader location = getReader(templateName);
@@ -54,53 +50,51 @@ public class PebbleDefaultLoader implements Loader {
 
 	protected Reader getReader(String templateName) throws LoaderException {
 
-		Reader reader = readerCache.containsKey(templateName) ? readerCache.get(templateName) : null;
+		InputStreamReader isr = null;
+		Reader reader = null;
 
-		if (reader == null) {
-			InputStream is = null;
+		InputStream is = null;
 
-			String path = "";
-			if (getPrefix() != null) {
-				path = getPrefix().endsWith(String.valueOf(File.separatorChar)) ? getPrefix() : getPrefix()
-						+ File.separatorChar;
-			}
+		String path = "";
+		if (getPrefix() != null) {
+			path = getPrefix().endsWith(String.valueOf(File.separatorChar)) ? getPrefix() : getPrefix()
+					+ File.separatorChar;
+		}
 
-			String location = path + templateName + (getSuffix() == null ? "" : getSuffix());
-			logger.debug("Looking for template in {}.", location);
+		String location = path + templateName + (getSuffix() == null ? "" : getSuffix());
+		logger.debug("Looking for template in {}.", location);
 
-			// try ContextClassLoader
-			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-			is = ccl.getResourceAsStream(location);
+		// try ContextClassLoader
+		ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+		is = ccl.getResourceAsStream(location);
 
-			// try ResourceLoader's class loader
-			ClassLoader rcl = PebbleDefaultLoader.class.getClassLoader();
-			if (is == null) {
-				is = rcl.getResourceAsStream(location);
-			}
+		// try ResourceLoader's class loader
+		ClassLoader rcl = PebbleDefaultLoader.class.getClassLoader();
+		if (is == null) {
+			is = rcl.getResourceAsStream(location);
+		}
 
-			// try to load File
-			if (is == null) {
-				File file = new File(path, templateName);
-				if (file.exists() && file.isFile()) {
-					try {
-						is = new FileInputStream(file);
-					} catch (FileNotFoundException e) {
-						// TODO: throw exception?
-					}
+		// try to load File
+		if (is == null) {
+			File file = new File(path, templateName);
+			if (file.exists() && file.isFile()) {
+				try {
+					is = new FileInputStream(file);
+				} catch (FileNotFoundException e) {
+					// TODO: throw exception?
 				}
-			}
-
-			if (is == null) {
-				throw new LoaderException("Could not find template \"" + templateName + "\"");
-			}
-
-			try {
-				reader = new BufferedReader(new InputStreamReader(is, charset));
-			} catch (UnsupportedEncodingException e) {
 			}
 		}
 
-		readerCache.put(templateName, reader);
+		if (is == null) {
+			throw new LoaderException("Could not find template \"" + templateName + "\"");
+		}
+
+		try {
+			isr = new InputStreamReader(is, charset);
+			reader = new BufferedReader(isr);
+		} catch (UnsupportedEncodingException e) {
+		}
 
 		return reader;
 	}

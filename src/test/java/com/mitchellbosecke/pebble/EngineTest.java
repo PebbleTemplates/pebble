@@ -100,6 +100,28 @@ public class EngineTest extends AbstractTest{
 		
 	}
 	
+	/**
+	 * An issue occurred where the engine would mistake the existence
+	 * of the template in it's cache with the existence of the templates
+	 * bytecode in the file managers cache. This lead to compilation issues.
+	 * 
+	 * It occurred when rendering two templates that share the same parent
+	 * template.
+	 * 
+	 * @throws PebbleException
+	 */
+	@Test
+	public void templateCachedButBytecodeCleared() throws PebbleException{
+		PebbleTemplate template1 = pebble.loadTemplate("template.parent.peb");
+		PebbleTemplate template2 = pebble.loadTemplate("template.parent2.peb");
+		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tPARENT HEAD\n"
+				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
+				+ "GRANDFATHER TEXT BELOW FOOT", template1.render());
+		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tPARENT HEAD\n"
+				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
+				+ "GRANDFATHER TEXT BELOW FOOT", template2.render());
+	}
+	
 	private class User {
 		
 	}
