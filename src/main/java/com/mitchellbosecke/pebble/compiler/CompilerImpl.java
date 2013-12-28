@@ -17,7 +17,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -141,8 +140,7 @@ public class CompilerImpl implements Compiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		InMemoryForwardingFileManager fileManager = InMemoryForwardingFileManager.getInstance(compiler
-				.getStandardFileManager(null, Locale.getDefault(), null));
+		InMemoryForwardingFileManager fileManager = engine.getFileManager();
 
 		/*
 		 * Prepare a list of compilation units (java source code file objects)

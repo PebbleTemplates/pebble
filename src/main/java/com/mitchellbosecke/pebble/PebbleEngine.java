@@ -17,6 +17,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
+import com.mitchellbosecke.pebble.compiler.InMemoryForwardingFileManager;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.SyntaxException;
@@ -49,6 +50,7 @@ public class PebbleEngine {
 	private final Parser parser;
 	private final Lexer lexer;
 	private final Compiler compiler;
+	private final InMemoryForwardingFileManager fileManager;
 
 	/*
 	 * Final Settings
@@ -99,6 +101,7 @@ public class PebbleEngine {
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
+		fileManager = new InMemoryForwardingFileManager();
 
 		// register default extensions
 		this.addExtension(new CoreExtension());
@@ -118,7 +121,10 @@ public class PebbleEngine {
 	 * @throws LoaderException
 	 */
 	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException, PebbleException {
-		
+		return loadTemplate(templateName, true);
+	}
+	
+	private PebbleTemplate loadTemplate(String templateName, boolean clearFileManager) throws SyntaxException, LoaderException, PebbleException {
 		if(this.loader == null){
 			throw new LoaderException("Loader has not yet been specified.");
 		}
@@ -140,12 +146,15 @@ public class PebbleEngine {
 			// if this template has a parent, lets make sure the parent is
 			// compiled first
 			if (root.hasParent()) {
-				this.loadTemplate(root.getParentFileName());
+				this.loadTemplate(root.getParentFileName(), false);
 			}
 
 			instance = getCompiler().compileToJava(javaSource, className);
 			instance.setEngine(this);
 			cachedTemplates.put(className, instance);
+		}
+		if(clearFileManager){
+			fileManager.clear();
 		}
 		return instance;
 	}
@@ -208,6 +217,10 @@ public class PebbleEngine {
 
 	public Compiler getCompiler() {
 		return compiler;
+	}
+	
+	public InMemoryForwardingFileManager getFileManager(){
+		return fileManager;
 	}
 
 	public void addExtension(Extension extension) {
