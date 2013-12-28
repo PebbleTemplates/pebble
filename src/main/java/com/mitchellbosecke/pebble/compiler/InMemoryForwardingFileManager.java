@@ -104,7 +104,8 @@ public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<Sta
 
 	/**
 	 * The pebble engine will clear all the java file objects from this file manager
-	 * when it is done with a successful compilation.
+	 * when it is done with a successful CHAIN of compilations (compiling a child AND all associated
+	 * parent templates). 
 	 */
 	public void clear() {
 		this.javaFileObjects.clear();

@@ -124,7 +124,18 @@ public class PebbleEngine {
 		return loadTemplate(templateName, true);
 	}
 	
-	private PebbleTemplate loadTemplate(String templateName, boolean clearFileManager) throws SyntaxException, LoaderException, PebbleException {
+	/**
+	 * 
+	 * @param templateName
+	 * @param isPrimary			Whether the template is the bottom template in a chain of inheritance. 
+	 * 							If it isn't, i.e. it is a parent template, then we do not check the cache
+	 * 							and we avoid clearing the file manager.
+	 * @return
+	 * @throws SyntaxException
+	 * @throws LoaderException
+	 * @throws PebbleException
+	 */
+	private PebbleTemplate loadTemplate(String templateName, boolean isPrimary) throws SyntaxException, LoaderException, PebbleException {
 		if(this.loader == null){
 			throw new LoaderException("Loader has not yet been specified.");
 		}
@@ -134,7 +145,7 @@ public class PebbleEngine {
 		
 		loader.setCharset(charset);
 		
-		if (cacheTemplates && cachedTemplates.containsKey(className)) {
+		if (isPrimary && cacheTemplates && cachedTemplates.containsKey(className)) {
 			instance = cachedTemplates.get(className);
 		} else {
 			/* template has not been compiled, we must compile it */
@@ -153,7 +164,7 @@ public class PebbleEngine {
 			instance.setEngine(this);
 			cachedTemplates.put(className, instance);
 		}
-		if(clearFileManager){
+		if(isPrimary){
 			fileManager.clear();
 		}
 		return instance;
