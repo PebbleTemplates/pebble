@@ -329,10 +329,6 @@ public class PebbleEngine {
 	 */
 	public String getTemplateClassName(String templateName) {
 
-		// if tempalteName is part of a directory path, get just the last
-		// segment
-		templateName = templateName.replaceFirst(".*/([^/]+).*", "$1");
-
 		String classNameHash = "";
 		byte[] bytesOfName;
 		MessageDigest md;

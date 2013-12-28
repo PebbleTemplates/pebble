@@ -34,7 +34,7 @@ public class PebbleDefaultLoader implements Loader {
 	private String prefix;
 
 	private String suffix;
-	
+
 	private String charset = "UTF-8";
 
 	private Map<String, Reader> readerCache = new HashMap<>();
@@ -59,8 +59,11 @@ public class PebbleDefaultLoader implements Loader {
 		if (reader == null) {
 			InputStream is = null;
 
-			String path = getPrefix().endsWith(String.valueOf(File.separatorChar)) ? getPrefix() : getPrefix()
-					+ File.separatorChar;
+			String path = "";
+			if (getPrefix() != null) {
+				path = getPrefix().endsWith(String.valueOf(File.separatorChar)) ? getPrefix() : getPrefix()
+						+ File.separatorChar;
+			}
 
 			String location = path + templateName + (getSuffix() == null ? "" : getSuffix());
 			logger.debug("Looking for template in {}.", location);
@@ -120,10 +123,10 @@ public class PebbleDefaultLoader implements Loader {
 		this.prefix = prefix;
 	}
 
-	public String getCharset(){
+	public String getCharset() {
 		return charset;
 	}
-	
+
 	@Override
 	public void setCharset(String charset) {
 		this.charset = charset;
