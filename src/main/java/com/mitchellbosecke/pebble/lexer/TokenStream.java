@@ -50,7 +50,8 @@ public class TokenStream {
 
 	/**
 	 * Checks the current token to see if it matches the provided type. If it
-	 * doesn't match this will throw a SyntaxException
+	 * doesn't match this will throw a SyntaxException. This will consume
+	 * a token.
 	 * 
 	 * @param type
 	 *            The type of token that we expect
@@ -63,7 +64,8 @@ public class TokenStream {
 	
 	/**
 	 * Checks the current token to see if it matches the provided type. If it
-	 * doesn't match this will throw a SyntaxException
+	 * doesn't match this will throw a SyntaxException. This will consume
+	 * a token.
 	 * 
 	 * @param type
 	 *            The type of token that we expect
@@ -78,7 +80,7 @@ public class TokenStream {
 	/**
 	 * Checks the current token to see if it matches the provided type and
 	 * value. If it doesn't match this will throw a SyntaxException with the
-	 * provided message.
+	 * provided message. This will consume a token.
 	 * 
 	 * @param type
 	 *            The type of token that we expect

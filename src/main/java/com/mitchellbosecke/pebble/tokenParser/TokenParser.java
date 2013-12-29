@@ -29,18 +29,35 @@ public interface TokenParser {
 	 * Each TokenParser instance will have access to the primary Pebble Parser
 	 * before the parse(Token token) method is invoked.
 	 * 
-	 * The primary parser will provide the TokenStream which a TokenParser
-	 * will require.
+	 * The primary parser will provide the TokenStream which a TokenParser will
+	 * require.
 	 * 
 	 * @param parser
 	 */
 	public void setParser(Parser parser);
 
 	/**
-	 * The TokenParser is responsible to convert all the necessary tokens
-	 * into appropriate Nodes. It can access tokens using parser.getTokenStream().
+	 * The TokenParser is responsible to convert all the necessary tokens into
+	 * appropriate Nodes. It can access tokens using parser.getTokenStream().
 	 * 
+	 * The tag may be self contained like the "extends" tag or it may have a
+	 * start and end point with content in the middle like the "block" tag. If
+	 * it contains content in the middle, it can use
+	 * parser.subparse(stopCondition) to parse the middle content at which point
+	 * responsibility comes back to the TokenParser to parse the end point.
 	 * 
+	 * It is the responsibility of the TokenParser to ensure that when it is
+	 * complete, the "current" token of the primary Parser's TokenStream is
+	 * pointing to the NEXT token. USUALLY this means the last statement in 
+	 * this parse method, immediately prior to the return statement, is the 
+	 * following which will consume one token:
+	 * 
+	 * stream.expect(Token.Type.EXECUTE_END);
+	 * 
+	 * Here are two relatively simple examples of how TokenParsers are implemented:
+	 * 
+	 * 	- self contained:  com.mitchellbosecke.pebble.tokenParser.SetTokenParser
+	 *  - middle content:  com.mitchellbosecke.pebble.tokenParser.BlockTokenParser
 	 * 
 	 * @param token
 	 * @return
