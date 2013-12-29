@@ -187,19 +187,19 @@ public class ParserImpl implements Parser {
 				case PRINT_START:
 
 					/*
-					 * We are entering variable tags at this point. These tags
+					 * We are entering a print delimited region at this point. These regions
 					 * will contain some sort of expression so let's pass
 					 * control to our expression parser.
 					 */
 
 					// go to the next token because the current one is just the
-					// opening tag
+					// opening delimiter
 					token = stream.next();
 
 					NodeExpression expression = this.expressionParser.parseExpression();
 					nodes.add(new NodePrint(expression, token.getLineNumber()));
 
-					// we expect to see a variable closing tag
+					// we expect to see a print closing delimiter
 					stream.expect(Token.Type.PRINT_END);
 
 					break;
@@ -207,7 +207,7 @@ public class ParserImpl implements Parser {
 				case EXECUTE_START:
 
 					// go to the next token because the current one is just the
-					// opening tag
+					// opening delimiter
 					stream.next();
 
 					token = stream.current();

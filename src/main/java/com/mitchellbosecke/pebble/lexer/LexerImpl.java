@@ -187,7 +187,7 @@ public class LexerImpl implements Lexer {
 	 * variable delimiter.
 	 */
 	private void lexData() {
-		// find the next start tag
+		// find the next start delimiter
 		Matcher matcher = regexStartDelimiters.matcher(source);
 		boolean match = matcher.find(cursor);
 
@@ -253,7 +253,7 @@ public class LexerImpl implements Lexer {
 	private void lexPrint() throws SyntaxException {
 		Matcher matcher = regexPrintClose.matcher(source.substring(cursor));
 
-		// check if we are at the variable closing tag
+		// check if we are at the print closing delimiter
 		if (brackets.isEmpty() && matcher.lookingAt()) {
 			String token = source.substring(cursor, cursor + matcher.end());
 			pushToken(Token.Type.PRINT_END);
