@@ -213,6 +213,12 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	protected Object applyFilter(String filterName, Object... args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
+		
+		// extract input object
+		Object input = args[0];
+		
+		// remove input from original args array
+		args = Arrays.copyOfRange(args, 1, args.length);
 
 		Collections.addAll(arguments, args);
 
@@ -222,7 +228,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		if (filter == null){
 			throw new PebbleException(String.format("Filter [%s] does not exist.", filterName));
 		}
-		return filter.apply(arguments);
+		return filter.apply(input, arguments);
 	}
 	
 	protected String printVariable(Object var){
@@ -235,18 +241,24 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	protected boolean applyTest(String testName, Object... args) {
 		ArrayList<Object> arguments = new ArrayList<>();
+		Object input;
 
 		// if args is null, it's because there was ONE argument and that
 		// argument happens to be null
 		if (args == null) {
-			arguments.add(null);
+			input = null;
 		} else {
+			input = args[0];
+			
+			// remove input from original args array
+			args = Arrays.copyOfRange(args, 1, args.length);
+			
 			Collections.addAll(arguments, args);
 		}
 
 		Map<String, Test> tests = engine.getTests();
 		Test test = tests.get(testName);
-		return test.apply(arguments);
+		return test.apply(input, arguments);
 	}
 
 	public void setSourceCode(String source) {

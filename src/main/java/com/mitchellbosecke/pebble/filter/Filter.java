@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface Filter {
 
-	public String getTag();
+	public String getName();
 	
-	public Object apply(List<Object> args);
+	public Object apply(Object input, List<Object> args);
 }

@@ -27,7 +27,7 @@ public interface Extension {
 	 * @return A list of filters. It is okay to return null.
 	 */
 	public List<Filter> getFilters();
-	
+
 	/**
 	 * Use this method to provide custom tests.
 	 * 
@@ -36,17 +36,26 @@ public interface Extension {
 	public List<Test> getTests();
 
 	/**
-	 * Use this method to provide custom tags. 
+	 * Use this method to provide custom tags.
 	 * 
-	 * A TokenParser is used to parse a stream of tokens
-	 * into Nodes which are then responsible for compiling
-	 * themselves into Java.
+	 * A TokenParser is used to parse a stream of tokens into Nodes which are
+	 * then responsible for compiling themselves into Java.
 	 * 
 	 * @return A list of TokenParsers. It is okay to return null.
 	 */
 	public List<TokenParser> getTokenParsers();
-	
+
+	/**
+	 * Use this method to provide custom binary operators.
+	 * 
+	 * @return A list of Operators. It is okay to return null;
+	 */
 	public List<Operator> getBinaryOperators();
-	
+
+	/**
+	 * Use this method to provide custom unary operators.
+	 * 
+	 * @return A list of Operators. It is okay to return null;
+	 */
 	public List<Operator> getUnaryOperators();
 }

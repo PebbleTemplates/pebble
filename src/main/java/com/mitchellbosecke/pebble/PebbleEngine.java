@@ -301,14 +301,14 @@ public class PebbleEngine {
 		// filters
 		if (extension.getFilters() != null) {
 			for (Filter filter : extension.getFilters()) {
-				this.filters.put(filter.getTag(), filter);
+				this.filters.put(filter.getName(), filter);
 			}
 		}
 
 		// tests
 		if (extension.getTests() != null) {
 			for (Test test : extension.getTests()) {
-				this.tests.put(test.getTag(), test);
+				this.tests.put(test.getName(), test);
 			}
 		}
 

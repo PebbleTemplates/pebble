@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface Test {
 
-	public String getTag();
+	public String getName();
 	
-	public Boolean apply(List<Object> args);
+	public Boolean apply(Object input, List<Object> args);
 }

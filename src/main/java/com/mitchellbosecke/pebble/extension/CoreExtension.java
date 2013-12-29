@@ -28,7 +28,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
-import com.mitchellbosecke.pebble.filter.FilterFunction;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryDivide;
@@ -49,7 +48,6 @@ import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryNot;
 import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryPositive;
 import com.mitchellbosecke.pebble.parser.Operator;
 import com.mitchellbosecke.pebble.test.Test;
-import com.mitchellbosecke.pebble.test.TestFunction;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ForTokenParser;
@@ -59,10 +57,9 @@ import com.mitchellbosecke.pebble.tokenParser.IncludeTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-import com.mitchellbosecke.pebble.utils.Method;
 
 public class CoreExtension extends AbstractExtension {
-	
+
 	private String charset = "UTF-8";
 
 	@Override
@@ -83,7 +80,7 @@ public class CoreExtension extends AbstractExtension {
 		parsers.add(new SetTokenParser());
 		return parsers;
 	}
-	
+
 	@Override
 	public List<Operator> getUnaryOperators() {
 		ArrayList<Operator> operators = new ArrayList<>();
@@ -117,55 +114,59 @@ public class CoreExtension extends AbstractExtension {
 	@Override
 	public List<Filter> getFilters() {
 		ArrayList<Filter> filters = new ArrayList<>();
-		filters.add(new FilterFunction("lower", lowerFilter));
-		filters.add(new FilterFunction("upper", upperFilter));
-		filters.add(new FilterFunction("date", dateFilter));
-		filters.add(new FilterFunction("urlencode", urlEncoderFilter));
-		filters.add(new FilterFunction("format", formatFilter));
-		filters.add(new FilterFunction("number", numberFilter));
-		filters.add(new FilterFunction("abbreviate", abbreviateFilter));
-		filters.add(new FilterFunction("capitalize", capitalizeFilter));
-		filters.add(new FilterFunction("trim", trimFilter));
-		filters.add(new FilterFunction("json", jsonEncodeFilter));
-		filters.add(new FilterFunction("default", defaultFilter));
+		filters.add(lowerFilter);
+		filters.add(upperFilter);
+		filters.add(dateFilter);
+		filters.add(urlEncoderFilter);
+		filters.add(formatFilter);
+		filters.add(numberFilter);
+		filters.add(abbreviateFilter);
+		filters.add(capitalizeFilter);
+		filters.add(trimFilter);
+		filters.add(jsonEncodeFilter);
+		filters.add(defaultFilter);
 		return filters;
 	}
-	
+
 	@Override
-	public List<Test> getTests(){
+	public List<Test> getTests() {
 		ArrayList<Test> tests = new ArrayList<>();
-		tests.add(new TestFunction("even", evenTest));
-		tests.add(new TestFunction("odd", oddTest));
-		tests.add(new TestFunction("null", nullTest));
-		tests.add(new TestFunction("empty", emptyTest));
-		tests.add(new TestFunction("iterable", iterableTest));
-		tests.add(new TestFunction("equalTo", equalsTest));
+		tests.add(evenTest);
+		tests.add(oddTest);
+		tests.add(nullTest);
+		tests.add(emptyTest);
+		tests.add(iterableTest);
+		tests.add(equalsTest);
 		return tests;
 	}
 
-	private Method<Object, List<Object>> lowerFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-			// first argument should be a string
-			String arg = (String) data.get(0);
-			return arg.toLowerCase();
+	private Filter lowerFilter = new Filter() {
+		public String getName() {
+			return "lower";
+		}
+
+		public Object apply(Object input, List<Object> args) {
+			return ((String) input).toLowerCase();
 		}
 	};
 
-	private Method<Object, List<Object>> upperFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-			// first argument should be a string
-			String arg = (String) data.get(0);
-			return arg.toUpperCase();
+	private Filter upperFilter = new Filter() {
+		public String getName() {
+			return "upper";
+		}
+
+		public Object apply(Object input, List<Object> args) {
+			return ((String) input).toUpperCase();
 		}
 	};
 
-	private Method<Object, List<Object>> urlEncoderFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-			// first argument should be a string
-			String arg = (String) data.get(0);
+	private Filter urlEncoderFilter = new Filter() {
+		public String getName() {
+			return "urlencode";
+		}
+
+		public Object apply(Object input, List<Object> args) {
+			String arg = (String) input;
 			try {
 				arg = URLEncoder.encode(arg, charset);
 			} catch (UnsupportedEncodingException e) {
@@ -174,181 +175,210 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Method<Object, List<Object>> formatFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-			// first argument should be a string
-			String arg = (String) data.get(0);
+	private Filter formatFilter = new Filter() {
+		public String getName() {
+			return "format";
+		}
 
-			Object[] formatArgs = data.subList(1, data.size()).toArray();
+		public Object apply(Object input, List<Object> args) {
+			String arg = (String) input;
+			Object[] formatArgs = args.toArray();
 
 			return String.format(arg, formatArgs);
 		}
 	};
 
-	private Method<Object, List<Object>> dateFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
+	private Filter dateFilter = new Filter() {
+		public String getName() {
+			return "date";
+		}
+
+		public Object apply(Object input, List<Object> args) {
 
 			Date arg = null;
 
-			if (data.size() == 2) {
-				arg = (Date) data.get(0);
-			} else if (data.size() == 3) {
-				// second argument is the format of the existing date
-				DateFormat originalFormat = new SimpleDateFormat((String) data.get(1));
+			DateFormat existingFormat = null;
+			DateFormat intendedFormat = null;
+
+			if (args.size() == 1) {
+				arg = (Date) input;
+				intendedFormat = new SimpleDateFormat((String) args.get(0));
+			} else if (args.size() == 2) {
+
+				existingFormat = new SimpleDateFormat((String) args.get(0));
+				intendedFormat = new SimpleDateFormat((String) args.get(1));
 
 				try {
-					arg = originalFormat.parse((String) data.get(0));
+					arg = existingFormat.parse((String) input);
 				} catch (ParseException e) {
 					// TODO: figure out what to do here
 				}
 			}
 
-			// last argument is the intended format
-			DateFormat format = new SimpleDateFormat((String) data.get(data.size() - 1));
-
-			return format.format(arg);
+			return intendedFormat.format(arg);
 		}
 	};
+	
+	private Filter numberFilter = new Filter() {
+		public String getName() {
+			return "number";
+		}
 
-	private Method<Object, List<Object>> numberFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-
-			Double number = (Double) data.get(0);
-
-			Format format = new DecimalFormat((String) data.get(1));
+		public Object apply(Object input, List<Object> args) {
+			Double number = (Double)input;
+			Format format = new DecimalFormat((String) args.get(0));
 
 			return format.format(number);
 		}
 	};
+	
+	private Filter abbreviateFilter = new Filter() {
+		public String getName() {
+			return "abbreviate";
+		}
 
-	private Method<Object, List<Object>> abbreviateFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-
-			String str = (String) data.get(0);
-
-			int maxWidth = (Integer) data.get(1);
+		public Object apply(Object input, List<Object> args) {
+			String str = (String)input;
+			int maxWidth = (Integer) args.get(0);
 
 			return StringUtils.abbreviate(str, maxWidth);
 		}
 	};
+	
+	private Filter capitalizeFilter = new Filter() {
+		public String getName() {
+			return "capitalize";
+		}
 
-	private Method<Object, List<Object>> capitalizeFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-
-			String str = (String) data.get(0);
+		public Object apply(Object input, List<Object> args) {
+			String str = (String)input;
 			return StringUtils.capitalize(str);
 		}
 	};
+	
+	private Filter trimFilter = new Filter() {
+		public String getName() {
+			return "trim";
+		}
 
-	private Method<Object, List<Object>> trimFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-
-			String str = (String) data.get(0);
+		public Object apply(Object input, List<Object> args) {
+			String str = (String)input;
 			return str.trim();
 		}
 	};
 
-	private Method<Object, List<Object>> jsonEncodeFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
+	private Filter jsonEncodeFilter = new Filter() {
+		public String getName() {
+			return "json";
+		}
 
-			Object obj = data.get(0);
+		public Object apply(Object input, List<Object> args) {
 
 			ObjectMapper mapper = new ObjectMapper();
 
 			String json = null;
 			try {
-				json = mapper.writeValueAsString(obj);
+				json = mapper.writeValueAsString(input);
 			} catch (JsonProcessingException e) {
 			}
 			return json;
 		}
 	};
+	
+	private Filter defaultFilter = new Filter() {
+		public String getName() {
+			return "default";
+		}
 
+		public Object apply(Object input, List<Object> args) {
 
-	private Method<Object, List<Object>> defaultFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
+			Object defaultObj = args.get(0);
 
-			Object obj = data.get(0);
-
-			Object defaultObj = data.get(1);
-			
-			if(emptyTest.execute(data)){
+			if (emptyTest.apply(input, new ArrayList<>())) {
 				return defaultObj;
 			}
-			return obj;
+			return input;
 		}
 	};
 	
-	
-	private Method<Boolean, List<Object>> evenTest = new Method<Boolean, List<Object>>() {
-		@Override
-		public Boolean execute(List<Object> data) {
+	private Test evenTest = new Test() {
+		public String getName() {
+			return "even";
+		}
 
-			Integer obj = (Integer) data.get(0);
+		public Boolean apply(Object input, List<Object> args) { 
+
+			Integer obj = (Integer) input;
 			return (obj % 2 == 0);
 		}
 	};
 	
-	private Method<Boolean, List<Object>> oddTest = new Method<Boolean, List<Object>>() {
-		@Override
-		public Boolean execute(List<Object> data) {
+	private Test oddTest = new Test() {
+		public String getName() {
+			return "odd";
+		}
 
-			return evenTest.execute(data) == false;
+		public Boolean apply(Object input, List<Object> args) { 
+
+			return evenTest.apply(input, args) == false;
 		}
 	};
 	
-	private Method<Boolean, List<Object>> nullTest = new Method<Boolean, List<Object>>() {
-		@Override
-		public Boolean execute(List<Object> data) {
-			return (data.get(0) == null);
+	private Test nullTest = new Test() {
+		public String getName() {
+			return "null";
+		}
+
+		public Boolean apply(Object input, List<Object> args) { 
+
+			return input == null;
 		}
 	};
 	
-	private Method<Boolean, List<Object>> emptyTest = new Method<Boolean, List<Object>>() {
-		@Override
-		public Boolean execute(List<Object> data) {
-			Object obj = data.get(0);
-			boolean isEmpty = obj == null;
-			
-			if(!isEmpty && obj instanceof String){
-				isEmpty = StringUtils.isBlank(((String)obj));
+	private Test emptyTest = new Test() {
+		public String getName() {
+			return "empty";
+		}
+
+		public Boolean apply(Object input, List<Object> args) { 
+			boolean isEmpty = input == null;
+
+			if (!isEmpty && input instanceof String) {
+				isEmpty = StringUtils.isBlank(((String) input));
 			}
-			
-			if(!isEmpty && obj instanceof Collection){
-				isEmpty = ((Collection<?>)obj).isEmpty();
+
+			if (!isEmpty && input instanceof Collection) {
+				isEmpty = ((Collection<?>) input).isEmpty();
 			}
-			
-			if(!isEmpty && obj instanceof Map){
-				isEmpty = ((Map<?,?>)obj).isEmpty();
+
+			if (!isEmpty && input instanceof Map) {
+				isEmpty = ((Map<?, ?>) input).isEmpty();
 			}
-			
+
 			return isEmpty;
 		}
 	};
+	
+	private Test iterableTest = new Test() {
+		public String getName() {
+			return "iterable";
+		}
 
-	private Method<Boolean, List<Object>> iterableTest = new Method<Boolean, List<Object>>() {
-		@Override
-		public Boolean execute(List<Object> data) {
-			Object obj = data.get(0);
-			
-			return obj instanceof Iterable;
+		public Boolean apply(Object input, List<Object> args) { 
+
+			return input instanceof Iterable;
 		}
 	};
 	
-	private Method<Boolean, List<Object>> equalsTest = new Method<Boolean, List<Object>>() {
-		@Override
-		public Boolean execute(List<Object> data) {
-			Object obj = data.get(0);
-			return obj.equals(data.get(1));
+	private Test equalsTest = new Test() {
+		public String getName() {
+			return "equalTo";
+		}
+
+		public Boolean apply(Object input, List<Object> args) { 
+
+			return input.equals(args.get(0));
 		}
 	};
-	
+
 }

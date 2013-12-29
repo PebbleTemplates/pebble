@@ -16,8 +16,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
-import com.mitchellbosecke.pebble.filter.FilterFunction;
-import com.mitchellbosecke.pebble.utils.Method;
 
 public class EscaperExtension extends AbstractExtension {
 
@@ -28,19 +26,21 @@ public class EscaperExtension extends AbstractExtension {
 	@Override
 	public List<Filter> getFilters() {
 		ArrayList<Filter> filters = new ArrayList<>();
-		filters.add(new FilterFunction("escape", escapeFilter));
+		filters.add(escapeFilter);
 		return filters;
 	}
+	
+	private Filter escapeFilter = new Filter() {
+		public String getName() {
+			return "escape";
+		}
 
-	private Method<Object, List<Object>> escapeFilter = new Method<Object, List<Object>>() {
-		@Override
-		public Object execute(List<Object> data) {
-
-			String input = (String) data.get(0);
+		public Object apply(Object inputObject, List<Object> args) {
+			String input = (String) inputObject;
 
 			String strategy = "html";
 			try {
-				strategy = (String) data.get(1);
+				strategy = (String) args.get(0);
 			} catch (IndexOutOfBoundsException e) {
 				// user did not provide strategy which is okay.
 			}
