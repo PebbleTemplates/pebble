@@ -12,13 +12,13 @@ package com.mitchellbosecke.pebble.node.expression.binary;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinaryCallable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
 import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeExpressionBinaryIs extends NodeExpressionBinaryCallable {
+public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {

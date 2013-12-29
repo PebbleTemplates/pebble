@@ -12,7 +12,7 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
-public abstract class NodeExpressionUnary extends NodeExpressionOperator {
+public abstract class NodeExpressionUnary extends NodeExpression {
 
 	protected NodeExpression node;
 

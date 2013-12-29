@@ -31,7 +31,8 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
-import com.mitchellbosecke.pebble.parser.Operator;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
@@ -81,8 +82,8 @@ public class PebbleEngine {
 	 * Elements retrieved from extensions
 	 */
 	private TokenParserBroker tokenParserBroker;
-	private Map<String, Operator> unaryOperators;
-	private Map<String, Operator> binaryOperators;
+	private Map<String, UnaryOperator> unaryOperators;
+	private Map<String, BinaryOperator> binaryOperators;
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
 
@@ -282,7 +283,7 @@ public class PebbleEngine {
 
 		// binary operators
 		if (extension.getBinaryOperators() != null) {
-			for (Operator operator : extension.getBinaryOperators()) {
+			for (BinaryOperator operator : extension.getBinaryOperators()) {
 				if (!this.binaryOperators.containsKey(operator.getSymbol())) {
 					this.binaryOperators.put(operator.getSymbol(), operator);
 				}
@@ -291,7 +292,7 @@ public class PebbleEngine {
 
 		// unary operators
 		if (extension.getUnaryOperators() != null) {
-			for (Operator operator : extension.getUnaryOperators()) {
+			for (UnaryOperator operator : extension.getUnaryOperators()) {
 				if (!this.unaryOperators.containsKey(operator.getSymbol())) {
 					this.unaryOperators.put(operator.getSymbol(), operator);
 				}
@@ -321,14 +322,14 @@ public class PebbleEngine {
 		return this.tokenParserBroker;
 	}
 
-	public Map<String, Operator> getBinaryOperators() {
+	public Map<String, BinaryOperator> getBinaryOperators() {
 		if (!this.extensionsInitialized) {
 			initExtensions();
 		}
 		return this.binaryOperators;
 	}
 
-	public Map<String, Operator> getUnaryOperators() {
+	public Map<String, UnaryOperator> getUnaryOperators() {
 		if (!this.extensionsInitialized) {
 			initExtensions();
 		}

@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
-public abstract class NodeExpressionBinary extends NodeExpressionOperator {
+public abstract class NodeExpressionBinary extends NodeExpression {
 
 	protected NodeExpression left;
 	protected NodeExpression right;

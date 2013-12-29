@@ -13,7 +13,8 @@ import java.util.List;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
-import com.mitchellbosecke.pebble.parser.Operator;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
@@ -50,12 +51,12 @@ public interface Extension {
 	 * 
 	 * @return A list of Operators. It is okay to return null;
 	 */
-	public List<Operator> getBinaryOperators();
+	public List<BinaryOperator> getBinaryOperators();
 
 	/**
 	 * Use this method to provide custom unary operators.
 	 * 
 	 * @return A list of Operators. It is okay to return null;
 	 */
-	public List<Operator> getUnaryOperators();
+	public List<UnaryOperator> getUnaryOperators();
 }

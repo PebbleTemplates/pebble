@@ -13,7 +13,8 @@ import java.util.List;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
-import com.mitchellbosecke.pebble.parser.Operator;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
@@ -30,12 +31,12 @@ public abstract class AbstractExtension implements Extension {
 	}
 	
 	@Override
-	public List<Operator> getBinaryOperators(){
+	public List<BinaryOperator> getBinaryOperators(){
 		return null;
 	}
 	
 	@Override
-	public List<Operator> getUnaryOperators(){
+	public List<UnaryOperator> getUnaryOperators(){
 		return null;
 	}
 	

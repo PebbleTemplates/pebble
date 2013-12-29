@@ -31,6 +31,9 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.operator.Associativity;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
 
 /**
  * Parses expressions.
@@ -39,8 +42,8 @@ public class ExpressionParser {
 
 	private final Parser parser;
 	private TokenStream stream;
-	private Map<String, Operator> binaryOperators;
-	private Map<String, Operator> unaryOperators;
+	private Map<String, BinaryOperator> binaryOperators;
+	private Map<String, UnaryOperator> unaryOperators;
 
 	/**
 	 * Constructor
@@ -58,7 +61,7 @@ public class ExpressionParser {
 	 * The public entry point for parsing an expression.
 	 * 
 	 * @return NodeExpression the expression that has been parsed.
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	public NodeExpression parseExpression() throws SyntaxException {
 		return parseExpression(0);
@@ -72,7 +75,7 @@ public class ExpressionParser {
 	 * @see http://en.wikipedia.org/wiki/Operator-precedence_parser
 	 * 
 	 * @return The NodeExpression representing the parsed expression.
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	private NodeExpression parseExpression(int minPrecedence) throws SyntaxException {
 
@@ -86,14 +89,21 @@ public class ExpressionParser {
 		 */
 
 		if (isUnary(token)) {
-			Operator operator = this.unaryOperators.get(token.getValue());
+			UnaryOperator operator = this.unaryOperators.get(token.getValue());
 			stream.next();
 			expression = parseExpression(operator.getPrecedence());
 
-			NodeExpressionUnary unaryExpression = (NodeExpressionUnary)operator.getNodeInstance();
+			NodeExpressionUnary unaryExpression = null;
+			Class<? extends NodeExpressionUnary> operatorNodeClass = operator.getNodeClass();
+			try {
+				unaryExpression = operatorNodeClass.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			unaryExpression.setLineNumber(stream.current().getLineNumber());
 			unaryExpression.setNode(expression);
-			
+
 			expression = unaryExpression;
 
 		} else if (token.test(Token.Type.PUNCTUATION, "(")) {
@@ -101,7 +111,7 @@ public class ExpressionParser {
 			stream.next();
 			expression = parseExpression();
 			stream.expect(Token.Type.PUNCTUATION, ")", "An opened parenthesis is not properly closed");
-			return parsePostfixExpression(expression);
+			expression = parsePostfixExpression(expression);
 
 		} else {
 			/*
@@ -121,22 +131,29 @@ public class ExpressionParser {
 		while (isBinary(token) && binaryOperators.get(token.getValue()).getPrecedence() >= minPrecedence) {
 
 			// find out which operator we are dealing with and then skip over it
-			Operator operator = binaryOperators.get(token.getValue());
+			BinaryOperator operator = binaryOperators.get(token.getValue());
 			stream.next();
 
 			/*
 			 * parse the expression on the right hand side of the operator while
 			 * maintaining proper associativity and precedence
 			 */
-			NodeExpression expressionRight = parseExpression(Operator.Associativity.LEFT.equals(operator
-					.getAssociativity()) ? operator.getPrecedence() + 1 : operator.getPrecedence());
+			NodeExpression expressionRight = parseExpression(Associativity.LEFT.equals(operator.getAssociativity()) ? operator
+					.getPrecedence() + 1 : operator.getPrecedence());
 
 			/*
 			 * we have to wrap the left and right side expressions into one
 			 * final expression. The operator provides us with the type of node
 			 * we are creating (and an instance of that node type)
 			 */
-			NodeExpressionBinary finalExpression = (NodeExpressionBinary) operator.getNodeInstance();
+			NodeExpressionBinary finalExpression = null;
+			Class<? extends NodeExpressionBinary> operatorNodeClass = operator.getNodeClass();
+			try {
+				finalExpression = operatorNodeClass.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			finalExpression.setLineNumber(stream.current().getLineNumber());
 			finalExpression.setLeft(expression);
@@ -182,7 +199,7 @@ public class ExpressionParser {
 	 * binary operator. Ex. "var.field", "true", "12", etc.
 	 * 
 	 * @return NodeExpression The expression that it found.
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	private NodeExpression subparseExpression() throws SyntaxException {
 		Token token = stream.current();
@@ -229,7 +246,7 @@ public class ExpressionParser {
 				break;
 
 			case STRING:
-				node = new NodeExpressionString(token.getLineNumber(),(String)token.getValue());
+				node = new NodeExpressionString(token.getLineNumber(), (String) token.getValue());
 				break;
 
 			// not found, syntax error
@@ -245,27 +262,27 @@ public class ExpressionParser {
 
 	private NodeExpression parseTernaryExpression(NodeExpression expression) throws SyntaxException {
 		while (this.stream.current().test(Token.Type.PUNCTUATION, "?")) {
-			
+
 			int lineNumber = stream.current().getLineNumber();
 
 			stream.next();
-			
+
 			NodeExpression expression2 = null;
 			NodeExpression expression3 = null;
-			
-			if(!stream.current().test(Token.Type.PUNCTUATION, ":")){
+
+			if (!stream.current().test(Token.Type.PUNCTUATION, ":")) {
 				expression2 = parseExpression();
-				
-				if(stream.current().test(Token.Type.PUNCTUATION, ":")){
+
+				if (stream.current().test(Token.Type.PUNCTUATION, ":")) {
 					stream.next();
 					expression3 = parseExpression();
 				}
-			}else{
+			} else {
 				stream.next();
 				expression2 = expression;
 				expression3 = parseExpression();
 			}
-			
+
 			expression = new NodeExpressionTernary(lineNumber, expression, expression2, expression3);
 		}
 
@@ -281,7 +298,7 @@ public class ExpressionParser {
 	 *            The expression that we have already discovered
 	 * @return Either the original expression that was passed in or a slightly
 	 *         modified version of it, depending on what was discovered.
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	private NodeExpression parsePostfixExpression(NodeExpression node) throws SyntaxException {
 		Token current;
@@ -314,19 +331,18 @@ public class ExpressionParser {
 	private NodeExpression parseFunctionExpression(NodeExpression node) throws SyntaxException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
-		
-		NodeExpressionConstant functionName = (NodeExpressionConstant)node;
+
+		NodeExpressionConstant functionName = (NodeExpressionConstant) node;
 		NodeExpressionArguments args = parseArguments();
-		
-		switch((String)functionName.getValue()){
+
+		switch ((String) functionName.getValue()) {
 			case "parent":
 				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
 			case "block":
-				String blockName = (String)((NodeExpressionString)args.getArgs()[0]).getValue();
+				String blockName = (String) ((NodeExpressionString) args.getArgs()[0]).getValue();
 				return new NodeExpressionBlockReference(node.getLineNumber(), blockName, true);
 		}
 
-		
 		return new NodeExpressionFunctionCall(lineNumber, functionName, args);
 	}
 
@@ -368,7 +384,7 @@ public class ExpressionParser {
 	 * @param node
 	 *            The expression parsed so far
 	 * @return NodeExpression The parsed subscript expression
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	private NodeExpression parseSubscriptExpression(NodeExpression node) throws SyntaxException {
 		TokenStream stream = parser.getStream();

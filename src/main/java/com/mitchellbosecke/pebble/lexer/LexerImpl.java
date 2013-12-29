@@ -22,7 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
-import com.mitchellbosecke.pebble.parser.Operator;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.utils.Pair;
 import com.mitchellbosecke.pebble.utils.StringLengthComparator;
 
@@ -562,11 +563,11 @@ public class LexerImpl implements Lexer {
 
 		List<String> operators = new ArrayList<>();
 
-		for (Operator operator : engine.getUnaryOperators().values()) {
+		for (UnaryOperator operator : engine.getUnaryOperators().values()) {
 			operators.add(operator.getSymbol());
 		}
 
-		for (Operator operator : engine.getBinaryOperators().values()) {
+		for (BinaryOperator operator : engine.getBinaryOperators().values()) {
 			operators.add(operator.getSymbol());
 		}
 

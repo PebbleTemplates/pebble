@@ -46,7 +46,11 @@ import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinarySub
 import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryNegative;
 import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryNot;
 import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryPositive;
-import com.mitchellbosecke.pebble.parser.Operator;
+import com.mitchellbosecke.pebble.operator.Associativity;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.BinaryOperatorImpl;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperatorImpl;
 import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
@@ -82,32 +86,33 @@ public class CoreExtension extends AbstractExtension {
 	}
 
 	@Override
-	public List<Operator> getUnaryOperators() {
-		ArrayList<Operator> operators = new ArrayList<>();
-		operators.add(new Operator("not", 50, NodeExpressionUnaryNot.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("+", 500, NodeExpressionUnaryPositive.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("-", 500, NodeExpressionUnaryNegative.class, Operator.Associativity.LEFT));
+	public List<UnaryOperator> getUnaryOperators() {
+		ArrayList<UnaryOperator> operators = new ArrayList<>();
+		operators.add(new UnaryOperatorImpl("not", 50, NodeExpressionUnaryNot.class));
+		operators.add(new UnaryOperatorImpl("+", 500, NodeExpressionUnaryPositive.class));
+		operators.add(new UnaryOperatorImpl("-", 500, NodeExpressionUnaryNegative.class));
 		return operators;
 	}
 
 	@Override
-	public List<Operator> getBinaryOperators() {
-		ArrayList<Operator> operators = new ArrayList<>();
-		operators.add(new Operator("and", 15, NodeExpressionBinaryAnd.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("or", 10, NodeExpressionBinaryOr.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("==", 20, NodeExpressionBinaryEqual.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("!=", 20, NodeExpressionBinaryNotEqual.class, Operator.Associativity.LEFT));
-		operators.add(new Operator(">", 20, NodeExpressionBinaryGreaterThan.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("<", 20, NodeExpressionBinaryLessThan.class, Operator.Associativity.LEFT));
-		operators.add(new Operator(">=", 20, NodeExpressionBinaryGreaterThanEquals.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("<=", 20, NodeExpressionBinaryLessThanEquals.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("+", 30, NodeExpressionBinaryAdd.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("-", 30, NodeExpressionBinarySubtract.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("*", 60, NodeExpressionBinaryMultiply.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("/", 60, NodeExpressionBinaryDivide.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("%", 60, NodeExpressionBinaryModulus.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("is", 100, NodeExpressionBinaryIs.class, Operator.Associativity.LEFT));
-		operators.add(new Operator("is not", 100, NodeExpressionBinaryIsNot.class, Operator.Associativity.LEFT));
+	public List<BinaryOperator> getBinaryOperators() {
+		ArrayList<BinaryOperator> operators = new ArrayList<>();
+		operators.add(new BinaryOperatorImpl("or", 10, NodeExpressionBinaryOr.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("and", 15, NodeExpressionBinaryAnd.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("==", 20, NodeExpressionBinaryEqual.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("!=", 20, NodeExpressionBinaryNotEqual.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl(">", 20, NodeExpressionBinaryGreaterThan.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("<", 20, NodeExpressionBinaryLessThan.class, Associativity.LEFT));
+		operators
+				.add(new BinaryOperatorImpl(">=", 20, NodeExpressionBinaryGreaterThanEquals.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("<=", 20, NodeExpressionBinaryLessThanEquals.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("+", 30, NodeExpressionBinaryAdd.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("-", 30, NodeExpressionBinarySubtract.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("*", 60, NodeExpressionBinaryMultiply.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("/", 60, NodeExpressionBinaryDivide.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("%", 60, NodeExpressionBinaryModulus.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("is", 100, NodeExpressionBinaryIs.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("is not", 100, NodeExpressionBinaryIsNot.class, Associativity.LEFT));
 		return operators;
 	}
 
@@ -218,51 +223,51 @@ public class CoreExtension extends AbstractExtension {
 			return intendedFormat.format(arg);
 		}
 	};
-	
+
 	private Filter numberFilter = new Filter() {
 		public String getName() {
 			return "number";
 		}
 
 		public Object apply(Object input, List<Object> args) {
-			Double number = (Double)input;
+			Double number = (Double) input;
 			Format format = new DecimalFormat((String) args.get(0));
 
 			return format.format(number);
 		}
 	};
-	
+
 	private Filter abbreviateFilter = new Filter() {
 		public String getName() {
 			return "abbreviate";
 		}
 
 		public Object apply(Object input, List<Object> args) {
-			String str = (String)input;
+			String str = (String) input;
 			int maxWidth = (Integer) args.get(0);
 
 			return StringUtils.abbreviate(str, maxWidth);
 		}
 	};
-	
+
 	private Filter capitalizeFilter = new Filter() {
 		public String getName() {
 			return "capitalize";
 		}
 
 		public Object apply(Object input, List<Object> args) {
-			String str = (String)input;
+			String str = (String) input;
 			return StringUtils.capitalize(str);
 		}
 	};
-	
+
 	private Filter trimFilter = new Filter() {
 		public String getName() {
 			return "trim";
 		}
 
 		public Object apply(Object input, List<Object> args) {
-			String str = (String)input;
+			String str = (String) input;
 			return str.trim();
 		}
 	};
@@ -284,7 +289,7 @@ public class CoreExtension extends AbstractExtension {
 			return json;
 		}
 	};
-	
+
 	private Filter defaultFilter = new Filter() {
 		public String getName() {
 			return "default";
@@ -300,47 +305,47 @@ public class CoreExtension extends AbstractExtension {
 			return input;
 		}
 	};
-	
+
 	private Test evenTest = new Test() {
 		public String getName() {
 			return "even";
 		}
 
-		public Boolean apply(Object input, List<Object> args) { 
+		public Boolean apply(Object input, List<Object> args) {
 
 			Integer obj = (Integer) input;
 			return (obj % 2 == 0);
 		}
 	};
-	
+
 	private Test oddTest = new Test() {
 		public String getName() {
 			return "odd";
 		}
 
-		public Boolean apply(Object input, List<Object> args) { 
+		public Boolean apply(Object input, List<Object> args) {
 
 			return evenTest.apply(input, args) == false;
 		}
 	};
-	
+
 	private Test nullTest = new Test() {
 		public String getName() {
 			return "null";
 		}
 
-		public Boolean apply(Object input, List<Object> args) { 
+		public Boolean apply(Object input, List<Object> args) {
 
 			return input == null;
 		}
 	};
-	
+
 	private Test emptyTest = new Test() {
 		public String getName() {
 			return "empty";
 		}
 
-		public Boolean apply(Object input, List<Object> args) { 
+		public Boolean apply(Object input, List<Object> args) {
 			boolean isEmpty = input == null;
 
 			if (!isEmpty && input instanceof String) {
@@ -358,24 +363,24 @@ public class CoreExtension extends AbstractExtension {
 			return isEmpty;
 		}
 	};
-	
+
 	private Test iterableTest = new Test() {
 		public String getName() {
 			return "iterable";
 		}
 
-		public Boolean apply(Object input, List<Object> args) { 
+		public Boolean apply(Object input, List<Object> args) {
 
 			return input instanceof Iterable;
 		}
 	};
-	
+
 	private Test equalsTest = new Test() {
 		public String getName() {
 			return "equalTo";
 		}
 
-		public Boolean apply(Object input, List<Object> args) { 
+		public Boolean apply(Object input, List<Object> args) {
 
 			return input.equals(args.get(0));
 		}
