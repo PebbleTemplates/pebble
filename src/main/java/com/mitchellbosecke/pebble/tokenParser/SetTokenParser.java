@@ -33,7 +33,7 @@ public class SetTokenParser extends AbstractTokenParser {
 		
 		NodeExpression value = this.parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 
 		return new NodeSet(lineNumber, name, value);
 	}

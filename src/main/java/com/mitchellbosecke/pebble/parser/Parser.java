@@ -20,7 +20,7 @@ import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.NodeRoot;
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 
 public interface Parser {
 
@@ -28,15 +28,29 @@ public interface Parser {
 
 	public NodeBody subparse() throws SyntaxException;
 
+	/**
+	 * Provides the stream of tokens which ultimately need to be 
+	 * "parsed" into Nodes.
+	 * 
+	 * @return TokenStream
+	 */
 	public TokenStream getStream();
+	
+	/**
+	 * Parses the existing TokenStream, starting at the current Token,
+	 * and ending when the stopCondition is fullfilled.
+	 * 
+	 * @param stopCondition
+	 * @return
+	 * @throws SyntaxException
+	 */
+	public NodeBody subparse(Method<Boolean, Token> stopCondition) throws SyntaxException;
 	
 	public void setParentFileName(String parentFileName);
 
 	public ExpressionParser getExpressionParser();
 
 	public void setBlock(String name, NodeBlock block);
-
-	public boolean hasBlock(String name);
 
 	public void pushBlockStack(String name);
 
@@ -46,7 +60,7 @@ public interface Parser {
 
 	public PebbleEngine getEngine();
 
-	public NodeBody subparse(Command<Boolean, Token> stopCondition) throws SyntaxException;
+	
 
 	String getParentFileName();
 

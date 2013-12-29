@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 
 public class MacroTokenParser extends AbstractTokenParser {
 
@@ -33,7 +33,7 @@ public class MacroTokenParser extends AbstractTokenParser {
 
 		NodeExpressionArguments args = this.parser.getExpressionParser().parseArguments(true);
 
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 
 		// parse the body
 		NodeBody body = this.parser.subparse(decideMacroEnd);
@@ -41,13 +41,13 @@ public class MacroTokenParser extends AbstractTokenParser {
 		// skip the 'endmacro' token
 		stream.next();
 		
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 
 		this.parser.addMacro(macroName, new NodeMacro(lineNumber, macroName, args, body));
 		return null;
 	}
 
-	private Command<Boolean, Token> decideMacroEnd = new Command<Boolean, Token>() {
+	private Method<Boolean, Token> decideMacroEnd = new Method<Boolean, Token>() {
 		@Override
 		public Boolean execute(Token token) {
 			return token.test(Token.Type.NAME, "endmacro");

@@ -29,7 +29,7 @@ public class IncludeTokenParser extends AbstractTokenParser {
 
 		NodeExpression includeExpression = this.parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 
 		return new NodeInclude(lineNumber, includeExpression);
 	}

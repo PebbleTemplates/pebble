@@ -29,7 +29,7 @@ import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.node.NodeText;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 
 public class ParserImpl implements Parser {
 
@@ -52,16 +52,31 @@ public class ParserImpl implements Parser {
 	/**
 	 * The TokenStream that we are converting into an Abstract Syntax Tree.
 	 */
+	private TokenStream stream;
 
 	/**
-	 * STATEFUL DATA
+	 * The parent template file name which must be known for a proper
+	 * compilation.
 	 */
-	private TokenStream stream;
 	private String parentFileName;
+
+	/**
+	 * Blocks to be compiled.
+	 */
 	private Map<String, NodeBlock> blocks;
+
+	/**
+	 * Macros to be compiled. Macros can be overloaded by name which explains
+	 * why it's a Map of Lists.
+	 */
+	private Map<String, List<NodeMacro>> macros;
+
+	/**
+	 * blockStack stores the names of the nested blocks to ensure that we always
+	 * have access to the name of the block that we are currently in. This can
+	 * be useful when implementing functions such as parent().
+	 */
 	private Stack<String> blockStack;
-	private Map<String, List<NodeMacro>> macros; // list allows for overloading
-													// same name
 
 	/**
 	 * Parser stack storing the stateful data. This is so that one Parser
@@ -149,7 +164,7 @@ public class ParserImpl implements Parser {
 	 * @param stopCondition	A stopping condition provided by a token parser
 	 * @return Node		The root node of the generated Abstract Syntax Tree
 	 */
-	public NodeBody subparse(Command<Boolean, Token> stopCondition) throws SyntaxException {
+	public NodeBody subparse(Method<Boolean, Token> stopCondition) throws SyntaxException {
 
 		// these nodes will be the children of the root node
 		List<Node> nodes = new ArrayList<>();
@@ -169,7 +184,7 @@ public class ParserImpl implements Parser {
 					stream.next();
 					break;
 
-				case VARIABLE_START:
+				case PRINT_START:
 
 					/*
 					 * We are entering variable tags at this point. These tags
@@ -185,11 +200,11 @@ public class ParserImpl implements Parser {
 					nodes.add(new NodePrint(expression, token.getLineNumber()));
 
 					// we expect to see a variable closing tag
-					stream.expect(Token.Type.VARIABLE_END);
+					stream.expect(Token.Type.PRINT_END);
 
 					break;
 
-				case BLOCK_START:
+				case EXECUTE_START:
 
 					// go to the next token because the current one is just the
 					// opening tag
@@ -265,11 +280,6 @@ public class ParserImpl implements Parser {
 
 	public void setParentFileName(String parent) {
 		this.parentFileName = parent;
-	}
-
-	@Override
-	public boolean hasBlock(String name) {
-		return getBlocks().containsKey(name);
 	}
 
 	@Override

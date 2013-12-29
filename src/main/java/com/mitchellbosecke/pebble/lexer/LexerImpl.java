@@ -53,25 +53,25 @@ public class LexerImpl implements Lexer {
 	private Stack<Pair<String, Integer>> brackets;
 
 	/**
-	 * The different tags which change the state of the lexer. The regular
-	 * expressions used to find these tags are dynamically generated. They are
-	 * safe to change via the getter/setter methods.
+	 * The different delimiters which change the state of the lexer. The regular
+	 * expressions used to find these delimiters are dynamically generated. They
+	 * are safe to change via the getter/setter methods.
 	 * 
 	 */
-	private String tagCommentOpen = "{#";
-	private String tagCommentClose = "#}";
-	private String tagBlockOpen = "{%";
-	private String tagBlockClose = "%}";
-	private String tagVariableOpen = "{{";
-	private String tagVariableClose = "}}";
+	private String delimiterCommentOpen = "{#";
+	private String delimiterCommentClose = "#}";
+	private String delimiterExecuteOpen = "{%";
+	private String delimiterExecuteClose = "%}";
+	private String delimiterPrintOpen = "{{";
+	private String delimiterPrintClose = "}}";
 
 	/**
-	 * The regular expressions used to find the different tags
+	 * The regular expressions used to find the different delimiters
 	 */
-	private Pattern regexVariableClose;
-	private Pattern regexBlockClose;
+	private Pattern regexPrintClose;
+	private Pattern regexExecuteClose;
 	private Pattern regexCommentClose;
-	private Pattern regexStartTags;
+	private Pattern regexStartDelimiters;
 
 	/**
 	 * The state of the lexer is important so that we know what to expect next
@@ -81,7 +81,7 @@ public class LexerImpl implements Lexer {
 	private Stack<State> states;
 
 	private static enum State {
-		DATA, BLOCK, VARIABLE, COMMENT
+		DATA, EXECUTE, PRINT, COMMENT
 	};
 
 	/**
@@ -89,7 +89,8 @@ public class LexerImpl implements Lexer {
 	 */
 	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
 	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
-	private static final Pattern REGEX_STRING = Pattern.compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))", Pattern.DOTALL);
+	private static final Pattern REGEX_STRING = Pattern.compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))",
+			Pattern.DOTALL);
 	private static final String PUNCTUATION = "()[]{}?:.,|=";
 
 	/**
@@ -102,14 +103,14 @@ public class LexerImpl implements Lexer {
 	public LexerImpl(PebbleEngine engine) {
 		this.engine = engine;
 
-		// generate the regexes used to find the individual tags
-		this.regexVariableClose = Pattern.compile("^\\s*" + Pattern.quote(tagVariableClose) + "\\n?");
-		this.regexBlockClose = Pattern.compile("^\\s*" + Pattern.quote(tagBlockClose) + "\\n?");
-		this.regexCommentClose = Pattern.compile(Pattern.quote(tagCommentClose) + "\\n?");
+		// generate the regexes used to find the individual delimiters
+		this.regexPrintClose = Pattern.compile("^\\s*" + Pattern.quote(delimiterPrintClose) + "\\n?");
+		this.regexExecuteClose = Pattern.compile("^\\s*" + Pattern.quote(delimiterExecuteClose) + "\\n?");
+		this.regexCommentClose = Pattern.compile(Pattern.quote(delimiterCommentClose) + "\\n?");
 
-		// Generate a special regex used to find the next START tag
-		this.regexStartTags = Pattern.compile(Pattern.quote(tagVariableOpen) + "|" + Pattern.quote(tagBlockOpen) + "|"
-				+ Pattern.quote(tagCommentOpen));
+		// Generate a special regex used to find the next START delimiters
+		this.regexStartDelimiters = Pattern.compile(Pattern.quote(delimiterPrintOpen) + "|"
+				+ Pattern.quote(delimiterExecuteOpen) + "|" + Pattern.quote(delimiterCommentOpen));
 	}
 
 	/**
@@ -119,7 +120,7 @@ public class LexerImpl implements Lexer {
 	 *            The raw contents of the template
 	 * @param name
 	 *            The name of the template (used for meaningful error messages)
-	 * @throws SyntaxException 
+	 * @throws SyntaxException
 	 */
 	@Override
 	public TokenStream tokenize(String source, String name) throws SyntaxException {
@@ -129,7 +130,7 @@ public class LexerImpl implements Lexer {
 
 		/*
 		 * Start in a DATA state. This state basically means that we are NOT in
-		 * between a pair of meaningful tags.
+		 * between a pair of meaningful delimiters.
 		 */
 		this.state = State.DATA;
 
@@ -152,11 +153,11 @@ public class LexerImpl implements Lexer {
 				case DATA:
 					lexData();
 					break;
-				case BLOCK:
-					lexBlock();
+				case EXECUTE:
+					lexExecute();
 					break;
-				case VARIABLE:
-					lexVariable();
+				case PRINT:
+					lexPrint();
 					break;
 				case COMMENT:
 					lexComment();
@@ -181,12 +182,13 @@ public class LexerImpl implements Lexer {
 
 	/**
 	 * The DATA state assumes that we are current NOT in between any pair of
-	 * meaningful tags. We are currently looking for the next "open" or "start"
-	 * tag, ex. the opening comment tag, or the opening variable tag.
+	 * meaningful delimiters. We are currently looking for the next "open" or
+	 * "start" delimiter, ex. the opening comment delimiter, or the opening
+	 * variable delimiter.
 	 */
 	private void lexData() {
 		// find the next start tag
-		Matcher matcher = regexStartTags.matcher(source);
+		Matcher matcher = regexStartDelimiters.matcher(source);
 		boolean match = matcher.find(cursor);
 
 		// check for EOF
@@ -200,41 +202,42 @@ public class LexerImpl implements Lexer {
 		String text = source.substring(cursor, matcher.start());
 		pushToken(Type.TEXT, text);
 
-		// get the individual tag, we still don't know which one it was
+		// get the individual delimiter, we still don't know which one it was
 		String token = source.substring(matcher.start(), matcher.end());
 
 		moveCursor(text + token);
 
-		if (tagCommentOpen.equals(token)) {
+		if (delimiterCommentOpen.equals(token)) {
 
 			// we don't actually push any tokens for comments
 			pushState(State.COMMENT);
 
-		} else if (tagVariableOpen.equals(token)) {
+		} else if (delimiterPrintOpen.equals(token)) {
 
-			pushToken(Token.Type.VARIABLE_START);
-			pushState(State.VARIABLE);
+			pushToken(Token.Type.PRINT_START);
+			pushState(State.PRINT);
 
-		} else if (tagBlockOpen.equals(token)) {
+		} else if (delimiterExecuteOpen.equals(token)) {
 
-			pushToken(Token.Type.BLOCK_START);
-			pushState(State.BLOCK);
+			pushToken(Token.Type.EXECUTE_START);
+			pushState(State.EXECUTE);
 
 		}
 
 	}
 
 	/**
-	 * Tokenizes between block tags.
-	 * @throws SyntaxException 
+	 * Tokenizes between execute delimiters.
+	 * 
+	 * @throws SyntaxException
 	 */
-	private void lexBlock() throws SyntaxException {
-		Matcher matcher = regexBlockClose.matcher(source.substring(cursor));
+	private void lexExecute() throws SyntaxException {
+		Matcher matcher = regexExecuteClose.matcher(source.substring(cursor));
 
-		// check if we are at the block closing tag
+		// check if we are at the execute closing delimiter
 		if (brackets.isEmpty() && matcher.lookingAt()) {
 			String token = source.substring(cursor, cursor + matcher.end());
-			pushToken(Token.Type.BLOCK_END);
+			pushToken(Token.Type.EXECUTE_END);
 			moveCursor(token);
 			popState();
 		} else {
@@ -243,16 +246,17 @@ public class LexerImpl implements Lexer {
 	}
 
 	/**
-	 * Tokenizes between variable tags.
-	 * @throws SyntaxException 
+	 * Tokenizes between print delimiters.
+	 * 
+	 * @throws SyntaxException
 	 */
-	private void lexVariable() throws SyntaxException {
-		Matcher matcher = regexVariableClose.matcher(source.substring(cursor));
+	private void lexPrint() throws SyntaxException {
+		Matcher matcher = regexPrintClose.matcher(source.substring(cursor));
 
 		// check if we are at the variable closing tag
 		if (brackets.isEmpty() && matcher.lookingAt()) {
 			String token = source.substring(cursor, cursor + matcher.end());
-			pushToken(Token.Type.VARIABLE_END);
+			pushToken(Token.Type.PRINT_END);
 			moveCursor(token);
 			popState();
 		} else {
@@ -261,11 +265,12 @@ public class LexerImpl implements Lexer {
 	}
 
 	/**
-	 * Tokenizes between comment tags.
+	 * Tokenizes between comment delimiters.
 	 * 
-	 * Simply find the closing tag for the comment and move the cursor to that
-	 * point.
-	 * @throws SyntaxException 
+	 * Simply find the closing delimiter for the comment and move the cursor to
+	 * that point.
+	 * 
+	 * @throws SyntaxException
 	 */
 	private void lexComment() throws SyntaxException {
 
@@ -274,19 +279,20 @@ public class LexerImpl implements Lexer {
 
 		boolean match = matcher.find(cursor);
 		if (!match) {
-			throw new SyntaxException("Unclosed comment block.", lineNumber, filename);
+			throw new SyntaxException("Unclosed comment.", lineNumber, filename);
 		}
 
-		// move cursor to end of comment tag
+		// move cursor to end of comment delimiter
 		String commentWithEndTag = source.substring(cursor, matcher.end());
 		moveCursor(commentWithEndTag);
 		popState();
 	}
 
 	/**
-	 * Tokenizing an expression which can be found within both block and
-	 * variable tags.
-	 * @throws SyntaxException 
+	 * Tokenizing an expression which can be found within both execute and print
+	 * regions.
+	 * 
+	 * @throws SyntaxException
 	 */
 	private void lexExpression() throws SyntaxException {
 		String token;
@@ -363,20 +369,19 @@ public class LexerImpl implements Lexer {
 			token = source.substring(cursor, cursor + matcher.end());
 
 			moveCursor(token);
-			
+
 			char quotationType = token.charAt(0);
-			
+
 			// remove first and last quotation marks
-			token = token.substring(1, token.length()-1);
-			
+			token = token.substring(1, token.length() - 1);
+
 			// remove backslashes used to escape inner quotation marks
-			if(quotationType == '\''){
+			if (quotationType == '\'') {
 				token = token.replaceAll("\\\\(')", "$1");
-			}else if (quotationType == '"'){
+			} else if (quotationType == '"') {
 				token = token.replaceAll("\\\\(\")", "$1");
 			}
-			
-			
+
 			pushToken(Token.Type.STRING, token);
 			return;
 		}
@@ -457,93 +462,93 @@ public class LexerImpl implements Lexer {
 	}
 
 	/**
-	 * @return the tagCommentOpen
+	 * @return the commentOpenDelimiter
 	 */
-	public String getTagCommentOpen() {
-		return tagCommentOpen;
+	public String getCommentOpenDelimiter() {
+		return delimiterCommentOpen;
 	}
 
 	/**
-	 * @param tagCommentOpen
-	 *            the tagCommentOpen to set
+	 * @param commentOpenDelimiter
+	 *            the commentOpenDelimiter to set
 	 */
-	public void setTagCommentOpen(String tagCommentOpen) {
-		this.tagCommentOpen = tagCommentOpen;
+	public void setCommentOpenDelimiter(String commentOpenDelimiter) {
+		this.delimiterCommentOpen = commentOpenDelimiter;
 	}
 
 	/**
-	 * @return the tagCommentClose
+	 * @return the commentCloseDelimiter
 	 */
-	public String getTagCommentClose() {
-		return tagCommentClose;
+	public String getCommentCloseDelimiter() {
+		return delimiterCommentClose;
 	}
 
 	/**
-	 * @param tagCommentClose
-	 *            the tagCommentClose to set
+	 * @param commentCloseDelimiter
+	 *            the commentCloseDelimiter to set
 	 */
-	public void setTagCommentClose(String tagCommentClose) {
-		this.tagCommentClose = tagCommentClose;
+	public void setCommentCloseDelimiter(String commentCloseDelimiter) {
+		this.delimiterCommentClose = commentCloseDelimiter;
 	}
 
 	/**
-	 * @return the tagBlockOpen
+	 * @return the executeOpenDelimiter
 	 */
-	public String getTagBlockOpen() {
-		return tagBlockOpen;
+	public String getExecuteOpenDelimiter() {
+		return delimiterExecuteOpen;
 	}
 
 	/**
-	 * @param tagBlockOpen
-	 *            the tagBlockOpen to set
+	 * @param executeOpenDelimiter
+	 *            the executeOpenDelimiter to set
 	 */
-	public void setTagBlockOpen(String tagBlockOpen) {
-		this.tagBlockOpen = tagBlockOpen;
+	public void setExecuteOpenDelimiter(String executeOpenDelimiter) {
+		this.delimiterExecuteOpen = executeOpenDelimiter;
 	}
 
 	/**
-	 * @return the tagBlockClose
+	 * @return the executeCloseDelimiter
 	 */
-	public String getTagBlockClose() {
-		return tagBlockClose;
+	public String getExecuteCloseDelimiter() {
+		return delimiterExecuteClose;
 	}
 
 	/**
-	 * @param tagBlockClose
-	 *            the tagBlockClose to set
+	 * @param executeCloseDelimiter
+	 *            the executeCloseDelimiter to set
 	 */
-	public void setTagBlockClose(String tagBlockClose) {
-		this.tagBlockClose = tagBlockClose;
+	public void setExecuteCloseDelimiter(String executeCloseDelimiter) {
+		this.delimiterExecuteClose = executeCloseDelimiter;
 	}
 
 	/**
-	 * @return the tagVariableOpen
+	 * @return the printOpenDelimiter
 	 */
-	public String getTagVariableOpen() {
-		return tagVariableOpen;
+	public String getPrintOpenDelimiter() {
+		return delimiterPrintOpen;
 	}
 
 	/**
-	 * @param tagVariableOpen
-	 *            the tagVariableOpen to set
+	 * @param printOpenDelimiter
+	 *            the printOpenDelimiter to set
 	 */
-	public void setTagVariableOpen(String tagVariableOpen) {
-		this.tagVariableOpen = tagVariableOpen;
+	public void setPrintOpenDelimiter(String printOpenDelimiter) {
+		this.delimiterPrintOpen = printOpenDelimiter;
 	}
 
 	/**
-	 * @return the tagVariableClose
+	 * @return the printCloseDelimiter
 	 */
-	public String getTagVariableClose() {
-		return tagVariableClose;
+	public String getPrintCloseDelimiter() {
+		return delimiterPrintClose;
 	}
 
 	/**
-	 * @param tagVariableClose
-	 *            the tagVariableClose to set
+	 * @param printCloseDelimiter
+	 *            the printCloseDelimiter to set
 	 */
-	public void setTagVariableClose(String tagVariableClose) {
-		this.tagVariableClose = tagVariableClose;
+	public void setPrintCloseDelimiter(String printCloseDelimiter) {
+		this.delimiterPrintClose = printCloseDelimiter;
 	}
 
 	/**

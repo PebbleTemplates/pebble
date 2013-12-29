@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.filter.FilterFunction;
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 
 public class EscaperExtension extends AbstractExtension {
 
@@ -32,7 +32,7 @@ public class EscaperExtension extends AbstractExtension {
 		return filters;
 	}
 
-	private Command<Object, List<Object>> escapeFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> escapeFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 

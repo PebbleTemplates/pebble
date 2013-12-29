@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeIf;
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class IfTokenParser extends AbstractTokenParser {
@@ -36,7 +36,7 @@ public class IfTokenParser extends AbstractTokenParser {
 
 		NodeExpression expression = this.parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 
 		NodeBody body = this.parser.subparse(decideIfFork);
 
@@ -48,14 +48,14 @@ public class IfTokenParser extends AbstractTokenParser {
 			switch (stream.current().getValue()) {
 				case "else":
 					stream.next();
-					stream.expect(Token.Type.BLOCK_END);
+					stream.expect(Token.Type.EXECUTE_END);
 					elseBody = this.parser.subparse(decideIfEnd);
 					break;
 
 				case "elseif":
 					stream.next();
 					expression = this.parser.getExpressionParser().parseExpression();
-					stream.expect(Token.Type.BLOCK_END);
+					stream.expect(Token.Type.EXECUTE_END);
 					body = this.parser.subparse(decideIfFork);
 					conditionsWithBodies.add(new Pair<NodeExpression, NodeBody>(expression, body));
 					break;
@@ -71,18 +71,18 @@ public class IfTokenParser extends AbstractTokenParser {
 			}
 		}
 
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 		return new NodeIf(lineNumber, conditionsWithBodies, elseBody);
 	}
 
-	private Command<Boolean, Token> decideIfFork = new Command<Boolean, Token>() {
+	private Method<Boolean, Token> decideIfFork = new Method<Boolean, Token>() {
 		@Override
 		public Boolean execute(Token token) {
 			return token.test(Token.Type.NAME, "elseif", "else", "endif");
 		}
 	};
 
-	private Command<Boolean, Token> decideIfEnd = new Command<Boolean, Token>() {
+	private Method<Boolean, Token> decideIfEnd = new Method<Boolean, Token>() {
 		@Override
 		public Boolean execute(Token token) {
 			return token.test(Token.Type.NAME, "endif");

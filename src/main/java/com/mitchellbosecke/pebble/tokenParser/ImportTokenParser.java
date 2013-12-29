@@ -34,7 +34,7 @@ public class ImportTokenParser extends AbstractTokenParser {
 		
 		NodeExpressionDeclaration var = this.parser.getExpressionParser().parseDeclarationExpression();
 
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 
 		return new NodeImport(lineNumber, importExpression, var);
 	}

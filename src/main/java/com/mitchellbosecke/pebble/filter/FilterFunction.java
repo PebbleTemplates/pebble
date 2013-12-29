@@ -11,15 +11,15 @@ package com.mitchellbosecke.pebble.filter;
 
 import java.util.List;
 
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 
 public class FilterFunction implements Filter {
 
 	private final String tag;
 
-	private final Command<Object, List<Object>> function;
+	private final Method<Object, List<Object>> function;
 
-	public FilterFunction(String tag, Command<Object, List<Object>> function) {
+	public FilterFunction(String tag, Method<Object, List<Object>> function) {
 		this.tag = tag;
 		this.function = function;
 	}

@@ -59,7 +59,7 @@ import com.mitchellbosecke.pebble.tokenParser.IncludeTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 
 public class CoreExtension extends AbstractExtension {
 	
@@ -143,7 +143,7 @@ public class CoreExtension extends AbstractExtension {
 		return tests;
 	}
 
-	private Command<Object, List<Object>> lowerFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> lowerFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 			// first argument should be a string
@@ -152,7 +152,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> upperFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> upperFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 			// first argument should be a string
@@ -161,7 +161,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> urlEncoderFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> urlEncoderFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 			// first argument should be a string
@@ -174,7 +174,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> formatFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> formatFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 			// first argument should be a string
@@ -186,7 +186,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> dateFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> dateFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 
@@ -212,7 +212,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> numberFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> numberFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 
@@ -224,7 +224,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> abbreviateFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> abbreviateFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 
@@ -236,7 +236,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> capitalizeFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> capitalizeFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 
@@ -245,7 +245,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> trimFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> trimFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 
@@ -254,7 +254,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Object, List<Object>> jsonEncodeFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> jsonEncodeFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 
@@ -272,7 +272,7 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 
-	private Command<Object, List<Object>> defaultFilter = new Command<Object, List<Object>>() {
+	private Method<Object, List<Object>> defaultFilter = new Method<Object, List<Object>>() {
 		@Override
 		public Object execute(List<Object> data) {
 
@@ -288,7 +288,7 @@ public class CoreExtension extends AbstractExtension {
 	};
 	
 	
-	private Command<Boolean, List<Object>> evenTest = new Command<Boolean, List<Object>>() {
+	private Method<Boolean, List<Object>> evenTest = new Method<Boolean, List<Object>>() {
 		@Override
 		public Boolean execute(List<Object> data) {
 
@@ -297,7 +297,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 	
-	private Command<Boolean, List<Object>> oddTest = new Command<Boolean, List<Object>>() {
+	private Method<Boolean, List<Object>> oddTest = new Method<Boolean, List<Object>>() {
 		@Override
 		public Boolean execute(List<Object> data) {
 
@@ -305,14 +305,14 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 	
-	private Command<Boolean, List<Object>> nullTest = new Command<Boolean, List<Object>>() {
+	private Method<Boolean, List<Object>> nullTest = new Method<Boolean, List<Object>>() {
 		@Override
 		public Boolean execute(List<Object> data) {
 			return (data.get(0) == null);
 		}
 	};
 	
-	private Command<Boolean, List<Object>> emptyTest = new Command<Boolean, List<Object>>() {
+	private Method<Boolean, List<Object>> emptyTest = new Method<Boolean, List<Object>>() {
 		@Override
 		public Boolean execute(List<Object> data) {
 			Object obj = data.get(0);
@@ -334,7 +334,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Command<Boolean, List<Object>> iterableTest = new Command<Boolean, List<Object>>() {
+	private Method<Boolean, List<Object>> iterableTest = new Method<Boolean, List<Object>>() {
 		@Override
 		public Boolean execute(List<Object> data) {
 			Object obj = data.get(0);
@@ -343,7 +343,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 	
-	private Command<Boolean, List<Object>> equalsTest = new Command<Boolean, List<Object>>() {
+	private Method<Boolean, List<Object>> equalsTest = new Method<Boolean, List<Object>>() {
 		@Override
 		public Boolean execute(List<Object> data) {
 			Object obj = data.get(0);

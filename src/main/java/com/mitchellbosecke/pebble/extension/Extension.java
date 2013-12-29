@@ -21,10 +21,29 @@ public interface Extension {
 
 	public void initRuntime(PebbleEngine engine);
 
+	/**
+	 * Use this method to provide custom filters.
+	 * 
+	 * @return A list of filters. It is okay to return null.
+	 */
 	public List<Filter> getFilters();
 	
+	/**
+	 * Use this method to provide custom tests.
+	 * 
+	 * @return A list of tests. It is okay to return null.
+	 */
 	public List<Test> getTests();
 
+	/**
+	 * Use this method to provide custom tags. 
+	 * 
+	 * A TokenParser is used to parse a stream of tokens
+	 * into Nodes which are then responsible for compiling
+	 * themselves into Java.
+	 * 
+	 * @return A list of TokenParsers. It is okay to return null.
+	 */
 	public List<TokenParser> getTokenParsers();
 	
 	public List<Operator> getBinaryOperators();

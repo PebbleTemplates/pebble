@@ -36,7 +36,7 @@ public class ExtendsTokenParser extends AbstractTokenParser {
 		// consume the parent name
 		stream.next();
 		
-		stream.expect(Token.Type.BLOCK_END);
+		stream.expect(Token.Type.EXECUTE_END);
 		return null;
 	}
 

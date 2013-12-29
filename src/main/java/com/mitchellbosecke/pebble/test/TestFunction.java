@@ -11,15 +11,15 @@ package com.mitchellbosecke.pebble.test;
 
 import java.util.List;
 
-import com.mitchellbosecke.pebble.utils.Command;
+import com.mitchellbosecke.pebble.utils.Method;
 
 public class TestFunction implements Test {
 
 	private final String tag;
 
-	private final Command<Boolean, List<Object>> function;
+	private final Method<Boolean, List<Object>> function;
 
-	public TestFunction(String tag, Command<Boolean, List<Object>> function) {
+	public TestFunction(String tag, Method<Boolean, List<Object>> function) {
 		this.tag = tag;
 		this.function = function;
 	}
