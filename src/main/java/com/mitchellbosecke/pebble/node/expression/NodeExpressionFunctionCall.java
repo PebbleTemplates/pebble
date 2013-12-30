@@ -11,15 +11,13 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionFunctionCall extends NodeExpression {
 
 	private final NodeExpressionConstant method;
 	private final NodeExpressionArguments args;
 
-	public NodeExpressionFunctionCall(int lineNumber, NodeExpressionConstant method,
-			NodeExpressionArguments arguments) {
+	public NodeExpressionFunctionCall(int lineNumber, NodeExpressionConstant method, NodeExpressionArguments arguments) {
 		super(lineNumber);
 		this.method = method;
 		this.args = arguments;
@@ -42,19 +40,13 @@ public class NodeExpressionFunctionCall extends NodeExpression {
 
 		compiler.raw(")");
 	}
-	
-	public NodeExpressionConstant getMethod(){
+
+	public NodeExpressionConstant getMethod() {
 		return method;
 	}
 
 	public NodeExpressionArguments getArguments() {
 		return args;
-	}
-	
-
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("function call ").subtree(method).subtree(args, true);
 	}
 
 }

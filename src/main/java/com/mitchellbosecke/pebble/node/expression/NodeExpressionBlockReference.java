@@ -13,7 +13,6 @@ import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.DisplayableNode;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionBlockReference extends NodeExpression implements DisplayableNode {
 
@@ -39,11 +38,6 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 		} else {
 			compiler.raw(String.format("%s%s()\n", NodeBlock.BLOCK_PREFIX, this.name));
 		}
-	}
-
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write(String.format("block reference [%s]", name));
 	}
 
 }

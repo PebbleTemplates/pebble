@@ -16,7 +16,6 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
 
@@ -57,12 +56,6 @@ public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
 		}
 
 		compiler.raw(") == false)");
-	}
-
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("binary is not").subtree(leftExpression).subtree(rightExpression, true);
-
 	}
 
 }

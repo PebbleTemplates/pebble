@@ -10,7 +10,6 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeText extends AbstractNode implements DisplayableNode {
 
@@ -28,12 +27,6 @@ public class NodeText extends AbstractNode implements DisplayableNode {
 
 	public String getData() {
 		return data;
-	}
-	
-	@Override
-	public void tree(TreeWriter tree) {
-		String data = this.data.replace("\r\n", " ").replace("\n", " ");
-		tree.write(String.format("text [%s]", data));
 	}
 
 }

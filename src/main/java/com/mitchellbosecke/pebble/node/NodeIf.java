@@ -13,7 +13,6 @@ import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.utils.Pair;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeIf extends AbstractNode {
 
@@ -51,13 +50,5 @@ public class NodeIf extends AbstractNode {
 
 		compiler.raw("\n").outdent().write("}\n");
 	}
-	
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("if");
-		for(Pair<NodeExpression, NodeBody> ifStatement : conditionsWithBodies){
-			tree.subtree(ifStatement.getLeft()).subtree(ifStatement.getRight());
-		}
-		tree.subtree(elseBody, true);
-	}
+
 }

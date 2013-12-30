@@ -10,15 +10,14 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeBlock extends AbstractNode {
 
 	public static final String BLOCK_PREFIX = "block_";
-	
+
 	private NodeBody body;
 	private String name;
-	
+
 	public NodeBlock(int lineNumber, String name) {
 		this(lineNumber, name, null);
 	}
@@ -28,33 +27,25 @@ public class NodeBlock extends AbstractNode {
 		this.body = body;
 		this.name = name;
 	}
-	
-	public void setBody(NodeBody body){
+
+	public void setBody(NodeBody body) {
 		this.body = body;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
 		compiler.write(
-				String.format(
-						"public String %s%s() throws com.mitchellbosecke.pebble.error.PebbleException {\n",
+				String.format("public String %s%s() throws com.mitchellbosecke.pebble.error.PebbleException {\n",
 						BLOCK_PREFIX, this.name)).indent();
-		
+
 		compiler.write("StringBuilder builder = new StringBuilder();\n");
-		
+
 		compiler.subcompile(body);
-		
+
 		compiler.raw("\n").write("return builder.toString();");
-		
-		compiler.raw("\n").outdent()
-				.write("}\n");
 
-	}
-	
+		compiler.raw("\n").outdent().write("}\n");
 
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write(String.format("block [%s]", name)).subtree(body, true);
 	}
 
 }

@@ -11,17 +11,11 @@ package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinarySimple;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionBinaryDivide extends NodeExpressionBinarySimple {
 
 	@Override
 	public void operator(Compiler compiler) {
 		compiler.raw("/");
-	}
-
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("/").subtree(leftExpression).subtree(rightExpression, true);
 	}
 }

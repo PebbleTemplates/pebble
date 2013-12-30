@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionBinaryEqual extends NodeExpressionBinary {
 
@@ -19,10 +18,5 @@ public class NodeExpressionBinaryEqual extends NodeExpressionBinary {
 	public void compile(Compiler compiler) {
 		compiler.raw("java.util.Objects.equals(").subcompile(leftExpression).raw(",").subcompile(rightExpression)
 				.raw(")");
-	}
-
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("==").subtree(leftExpression).subtree(rightExpression, true);
 	}
 }

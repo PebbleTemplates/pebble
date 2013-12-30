@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeImport extends AbstractNode {
 
@@ -33,9 +32,5 @@ public class NodeImport extends AbstractNode {
 		compiler.raw("this.engine.loadTemplate(").subcompile(importExpression).raw(")");
 		compiler.raw(");\n");
 	}
-	
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("import").subtree(importExpression, true);
-	}
+
 }

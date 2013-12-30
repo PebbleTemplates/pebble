@@ -15,7 +15,6 @@ import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionArguments extends NodeExpression {
 
@@ -25,12 +24,12 @@ public class NodeExpressionArguments extends NodeExpression {
 		super(lineNumber);
 		this.args = args;
 	}
-	
+
 	/**
-	 * NodeMacro will use this method to add a secret _context argument
-	 * when compiling macro declarations.
+	 * NodeMacro will use this method to add a secret _context argument when
+	 * compiling macro declarations.
 	 */
-	public void addArgument(NodeExpressionDeclaration declaration){
+	public void addArgument(NodeExpressionDeclaration declaration) {
 		List<NodeExpression> arguments = new ArrayList<>(Arrays.asList(args));
 		arguments.add(declaration);
 		this.args = arguments.toArray(new NodeExpression[arguments.size()]);
@@ -53,20 +52,8 @@ public class NodeExpressionArguments extends NodeExpression {
 		compiler.raw(")");
 	}
 
-	public NodeExpression[] getArgs(){
+	public NodeExpression[] getArgs() {
 		return args;
 	}
-	
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("arguments");
-		
-		for (int i = 0; i < args.length; ++i) {
-			if (i == (args.length - 1)) {
-				tree.subtree(args[i], true);
-			} else {
-				tree.subtree(args[i]);
-			}
-		}
-	}
+
 }

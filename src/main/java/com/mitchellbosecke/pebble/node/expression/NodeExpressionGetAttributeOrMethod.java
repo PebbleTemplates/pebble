@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 /**
  * This node can be either getting a field from a variable or calling a method
@@ -58,11 +57,6 @@ public class NodeExpressionGetAttributeOrMethod extends NodeExpression {
 			}
 		}
 		compiler.raw(") ");
-	}
-
-	public void tree(TreeWriter tree) {
-		tree.write(String.format("get attribute or method [%s]", type.toString())).subtree(node)
-				.subtree(attributeOrMethod).subtree(args, true);
 	}
 
 }

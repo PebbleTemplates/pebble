@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinarySimple;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionBinaryMultiply extends NodeExpressionBinarySimple {
 
@@ -20,8 +19,4 @@ public class NodeExpressionBinaryMultiply extends NodeExpressionBinarySimple {
 		compiler.raw("*");
 	}
 
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("*").subtree(leftExpression).subtree(rightExpression, true);
-	}
 }

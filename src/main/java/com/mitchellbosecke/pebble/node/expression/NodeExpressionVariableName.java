@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionVariableName extends NodeExpression {
 
@@ -24,18 +23,15 @@ public class NodeExpressionVariableName extends NodeExpression {
 
 	@Override
 	public void compile(Compiler compiler) {
-		if("_self".equals(name)){
+		if ("_self".equals(name)) {
 			compiler.raw("this");
-		}else{
+		} else {
 			compiler.raw("context.get(").string(name).raw(")");
 		}
 	}
 
-	public String getName(){
+	public String getName() {
 		return name;
 	}
-	
-	public void tree(TreeWriter tree){
-		tree.write(String.format("variable name [%s]", name));
-	}
+
 }

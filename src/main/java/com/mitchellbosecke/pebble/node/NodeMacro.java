@@ -12,7 +12,6 @@ package com.mitchellbosecke.pebble.node;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeMacro extends AbstractNode {
 
@@ -33,13 +32,13 @@ public class NodeMacro extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		
+
 		/*
 		 * Add a map as a secret argument
 		 */
 		NodeExpressionDeclaration mapDeclaration = new NodeExpressionDeclaration(args.getLineNumber(), "_context");
 		args.addArgument(mapDeclaration);
-		
+
 		compiler.write(String.format("public String %s%s", MACRO_PREFIX, name)).subcompile(args).raw("{\n\n").indent();
 
 		/*
@@ -66,8 +65,4 @@ public class NodeMacro extends AbstractNode {
 
 	}
 
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write(String.format("macro [%s]", name)).subtree(args).subtree(body);
-	}
 }

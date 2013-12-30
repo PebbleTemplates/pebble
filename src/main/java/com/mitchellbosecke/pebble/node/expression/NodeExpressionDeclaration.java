@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionDeclaration extends NodeExpression {
 
@@ -27,12 +26,9 @@ public class NodeExpressionDeclaration extends NodeExpression {
 	 * declaration. It becomes useless when compiling a method call or the
 	 * declaration is part of the "set" node.
 	 * 
-	 * useful:
-	 * public String method(Object name){ ... };
+	 * useful: public String method(Object name){ ... };
 	 * 
-	 * useless:
-	 * obj.method(name);
-	 * context.put(name, true); 
+	 * useless: obj.method(name); context.put(name, true);
 	 */
 	@Override
 	public void compile(Compiler compiler) {
@@ -41,11 +37,6 @@ public class NodeExpressionDeclaration extends NodeExpression {
 
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write(String.format("declaration [%s]", name));
 	}
 
 }

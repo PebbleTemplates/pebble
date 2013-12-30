@@ -9,11 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeFor extends AbstractNode {
 
@@ -69,11 +67,11 @@ public class NodeFor extends AbstractNode {
 
 		// start the for loop
 		compiler.write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){\n")
-				.indent();		
+				.indent();
 
 		compiler.write("context.put(").string(iterationVariable.getName()).raw(",").raw(iterationVariable.getName())
 				.raw(");\n").subcompile(body);
-		
+
 		// increment the special loop.index variable
 		compiler.write("currentLoop.put(\"index\", (int)currentLoop.get(\"index\") + 1);\n");
 
@@ -84,8 +82,4 @@ public class NodeFor extends AbstractNode {
 		compiler.write("context.remove(").string(iterationVariable.getName()).raw(");").raw("\n");
 	}
 
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("for").subtree(iterationVariable).subtree(iterable).subtree(body, true);
-	}
 }

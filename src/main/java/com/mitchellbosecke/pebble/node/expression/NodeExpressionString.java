@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionString extends NodeExpression {
 
@@ -26,14 +25,9 @@ public class NodeExpressionString extends NodeExpression {
 	public void compile(Compiler compiler) {
 		compiler.string(value);
 	}
-	
-	public Object getValue(){
+
+	public Object getValue() {
 		return value;
-	}
-	
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write(String.format("constant [%s]", String.valueOf(value)));
 	}
 
 }

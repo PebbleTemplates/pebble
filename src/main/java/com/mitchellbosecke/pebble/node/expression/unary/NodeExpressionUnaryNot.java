@@ -11,18 +11,12 @@ package com.mitchellbosecke.pebble.node.expression.unary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
 public class NodeExpressionUnaryNot extends NodeExpressionUnary {
 
 	@Override
 	public void operator(Compiler compiler) {
 		compiler.raw("!");
-	}
-	
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("not").subtree(node, true);
 	}
 
 }

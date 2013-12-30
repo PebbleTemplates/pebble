@@ -10,9 +10,8 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.utils.TreeWriter;
 
-public class NodeInclude extends AbstractNode implements DisplayableNode{
+public class NodeInclude extends AbstractNode implements DisplayableNode {
 
 	private final NodeExpression includeExpression;
 
@@ -25,14 +24,10 @@ public class NodeInclude extends AbstractNode implements DisplayableNode{
 	public void compile(Compiler compiler) {
 
 		compiler.raw("\n").write("builder.append(");
-		
+
 		compiler.raw("this.engine.loadTemplate(").subcompile(includeExpression).raw(").render()");
-		
+
 		compiler.raw(");\n");
 	}
-	
-	@Override
-	public void tree(TreeWriter tree) {
-		tree.write("include").subtree(includeExpression, true);
-	}
+
 }
