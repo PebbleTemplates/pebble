@@ -230,7 +230,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
-			Double number = (Double) input;
+			Number number = (Number) input;
 			Format format = new DecimalFormat((String) args.get(0));
 
 			return format.format(number);

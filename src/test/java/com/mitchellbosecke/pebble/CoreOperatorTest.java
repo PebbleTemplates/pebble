@@ -24,7 +24,7 @@ public class CoreOperatorTest extends AbstractTest {
 	public void testUnaryOperators() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		
+
 		String source = "{% if -2 == -+(5 - 3) %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		assertEquals("yes", template.render());
@@ -34,17 +34,35 @@ public class CoreOperatorTest extends AbstractTest {
 	public void testBinaryOperators() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		
+
 		String source = "{{ 8 + 5 * 4 - (6 + 10 / 2)  + 44 }}-{{ 10%3 }}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		assertEquals("61-1", template.render());
+	}
+	
+	/**
+	 * Problem existed where getAttribute would return an Object 
+	 * type which was an invalid operand for java's algebraic operators.
+	 * 
+	 * @throws PebbleException
+	 */
+	@Test
+	public void testMathOperatorOnAttribute() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ 1 + item.changeInt }}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("item", new Item());
+		assertEquals("4", template.render(context));
 	}
 
 	@Test
 	public void testTernary() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		
+
 		String source = "{{ true ? 1 : 2 }}-{{ 1 + 4 == 5 ?(2-1) : 2 }}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		assertEquals("1-1", template.render());
@@ -59,12 +77,12 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		assertEquals("yesyesyesyesyes", template.render());
 	}
-	
+
 	@Test()
 	public void testEqualsOperator() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		
+
 		String source = "{% if 'test' equals obj2 %}yes{% endif %}{% if 'blue' equals 'red' %}no{% else %}yes{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
@@ -76,11 +94,63 @@ public class CoreOperatorTest extends AbstractTest {
 	public void testEqualsOperatorWithNulls() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		
+
 		String source = "{% if null equals null %}yes{% endif %}{% if null equals obj %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
 		assertEquals("yesyes", template.render(context));
+	}
+	
+	@Test()
+	public void testNotEqualsOperator() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if 'Mitchell' != name %}no{% else %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("name", "Mitchell");
+		assertEquals("yes", template.render(context));
+	}
+
+	@Test()
+	public void testEqualsOperatorWithPrimitives() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if 1 equals 1 %}yes{% endif %}{% if 3 equals item.changeInt %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("item", new Item());
+		assertEquals("yesyes", template.render(context));
+	}
+
+	/**
+	 * There was an issue where if one of the comparison operands came from a
+	 * variable object, the template could not be compiled. This is because the
+	 * getAttribute() method of the AbstractPebbleTemplate returns Objects and
+	 * Objects can not be compared to primitives.
+	 * 
+	 * @throws PebbleException
+	 */
+	@Test()
+	public void testComparisonWithAttributeOperand() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if item.change < 2.0 %}yes{% else %}no{% endif %}"
+				+ "{% if item.change <= 2.0 %}yes{% else %}no{% endif %}"
+				+ "{% if item.change > 2.0 %}yes{% else %}no{% endif %}"
+				+ "{% if item.change >= 2.0 %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("item", new Item());
+		assertEquals("yesyesnono", template.render(context));
+	}
+
+	public class Item {
+		public double change = 1.234;
+		public Integer changeInt = 3;
 	}
 }
