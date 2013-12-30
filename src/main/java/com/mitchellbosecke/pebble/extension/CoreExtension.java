@@ -32,6 +32,7 @@ import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryDivide;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqualMethod;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThan;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThanEquals;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIs;
@@ -100,6 +101,7 @@ public class CoreExtension extends AbstractExtension {
 		operators.add(new BinaryOperatorImpl("or", 10, NodeExpressionBinaryOr.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("and", 15, NodeExpressionBinaryAnd.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("==", 20, NodeExpressionBinaryEqual.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("equals", 20, NodeExpressionBinaryEqualMethod.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("!=", 20, NodeExpressionBinaryNotEqual.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl(">", 20, NodeExpressionBinaryGreaterThan.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("<", 20, NodeExpressionBinaryLessThan.class, Associativity.LEFT));
@@ -141,7 +143,6 @@ public class CoreExtension extends AbstractExtension {
 		tests.add(nullTest);
 		tests.add(emptyTest);
 		tests.add(iterableTest);
-		tests.add(equalsTest);
 		return tests;
 	}
 
@@ -372,17 +373,6 @@ public class CoreExtension extends AbstractExtension {
 		public Boolean apply(Object input, List<Object> args) {
 
 			return input instanceof Iterable;
-		}
-	};
-
-	private Test equalsTest = new Test() {
-		public String getName() {
-			return "equalTo";
-		}
-
-		public Boolean apply(Object input, List<Object> args) {
-
-			return input.equals(args.get(0));
 		}
 	};
 

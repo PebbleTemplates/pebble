@@ -87,16 +87,4 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		assertEquals("yesyes", template.render());
 	}
-
-	@Test()
-	public void testEqualToTest() throws PebbleException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		
-		String source = "{% if 'test' is equalTo(obj2) %}yes{% endif %}{% if 'blue' is equalTo('red') %}no{% else %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
-		Map<String, Object> context = new HashMap<>();
-		context.put("obj2", new String("test"));
-		assertEquals("yesyes", template.render(context));
-	}
 }
