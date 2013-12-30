@@ -22,6 +22,6 @@ public class NodeExpressionBinaryNotEqual extends NodeExpressionBinarySimple {
 	
 	@Override
 	public void tree(TreeWriter tree) {
-		tree.write("!=").subtree(left).subtree(right, true);
+		tree.write("!=").subtree(leftExpression).subtree(rightExpression, true);
 	}
 }

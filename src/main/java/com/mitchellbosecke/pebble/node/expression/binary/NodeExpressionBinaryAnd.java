@@ -22,7 +22,7 @@ public class NodeExpressionBinaryAnd extends NodeExpressionBinarySimple {
 	
 	@Override
 	public void tree(TreeWriter tree) {
-		tree.write("and").subtree(left).subtree(right, true);
+		tree.write("and").subtree(leftExpression).subtree(rightExpression, true);
 	}
 
 }

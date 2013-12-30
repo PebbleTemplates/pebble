@@ -22,6 +22,6 @@ public class NodeExpressionBinaryOr extends NodeExpressionBinarySimple {
 	
 	@Override
 	public void tree(TreeWriter tree) {
-		tree.write("or").subtree(left).subtree(right, true);
+		tree.write("or").subtree(leftExpression).subtree(rightExpression, true);
 	}
 }

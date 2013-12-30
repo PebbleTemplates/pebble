@@ -26,12 +26,12 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 		NodeExpressionConstant method;
 		NodeExpressionArguments args = null;
 
-		if (right instanceof NodeExpressionFunctionCall) {
+		if (rightExpression instanceof NodeExpressionFunctionCall) {
 
-			method = ((NodeExpressionFunctionCall) right).getMethod();
-			args = ((NodeExpressionFunctionCall) right).getArguments();
+			method = ((NodeExpressionFunctionCall) rightExpression).getMethod();
+			args = ((NodeExpressionFunctionCall) rightExpression).getArguments();
 
-		} else if (right instanceof NodeExpressionVariableName){
+		} else if (rightExpression instanceof NodeExpressionVariableName){
 
 			/*
 			 * We allow the user to omit the brackets when calling tests that
@@ -42,16 +42,16 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 			 * TODO: Is this too much of a hack? Should the parser somehow be
 			 * tweaked to be more intelligent?
 			 */
-			NodeExpressionVariableName name = (NodeExpressionVariableName) right;
+			NodeExpressionVariableName name = (NodeExpressionVariableName) rightExpression;
 			method = new NodeExpressionConstant(name.getLineNumber(), name.getName());
 			
 		} else {
-			method = ((NodeExpressionConstant) right);
+			method = ((NodeExpressionConstant) rightExpression);
 		}
 
 		compiler.raw("applyTest(").string(String.valueOf(method.getValue()));
 
-		compiler.raw(",").subcompile(left);
+		compiler.raw(",").subcompile(leftExpression);
 
 		if (args != null) {
 			for (NodeExpression arg : args.getArgs()) {
@@ -64,7 +64,7 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 
 	@Override
 	public void tree(TreeWriter tree) {
-		tree.write("binary is").subtree(left).subtree(right, true);
+		tree.write("binary is").subtree(leftExpression).subtree(rightExpression, true);
 
 	}
 

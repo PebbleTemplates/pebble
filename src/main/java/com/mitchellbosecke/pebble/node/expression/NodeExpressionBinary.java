@@ -13,15 +13,15 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionBinary extends NodeExpression {
 
-	protected NodeExpression left;
-	protected NodeExpression right;
+	protected NodeExpression leftExpression;
+	protected NodeExpression rightExpression;
 	
 	public void setLeft(NodeExpression left){
-		this.left = left;
+		this.leftExpression = left;
 	}
 	
 	public void setRight(NodeExpression right){
-		this.right = right;
+		this.rightExpression = right;
 	}
 
 }

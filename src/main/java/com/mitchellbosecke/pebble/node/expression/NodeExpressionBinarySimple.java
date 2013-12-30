@@ -15,9 +15,9 @@ public abstract class NodeExpressionBinarySimple extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("(").subcompile(left).raw(" ");
+		compiler.raw("(").subcompile(leftExpression).raw(" ");
 		this.operator(compiler);
-		compiler.raw(" ").subcompile(right).raw(")");
+		compiler.raw(" ").subcompile(rightExpression).raw(")");
 	}
 	
 	public abstract void operator(Compiler compiler);
