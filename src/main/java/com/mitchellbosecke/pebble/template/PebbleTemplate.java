@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.io.Writer;
+import java.util.Locale;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -25,23 +26,16 @@ public interface PebbleTemplate {
 
 	public void setEngine(PebbleEngine engine);
 	
-	/**
-	 * Returns the contents of a template.
-	 * 
-	 * @return the contents of a template.
-	 */
 	public String getSource();
 	
-	/**
-	 * Returns the compiled Java code that was generated
-	 * by the PebbleEngine.
-	 * 
-	 * @return Generated Java code
-	 */
 	public String getGeneratedJavaCode();
 
 	public void setGeneratedJavaCode(String javaSource);
 	
 	public void setSource(String source);
+	
+	public void setLocale(Locale locale);
+	
+	public Locale getLocale();
 
 }

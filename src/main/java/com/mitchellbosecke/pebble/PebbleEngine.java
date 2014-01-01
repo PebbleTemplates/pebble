@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -71,6 +72,7 @@ public class PebbleEngine {
 	private boolean cacheTemplates = true;
 	private boolean strictVariables = true;
 	private String charset = "UTF-8";
+	private Locale defaultLocale = Locale.getDefault();
 
 	/*
 	 * Templates that have already been compiled into Java
@@ -182,9 +184,12 @@ public class PebbleEngine {
 			}
 
 			instance = getCompiler().compileToJava(javaSource, className);
+			
+			// give the template some KNOWLEDGE
 			instance.setEngine(this);
 			instance.setGeneratedJavaCode(javaSource);
 			instance.setSource(templateSource);
+			instance.setLocale(defaultLocale);
 
 			if (isPrimary) {
 				cachedTemplates.put(className, instance);
@@ -421,5 +426,13 @@ public class PebbleEngine {
 
 	public void setCharset(String charset) {
 		this.charset = charset;
+	}
+	
+	public Locale getDefaultLocale(){
+		return defaultLocale;
+	}
+	
+	public void setDefaultLocale(Locale locale){
+		this.defaultLocale = locale;
 	}
 }

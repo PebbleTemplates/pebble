@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -40,6 +41,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	protected StringBuilder builder = new StringBuilder();
 	protected Context context;
 	protected PebbleEngine engine;
+	
+	private Locale locale;
 
 	public abstract void buildContent() throws PebbleException;
 
@@ -344,5 +347,14 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	public String getSource() {
 		return this.source;
 	}
+	
+	@Override
+	public Locale getLocale(){
+		return this.locale;
+	}
 
+	@Override
+	public void setLocale(Locale locale){
+		this.locale = locale;
+	}
 }
