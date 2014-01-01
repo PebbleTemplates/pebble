@@ -28,7 +28,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if -2 == -+(5 - 3) %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -41,7 +41,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if not (true) %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -54,7 +54,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{{ 8 + 5 * 4 - (6 + 10 / 2)  + 44 }}-{{ 10%3 }}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -74,7 +74,7 @@ public class CoreOperatorTest extends AbstractTest {
 
 		String source = "{{ 1 + item.changeInt }} " + "{{ 1 - item.changeInt }} " + "{{ 2 * item.changeInt }} "
 				+ "{{ 11 / item.changeInt }} " + "{{ 4 % item.changeInt }}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
 
@@ -95,7 +95,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if -5 > -item.changeInt %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
 
@@ -110,7 +110,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if not(item.truthy) %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
 
@@ -126,7 +126,7 @@ public class CoreOperatorTest extends AbstractTest {
 
 		String source = "{% if item.truthy and item.falsey %}yes{% else %}no{% endif %}"
 				+ "{% if item.truthy or item.falsey %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
 
@@ -142,7 +142,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{{ true ? 1 : 2 }}-{{ 1 + 4 == 5 ?(2-1) : 2 }}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -155,7 +155,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if 3 > 2 %}yes{% endif %}{% if 2 > 3 %}no{% endif %}{% if 2 < 3 %}yes{% endif %}{% if 3 >= 3 %}yes{% endif %}{% if 100 <= 100 %}yes{% endif %}{% if 2 == 2 %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -168,7 +168,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if 3 > 2.0 %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -181,7 +181,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if 'test' equals obj2 %}yes{% endif %}{% if 'blue' equals 'red' %}no{% else %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj2", new String("test"));
 
@@ -196,7 +196,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if null equals null %}yes{% endif %}{% if null equals obj %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
 
@@ -211,7 +211,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if 'Mitchell' != name %}no{% else %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("name", "Mitchell");
 
@@ -226,7 +226,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% if 1 equals 1 %}yes{% endif %}{% if 3 equals item.changeInt %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
 
@@ -252,7 +252,7 @@ public class CoreOperatorTest extends AbstractTest {
 				+ "{% if item.change <= 2.0 %}yes{% else %}no{% endif %}"
 				+ "{% if item.change > 2.0 %}yes{% else %}no{% endif %}"
 				+ "{% if item.change >= 2.0 %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
 

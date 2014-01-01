@@ -26,7 +26,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testBlock() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.grandfather.peb");
+		PebbleTemplate template = pebble.compile("template.grandfather.peb");
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 	}
@@ -35,9 +35,10 @@ public class CoreTagsTest extends AbstractTest {
 	public void testIf() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
 
 		String source = "{% if false or steve == true  %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("yes", true);
 
@@ -52,7 +53,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% for user in users %}{% if loop.index == 0 %}[{{ loop.length }}]{% endif %}{{ loop.index }}{{ user.username }}{% endfor %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
@@ -76,7 +77,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "" + "{% for user in users %}{% endfor %}" + "{% for user in users %}{% endfor %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
@@ -93,7 +94,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% for user in users %}{{ user.username }}{% else %}yes{% endfor %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		context.put("users", users);
@@ -105,7 +106,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testMacro() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.macro1.peb");
+		PebbleTemplate template = pebble.compile("template.macro1.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -116,7 +117,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testMacroFromAnotherFile() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.macro2.peb");
+		PebbleTemplate template = pebble.compile("template.macro2.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -125,7 +126,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testInclude() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.include1.peb");
+		PebbleTemplate template = pebble.compile("template.include1.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -138,7 +139,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% set name = 'alex'  %}{{ name }}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("name", "steve");
 

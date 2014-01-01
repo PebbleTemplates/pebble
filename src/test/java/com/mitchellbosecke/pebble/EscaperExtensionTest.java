@@ -25,7 +25,7 @@ public class EscaperExtensionTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ '<test>' | escape }}");
+		PebbleTemplate template = pebble.compile("{{ '<test>' | escape }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);

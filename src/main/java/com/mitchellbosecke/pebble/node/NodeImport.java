@@ -29,7 +29,7 @@ public class NodeImport extends AbstractNode {
 
 		compiler.write("context.put(").string(var.getName()).raw(",");
 
-		compiler.raw("this.engine.loadTemplate(").subcompile(importExpression).raw(")");
+		compiler.raw("this.engine.compile(").subcompile(importExpression).raw(")");
 		compiler.raw(");\n");
 	}
 

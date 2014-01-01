@@ -20,7 +20,7 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testSimpleInheritance() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.parent.peb");
+		PebbleTemplate template = pebble.compile("template.parent.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);

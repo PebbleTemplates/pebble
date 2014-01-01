@@ -25,7 +25,7 @@ public class NodeInclude extends AbstractNode implements DisplayableNode {
 
 		compiler.raw("\n");
 		compiler.write("writeContentToWriter();");
-		compiler.write("this.engine.loadTemplate(").subcompile(includeExpression).raw(").evaluate(writer);");
+		compiler.write("this.engine.compile(").subcompile(includeExpression).raw(").evaluate(writer);");
 
 		compiler.raw("\n");
 	}

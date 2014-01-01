@@ -34,7 +34,6 @@ import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.PebbleDefaultLoader;
-import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -69,7 +68,7 @@ public class PebbleEngine {
 	 * User Editable Settings
 	 */
 	private boolean cacheTemplates = true;
-	private boolean strictVariables = false;
+	private boolean strictVariables = true;
 	private String charset = "UTF-8";
 
 	/*
@@ -126,8 +125,8 @@ public class PebbleEngine {
 	 * @throws SyntaxException
 	 * @throws LoaderException
 	 */
-	public PebbleTemplate loadTemplate(String templateName) throws SyntaxException, LoaderException, PebbleException {
-		return loadTemplate(templateName, true);
+	public PebbleTemplate compile(String templateName) throws SyntaxException, LoaderException, PebbleException {
+		return compile(templateName, true);
 	}
 
 	/**
@@ -143,8 +142,8 @@ public class PebbleEngine {
 	 * @throws LoaderException
 	 * @throws PebbleException
 	 */
-	private PebbleTemplate loadTemplate(String templateName, boolean isPrimary) throws SyntaxException,
-			LoaderException, PebbleException {
+	private PebbleTemplate compile(String templateName, boolean isPrimary) throws SyntaxException, LoaderException,
+			PebbleException {
 		if (this.loader == null) {
 			throw new LoaderException("Loader has not yet been specified.");
 		}
@@ -158,6 +157,8 @@ public class PebbleEngine {
 			instance = cachedTemplates.get(className);
 		} else {
 			/* template has not been compiled, we must compile it */
+
+			// load it
 			Reader templateReader = loader.getReader(templateName);
 			String templateSource = "";
 			try {
@@ -166,14 +167,15 @@ public class PebbleEngine {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			NodeRoot root = parse(tokenize(templateSource, templateName));
 
-			String javaSource = compile(root);
+			TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
+			NodeRoot root = getParser().parse(tokenStream);
+			String javaSource = getCompiler().compile(root).getSource();
 
 			// if this template has a parent, lets make sure the parent is
 			// compiled first
 			if (root.hasParent()) {
-				this.loadTemplate(root.getParentFileName(), false);
+				this.compile(root.getParentFileName(), false);
 			}
 
 			instance = getCompiler().compileToJava(javaSource, className);
@@ -187,46 +189,6 @@ public class PebbleEngine {
 			fileManager.clear();
 		}
 		return instance;
-	}
-
-	/**
-	 * Tokenizes the raw contents of a template. This is the first phase in the
-	 * entire compilation process.
-	 * 
-	 * @param source
-	 *            The raw content of the template
-	 * @param filename
-	 *            The name of the template (used for meaningful error messages)
-	 * @return The TokenStream which is ready for parsing
-	 * @throws SyntaxException
-	 */
-	private TokenStream tokenize(String source, String filename) throws SyntaxException {
-		return getLexer().tokenize(source, filename);
-	}
-
-	/**
-	 * Parses a TokenStream object into an Abstract Syntax Tree (AST). This is
-	 * the second phase in the entire compilation process.
-	 * 
-	 * @param stream
-	 *            The TokenStream which is ready for parsing
-	 * @return The root Node of the AST
-	 * @throws SyntaxException
-	 */
-	private NodeRoot parse(TokenStream stream) throws SyntaxException {
-		return getParser().parse(stream);
-	}
-
-	/**
-	 * Compiles an Abstract Syntax Tree (AST) into a Java class and returns the
-	 * source code of the new Java class.
-	 * 
-	 * @param node
-	 *            The root Node of the AST
-	 * @return The source code of the new Java class
-	 */
-	private String compile(Node node) {
-		return getCompiler().compile(node).getSource();
 	}
 
 	public void setLoader(Loader loader) {

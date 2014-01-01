@@ -20,7 +20,7 @@ public class CoreFunctionTest extends AbstractTest {
 
 	@Test
 	public void testParentFunction() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("function/template.child.peb");
+		PebbleTemplate template = pebble.compile("function/template.child.peb");
 		
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -29,7 +29,7 @@ public class CoreFunctionTest extends AbstractTest {
 
 	@Test
 	public void testBlockFunction() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("function/template.block.peb");
+		PebbleTemplate template = pebble.compile("function/template.block.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);

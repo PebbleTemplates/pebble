@@ -27,7 +27,7 @@ public class CompilerTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
-		PebbleTemplate template = pebble.loadTemplate("hello {{ test }}");
+		PebbleTemplate template = pebble.compile("hello {{ test }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("test", "TEST");
 		Writer writer = new StringWriter();
@@ -37,7 +37,7 @@ public class CompilerTest extends AbstractTest {
 
 	@Test
 	public void testEscapeCharactersText() throws PebbleException {
-		PebbleTemplate template = pebble.loadTemplate("template.escapeCharactersInText.peb");
+		PebbleTemplate template = pebble.compile("template.escapeCharactersInText.peb");
 		Map<String, Object> context = new HashMap<>();
 		Writer writer = new StringWriter();
 		template.evaluate(writer,context);

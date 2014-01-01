@@ -25,7 +25,7 @@ public class EngineTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(true);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ nonExisting }}");
+		PebbleTemplate template = pebble.compile("{{ nonExisting }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -37,7 +37,7 @@ public class EngineTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(false);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ nonExisting }}");
+		PebbleTemplate template = pebble.compile("{{ nonExisting }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -50,7 +50,7 @@ public class EngineTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(true);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ existingButNull }}");
+		PebbleTemplate template = pebble.compile("{{ existingButNull }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("existingButNull", null);
 
@@ -65,7 +65,7 @@ public class EngineTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(true);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ dave.username }}");
+		PebbleTemplate template = pebble.compile("{{ dave.username }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("dave", new User());
 
@@ -80,7 +80,7 @@ public class EngineTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(false);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ dave.username }}");
+		PebbleTemplate template = pebble.compile("{{ dave.username }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("dave", new User());
 
@@ -101,8 +101,8 @@ public class EngineTest extends AbstractTest {
 		PebbleEngine engine = new PebbleEngine(loader);
 		engine.setCacheTemplates(true);
 
-		PebbleTemplate cache1 = engine.loadTemplate("templates/cache/cache1/template.cache.peb");
-		PebbleTemplate cache2 = engine.loadTemplate("templates/cache/cache2/template.cache.peb");
+		PebbleTemplate cache1 = engine.compile("templates/cache/cache1/template.cache.peb");
+		PebbleTemplate cache2 = engine.compile("templates/cache/cache2/template.cache.peb");
 		
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();
@@ -129,8 +129,8 @@ public class EngineTest extends AbstractTest {
 	 */
 	@Test
 	public void templateCachedButBytecodeCleared() throws PebbleException {
-		PebbleTemplate template1 = pebble.loadTemplate("template.parent.peb");
-		PebbleTemplate template2 = pebble.loadTemplate("template.parent2.peb");
+		PebbleTemplate template1 = pebble.compile("template.parent.peb");
+		PebbleTemplate template2 = pebble.compile("template.parent2.peb");
 
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();

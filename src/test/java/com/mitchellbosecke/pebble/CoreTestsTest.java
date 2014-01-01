@@ -29,7 +29,7 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
 		String source = "{% if 2 is even %}yes{% else %}no{% endif %}{% if 3 is even %}no{% else %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -42,7 +42,7 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
 		String source = "{% if 2 is odd %}no{% else %}yes{% endif %}{% if 3 is odd %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -55,7 +55,7 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
 		String source = "{% if null is null %}yes{% endif %}{% if obj is null %}yes{% endif %}{% if 2 is null %}no{% else %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
 
@@ -70,7 +70,7 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
 		String source = "{% if null is empty() %}yes{% endif %}{% if '  ' is empty() %}yes{% endif %}{% if obj is empty() %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", new ArrayList<String>());
 		
@@ -85,7 +85,7 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
 		String source = "{% if null is iterable() %}no{% else %}yes{% endif %}{% if obj1 is iterable() %}yes{% else %}no{% endif %}{% if obj2 is iterable() %}no{% else %}yes{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj1", new ArrayList<String>());
 		context.put("obj2", new HashMap<String, Object>());
@@ -101,7 +101,7 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
 		String source = "{% if 2 is not odd %}yes{% else %}no{% endif %}{% if null is not iterable() %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);

@@ -31,7 +31,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ 'TEMPLATE' | lower }}");
+		PebbleTemplate template = pebble.compile("{{ 'TEMPLATE' | lower }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -43,7 +43,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ 'template' | upper }}");
+		PebbleTemplate template = pebble.compile("{{ 'template' | upper }}");
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("TEMPLATE", writer.toString());
@@ -56,7 +56,7 @@ public class CoreFiltersTest extends AbstractTest {
 
 		String source = "{{ realDate | date(\"MM/dd/yyyy\") }}{{ realDate | date(format) }}{{ stringDate | date(\"yyyy-MMMM-d\", \"yyyy/MMMM/d\") }}";
 
-		PebbleTemplate template = pebble.loadTemplate(source);
+		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
 		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
 		Date realDate = format.parse("2012-July-01");
@@ -74,7 +74,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ 'The string ü@foo-bar' | urlencode }}");
+		PebbleTemplate template = pebble.compile("{{ 'The string ü@foo-bar' | urlencode }}");
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("The+string+%C3%BC%40foo-bar", writer.toString());
@@ -85,7 +85,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ 'I like %s and %s.' | format(foo, 'bar') }}");
+		PebbleTemplate template = pebble.compile("{{ 'I like %s and %s.' | format(foo, 'bar') }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("foo", "foo");
 		
@@ -99,7 +99,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("You owe me {{ 10000.235166 | number(currencyFormat) }}.");
+		PebbleTemplate template = pebble.compile("You owe me {{ 10000.235166 | number(currencyFormat) }}.");
 		Map<String, Object> context = new HashMap<>();
 		context.put("currencyFormat", "$#,###,###,##0.00");
 		
@@ -114,7 +114,7 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble
-				.loadTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(16) }}");
+				.compile("{{ 'This is a test of the abbreviate filter' | abbreviate(16) }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -126,7 +126,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ 'this should be capitalized.' | capitalize }}");
+		PebbleTemplate template = pebble.compile("{{ 'this should be capitalized.' | capitalize }}");
 		
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -138,7 +138,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ '        		This should be trimmed. 		' | trim }}");
+		PebbleTemplate template = pebble.compile("{{ '        		This should be trimmed. 		' | trim }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -150,7 +150,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ obj | json }}");
+		PebbleTemplate template = pebble.compile("{{ obj | json }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", new User("Alex"));
 
@@ -165,7 +165,7 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble
-				.loadTemplate("{{ obj|default('Hello') }} {{ null|default('Steve') }} {{ '  ' |default('Hello') }}");
+				.compile("{{ obj|default('Hello') }} {{ null|default('Steve') }} {{ '  ' |default('Hello') }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
 

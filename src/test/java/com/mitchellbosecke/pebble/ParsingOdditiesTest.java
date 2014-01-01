@@ -27,7 +27,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble
-				.loadTemplate("{{ _self.input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+				.compile("{{ _self.input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -39,7 +39,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ 'test\ntest' }}");
+		PebbleTemplate template = pebble.compile("{{ 'test\ntest' }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -51,7 +51,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{'test\"}}");
+		PebbleTemplate template = pebble.compile("{{'test\"}}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -63,18 +63,18 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{\"te'st\"}}");
+		PebbleTemplate template = pebble.compile("{{\"te'st\"}}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("te'st", writer.toString());
 
-		template = pebble.loadTemplate("{{\"te\\'st\"}}");
+		template = pebble.compile("{{\"te\\'st\"}}");
 		writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("te\\'st", writer.toString());
 
-		template = pebble.loadTemplate("{{'te\\'st'}}");
+		template = pebble.compile("{{'te\\'st'}}");
 		writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("te'st", writer.toString());
