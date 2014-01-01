@@ -22,12 +22,12 @@ public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
 	@Override
 	public void compile(Compiler compiler) {
 
-		NodeExpressionConstant method;
+		NodeExpressionConstant testName;
 		NodeExpressionArguments args = null;
 
 		if (rightExpression instanceof NodeExpressionFunctionCall) {
 
-			method = ((NodeExpressionFunctionCall) rightExpression).getMethod();
+			testName = ((NodeExpressionFunctionCall) rightExpression).getFunctionName();
 			args = ((NodeExpressionFunctionCall) rightExpression).getArguments();
 
 		} else {
@@ -42,10 +42,10 @@ public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
 			 * tweaked to be more intelligent?
 			 */
 			NodeExpressionVariableName name = (NodeExpressionVariableName) rightExpression;
-			method = new NodeExpressionConstant(name.getLineNumber(), name.getName());
+			testName = new NodeExpressionConstant(name.getLineNumber(), name.getName());
 		}
 
-		compiler.raw("(applyTest(").string(String.valueOf(method.getValue()));
+		compiler.raw("(applyTest(").string(String.valueOf(testName.getValue()));
 
 		compiler.raw(",").subcompile(leftExpression);
 

@@ -17,7 +17,7 @@ public class NodeExpressionBinaryGreaterThan extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("((boolean)").raw(OperatorUtils.class.getName()).raw(".gt(").subcompile(leftExpression).raw(",")
+		compiler.raw("(").raw(OperatorUtils.class.getName()).raw(".gt(").subcompile(leftExpression).raw(",")
 				.subcompile(rightExpression).raw("))");
 	}
 

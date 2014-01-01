@@ -22,12 +22,12 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 	@Override
 	public void compile(Compiler compiler) {
 
-		NodeExpressionConstant method;
+		NodeExpressionConstant testName;
 		NodeExpressionArguments args = null;
 
 		if (rightExpression instanceof NodeExpressionFunctionCall) {
 
-			method = ((NodeExpressionFunctionCall) rightExpression).getMethod();
+			testName = ((NodeExpressionFunctionCall) rightExpression).getFunctionName();
 			args = ((NodeExpressionFunctionCall) rightExpression).getArguments();
 
 		} else if (rightExpression instanceof NodeExpressionVariableName){
@@ -39,16 +39,17 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 			 * have to make the conversion here.
 			 * 
 			 * TODO: Is this too much of a hack? Should the parser somehow be
-			 * tweaked to be more intelligent?
+			 * tweaked to be more intelligent? Perhaps parser has access to test
+			 * names through the main engine?
 			 */
 			NodeExpressionVariableName name = (NodeExpressionVariableName) rightExpression;
-			method = new NodeExpressionConstant(name.getLineNumber(), name.getName());
+			testName = new NodeExpressionConstant(name.getLineNumber(), name.getName());
 			
 		} else {
-			method = ((NodeExpressionConstant) rightExpression);
+			testName = ((NodeExpressionConstant) rightExpression);
 		}
 
-		compiler.raw("applyTest(").string(String.valueOf(method.getValue()));
+		compiler.raw("applyTest(").string(String.valueOf(testName.getValue()));
 
 		compiler.raw(",").subcompile(leftExpression);
 

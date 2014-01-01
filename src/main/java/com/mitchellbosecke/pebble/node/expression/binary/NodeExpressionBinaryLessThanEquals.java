@@ -17,7 +17,7 @@ public class NodeExpressionBinaryLessThanEquals extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("((boolean)").raw(OperatorUtils.class.getName()).raw(".lte(").subcompile(leftExpression).raw(",")
+		compiler.raw("(").raw(OperatorUtils.class.getName()).raw(".lte(").subcompile(leftExpression).raw(",")
 				.subcompile(rightExpression).raw("))");
 	}
 

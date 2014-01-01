@@ -18,6 +18,7 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+import com.mitchellbosecke.pebble.utils.SimpleFunction;
 
 public abstract class AbstractExtension implements Extension {
 
@@ -48,6 +49,11 @@ public abstract class AbstractExtension implements Extension {
 	
 	@Override
 	public List<Test> getTests(){
+		return null;
+	}
+	
+	@Override
+	public List<SimpleFunction> getFunctions(){
 		return null;
 	}
 

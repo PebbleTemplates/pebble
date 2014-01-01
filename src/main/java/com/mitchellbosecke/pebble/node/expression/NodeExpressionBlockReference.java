@@ -34,7 +34,7 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 	@Override
 	public void compile(Compiler compiler) {
 		if (!this.output) {
-			compiler.raw("\n").write(String.format("builder.append(block_%s());\n", this.name));
+			compiler.raw("\n").write(String.format("builder.append(%s%s());\n", NodeBlock.BLOCK_PREFIX, this.name));
 		} else {
 			compiler.raw(String.format("%s%s()\n", NodeBlock.BLOCK_PREFIX, this.name));
 		}

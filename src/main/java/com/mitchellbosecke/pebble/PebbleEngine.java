@@ -45,6 +45,7 @@ import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBrokerImpl;
+import com.mitchellbosecke.pebble.utils.SimpleFunction;
 
 public class PebbleEngine {
 
@@ -91,6 +92,7 @@ public class PebbleEngine {
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
 	private Map<String, Object> globalVariables;
+	private Map<String, SimpleFunction> functions;
 
 	public PebbleEngine() {
 		this(new PebbleDefaultLoader());
@@ -181,6 +183,8 @@ public class PebbleEngine {
 
 			instance = getCompiler().compileToJava(javaSource, className);
 			instance.setEngine(this);
+			instance.setGeneratedJavaCode(javaSource);
+			instance.setSource(templateSource);
 
 			if (isPrimary) {
 				cachedTemplates.put(className, instance);
@@ -234,6 +238,7 @@ public class PebbleEngine {
 		this.binaryOperators = new HashMap<>();
 		this.filters = new HashMap<>();
 		this.tests = new HashMap<>();
+		this.functions = new HashMap<>();
 		this.globalVariables = new HashMap<>();
 
 		for (Extension extension : this.extensions.values()) {
@@ -249,7 +254,7 @@ public class PebbleEngine {
 	 *            The extension to initialize
 	 */
 	private void initExtension(Extension extension) {
-		
+
 		extension.initRuntime(this);
 
 		// token parsers
@@ -288,6 +293,13 @@ public class PebbleEngine {
 		if (extension.getTests() != null) {
 			for (Test test : extension.getTests()) {
 				this.tests.put(test.getName(), test);
+			}
+		}
+
+		// tests
+		if (extension.getFunctions() != null) {
+			for (SimpleFunction function : extension.getFunctions()) {
+				this.functions.put(function.getName(), function);
 			}
 		}
 
@@ -331,6 +343,13 @@ public class PebbleEngine {
 			initExtensions();
 		}
 		return this.tests;
+	}
+
+	public Map<String, SimpleFunction> getFunctions() {
+		if (!this.extensionsInitialized) {
+			initExtensions();
+		}
+		return this.functions;
 	}
 
 	public Map<String, Object> getGlobalVariables() {

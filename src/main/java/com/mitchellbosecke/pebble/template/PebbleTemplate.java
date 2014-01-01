@@ -24,5 +24,24 @@ public interface PebbleTemplate {
 	public void evaluate(Writer writer, Map<String, Object> model) throws PebbleException;
 
 	public void setEngine(PebbleEngine engine);
+	
+	/**
+	 * Returns the contents of a template.
+	 * 
+	 * @return the contents of a template.
+	 */
+	public String getSource();
+	
+	/**
+	 * Returns the compiled Java code that was generated
+	 * by the PebbleEngine.
+	 * 
+	 * @return Generated Java code
+	 */
+	public String getGeneratedJavaCode();
+
+	public void setGeneratedJavaCode(String javaSource);
+	
+	public void setSource(String source);
 
 }

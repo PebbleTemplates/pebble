@@ -202,7 +202,6 @@ public class CompilerImpl implements Compiler {
 
 			ClassLoader cl = fileManager.getClassLoader(null);
 			template = (AbstractPebbleTemplate) cl.loadClass(fullClassName).newInstance();
-			template.setSourceCode(getSource());
 
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new PebbleException("Compilation error occurred");

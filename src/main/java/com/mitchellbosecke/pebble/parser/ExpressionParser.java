@@ -335,6 +335,11 @@ public class ExpressionParser {
 		NodeExpressionConstant functionName = (NodeExpressionConstant) node;
 		NodeExpressionArguments args = parseArguments();
 
+		/*
+		 * The following core functions have their own Nodes
+		 * and are compiled in unique ways for the sake of 
+		 * performance.
+		 */
 		switch ((String) functionName.getValue()) {
 			case "parent":
 				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());

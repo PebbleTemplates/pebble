@@ -61,13 +61,20 @@ import com.mitchellbosecke.pebble.tokenParser.IncludeTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+import com.mitchellbosecke.pebble.utils.OperatorUtils;
+import com.mitchellbosecke.pebble.utils.SimpleFunction;
+import com.mitchellbosecke.pebble.utils.TemplateAwareSimpleFunction;
 
 public class CoreExtension extends AbstractExtension {
 
 	private String charset = "UTF-8";
 
+	@SuppressWarnings("unused")
+	private PebbleEngine engine;
+
 	@Override
 	public void initRuntime(PebbleEngine engine) {
+		this.engine = engine;
 		charset = engine.getCharset();
 	}
 
@@ -144,18 +151,33 @@ public class CoreExtension extends AbstractExtension {
 		tests.add(iterableTest);
 		return tests;
 	}
-	
+
 	@Override
-	public Map<String,Object> getGlobalVariables(){
-		
+	public List<SimpleFunction> getFunctions() {
+		ArrayList<SimpleFunction> functions = new ArrayList<>();
+
 		/*
-		 * The following core global variables are
-		 * defined in AbstractPebbleTemplate.initContext():
+		 * For efficiency purposes, some core functions are individually parsed
+		 * by our expression parser and compiled in their own unique way. This
+		 * includes the block and parent functions.
+		 */
+
+		functions.add(sourceFunction);
+		functions.add(minFunction);
+		functions.add(maxFunction);
+		return functions;
+	}
+
+	@Override
+	public Map<String, Object> getGlobalVariables() {
+
+		/*
+		 * The following core global variables are defined in
+		 * AbstractPebbleTemplate.initContext():
 		 * 
 		 * _self
-		 * 
 		 */
-		
+
 		return null;
 	}
 
@@ -389,4 +411,55 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
+	private SimpleFunction sourceFunction = new TemplateAwareSimpleFunction() {
+		public String getName() {
+			return "source";
+		}
+
+		public Object execute(List<Object> args) {
+			return template.getSource();
+
+		}
+	};
+
+	private SimpleFunction minFunction = new SimpleFunction() {
+		public String getName() {
+			return "min";
+		}
+
+		public Object execute(List<Object> args) {
+			Object min = null;
+			for (Object candidate : args) {
+				if (min == null) {
+					min = candidate;
+					continue;
+				}
+				if (OperatorUtils.lt(candidate, min)) {
+					min = candidate;
+				}
+			}
+			return min;
+		}
+	};
+
+	private SimpleFunction maxFunction = new SimpleFunction() {
+		public String getName() {
+			return "max";
+		}
+
+		public Object execute(List<Object> args) {
+			Object min = null;
+			for (Object candidate : args) {
+				if (min == null) {
+					min = candidate;
+					continue;
+				}
+				if (OperatorUtils.gt(candidate, min)) {
+					min = candidate;
+				}
+			}
+			return min;
+
+		}
+	};
 }

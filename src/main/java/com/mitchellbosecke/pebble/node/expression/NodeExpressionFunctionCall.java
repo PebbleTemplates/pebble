@@ -14,35 +14,32 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionFunctionCall extends NodeExpression {
 
-	private final NodeExpressionConstant method;
+	private final NodeExpressionConstant functionName;
 	private final NodeExpressionArguments args;
 
-	public NodeExpressionFunctionCall(int lineNumber, NodeExpressionConstant method, NodeExpressionArguments arguments) {
+	public NodeExpressionFunctionCall(int lineNumber, NodeExpressionConstant functionName,
+			NodeExpressionArguments arguments) {
 		super(lineNumber);
-		this.method = method;
+		this.functionName = functionName;
 		this.args = arguments;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.subcompile(method).raw("(");
+		compiler.raw("applyFunction(").string(String.valueOf(functionName.getValue()));
 
-		boolean isFirst = true;
-		for (NodeExpression arg : args.getArgs()) {
-			if (!isFirst) {
-				compiler.raw(", ");
+		if (args != null) {
+			for (NodeExpression arg : args.getArgs()) {
+				compiler.raw(", ").subcompile(arg);
 			}
-			isFirst = false;
-
-			compiler.subcompile(arg);
 		}
 
 		compiler.raw(")");
 	}
 
-	public NodeExpressionConstant getMethod() {
-		return method;
+	public NodeExpressionConstant getFunctionName() {
+		return functionName;
 	}
 
 	public NodeExpressionArguments getArguments() {

@@ -33,20 +33,20 @@ public class OperatorUtils {
 		return ((a == b) || ((a != null) && a.equals(b)));
 	}
 
-	public static Object gt(Object op1, Object op2) {
-		return wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN);
+	public static boolean gt(Object op1, Object op2) {
+		return (boolean)wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN);
 	}
 
-	public static Object gte(Object op1, Object op2) {
-		return wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN_EQUALS);
+	public static boolean gte(Object op1, Object op2) {
+		return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN_EQUALS);
 	}
 
-	public static Object lt(Object op1, Object op2) {
-		return wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN);
+	public static boolean lt(Object op1, Object op2) {
+		return (boolean)wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN);
 	}
 
-	public static Object lte(Object op1, Object op2) {
-		return wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN_EQUALS);
+	public static boolean lte(Object op1, Object op2) {
+		return (boolean)wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN_EQUALS);
 	}
 
 	public static Object unaryPlus(Object op1) {

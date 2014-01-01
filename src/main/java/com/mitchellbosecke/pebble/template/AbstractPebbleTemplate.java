@@ -28,10 +28,14 @@ import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.utils.Context;
+import com.mitchellbosecke.pebble.utils.SimpleFunction;
+import com.mitchellbosecke.pebble.utils.TemplateAware;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
-	private String sourceCode;
+	private String generatedJavaCode;
+	private String source;
+
 	protected Writer writer;
 	protected StringBuilder builder = new StringBuilder();
 	protected Context context;
@@ -44,9 +48,9 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		Context context = initContext();
 		evaluate(writer, context);
 	}
-	
+
 	@Override
-	public void evaluate(Writer writer, Map<String,Object> map) throws PebbleException {
+	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException {
 		Context context = initContext();
 		context.putAll(map);
 		evaluate(writer, context);
@@ -74,14 +78,14 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			}
 		}
 	}
-	
+
 	private Context initContext() {
 		Context context = new Context(engine.isStrictVariables());
 		context.putAll(engine.getGlobalVariables());
-		
+
 		/*
-		 * some global variables that have to be implemented here
-		 * because they are unique to the particular template.
+		 * some global variables that have to be implemented here because they
+		 * are unique to the particular template.
 		 */
 		context.put("_self", this);
 		context.put("_context", context);
@@ -142,11 +146,10 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		String attributeCapitalized = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
 
 		/*
-		 * Entry in hash map. 
+		 * Entry in hash map.
 		 * 
-		 * Has priority because:
-		 * 	- for loop stores variables in a hash map
-		 * 	- doesn't require reflection and is therefore really fast
+		 * Has priority because: - for loop stores variables in a hash map -
+		 * doesn't require reflection and is therefore really fast
 		 */
 		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {
 
@@ -274,6 +277,24 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		return filter.apply(input, arguments);
 	}
 
+	protected Object applyFunction(String functionName, Object... args) throws PebbleException {
+		List<Object> arguments = new ArrayList<>();
+
+		Collections.addAll(arguments, args);
+
+		Map<String, SimpleFunction> functions = engine.getFunctions();
+		SimpleFunction function = functions.get(functionName);
+
+		if (function instanceof TemplateAware) {
+			((TemplateAware) function).setTemplate(this);
+		}
+
+		if (function == null) {
+			throw new PebbleException(String.format("Function [%s] does not exist.", functionName));
+		}
+		return function.execute(arguments);
+	}
+
 	protected String printVariable(Object var) {
 		if (var == null) {
 			return "";
@@ -304,12 +325,24 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		return test.apply(input, arguments);
 	}
 
-	public void setSourceCode(String source) {
-		this.sourceCode = source;
+	@Override
+	public void setGeneratedJavaCode(String generatedJavaCode) {
+		this.generatedJavaCode = generatedJavaCode;
 	}
 
-	public String getSourceCode() {
-		return sourceCode;
+	@Override
+	public String getGeneratedJavaCode() {
+		return generatedJavaCode;
+	}
+
+	@Override
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	@Override
+	public String getSource() {
+		return this.source;
 	}
 
 }

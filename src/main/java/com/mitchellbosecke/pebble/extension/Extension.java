@@ -18,6 +18,7 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+import com.mitchellbosecke.pebble.utils.SimpleFunction;
 
 public interface Extension {
 
@@ -36,6 +37,13 @@ public interface Extension {
 	 * @return A list of tests. It is okay to return null.
 	 */
 	public List<Test> getTests();
+	
+	/**
+	 * Use this method to provide custom functions.
+	 * 
+	 * @return A list of functions. It is okay to return null.
+	 */
+	public List<SimpleFunction> getFunctions();
 
 	/**
 	 * Use this method to provide custom tags.

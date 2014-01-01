@@ -14,6 +14,6 @@ import java.util.List;
 public interface Filter {
 
 	public String getName();
-	
+
 	public Object apply(Object input, List<Object> args);
 }
