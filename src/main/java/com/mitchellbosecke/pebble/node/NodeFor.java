@@ -12,6 +12,7 @@ package com.mitchellbosecke.pebble.node;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.utils.ObjectUtils;
 
 public class NodeFor extends AbstractNode {
 
@@ -50,36 +51,29 @@ public class NodeFor extends AbstractNode {
 
 	private void compileForLoop(Compiler compiler) {
 
+		compiler.write("pushContext();\n");
+		compiler.write("context.put(\"loop\", new HashMap<>());\n");
+
 		// create the special "loop" variable
-		compiler.raw("\n").write("currentLoop = new HashMap<>();\n");
-		compiler.write("currentLoop.put(\"index\", 0);\n");
+		compiler.write("((Map<String,Object>)context.get(\"loop\")).put(\"index\", 0);\n");
 
 		// iterate through loop first to calculate length
-		compiler.write("currentLoopLength = 0;\n");
-		compiler.write("currentLoopIterator = ((Iterable)").subcompile(iterable).raw(").iterator();\n");
-		compiler.write("while(currentLoopIterator.hasNext()){\n");
-		compiler.write("currentLoopIterator.next();\n");
-		compiler.write("currentLoopLength++;\n");
-		compiler.write("};\n");
-
-		compiler.write("currentLoop.put(\"length\", currentLoopLength);\n");
-		compiler.write("context.put(\"loop\", currentLoop);\n");
+		compiler.write("((Map<String,Object>)context.get(\"loop\")).put(\"length\", ").raw(ObjectUtils.class.getName())
+				.raw(".getIteratorSize((Iterable)").subcompile(iterable).raw("));\n");
 
 		// start the for loop
 		compiler.write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){\n")
 				.indent();
 
 		compiler.write("context.put(").string(iterationVariable.getName()).raw(",").raw(iterationVariable.getName())
-				.raw(");\n").subcompile(body);
+				.raw(");\n").subcompile(body).raw("\n");
 
 		// increment the special loop.index variable
-		compiler.write("currentLoop.put(\"index\", (int)currentLoop.get(\"index\") + 1);\n");
+		compiler.write("((Map<String,Object>)context.get(\"loop\")).put(\"index\", (int)((Map<String,Object>)context.get(\"loop\")).get(\"index\") + 1);\n");
 
 		compiler.outdent().raw("\n").write("}\n");
 
 		// remove context variables that are specific to this for loop
-		compiler.write("context.remove(\"loop\");\n");
-		compiler.write("context.remove(").string(iterationVariable.getName()).raw(");").raw("\n");
+		compiler.write("popContext();\n");
 	}
-
 }

@@ -39,13 +39,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	protected Context context;
 	protected PebbleEngine engine;
 
-	/*
-	 * These are variables used to help with for loops
-	 */
-	protected Map<String, Object> currentLoop;
-	protected int currentLoopLength;
-	protected Iterator<?> currentLoopIterator;
-
 	public abstract void buildContent() throws PebbleException;
 
 	@Override
@@ -79,6 +72,16 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 				throw new PebbleException("Unable to flush or close writer.");
 			}
 		}
+	}
+	
+	protected void pushContext(){
+		Context context = new Context(this.context.isStrictVariables());
+		context.setParent(this.context);
+		this.context = context;
+	}
+	
+	protected void popContext(){
+		this.context = this.context.getParent();
 	}
 	
 	public void writeContentToWriter() throws PebbleException{

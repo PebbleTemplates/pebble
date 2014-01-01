@@ -64,6 +64,12 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("[2]0Alex1Bob", writer.toString());
 	}
 
+	/**
+	 * There were compilation issues when having two for loops in the same
+	 * template due to the same variable name being declared twice.
+	 * 
+	 * @throws PebbleException
+	 */
 	@Test
 	public void multipleForLoops() throws PebbleException {
 		Loader loader = new StringLoader();
