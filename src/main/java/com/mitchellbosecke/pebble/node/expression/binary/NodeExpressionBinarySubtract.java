@@ -10,13 +10,15 @@
 package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinarySimple;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
+import com.mitchellbosecke.pebble.utils.MathUtils;
 
-public class NodeExpressionBinarySubtract extends NodeExpressionBinarySimple {
+public class NodeExpressionBinarySubtract extends NodeExpressionBinary {
 
 	@Override
-	public void operator(Compiler compiler) {
-		compiler.raw("-");
+	public void compile(Compiler compiler) {
+		compiler.raw(MathUtils.class.getName()).raw(".subtract(").subcompile(leftExpression, false).raw(",")
+		.subcompile(rightExpression, false).raw(")");
 	}
 
 }

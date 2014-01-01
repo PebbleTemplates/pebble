@@ -29,7 +29,7 @@ import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.node.NodeText;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
-import com.mitchellbosecke.pebble.utils.Method;
+import com.mitchellbosecke.pebble.utils.Function;
 
 public class ParserImpl implements Parser {
 
@@ -164,7 +164,7 @@ public class ParserImpl implements Parser {
 	 * @param stopCondition	A stopping condition provided by a token parser
 	 * @return Node		The root node of the generated Abstract Syntax Tree
 	 */
-	public NodeBody subparse(Method<Boolean, Token> stopCondition) throws SyntaxException {
+	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws SyntaxException {
 
 		// these nodes will be the children of the root node
 		List<Node> nodes = new ArrayList<>();

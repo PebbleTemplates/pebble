@@ -16,7 +16,7 @@ public class NodeExpressionBinaryNotEqual extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("(java.util.Objects.equals(").subcompile(leftExpression).raw(",").subcompile(rightExpression)
+		compiler.raw("(com.mitchellbosecke.pebble.utils.ObjectUtils.equals(").subcompile(leftExpression).raw(",").subcompile(rightExpression)
 				.raw(") == false)");
 	}
 

@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeIf;
-import com.mitchellbosecke.pebble.utils.Method;
+import com.mitchellbosecke.pebble.utils.Function;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class IfTokenParser extends AbstractTokenParser {
@@ -75,14 +75,14 @@ public class IfTokenParser extends AbstractTokenParser {
 		return new NodeIf(lineNumber, conditionsWithBodies, elseBody);
 	}
 
-	private Method<Boolean, Token> decideIfFork = new Method<Boolean, Token>() {
+	private Function<Boolean, Token> decideIfFork = new Function<Boolean, Token>() {
 		@Override
 		public Boolean execute(Token token) {
 			return token.test(Token.Type.NAME, "elseif", "else", "endif");
 		}
 	};
 
-	private Method<Boolean, Token> decideIfEnd = new Method<Boolean, Token>() {
+	private Function<Boolean, Token> decideIfEnd = new Function<Boolean, Token>() {
 		@Override
 		public Boolean execute(Token token) {
 			return token.test(Token.Type.NAME, "endif");

@@ -20,7 +20,7 @@ import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.NodeRoot;
-import com.mitchellbosecke.pebble.utils.Method;
+import com.mitchellbosecke.pebble.utils.Function;
 
 public interface Parser {
 
@@ -44,7 +44,7 @@ public interface Parser {
 	 * @return
 	 * @throws SyntaxException
 	 */
-	public NodeBody subparse(Method<Boolean, Token> stopCondition) throws SyntaxException;
+	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws SyntaxException;
 	
 	public void setParentFileName(String parentFileName);
 

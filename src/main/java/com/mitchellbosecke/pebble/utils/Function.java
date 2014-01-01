@@ -19,7 +19,7 @@ package com.mitchellbosecke.pebble.utils;
  * @param <T> The return type of the method
  * @param <K> The type of arguments. Usually "List<Object>" in order to receive multiple arguments.
  */
-public interface Method<T, K> {
+public interface Function<T, K> {
 	
 	public T execute(K data);
 }

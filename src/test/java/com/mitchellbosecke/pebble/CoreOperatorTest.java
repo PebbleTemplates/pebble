@@ -51,11 +51,15 @@ public class CoreOperatorTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		String source = "{{ 1 + item.changeInt }}";
+		String source = "{{ 1 + item.changeInt }} " +
+				"{{ 1 - item.changeInt }} " +
+				"{{ 2 * item.changeInt }} " +
+				"{{ 11 / item.changeInt }} " +
+				"{{ 4 % item.changeInt }}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
-		assertEquals("4", template.render(context));
+		assertEquals("4 -2 6 3 1", template.render(context));
 	}
 
 	@Test

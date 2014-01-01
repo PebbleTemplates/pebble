@@ -10,12 +10,14 @@
 package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinarySimple;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
+import com.mitchellbosecke.pebble.utils.MathUtils;
 
-public class NodeExpressionBinaryAdd extends NodeExpressionBinarySimple {
+public class NodeExpressionBinaryAdd extends NodeExpressionBinary {
 
 	@Override
-	public void operator(Compiler compiler) {
-		compiler.raw("+");
+	public void compile(Compiler compiler) {
+		compiler.raw(MathUtils.class.getName()).raw(".add(").subcompile(leftExpression, false).raw(",")
+				.subcompile(rightExpression, false).raw(")");
 	}
 }

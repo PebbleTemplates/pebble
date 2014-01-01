@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
-import com.mitchellbosecke.pebble.utils.Method;
+import com.mitchellbosecke.pebble.utils.Function;
 
 public class BlockTokenParser extends AbstractTokenParser {
 
@@ -42,7 +42,7 @@ public class BlockTokenParser extends AbstractTokenParser {
 		stream.expect(Token.Type.EXECUTE_END);
 
 		// now we parse the block body
-		NodeBody blockBody = this.parser.subparse(new Method<Boolean, Token>() {
+		NodeBody blockBody = this.parser.subparse(new Function<Boolean, Token>() {
 			@Override
 			public Boolean execute(Token token) {
 				return token.test(Token.Type.NAME, "endblock");
