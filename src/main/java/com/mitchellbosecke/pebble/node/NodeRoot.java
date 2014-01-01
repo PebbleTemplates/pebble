@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.utils.Context;
 
 public class NodeRoot extends AbstractNode {
 
@@ -64,6 +65,8 @@ public class NodeRoot extends AbstractNode {
 				.write("import java.util.Map;")
 				.raw("\n")
 				.write("import java.util.HashMap;")
+				.raw("\n")
+				.write("import ").raw(Context.class.getName()).raw(";")
 				.raw("\n")
 				.raw("\n")
 				.write(String.format("public class %s extends %s implements %s {", compiler.getEngine()

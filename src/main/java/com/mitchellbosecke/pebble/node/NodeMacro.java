@@ -45,9 +45,12 @@ public class NodeMacro extends AbstractNode {
 		 * Each macro has it's own copy of the main context. We will add the
 		 * macro arguments into this new context to give them scope and easy
 		 * accessibility.
+		 * 
+		 * We can't use pushContext() here because the macro might exist in a 
+		 * completely different template.
 		 */
-		compiler.write("Map<String,Object> context = new HashMap<>();").raw("\n");
-		compiler.write("context.putAll((Map<String,Object>)_context);").raw("\n");
+		compiler.write("Context context = new Context(((Context)_context).isStrictVariables());").raw("\n");
+		compiler.write("context.setParent((Context)_context);").raw("\n");
 
 		// put args into scoped context
 		for (NodeExpression arg : args.getArgs()) {
