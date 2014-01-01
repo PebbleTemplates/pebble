@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.extension;
 
 import java.util.List;
+import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
@@ -50,4 +51,8 @@ public abstract class AbstractExtension implements Extension {
 		return null;
 	}
 
+	@Override
+	public Map<String,Object> getGlobalVariables(){
+		return null;
+	}
 }

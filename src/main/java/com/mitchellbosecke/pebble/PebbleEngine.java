@@ -90,6 +90,7 @@ public class PebbleEngine {
 	private Map<String, BinaryOperator> binaryOperators;
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
+	private Map<String, Object> globalVariables;
 
 	public PebbleEngine() {
 		this(new PebbleDefaultLoader());
@@ -233,6 +234,7 @@ public class PebbleEngine {
 		this.binaryOperators = new HashMap<>();
 		this.filters = new HashMap<>();
 		this.tests = new HashMap<>();
+		this.globalVariables = new HashMap<>();
 
 		for (Extension extension : this.extensions.values()) {
 			initExtension(extension);
@@ -247,6 +249,8 @@ public class PebbleEngine {
 	 *            The extension to initialize
 	 */
 	private void initExtension(Extension extension) {
+		
+		extension.initRuntime(this);
 
 		// token parsers
 		if (extension.getTokenParsers() != null) {
@@ -287,6 +291,11 @@ public class PebbleEngine {
 			}
 		}
 
+		// global variables
+		if (extension.getGlobalVariables() != null) {
+			this.globalVariables.putAll(extension.getGlobalVariables());
+		}
+
 	}
 
 	public TokenParserBroker getTokenParserBroker() {
@@ -322,6 +331,13 @@ public class PebbleEngine {
 			initExtensions();
 		}
 		return this.tests;
+	}
+
+	public Map<String, Object> getGlobalVariables() {
+		if (!this.extensionsInitialized) {
+			initExtensions();
+		}
+		return this.globalVariables;
 	}
 
 	/**

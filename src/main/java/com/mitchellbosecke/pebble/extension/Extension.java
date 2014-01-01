@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.extension;
 
 import java.util.List;
+import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.filter.Filter;
@@ -59,4 +60,11 @@ public interface Extension {
 	 * @return A list of Operators. It is okay to return null;
 	 */
 	public List<UnaryOperator> getUnaryOperators();
+	
+	/**
+	 * Use this method to provide variables available to all templates
+	 * 
+	 * @return Map<String,Object> global variables available to all templates
+	 */
+	public Map<String,Object> getGlobalVariables();
 }

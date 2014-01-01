@@ -144,6 +144,20 @@ public class CoreExtension extends AbstractExtension {
 		tests.add(iterableTest);
 		return tests;
 	}
+	
+	@Override
+	public Map<String,Object> getGlobalVariables(){
+		
+		/*
+		 * The following core global variables are
+		 * defined in AbstractPebbleTemplate.initContext():
+		 * 
+		 * _self
+		 * 
+		 */
+		
+		return null;
+	}
 
 	private Filter lowerFilter = new Filter() {
 		public String getName() {

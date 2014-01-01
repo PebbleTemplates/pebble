@@ -17,7 +17,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,17 +41,20 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	@Override
 	public void evaluate(Writer writer) throws PebbleException {
-		evaluate(writer, new HashMap<String, Object>());
+		Context context = initContext();
+		evaluate(writer, context);
+	}
+	
+	@Override
+	public void evaluate(Writer writer, Map<String,Object> map) throws PebbleException {
+		Context context = initContext();
+		context.putAll(map);
+		evaluate(writer, context);
 	}
 
-	@Override
-	public void evaluate(Writer writer, Map<String, Object> context) throws PebbleException {
+	private void evaluate(Writer writer, Context context) throws PebbleException {
 		this.writer = writer;
-		this.context = new Context(engine.isStrictVariables());
-
-		if (context != null) {
-			this.context.putAll(context);
-		}
+		this.context = context;
 
 		this.builder = new StringBuilder();
 		buildContent();
@@ -71,6 +73,19 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 				throw new PebbleException("Unable to flush or close writer.");
 			}
 		}
+	}
+	
+	private Context initContext() {
+		Context context = new Context(engine.isStrictVariables());
+		context.putAll(engine.getGlobalVariables());
+		
+		/*
+		 * some global variables that have to be implemented here
+		 * because they are unique to the particular template.
+		 */
+		context.put("_self", this);
+		context.put("_context", context);
+		return context;
 	}
 
 	protected void pushContext() {

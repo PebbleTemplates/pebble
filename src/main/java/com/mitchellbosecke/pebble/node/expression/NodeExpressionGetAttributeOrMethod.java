@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
  * This node can be either getting a field from a variable or calling a method
  * of that variable. Ex:
  * 
- * var.field var.getField() var.executeMethod() var.executeMethod(arg1, arg2)
+ * var.field OR var.getField() OR var.executeMethod(arg1, arg2)
  * 
  * @author Mitchell
  * 
