@@ -126,11 +126,28 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		// capitalize first letter of attribute for the following attempts
 		String attributeCapitalized = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
 
+		/*
+		 * Entry in hash map. 
+		 * 
+		 * Has priority because:
+		 * 	- for loop stores variables in a hash map
+		 * 	- doesn't require reflection and is therefore really fast
+		 */
+		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {
+
+			if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
+				result = ((Map<?, ?>) object).get(attribute);
+				found = true;
+			}
+		}
+
 		// check get method
-		try {
-			method = clazz.getMethod("get" + attributeCapitalized);
-			found = true;
-		} catch (NoSuchMethodException | SecurityException e) {
+		if (!found) {
+			try {
+				method = clazz.getMethod("get" + attributeCapitalized);
+				found = true;
+			} catch (NoSuchMethodException | SecurityException e) {
+			}
 		}
 
 		// check is method
@@ -139,15 +156,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 				method = clazz.getMethod("is" + attributeCapitalized);
 				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
-			}
-		}
-		
-		// entry in hash map
-		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {
-
-			if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
-				result = ((Map<?, ?>) object).get(attribute);
-				found = true;
 			}
 		}
 
@@ -189,7 +197,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		// public field
 		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {
-			
+
 			try {
 				Field field = clazz.getField(attribute);
 				result = field.get(object);
@@ -197,7 +205,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			}
 		}
-		
+
 		if (method != null) {
 			try {
 				if (passContextAsArgument) {

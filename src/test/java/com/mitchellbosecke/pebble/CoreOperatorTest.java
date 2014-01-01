@@ -105,6 +105,21 @@ public class CoreOperatorTest extends AbstractTest {
 	}
 
 	@Test
+	public void testNotUnaryOperatorOnAttribute() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if not(item.truthy) %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("item", new Item());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("no", writer.toString());
+	}
+	
+	@Test
 	public void testLogicOperatorOnAttributes() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
@@ -120,20 +135,6 @@ public class CoreOperatorTest extends AbstractTest {
 		assertEquals("noyes", writer.toString());
 	}
 
-	@Test
-	public void testNotUnaryOperatorOnAttribute() throws PebbleException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-
-		String source = "{% if not(item.truthy) %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.loadTemplate(source);
-		Map<String, Object> context = new HashMap<>();
-		context.put("item", new Item());
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("no", writer.toString());
-	}
 
 	@Test
 	public void testTernary() throws PebbleException {
@@ -159,6 +160,19 @@ public class CoreOperatorTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("yesyesyesyesyes", writer.toString());
+	}
+	
+	@Test
+	public void testComparisonsOnDifferingOperands() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if 3 > 2.0 %}yes{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("yes", writer.toString());
 	}
 
 	@Test()

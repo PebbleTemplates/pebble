@@ -3,10 +3,6 @@ package com.mitchellbosecke.pebble.utils;
 import java.util.Iterator;
 
 public class ObjectUtils {
-
-	public static boolean equals(Object a, Object b){
-		return ((a==b) || ((a != null) && a.equals(b)));
-	}
 	
 	public static int getIteratorSize(Iterable<?> iterable){
 		if(iterable == null){

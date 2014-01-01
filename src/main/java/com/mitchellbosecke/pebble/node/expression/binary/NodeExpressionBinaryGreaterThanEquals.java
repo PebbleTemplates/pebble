@@ -11,12 +11,13 @@ package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
+import com.mitchellbosecke.pebble.utils.OperatorUtils;
 
 public class NodeExpressionBinaryGreaterThanEquals extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("(((Comparable)").subcompile(leftExpression).raw(").compareTo(").subcompile(rightExpression)
-				.raw(") >= 0)");
+		compiler.raw("((boolean)").raw(OperatorUtils.class.getName()).raw(".gte(").subcompile(leftExpression).raw(",")
+				.subcompile(rightExpression).raw("))");
 	}
 }
