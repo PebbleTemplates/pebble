@@ -105,9 +105,10 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		this.context = this.context.getParent();
 	}
 
-	public void writeContentToWriter() throws PebbleException {
+	protected void flush() throws PebbleException {
 		try {
 			writer.write(builder.toString());
+			writer.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new PebbleException("Unable to write template output to writer.");

@@ -54,6 +54,7 @@ import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperatorImpl;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.FlushTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ForTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.IfTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ImportTokenParser;
@@ -87,6 +88,7 @@ public class CoreExtension extends AbstractExtension {
 		parsers.add(new ImportTokenParser());
 		parsers.add(new IncludeTokenParser());
 		parsers.add(new SetTokenParser());
+		parsers.add(new FlushTokenParser());
 		return parsers;
 	}
 
