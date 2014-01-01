@@ -13,13 +13,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,19 +34,7 @@ public class PebbleDefaultLoader implements Loader {
 	private String charset = "UTF-8";
 
 	@Override
-	public String getSource(String templateName) throws LoaderException {
-		Reader location = getReader(templateName);
-		String source = null;
-
-		try {
-			source = IOUtils.toString(location);
-		} catch (IOException e) {
-			throw new LoaderException("Template can not be found.");
-		}
-		return source;
-	}
-
-	protected Reader getReader(String templateName) throws LoaderException {
+	public Reader getReader(String templateName) throws LoaderException {
 
 		InputStreamReader isr = null;
 		Reader reader = null;

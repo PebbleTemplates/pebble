@@ -9,11 +9,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
@@ -154,7 +158,14 @@ public class PebbleEngine {
 			instance = cachedTemplates.get(className);
 		} else {
 			/* template has not been compiled, we must compile it */
-			String templateSource = loader.getSource(templateName);
+			Reader templateReader = loader.getReader(templateName);
+			String templateSource = "";
+			try {
+				templateSource = IOUtils.toString(templateReader);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			NodeRoot root = parse(tokenize(templateSource, templateName));
 
 			String javaSource = compile(root);

@@ -9,13 +9,16 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
+import java.io.Reader;
+import java.io.StringReader;
+
 import com.mitchellbosecke.pebble.error.LoaderException;
 
 public class StringLoader implements Loader {
 
 	@Override
-	public String getSource(String templateName) throws LoaderException {
-		return templateName;
+	public Reader getReader(String templateName) throws LoaderException {
+		return new StringReader(templateName);
 	}
 
 	@Override
