@@ -41,13 +41,17 @@ public class PebbleDefaultLoader implements Loader {
 
 		InputStream is = null;
 
-		String path = "";
+		StringBuilder path = new StringBuilder("");
 		if (getPrefix() != null) {
-			path = getPrefix().endsWith(String.valueOf(File.separatorChar)) ? getPrefix() : getPrefix()
-					+ File.separatorChar;
+
+			path.append(getPrefix());
+
+			if (!getPrefix().endsWith(String.valueOf(File.separatorChar))) {
+				path.append(File.separatorChar);
+			}
 		}
 
-		String location = path + templateName + (getSuffix() == null ? "" : getSuffix());
+		String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
 		logger.debug("Looking for template in {}.", location);
 
 		// try ContextClassLoader
@@ -60,20 +64,34 @@ public class PebbleDefaultLoader implements Loader {
 			is = rcl.getResourceAsStream(location);
 		}
 
+		/*
+		 * if template name contains path segments, move those segments into the
+		 * path variable. The below technique needs to know the difference
+		 * between the path and file name.
+		 */
+		String[] pathSegments = templateName.split("\\\\|/");
+
+		if (pathSegments.length > 1) {
+			// file name is the last segment
+			templateName = pathSegments[pathSegments.length - 1];
+		}
+		for (int i = 0; i < (pathSegments.length - 1); i++) {
+			path.append(pathSegments[i]).append(File.separatorChar);
+		}
+
 		// try to load File
 		if (is == null) {
-			File file = new File(path, templateName);
+			File file = new File(path.toString(), templateName);
 			if (file.exists() && file.isFile()) {
 				try {
 					is = new FileInputStream(file);
 				} catch (FileNotFoundException e) {
-					// TODO: throw exception?
 				}
 			}
 		}
 
 		if (is == null) {
-			throw new LoaderException("Could not find template \"" + templateName + "\"");
+			throw new LoaderException("Could not find template \"" + location + "\"");
 		}
 
 		try {
