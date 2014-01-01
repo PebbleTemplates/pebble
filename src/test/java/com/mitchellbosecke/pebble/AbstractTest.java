@@ -6,9 +6,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.loader.Loader;
@@ -24,8 +21,7 @@ public abstract class AbstractTest {
 	protected final Compiler compiler;
 
 	public AbstractTest() {
-		Collection<String> paths = new ArrayList<>();
-		paths.add("templates");
+
 		Loader templateLoader = new PebbleDefaultLoader();
 		templateLoader.setPrefix("templates");
 		

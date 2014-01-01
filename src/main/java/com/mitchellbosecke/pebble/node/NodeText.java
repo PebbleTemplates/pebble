@@ -22,7 +22,7 @@ public class NodeText extends AbstractNode implements DisplayableNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("\n").write("builder.append(String.valueOf(").string(getData()).raw("));");
+		compiler.raw("\n").write("builder.append(").string(getData()).raw(");");
 	}
 
 	public String getData() {
