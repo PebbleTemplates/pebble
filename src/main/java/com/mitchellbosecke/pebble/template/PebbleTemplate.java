@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
+import java.io.Writer;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -18,9 +19,9 @@ public interface PebbleTemplate {
 	
 	public final static String COMPILED_PACKAGE_NAME = "com.mitchellbosecke.pebble.template.compiled";
 	
-	public String render() throws PebbleException;
+	public void evaluate(Writer writer) throws PebbleException;
 
-	public String render(Map<String, Object> model) throws PebbleException;
+	public void evaluate(Writer writer, Map<String, Object> model) throws PebbleException;
 
 	public void setEngine(PebbleEngine engine);
 

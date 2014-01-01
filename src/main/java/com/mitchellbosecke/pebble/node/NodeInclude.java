@@ -23,11 +23,11 @@ public class NodeInclude extends AbstractNode implements DisplayableNode {
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.raw("\n").write("builder.append(");
+		compiler.raw("\n");
+		compiler.write("writeContentToWriter();");
+		compiler.write("this.engine.loadTemplate(").subcompile(includeExpression).raw(").evaluate(writer);");
 
-		compiler.raw("this.engine.loadTemplate(").subcompile(includeExpression).raw(").render()");
-
-		compiler.raw(");\n");
+		compiler.raw("\n");
 	}
 
 }

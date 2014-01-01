@@ -29,6 +29,7 @@ import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.PebbleDefaultLoader;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
@@ -88,7 +89,7 @@ public class PebbleEngine {
 	private Map<String, Test> tests;
 
 	public PebbleEngine() {
-		this(null);
+		this(new PebbleDefaultLoader());
 	}
 
 	/**

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +34,7 @@ import com.mitchellbosecke.pebble.utils.Context;
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	private String sourceCode;
+	protected Writer writer;
 	protected StringBuilder builder = new StringBuilder();
 	protected Context context;
 	protected PebbleEngine engine;
@@ -46,13 +49,13 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	public abstract void buildContent() throws PebbleException;
 
 	@Override
-	public String render() throws PebbleException {
-		return render(new HashMap<String, Object>());
+	public void evaluate(Writer writer) throws PebbleException {
+		evaluate(writer, new HashMap<String, Object>());
 	}
 
 	@Override
-	public String render(Map<String, Object> context) throws PebbleException {
-
+	public void evaluate(Writer writer, Map<String, Object> context) throws PebbleException {
+		this.writer = writer;
 		this.context = new Context(engine.isStrictVariables());
 		
 		if(context != null){
@@ -61,7 +64,31 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		this.builder = new StringBuilder();
 		buildContent();
-		return builder.toString();
+		try {
+			writer.write(builder.toString());
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new PebbleException("Unable to write template output to writer.");
+		} finally {
+			try {
+				writer.flush();
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new PebbleException("Unable to flush or close writer.");
+			}
+		}
+	}
+	
+	public void writeContentToWriter() throws PebbleException{
+		try {
+			writer.write(builder.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new PebbleException("Unable to write template output to writer.");
+		}
+		builder = new StringBuilder();
 	}
 
 	@Override

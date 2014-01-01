@@ -8,6 +8,9 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -23,6 +26,9 @@ public class EscaperExtensionTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{ '<test>' | escape }}");
-		assertEquals("&lt;test&gt;", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("&lt;test&gt;", writer.toString());
 	}
 }

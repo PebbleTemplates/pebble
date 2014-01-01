@@ -8,6 +8,8 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,14 +30,17 @@ public class CompilerTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("hello {{ test }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("test", "TEST");
-		assertEquals(template.render(context), "hello TEST");
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals(writer.toString(), "hello TEST");
 	}
 
 	@Test
 	public void testEscapeCharactersText() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.escapeCharactersInText.peb");
 		Map<String, Object> context = new HashMap<>();
-		template.render(context);
+		Writer writer = new StringWriter();
+		template.evaluate(writer,context);
 	}
 
 }

@@ -8,6 +8,8 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +30,10 @@ public class CoreTestsTest extends AbstractTest {
 		
 		String source = "{% if 2 is even %}yes{% else %}no{% endif %}{% if 3 is even %}no{% else %}yes{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("yesyes", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("yesyes", writer.toString());
 	}
 
 	@Test
@@ -38,7 +43,10 @@ public class CoreTestsTest extends AbstractTest {
 		
 		String source = "{% if 2 is odd %}no{% else %}yes{% endif %}{% if 3 is odd %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("yesyes", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("yesyes", writer.toString());
 	}
 
 	@Test
@@ -50,7 +58,10 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
-		assertEquals("yesyesyes", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yesyesyes", writer.toString());
 	}
 
 	@Test
@@ -62,7 +73,10 @@ public class CoreTestsTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", new ArrayList<String>());
-		assertEquals("yesyesyes", template.render());
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yesyesyes", writer.toString());
 	}
 
 	@Test
@@ -75,7 +89,10 @@ public class CoreTestsTest extends AbstractTest {
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj1", new ArrayList<String>());
 		context.put("obj2", new HashMap<String, Object>());
-		assertEquals("yesyesyes", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yesyesyes", writer.toString());
 	}
 
 	@Test
@@ -85,6 +102,9 @@ public class CoreTestsTest extends AbstractTest {
 		
 		String source = "{% if 2 is not odd %}yes{% else %}no{% endif %}{% if null is not iterable() %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("yesyes", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("yesyes", writer.toString());
 	}
 }

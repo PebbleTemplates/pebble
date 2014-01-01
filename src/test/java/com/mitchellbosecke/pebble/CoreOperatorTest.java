@@ -8,6 +8,8 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,9 +29,12 @@ public class CoreOperatorTest extends AbstractTest {
 
 		String source = "{% if -2 == -+(5 - 3) %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("yes", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("yes", writer.toString());
 	}
-	
+
 	@Test
 	public void testNotUnaryOperator() throws PebbleException {
 		Loader loader = new StringLoader();
@@ -37,7 +42,10 @@ public class CoreOperatorTest extends AbstractTest {
 
 		String source = "{% if not (true) %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("no", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("no", writer.toString());
 	}
 
 	@Test
@@ -47,12 +55,15 @@ public class CoreOperatorTest extends AbstractTest {
 
 		String source = "{{ 8 + 5 * 4 - (6 + 10 / 2)  + 44 }}-{{ 10%3 }}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("61-1", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("61-1", writer.toString());
 	}
-	
+
 	/**
-	 * Problem existed where getAttribute would return an Object 
-	 * type which was an invalid operand for java's algebraic operators.
+	 * Problem existed where getAttribute would return an Object type which was
+	 * an invalid operand for java's algebraic operators.
 	 * 
 	 * @throws PebbleException
 	 */
@@ -61,20 +72,20 @@ public class CoreOperatorTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		String source = "{{ 1 + item.changeInt }} " +
-				"{{ 1 - item.changeInt }} " +
-				"{{ 2 * item.changeInt }} " +
-				"{{ 11 / item.changeInt }} " +
-				"{{ 4 % item.changeInt }}";
+		String source = "{{ 1 + item.changeInt }} " + "{{ 1 - item.changeInt }} " + "{{ 2 * item.changeInt }} "
+				+ "{{ 11 / item.changeInt }} " + "{{ 4 % item.changeInt }}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
-		assertEquals("4 -2 6 3 1", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("4 -2 6 3 1", writer.toString());
 	}
-	
+
 	/**
-	 * Problem existed where getAttribute would return an Object 
-	 * type which was an invalid operand for java's algebraic operators.
+	 * Problem existed where getAttribute would return an Object type which was
+	 * an invalid operand for java's algebraic operators.
 	 * 
 	 * @throws PebbleException
 	 */
@@ -87,23 +98,28 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
-		assertEquals("no", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("no", writer.toString());
 	}
-	
+
 	@Test
 	public void testLogicOperatorOnAttributes() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		String source = "{% if item.truthy and item.falsey %}yes{% else %}no{% endif %}" +
-				"{% if item.truthy or item.falsey %}yes{% else %}no{% endif %}";
+		String source = "{% if item.truthy and item.falsey %}yes{% else %}no{% endif %}"
+				+ "{% if item.truthy or item.falsey %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
-		assertEquals("noyes", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("noyes", writer.toString());
 	}
-	
-	
+
 	@Test
 	public void testNotUnaryOperatorOnAttribute() throws PebbleException {
 		Loader loader = new StringLoader();
@@ -113,8 +129,11 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
-		assertEquals("no", template.render(context));
-	}	
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("no", writer.toString());
+	}
 
 	@Test
 	public void testTernary() throws PebbleException {
@@ -123,9 +142,12 @@ public class CoreOperatorTest extends AbstractTest {
 
 		String source = "{{ true ? 1 : 2 }}-{{ 1 + 4 == 5 ?(2-1) : 2 }}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("1-1", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("1-1", writer.toString());
 	}
-	
+
 	@Test
 	public void testComparisons() throws PebbleException {
 		Loader loader = new StringLoader();
@@ -133,7 +155,10 @@ public class CoreOperatorTest extends AbstractTest {
 
 		String source = "{% if 3 > 2 %}yes{% endif %}{% if 2 > 3 %}no{% endif %}{% if 2 < 3 %}yes{% endif %}{% if 3 >= 3 %}yes{% endif %}{% if 100 <= 100 %}yes{% endif %}{% if 2 == 2 %}yes{% endif %}";
 		PebbleTemplate template = pebble.loadTemplate(source);
-		assertEquals("yesyesyesyesyes", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("yesyesyesyesyes", writer.toString());
 	}
 
 	@Test()
@@ -145,7 +170,10 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj2", new String("test"));
-		assertEquals("yesyes", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yesyes", writer.toString());
 	}
 
 	@Test()
@@ -157,9 +185,12 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
-		assertEquals("yesyes", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yesyes", writer.toString());
 	}
-	
+
 	@Test()
 	public void testNotEqualsOperator() throws PebbleException {
 		Loader loader = new StringLoader();
@@ -169,7 +200,10 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("name", "Mitchell");
-		assertEquals("yes", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
 	}
 
 	@Test()
@@ -181,7 +215,10 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
-		assertEquals("yesyes", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yesyes", writer.toString());
 	}
 
 	/**
@@ -204,7 +241,10 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());
-		assertEquals("yesyesnono", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yesyesnono", writer.toString());
 	}
 
 	public class Item {

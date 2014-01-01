@@ -8,6 +8,8 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +32,10 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{ 'TEMPLATE' | lower }}");
-		assertEquals("template", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("template", writer.toString());
 	}
 
 	@Test
@@ -39,7 +44,9 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{ 'template' | upper }}");
-		assertEquals("TEMPLATE", template.render());
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("TEMPLATE", writer.toString());
 	}
 
 	@Test
@@ -56,7 +63,10 @@ public class CoreFiltersTest extends AbstractTest {
 		context.put("realDate", realDate);
 		context.put("stringDate", format.format(realDate));
 		context.put("format", "yyyy-MMMM-d");
-		assertEquals("07/01/20122012-July-12012/July/1", template.render(context));
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("07/01/20122012-July-12012/July/1", writer.toString());
 	}
 
 	@Test
@@ -65,7 +75,9 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{ 'The string ü@foo-bar' | urlencode }}");
-		assertEquals("The+string+%C3%BC%40foo-bar", template.render());
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("The+string+%C3%BC%40foo-bar", writer.toString());
 	}
 
 	@Test
@@ -76,7 +88,10 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("{{ 'I like %s and %s.' | format(foo, 'bar') }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("foo", "foo");
-		assertEquals("I like foo and bar.", template.render(context));
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("I like foo and bar.", writer.toString());
 	}
 
 	@Test
@@ -87,7 +102,10 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("You owe me {{ 10000.235166 | number(currencyFormat) }}.");
 		Map<String, Object> context = new HashMap<>();
 		context.put("currencyFormat", "$#,###,###,##0.00");
-		assertEquals("You owe me $10,000.24.", template.render(context));
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("You owe me $10,000.24.", writer.toString());
 	}
 
 	@Test
@@ -97,7 +115,10 @@ public class CoreFiltersTest extends AbstractTest {
 
 		PebbleTemplate template = pebble
 				.loadTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(16) }}");
-		assertEquals("This is a tes...", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("This is a tes...", writer.toString());
 	}
 
 	@Test
@@ -106,7 +127,10 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{ 'this should be capitalized.' | capitalize }}");
-		assertEquals("This should be capitalized.", template.render());
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("This should be capitalized.", writer.toString());
 	}
 
 	@Test
@@ -115,7 +139,10 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{ '        		This should be trimmed. 		' | trim }}");
-		assertEquals("This should be trimmed.", template.render());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("This should be trimmed.", writer.toString());
 	}
 
 	@Test
@@ -126,7 +153,10 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate("{{ obj | json }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", new User("Alex"));
-		assertEquals("{\"username\":\"Alex\"}", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("{\"username\":\"Alex\"}", writer.toString());
 	}
 
 	@Test
@@ -138,7 +168,10 @@ public class CoreFiltersTest extends AbstractTest {
 				.loadTemplate("{{ obj|default('Hello') }} {{ null|default('Steve') }} {{ '  ' |default('Hello') }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("obj", null);
-		assertEquals("Hello Steve Hello", template.render(context));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("Hello Steve Hello", writer.toString());
 	}
 
 	public class User {

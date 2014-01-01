@@ -8,6 +8,9 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -23,8 +26,12 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.loadTemplate("{{ _self.input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
-		assertEquals("2", template.render());
+		PebbleTemplate template = pebble
+				.loadTemplate("{{ _self.input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("2", writer.toString());
 	}
 
 	@Test
@@ -33,9 +40,11 @@ public class ParsingOdditiesTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{ 'test\ntest' }}");
-		assertEquals("test\ntest", template.render());
-	}
 
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("test\ntest", writer.toString());
+	}
 
 	@Test(expected = SyntaxException.class)
 	public void testStringWithDifferentQuotationMarks() throws PebbleException {
@@ -43,22 +52,32 @@ public class ParsingOdditiesTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{'test\"}}");
-		assertEquals("test", template.render()); 
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("test", writer.toString());
 	}
-	
+
 	@Test
 	public void testSingleQuoteWithinDoubleQuotes() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.loadTemplate("{{\"te'st\"}}");
-		assertEquals("te'st", template.render());
-		
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("te'st", writer.toString());
+
 		template = pebble.loadTemplate("{{\"te\\'st\"}}");
-		assertEquals("te\\'st", template.render());
-		
+		writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("te\\'st", writer.toString());
+
 		template = pebble.loadTemplate("{{'te\\'st'}}");
-		assertEquals("te'st", template.render());
+		writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("te'st", writer.toString());
 	}
 
 }

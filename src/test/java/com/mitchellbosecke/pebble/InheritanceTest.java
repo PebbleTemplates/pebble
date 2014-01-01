@@ -8,6 +8,9 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -18,9 +21,12 @@ public class InheritanceTest extends AbstractTest {
 	@Test
 	public void testSimpleInheritance() throws PebbleException {
 		PebbleTemplate template = pebble.loadTemplate("template.parent.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
 		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tPARENT HEAD\n"
 				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
-				+ "GRANDFATHER TEXT BELOW FOOT", template.render());
+				+ "GRANDFATHER TEXT BELOW FOOT", writer.toString());
 	}
 
 }
