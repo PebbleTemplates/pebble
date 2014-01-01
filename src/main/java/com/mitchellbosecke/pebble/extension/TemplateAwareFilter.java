@@ -1,8 +1,9 @@
-package com.mitchellbosecke.pebble.utils;
+package com.mitchellbosecke.pebble.extension;
 
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.utils.TemplateAware;
 
-public abstract class TemplateAwareSimpleFunction implements SimpleFunction, TemplateAware {
+public abstract class TemplateAwareFilter implements Filter, TemplateAware {
 
 	protected PebbleTemplate template;
 

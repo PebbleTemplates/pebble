@@ -15,8 +15,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.utils.SimpleFunction;
-import com.mitchellbosecke.pebble.utils.TemplateAwareSimpleFunction;
 
 public class I18nExtension extends AbstractExtension {
 

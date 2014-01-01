@@ -95,7 +95,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNumberFormat() throws PebbleException {
+	public void testNumberFilterWithFormat() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -106,6 +106,18 @@ public class CoreFiltersTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("You owe me $10,000.24.", writer.toString());
+	}
+	
+	@Test
+	public void testNumberFilterWithLocale() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ 1000000 | number }}");
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("1,000,000", writer.toString());
 	}
 
 	@Test

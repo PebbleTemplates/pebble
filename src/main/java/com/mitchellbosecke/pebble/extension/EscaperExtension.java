@@ -15,7 +15,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.filter.Filter;
 
 public class EscaperExtension extends AbstractExtension {
 

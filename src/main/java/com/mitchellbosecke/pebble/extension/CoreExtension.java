@@ -14,12 +14,14 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.filter.Filter;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryDivide;
@@ -51,7 +52,6 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.BinaryOperatorImpl;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperatorImpl;
-import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ForTokenParser;
@@ -62,8 +62,6 @@ import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.utils.OperatorUtils;
-import com.mitchellbosecke.pebble.utils.SimpleFunction;
-import com.mitchellbosecke.pebble.utils.TemplateAwareSimpleFunction;
 
 public class CoreExtension extends AbstractExtension {
 
@@ -229,7 +227,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter dateFilter = new Filter() {
+	private Filter dateFilter = new TemplateAwareFilter() {
 		public String getName() {
 			return "date";
 		}
@@ -241,13 +239,15 @@ public class CoreExtension extends AbstractExtension {
 			DateFormat existingFormat = null;
 			DateFormat intendedFormat = null;
 
+			Locale locale = template.getLocale();
+
 			if (args.size() == 1) {
 				arg = (Date) input;
-				intendedFormat = new SimpleDateFormat((String) args.get(0));
+				intendedFormat = new SimpleDateFormat((String) args.get(0), locale);
 			} else if (args.size() == 2) {
 
-				existingFormat = new SimpleDateFormat((String) args.get(0));
-				intendedFormat = new SimpleDateFormat((String) args.get(1));
+				existingFormat = new SimpleDateFormat((String) args.get(0), locale);
+				intendedFormat = new SimpleDateFormat((String) args.get(1), locale);
 
 				try {
 					arg = existingFormat.parse((String) input);
@@ -260,16 +260,21 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter numberFilter = new Filter() {
+	private Filter numberFilter = new TemplateAwareFilter() {
 		public String getName() {
 			return "number";
 		}
 
 		public Object apply(Object input, List<Object> args) {
 			Number number = (Number) input;
-			Format format = new DecimalFormat((String) args.get(0));
 
-			return format.format(number);
+			if (args.size() > 0) {
+				Format format = new DecimalFormat((String) args.get(0));
+				return format.format(number);
+			} else {
+				NumberFormat numberFormat = NumberFormat.getInstance(template.getLocale());
+				return numberFormat.format(number);
+			}
 		}
 	};
 

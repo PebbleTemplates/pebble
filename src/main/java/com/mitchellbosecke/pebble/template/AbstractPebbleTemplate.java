@@ -24,12 +24,12 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.filter.Filter;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.SimpleFunction;
+import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
-import com.mitchellbosecke.pebble.test.Test;
 import com.mitchellbosecke.pebble.utils.Context;
-import com.mitchellbosecke.pebble.utils.SimpleFunction;
 import com.mitchellbosecke.pebble.utils.TemplateAware;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
@@ -273,6 +273,10 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
+		
+		if(filter instanceof TemplateAware){
+			((TemplateAware)filter).setTemplate(this);
+		}
 
 		if (filter == null) {
 			throw new PebbleException(String.format("Filter [%s] does not exist.", filterName));
