@@ -1,34 +1,43 @@
 package com.mitchellbosecke.pebble.utils;
 
-public class MathUtils {
+public class OperatorUtils {
 
 	private enum Operation {
 		ADD, SUBTRACT, MULTIPLICATION, DIVISION, MODULUS
 	};
 
 	public static Object add(Object op1, Object op2) {
-		return wideningConversionOperation(op1, op2, Operation.ADD);
+	    if( op1 instanceof String || op2 instanceof String){
+	        return concatenateStrings(String.valueOf(op1), String.valueOf(op2));
+	    }
+		return wideningConversionBinaryOperation(op1, op2, Operation.ADD);
 	}
 	public static Object subtract(Object op1, Object op2) {
-		return wideningConversionOperation(op1, op2, Operation.SUBTRACT);
+		return wideningConversionBinaryOperation(op1, op2, Operation.SUBTRACT);
 	}
 	public static Object multiply(Object op1, Object op2) {
-		return wideningConversionOperation(op1, op2, Operation.MULTIPLICATION);
+		return wideningConversionBinaryOperation(op1, op2, Operation.MULTIPLICATION);
 	}
 	public static Object divide(Object op1, Object op2) {
-		return wideningConversionOperation(op1, op2, Operation.DIVISION);
+		return wideningConversionBinaryOperation(op1, op2, Operation.DIVISION);
 	}
 	public static Object mod(Object op1, Object op2) {
-		return wideningConversionOperation(op1, op2, Operation.MODULUS);
+		return wideningConversionBinaryOperation(op1, op2, Operation.MODULUS);
+	}
+	
+	public static Object unaryPlus(Object op1){
+		return multiply(1, op1);
+	}
+	
+	public static Object unaryMinus(Object op1){
+		return multiply(-1, op1);
+	}
+	
+	private static Object concatenateStrings(String op1, String op2){
+		return op1 + op2;
 	}
 
-	private static Object wideningConversionOperation(Object op1, Object op2, Operation operation){
-
-	    // check for null values?
-
-	    if( op1 instanceof String || op2 instanceof String){
-	        return stringOperation(String.valueOf(op1), String.valueOf(op2), operation);
-	    }
+	private static Object wideningConversionBinaryOperation(Object op1, Object op2, Operation operation){
 
 	    if( !(op1 instanceof Number) || !(op2 instanceof Number) ){
 	        throw new RuntimeException("invalid operands for mathematical operator [+]");
@@ -47,15 +56,6 @@ public class MathUtils {
 	    }
 
 	    return integerOperation(((Number)op1).intValue(), ((Number)op2).intValue(), operation);
-	}
-
-	private static Object stringOperation(String fl1, String fl2, Operation operation) {
-		switch (operation) {
-			case ADD:
-				return fl1 + fl2;
-			default:
-				throw new RuntimeException("Invalid operand types for operation [" + operation.toString() + "]");
-		}
 	}
 	
 	private static Object doubleOperation(Double fl1, Double fl2, Operation operation) {

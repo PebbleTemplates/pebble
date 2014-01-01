@@ -15,8 +15,8 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 public class NodeExpressionUnaryNot extends NodeExpressionUnary {
 
 	@Override
-	public void operator(Compiler compiler) {
-		compiler.raw("!");
+	public void compile(Compiler compiler) {
+		compiler.raw("((Boolean)").subcompile(childExpression).raw(" == false)");
 	}
 
 }

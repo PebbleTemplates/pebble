@@ -29,6 +29,16 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		assertEquals("yes", template.render());
 	}
+	
+	@Test
+	public void testNotUnaryOperator() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if not (true) %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		assertEquals("no", template.render());
+	}
 
 	@Test
 	public void testBinaryOperators() throws PebbleException {
@@ -47,7 +57,7 @@ public class CoreOperatorTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void testMathOperatorOnAttribute() throws PebbleException {
+	public void testBinaryOperatorOnAttribute() throws PebbleException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -61,6 +71,37 @@ public class CoreOperatorTest extends AbstractTest {
 		context.put("item", new Item());
 		assertEquals("4 -2 6 3 1", template.render(context));
 	}
+	
+	/**
+	 * Problem existed where getAttribute would return an Object 
+	 * type which was an invalid operand for java's algebraic operators.
+	 * 
+	 * @throws PebbleException
+	 */
+	@Test
+	public void testUnaryOperatorOnAttribute() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if -5 > -item.changeInt %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("item", new Item());
+		assertEquals("no", template.render(context));
+	}
+	
+	
+	@Test
+	public void testNotUnaryOperatorOnAttribute() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if not(item.truthy) %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("item", new Item());
+		assertEquals("no", template.render(context));
+	}	
 
 	@Test
 	public void testTernary() throws PebbleException {
@@ -71,7 +112,7 @@ public class CoreOperatorTest extends AbstractTest {
 		PebbleTemplate template = pebble.loadTemplate(source);
 		assertEquals("1-1", template.render());
 	}
-
+	
 	@Test
 	public void testComparisons() throws PebbleException {
 		Loader loader = new StringLoader();
@@ -156,5 +197,6 @@ public class CoreOperatorTest extends AbstractTest {
 	public class Item {
 		public double change = 1.234;
 		public Integer changeInt = 3;
+		public boolean truthy = true;
 	}
 }

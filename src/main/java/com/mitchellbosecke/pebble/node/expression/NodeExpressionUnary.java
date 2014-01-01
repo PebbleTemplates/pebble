@@ -9,24 +9,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionUnary extends NodeExpression {
 
-	protected NodeExpression node;
-
-	@Override
-	public void compile(Compiler compiler) {
-		compiler.raw("(");
-		operator(compiler);
-		compiler.subcompile(node).raw(")");
-	}
-
-	public abstract void operator(Compiler compiler);
+	protected NodeExpression childExpression;
 	
 	public void setNode(NodeExpression node){
-		this.node = node;
+		this.childExpression = node;
 	}
 
 }
