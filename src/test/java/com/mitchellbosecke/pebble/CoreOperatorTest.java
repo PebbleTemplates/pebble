@@ -90,6 +90,19 @@ public class CoreOperatorTest extends AbstractTest {
 		assertEquals("no", template.render(context));
 	}
 	
+	@Test
+	public void testLogicOperatorOnAttributes() throws PebbleException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if item.truthy and item.falsey %}yes{% else %}no{% endif %}" +
+				"{% if item.truthy or item.falsey %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.loadTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("item", new Item());
+		assertEquals("noyes", template.render(context));
+	}
+	
 	
 	@Test
 	public void testNotUnaryOperatorOnAttribute() throws PebbleException {
@@ -198,5 +211,6 @@ public class CoreOperatorTest extends AbstractTest {
 		public double change = 1.234;
 		public Integer changeInt = 3;
 		public boolean truthy = true;
+		public Boolean falsy = false;
 	}
 }
