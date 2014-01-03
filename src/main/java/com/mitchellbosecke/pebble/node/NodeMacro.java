@@ -34,23 +34,36 @@ public class NodeMacro extends AbstractNode {
 	public void compile(Compiler compiler) {
 
 		/*
-		 * Add a map as a secret argument
+		 * Because the macro might exist in a different template we must
+		 * manually pass the context and writer as secret arguments.
+		 * 
+		 * We prefix them with underscores because technically they get put into
+		 * the context and are then accessible to the user and we want to avoid
+		 * conflicts.
+		 * 
+		 * TODO: remove the underscore prefix and simultaneously prevent these
+		 * two args from being added into context object and are therefore
+		 * inaccessible to user.
 		 */
-		NodeExpressionDeclaration mapDeclaration = new NodeExpressionDeclaration(args.getLineNumber(), "_context");
-		args.addArgument(mapDeclaration);
+		NodeExpressionDeclaration contextDeclaration = new NodeExpressionDeclaration(args.getLineNumber(), "_context");
+		NodeExpressionDeclaration writerDeclaration = new NodeExpressionDeclaration(args.getLineNumber(), "_writer");
+		args.addArgument(contextDeclaration);
+		args.addArgument(writerDeclaration);
 
-		compiler.write(String.format("public String %s%s", MACRO_PREFIX, name)).subcompile(args).raw("{\n\n").indent();
+		compiler.write(String.format("public void %s%s", MACRO_PREFIX, name)).subcompile(args)
+				.raw(" throws com.mitchellbosecke.pebble.error.PebbleException {\n\n").indent();
 
 		/*
 		 * Each macro has it's own copy of the main context. We will add the
 		 * macro arguments into this new context to give them scope and easy
 		 * accessibility.
 		 * 
-		 * We can't use pushContext() here because the macro might exist in a 
+		 * We can't use pushContext() here because the macro might exist in a
 		 * completely different template.
 		 */
 		compiler.write("Context context = new Context(((Context)_context).isStrictVariables());").raw("\n");
 		compiler.write("context.setParent((Context)_context);").raw("\n");
+		compiler.write("PebbleWrappedWriter writer = (PebbleWrappedWriter)_writer;").raw("\n");
 
 		// put args into scoped context
 		for (NodeExpression arg : args.getArgs()) {
@@ -58,11 +71,7 @@ public class NodeMacro extends AbstractNode {
 					.raw(((NodeExpressionDeclaration) arg).getName()).raw(");\n");
 		}
 
-		compiler.write("StringBuilder builder = new StringBuilder();").raw("\n");
-
 		compiler.subcompile(body);
-
-		compiler.raw("\n").write("return builder.toString();").raw("\n");
 
 		compiler.raw("\n").outdent().write("}");
 

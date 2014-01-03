@@ -34,18 +34,32 @@ public class NodeBlock extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
+		compileMainBlockMethod(compiler);
+		compileBlockMethodReturningString(compiler);
+	}
+
+	private void compileMainBlockMethod(Compiler compiler) {
+		compiler.write(
+				String.format(
+						"public void %s%s(PebbleWrappedWriter writer) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
+						BLOCK_PREFIX, this.name)).indent();
+
+		compiler.subcompile(body);
+
+		compiler.raw("\n").outdent().write("}\n");
+	}
+
+	private void compileBlockMethodReturningString(Compiler compiler) {
 		compiler.write(
 				String.format("public String %s%s() throws com.mitchellbosecke.pebble.error.PebbleException {\n",
 						BLOCK_PREFIX, this.name)).indent();
 
-		compiler.write("StringBuilder builder = new StringBuilder();\n");
-
-		compiler.subcompile(body);
-
-		compiler.raw("\n").write("return builder.toString();");
+		compiler.write("java.io.StringWriter stringWriter = new java.io.StringWriter();\n");
+		compiler.write("PebbleWrappedWriter writer = new PebbleWrappedWriter(stringWriter);\n");
+		compiler.write(String.format("%s%s(writer);\n", BLOCK_PREFIX, this.name));
+		compiler.write("return stringWriter.toString();\n");
 
 		compiler.raw("\n").outdent().write("}\n");
-
 	}
 
 }

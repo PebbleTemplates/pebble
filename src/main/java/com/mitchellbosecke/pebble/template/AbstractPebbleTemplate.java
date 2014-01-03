@@ -30,6 +30,7 @@ import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.utils.Context;
+import com.mitchellbosecke.pebble.utils.PebbleWrappedWriter;
 import com.mitchellbosecke.pebble.utils.TemplateAware;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
@@ -37,11 +38,10 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	private String generatedJavaCode;
 	private String source;
 
-	protected Writer writer;
-	protected StringBuilder builder = new StringBuilder();
+	protected PebbleWrappedWriter writer;
 	protected Context context;
 	protected PebbleEngine engine;
-	
+
 	private Locale locale;
 
 	public abstract void buildContent() throws PebbleException;
@@ -60,25 +60,17 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	}
 
 	private void evaluate(Writer writer, Context context) throws PebbleException {
-		this.writer = writer;
+		this.writer = new PebbleWrappedWriter(writer);
 		this.context = context;
 
-		this.builder = new StringBuilder();
 		buildContent();
-		try {
-			writer.write(builder.toString());
 
+		try {
+			writer.flush();
+			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new PebbleException("Unable to write template output to writer.");
-		} finally {
-			try {
-				writer.flush();
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new PebbleException("Unable to flush or close writer.");
-			}
+			throw new PebbleException("Unable to flush or close writer.");
 		}
 	}
 
@@ -103,17 +95,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 	protected void popContext() {
 		this.context = this.context.getParent();
-	}
-
-	protected void flush() throws PebbleException {
-		try {
-			writer.write(builder.toString());
-			writer.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new PebbleException("Unable to write template output to writer.");
-		}
-		builder = new StringBuilder();
 	}
 
 	@Override
@@ -144,7 +125,7 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		Method method = null;
 
-		boolean passContextAsArgument = false;
+		boolean isMacroCall = false;
 
 		// capitalize first letter of attribute for the following attempts
 		String attributeCapitalized = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
@@ -204,15 +185,16 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 				}
 
 				/*
-				 * Add an extra parameter to account for the secret _context
-				 * object that we will pass
+				 * Add an two extra parameter to account for the secret _context
+				 * and _writer arguments that we add.
 				 */
+				paramTypes.add(Object.class);
 				paramTypes.add(Object.class);
 
 				method = clazz.getMethod(NodeMacro.MACRO_PREFIX + attribute,
 						paramTypes.toArray(new Class[paramTypes.size()]));
 				found = true;
-				passContextAsArgument = true;
+				isMacroCall = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
@@ -230,9 +212,10 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		if (method != null) {
 			try {
-				if (passContextAsArgument) {
+				if (isMacroCall) {
 					List<Object> arguments = new ArrayList<>(Arrays.asList(args));
 					arguments.add(context);
+					arguments.add(writer);
 					args = arguments.toArray();
 				}
 				if (args.length > 0) {
@@ -274,9 +257,9 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
-		
-		if(filter instanceof TemplateAware){
-			((TemplateAware)filter).setTemplate(this);
+
+		if (filter instanceof TemplateAware) {
+			((TemplateAware) filter).setTemplate(this);
 		}
 
 		if (filter == null) {
@@ -352,14 +335,14 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	public String getSource() {
 		return this.source;
 	}
-	
+
 	@Override
-	public Locale getLocale(){
+	public Locale getLocale() {
 		return this.locale;
 	}
 
 	@Override
-	public void setLocale(Locale locale){
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 }

@@ -137,7 +137,7 @@ public class EngineTest extends AbstractTest {
 		
 		template1.evaluate(writer1);
 		template2.evaluate(writer2);
-		
+
 		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tPARENT HEAD\n"
 				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
 				+ "GRANDFATHER TEXT BELOW FOOT", writer1.toString());

@@ -342,11 +342,13 @@ public class ExpressionParser {
 		 */
 		switch ((String) functionName.getValue()) {
 			case "parent":
-				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
+				String parentClassName = this.parser.getEngine().getTemplateClassName(this.parser.getParentFileName());
+				return new NodeExpressionParentReference(node.getLineNumber(), parentClassName, parser.peekBlockStack());
 			case "block":
 				String blockName = (String) ((NodeExpressionString) args.getArgs()[0]).getValue();
 				return new NodeExpressionBlockReference(node.getLineNumber(), blockName, true);
 		}
+		
 
 		return new NodeExpressionFunctionCall(lineNumber, functionName, args);
 	}

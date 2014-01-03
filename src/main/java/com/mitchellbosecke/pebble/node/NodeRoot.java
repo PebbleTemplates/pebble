@@ -15,6 +15,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.utils.Context;
+import com.mitchellbosecke.pebble.utils.PebbleWrappedWriter;
 
 public class NodeRoot extends AbstractNode {
 
@@ -66,7 +67,13 @@ public class NodeRoot extends AbstractNode {
 				.raw("\n")
 				.write("import java.util.HashMap;")
 				.raw("\n")
-				.write("import ").raw(Context.class.getName()).raw(";")
+				.write("import ")
+				.raw(Context.class.getName())
+				.raw(";")
+				.raw("\n")
+				.write("import ")
+				.raw(PebbleWrappedWriter.class.getName())
+				.raw(";")
 				.raw("\n")
 				.raw("\n")
 				.write(String.format("public class %s extends %s implements %s {", compiler.getEngine()
@@ -75,7 +82,9 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {
-		compiler.raw("\n\n").write("public void buildContent() throws com.mitchellbosecke.pebble.error.PebbleException {").raw("\n").indent();
+		compiler.raw("\n\n")
+				.write("public void buildContent() throws com.mitchellbosecke.pebble.error.PebbleException {")
+				.raw("\n").indent();
 
 		body.compile(compiler);
 
@@ -94,7 +103,7 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileMacroMethods(Compiler compiler) {
 		for (List<NodeMacro> overloadedMacros : macros.values()) {
-			for(NodeMacro macro: overloadedMacros){
+			for (NodeMacro macro : overloadedMacros) {
 				compiler.raw("\n\n").subcompile(macro);
 			}
 		}

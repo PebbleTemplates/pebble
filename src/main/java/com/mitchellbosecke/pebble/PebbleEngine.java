@@ -70,7 +70,7 @@ public class PebbleEngine {
 	 * User Editable Settings
 	 */
 	private boolean cacheTemplates = true;
-	private boolean strictVariables = true;
+	private boolean strictVariables = false;
 	private String charset = "UTF-8";
 	private Locale defaultLocale = Locale.getDefault();
 
@@ -184,7 +184,7 @@ public class PebbleEngine {
 			}
 
 			instance = getCompiler().compileToJava(javaSource, className);
-			
+
 			// give the template some KNOWLEDGE
 			instance.setEngine(this);
 			instance.setGeneratedJavaCode(javaSource);
@@ -378,7 +378,7 @@ public class PebbleEngine {
 		byte[] bytesOfName;
 		MessageDigest md;
 		try {
-			bytesOfName = templateName.getBytes(getCharset());
+			bytesOfName = templateName.getBytes("UTF-8");
 			md = MessageDigest.getInstance("MD5");
 			md.update(bytesOfName);
 			byte[] hash = md.digest();
@@ -427,12 +427,12 @@ public class PebbleEngine {
 	public void setCharset(String charset) {
 		this.charset = charset;
 	}
-	
-	public Locale getDefaultLocale(){
+
+	public Locale getDefaultLocale() {
 		return defaultLocale;
 	}
-	
-	public void setDefaultLocale(Locale locale){
+
+	public void setDefaultLocale(Locale locale) {
 		this.defaultLocale = locale;
 	}
 }

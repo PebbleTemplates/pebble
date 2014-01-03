@@ -26,8 +26,8 @@ public class NodeExpressionArguments extends NodeExpression {
 	}
 
 	/**
-	 * NodeMacro will use this method to add a secret _context argument when
-	 * compiling macro declarations.
+	 * NodeMacro will use this method to add a secret context and writer
+	 * arguments.
 	 */
 	public void addArgument(NodeExpressionDeclaration declaration) {
 		List<NodeExpression> arguments = new ArrayList<>(Arrays.asList(args));
@@ -45,7 +45,7 @@ public class NodeExpressionArguments extends NodeExpression {
 			compiler.subcompile(var, true);
 
 			if (i < (args.length - 1)) {
-				compiler.raw(",");
+				compiler.raw(", ");
 			}
 		}
 

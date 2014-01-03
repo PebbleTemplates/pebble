@@ -21,7 +21,7 @@ public class NodeFlush extends AbstractNode {
 	public void compile(Compiler compiler) {
 
 		compiler.raw("\n");
-		compiler.write("flush();");
+		compiler.write("writer.flush();");
 
 		compiler.raw("\n");
 	}

@@ -20,8 +20,8 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 
 	/*
 	 * output is true if the block is referenced in an expression using the
-	 * block() function, otherwise it is false if it is referenced using block
-	 * tags, ie. {% block name %}
+	 * {{ block() }} function, otherwise it is false if it is referenced using block
+	 * tags, ie. {% block name %}{% endblock %}
 	 */
 	private final boolean output;
 
@@ -34,9 +34,9 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 	@Override
 	public void compile(Compiler compiler) {
 		if (!this.output) {
-			compiler.raw("\n").write(String.format("builder.append(%s%s());\n", NodeBlock.BLOCK_PREFIX, this.name));
+			compiler.raw("\n").write(String.format("%s%s(writer);\n", NodeBlock.BLOCK_PREFIX, this.name));
 		} else {
-			compiler.raw(String.format("%s%s()\n", NodeBlock.BLOCK_PREFIX, this.name));
+			compiler.raw(String.format("%s%s()", NodeBlock.BLOCK_PREFIX, this.name));
 		}
 	}
 
