@@ -115,6 +115,21 @@ public class CoreTagsTest extends AbstractTest {
 				writer.toString());
 	}
 
+	/**
+	 * I was once writing macro output directly to writer which was preventing
+	 * output from being filtered. I have fixed this now.
+	 * 
+	 * @throws PebbleException
+	 */
+	@Test
+	public void testMacroBeingFiltered() throws PebbleException {
+		PebbleTemplate template = pebble.compile("template.macro3.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("HELLO\n", writer.toString());
+	}
+
 	@Test
 	public void testMacroFromAnotherFile() throws PebbleException {
 		PebbleTemplate template = pebble.compile("template.macro2.peb");

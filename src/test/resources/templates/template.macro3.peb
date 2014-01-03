@@ -1,0 +1,3 @@
+{{ _self.returnItem("hello") | upper }}
+
+{% macro returnItem(item) %}{{ item }}{% endmacro %}

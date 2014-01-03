@@ -186,9 +186,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 				/*
 				 * Add an two extra parameter to account for the secret _context
-				 * and _writer arguments that we add.
+				 * arguments that we add.
 				 */
-				paramTypes.add(Object.class);
 				paramTypes.add(Object.class);
 
 				method = clazz.getMethod(NodeMacro.MACRO_PREFIX + attribute,
@@ -215,7 +214,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 				if (isMacroCall) {
 					List<Object> arguments = new ArrayList<>(Arrays.asList(args));
 					arguments.add(context);
-					arguments.add(writer);
 					args = arguments.toArray();
 				}
 				if (args.length > 0) {

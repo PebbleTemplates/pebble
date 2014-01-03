@@ -197,6 +197,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			return ((String) input).toUpperCase();
 		}
 	};
