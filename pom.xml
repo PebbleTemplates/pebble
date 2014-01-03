@@ -9,7 +9,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mitchellbosecke</groupId>
 	<artifactId>pebble</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
 	<name>Pebble</name>
@@ -188,6 +188,6 @@
 		<connection>scm:git:git://github.com/mbosecke/pebble.git</connection>
 		<developerConnection>scm:git:git@github.com:mbosecke/pebble.git</developerConnection>
 		<url>http://github.com/mbosecke/pebble.git</url>
-	  <tag>v0.1.1-beta</tag>
+	  <tag>HEAD</tag>
   </scm>
 </project>
