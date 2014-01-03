@@ -38,10 +38,16 @@ public class NodeBlock extends AbstractNode {
 		compileBlockMethodReturningString(compiler);
 	}
 
+	/*
+	 * Block methods only require the context just in case a child is accessing
+	 * a parent block with the use of the parent() function, it's important the
+	 * parent is using the correct context.
+	 */
+
 	private void compileMainBlockMethod(Compiler compiler) {
 		compiler.write(
 				String.format(
-						"public void %s%s(PebbleWrappedWriter writer) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
+						"public void %s%s(PebbleWrappedWriter writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
 						BLOCK_PREFIX, this.name)).indent();
 
 		compiler.subcompile(body);
@@ -51,12 +57,13 @@ public class NodeBlock extends AbstractNode {
 
 	private void compileBlockMethodReturningString(Compiler compiler) {
 		compiler.write(
-				String.format("public String %s%s() throws com.mitchellbosecke.pebble.error.PebbleException {\n",
+				String.format(
+						"public String %s%s(Context context) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
 						BLOCK_PREFIX, this.name)).indent();
 
 		compiler.write("java.io.StringWriter stringWriter = new java.io.StringWriter();\n");
 		compiler.write("PebbleWrappedWriter writer = new PebbleWrappedWriter(stringWriter);\n");
-		compiler.write(String.format("%s%s(writer);\n", BLOCK_PREFIX, this.name));
+		compiler.write(String.format("%s%s(writer, context);\n", BLOCK_PREFIX, this.name));
 		compiler.write("return stringWriter.toString();\n");
 
 		compiler.raw("\n").outdent().write("}\n");

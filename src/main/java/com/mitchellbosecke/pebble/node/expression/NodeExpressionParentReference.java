@@ -49,7 +49,7 @@ public class NodeExpressionParentReference extends NodeExpression implements Dis
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(String.format("(new %s()).%s%s()", parentClassName, NodeBlock.BLOCK_PREFIX, this.blockName));
+		compiler.raw(String.format("(new %s()).%s%s(context)", parentClassName, NodeBlock.BLOCK_PREFIX, this.blockName));
 	}
 
 }

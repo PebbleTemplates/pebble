@@ -31,6 +31,21 @@ public class CoreFunctionsTest extends AbstractTest {
 		assertEquals("parent text\n\t\tparent head\n\tchild head\n", writer.toString());
 	}
 
+	/**
+	 * Issue occurred where parent block didn't have access to the context when
+	 * invoked via the parent() function.
+	 * 
+	 * @throws PebbleException
+	 */
+	@Test
+	public void testParentBlockHasAccessToContext() throws PebbleException {
+		PebbleTemplate template = pebble.compile("function/template.childWithContext.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("bar", writer.toString());
+	}
+
 	@Test
 	public void testBlockFunction() throws PebbleException {
 		PebbleTemplate template = pebble.compile("function/template.block.peb");
@@ -68,7 +83,7 @@ public class CoreFunctionsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("1", writer.toString());
 	}
-	
+
 	@Test
 	public void testMaxFunction() throws PebbleException {
 		Loader loader = new StringLoader();
