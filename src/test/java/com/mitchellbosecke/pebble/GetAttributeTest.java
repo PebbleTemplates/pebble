@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -125,7 +126,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNullObject() throws PebbleException, IOException {
+	public void testNullObjectWithStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		pebble.setStrictVariables(false);
@@ -137,13 +138,25 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNonExistingAttribute() throws PebbleException, IOException {
+	public void testNonExistingAttributeWithoutStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		pebble.setStrictVariables(false);
 
-		// EngineTest.java will perform the same test but with strict variables
-		// on
+		PebbleTemplate template = pebble.compile("hello {{ object.name }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("object", new Object());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("hello ", writer.toString());
+	}
+	
+	@Test(expected = AttributeNotFoundException.class)
+	public void testNonExistingAttributeWithStrictVariables() throws PebbleException, IOException {
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		pebble.setStrictVariables(true);
 
 		PebbleTemplate template = pebble.compile("hello {{ object.name }}");
 		Map<String, Object> context = new HashMap<>();
@@ -155,9 +168,31 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNullAttribute() throws PebbleException, IOException {
+	public void testNullAttributeWithoutStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
+
+		PebbleTemplate template = pebble.compile("hello {{ object.name }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("object", new SimpleObject7());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("hello ", writer.toString());
+
+	}
+	
+	/**
+	 * Should behave the same as it does with strictVariables = false.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testNullAttributeWithStrictVariables() throws PebbleException, IOException {
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		pebble.setStrictVariables(true);
 
 		PebbleTemplate template = pebble.compile("hello {{ object.name }}");
 		Map<String, Object> context = new HashMap<>();
