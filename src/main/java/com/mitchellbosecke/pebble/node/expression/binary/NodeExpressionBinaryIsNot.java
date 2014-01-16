@@ -14,7 +14,7 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
 
 public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
@@ -25,10 +25,10 @@ public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
 		NodeExpressionConstant testName;
 		NodeExpressionArguments args = null;
 
-		if (rightExpression instanceof NodeExpressionFunctionCall) {
+		if (rightExpression instanceof NodeExpressionFunctionOrMacroCall) {
 
-			testName = ((NodeExpressionFunctionCall) rightExpression).getFunctionName();
-			args = ((NodeExpressionFunctionCall) rightExpression).getArguments();
+			testName = ((NodeExpressionFunctionOrMacroCall) rightExpression).getFunctionName();
+			args = ((NodeExpressionFunctionOrMacroCall) rightExpression).getArguments();
 
 		} else {
 

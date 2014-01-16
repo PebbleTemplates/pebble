@@ -1,2 +1,2 @@
-{% import "template.macro1.peb" as forms %}
-{{ forms.input("company", "forcorp", "text") }}
+{% import "template.macro1.peb" %}
+{{ input("company", "forcorp", "text") }}

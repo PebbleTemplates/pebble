@@ -15,7 +15,6 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeImport;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 
 public class ImportTokenParser extends AbstractTokenParser {
 
@@ -30,13 +29,9 @@ public class ImportTokenParser extends AbstractTokenParser {
 
 		NodeExpression importExpression = this.parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.NAME, "as");
-		
-		NodeExpressionDeclaration var = this.parser.getExpressionParser().parseDeclarationExpression();
-
 		stream.expect(Token.Type.EXECUTE_END);
 
-		return new NodeImport(lineNumber, importExpression, var);
+		return new NodeImport(lineNumber, importExpression);
 	}
 
 	@Override

@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -25,14 +26,14 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class CoreTagsTest extends AbstractTest {
 
 	@Test
-	public void testBlock() throws PebbleException {
+	public void testBlock() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.grandfather.peb");
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 	}
 
 	@Test
-	public void testIf() throws PebbleException {
+	public void testIf() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(false);
@@ -48,7 +49,7 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testFor() throws PebbleException {
+	public void testFor() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -72,7 +73,7 @@ public class CoreTagsTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void multipleForLoops() throws PebbleException {
+	public void multipleForLoops() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -89,7 +90,7 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testForElse() throws PebbleException {
+	public void testForElse() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -105,7 +106,7 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testMacro() throws PebbleException {
+	public void testMacro() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macro1.peb");
 
 		Writer writer = new StringWriter();
@@ -122,16 +123,16 @@ public class CoreTagsTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void testMacroBeingFiltered() throws PebbleException {
+	public void testMacroBeingFiltered() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macro3.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("HELLO\n", writer.toString());
 	}
-
+	
 	@Test
-	public void testMacroFromAnotherFile() throws PebbleException {
+	public void testMacroFromAnotherFile() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macro2.peb");
 
 		Writer writer = new StringWriter();
@@ -140,7 +141,7 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testInclude() throws PebbleException {
+	public void testInclude() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.include1.peb");
 
 		Writer writer = new StringWriter();
@@ -149,7 +150,7 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSet() throws PebbleException {
+	public void testSet() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 

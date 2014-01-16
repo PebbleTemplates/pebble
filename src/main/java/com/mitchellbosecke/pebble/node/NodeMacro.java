@@ -12,6 +12,7 @@ package com.mitchellbosecke.pebble.node;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
+import com.mitchellbosecke.pebble.template.AbstractMacro;
 
 public class NodeMacro extends AbstractNode {
 
@@ -32,49 +33,42 @@ public class NodeMacro extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
+		compiler.write("this.registerMacro(new ").raw(AbstractMacro.class.getName()).raw("(){").raw("\n").indent();
 
-		/*
-		 * Because the macro might exist in a different template we must
-		 * manually pass the context as a secret argument.
-		 * 
-		 * We prefix it with an underscore because technically it will be put
-		 * into the context and is then accessible to the user and we want to
-		 * avoid conflicts.
-		 * 
-		 * TODO: remove the underscore prefix and simultaneously prevent this
-		 * secret arg from being added into context object and are therefore
-		 * inaccessible to user.
-		 */
-		NodeExpressionDeclaration contextDeclaration = new NodeExpressionDeclaration(args.getLineNumber(), "_context");
-		args.addArgument(contextDeclaration);
-
-		compiler.write(String.format("public String %s%s", MACRO_PREFIX, name)).subcompile(args)
-				.raw(" throws com.mitchellbosecke.pebble.error.PebbleException {\n\n").indent();
-
-		/*
-		 * Each macro has it's own copy of the main context. We will add the
-		 * macro arguments into this new context to give them scope and easy
-		 * accessibility.
-		 * 
-		 * We can't use pushContext() here because the macro might exist in a
-		 * completely different template.
-		 */
-		compiler.write("Context context = new Context(((Context)_context).isStrictVariables());").raw("\n");
-		compiler.write("context.setParent((Context)_context);").raw("\n");
-		compiler.write("java.io.StringWriter writer = new java.io.StringWriter();").raw("\n");
-
-		// put args into scoped context
-		for (NodeExpression arg : args.getArgs()) {
-			compiler.write("context.put(").string(((NodeExpressionDeclaration) arg).getName()).raw(",")
-					.raw(((NodeExpressionDeclaration) arg).getName()).raw(");\n");
-		}
-
-		compiler.subcompile(body);
-
-		compiler.raw("\n").write("return writer.toString();");
-
-		compiler.raw("\n").outdent().write("}");
+		compileGetNameMethod(compiler);
+		compileGetNumberOfArguments(compiler);
+		compileInit(compiler);
+		compileEvaluate(compiler);
+		compiler.outdent().write("});");
 
 	}
 
+	public void compileGetNameMethod(Compiler compiler) {
+		compiler.write("public String getName() { return ").string(name).raw("; }").raw("\n");
+	}
+
+	public void compileGetNumberOfArguments(Compiler compiler) {
+		compiler.write("public int getNumberOfArguments() { return ").raw(String.valueOf(args.getArgs().length))
+				.raw("; }").raw("\n");
+	}
+
+	public void compileInit(Compiler compiler) {
+		compiler.write("public void init(){").indent();
+
+		for (NodeExpression arg : args.getArgs()) {
+			NodeExpressionDeclaration variableDeclaration = (NodeExpressionDeclaration) arg;
+			compiler.write("argNames.add(").string(variableDeclaration.getName()).raw(");").raw("\n");
+		}
+
+		compiler.outdent().write("}").raw("\n");
+
+	}
+
+	public void compileEvaluate(Compiler compiler) {
+		compiler.write(
+				"public void evaluate(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
+				.indent();
+		compiler.subcompile(body);
+		compiler.outdent().raw("\n").write("}").raw("\n");
+	}
 }

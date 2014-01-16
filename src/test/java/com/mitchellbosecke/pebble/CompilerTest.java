@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class CompilerTest extends AbstractTest {
 
 	@Test
-	public void testCompile() throws PebbleException {
+	public void testCompile() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		
@@ -36,7 +37,7 @@ public class CompilerTest extends AbstractTest {
 	}
 
 	@Test
-	public void testEscapeCharactersText() throws PebbleException {
+	public void testEscapeCharactersText() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.escapeCharactersInText.peb");
 		Map<String, Object> context = new HashMap<>();
 		Writer writer = new StringWriter();

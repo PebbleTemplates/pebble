@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,10 +29,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.SimpleFunction;
 import com.mitchellbosecke.pebble.extension.Test;
-import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.utils.Context;
-import com.mitchellbosecke.pebble.utils.PebbleWrappedWriter;
 import com.mitchellbosecke.pebble.utils.TemplateAware;
 
 public abstract class AbstractPebbleTemplate implements PebbleTemplate {
@@ -38,32 +38,40 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	private String generatedJavaCode;
 	private String source;
 
-	protected PebbleWrappedWriter writer;
+	protected Writer writer;
 	protected Context context;
 	protected PebbleEngine engine;
 
+	private PebbleTemplate parent;
+	private PebbleTemplate child;
+	private final List<PebbleTemplate> importedTemplates = new ArrayList<>();
+
+	private final Map<String, Block> blocks = new HashMap<>();
+	private final Map<String, Map<Integer, Macro>> macros = new HashMap<>();
+
 	private Locale locale;
 
-	public abstract void buildContent() throws PebbleException;
+	@Override
+	public abstract void buildContent(Writer writer, Context context) throws IOException, PebbleException;
 
 	@Override
-	public void evaluate(Writer writer) throws PebbleException {
+	public void evaluate(Writer writer) throws PebbleException, IOException {
 		Context context = initContext();
 		evaluate(writer, context);
 	}
 
 	@Override
-	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException {
+	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
 		Context context = initContext();
 		context.putAll(map);
 		evaluate(writer, context);
 	}
 
-	private void evaluate(Writer writer, Context context) throws PebbleException {
-		this.writer = new PebbleWrappedWriter(writer);
+	private void evaluate(Writer writer, Context context) throws PebbleException, IOException {
+		this.writer = writer;
 		this.context = context;
 
-		buildContent();
+		buildContent(writer, context);
 
 		try {
 			writer.flush();
@@ -82,8 +90,8 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		 * some global variables that have to be implemented here because they
 		 * are unique to the particular template.
 		 */
-		context.put("_self", this);
-		context.put("_context", context);
+		// context.put("_self", this);
+		// context.put("_context", context);
 		return context;
 	}
 
@@ -103,12 +111,12 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	}
 
 	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute)
-			throws AttributeNotFoundException {
+			throws PebbleException {
 		return getAttribute(type, object, attribute, new Object[0]);
 	}
 
 	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute,
-			Object... args) throws AttributeNotFoundException {
+			Object... args) throws PebbleException {
 
 		if (object == null) {
 			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attribute));
@@ -124,8 +132,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		boolean found = false;
 
 		Method method = null;
-
-		boolean isMacroCall = false;
 
 		// capitalize first letter of attribute for the following attempts
 		String attributeCapitalized = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
@@ -171,33 +177,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			}
 		}
 
-		// Check for macro
-		if (!found) {
-			try {
-
-				// in order to use reflection we need to know the EXACT
-				// number and types of arguments the intended method takes
-				List<Class<?>> paramTypes = new ArrayList<>();
-
-				for (@SuppressWarnings("unused")
-				Object param : args) {
-					paramTypes.add(Object.class);
-				}
-
-				/*
-				 * Add an two extra parameter to account for the secret _context
-				 * arguments that we add.
-				 */
-				paramTypes.add(Object.class);
-
-				method = clazz.getMethod(NodeMacro.MACRO_PREFIX + attribute,
-						paramTypes.toArray(new Class[paramTypes.size()]));
-				found = true;
-				isMacroCall = true;
-			} catch (NoSuchMethodException | SecurityException e) {
-			}
-		}
-
 		// public field
 		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {
 
@@ -211,11 +190,6 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 
 		if (method != null) {
 			try {
-				if (isMacroCall) {
-					List<Object> arguments = new ArrayList<>(Arrays.asList(args));
-					arguments.add(context);
-					args = arguments.toArray();
-				}
 				if (args.length > 0) {
 					result = method.invoke(object, args);
 				} else {
@@ -239,6 +213,100 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 			}
 		}
 		return result;
+
+	}
+
+	@Override
+	public void registerMacro(Macro macro) {
+		Map<Integer, Macro> overloadedMacros = macros.get(macro.getName());
+
+		if (overloadedMacros == null) {
+			overloadedMacros = new HashMap<Integer, Macro>();
+		}
+		overloadedMacros.put(macro.getNumberOfArguments(), macro);
+		macros.put(macro.getName(), overloadedMacros);
+	}
+
+	@Override
+	public boolean hasMacro(String macroName, int numOfArguments) {
+		boolean result = false;
+		Map<Integer, Macro> overloadedMacros = macros.get(macroName);
+		if (overloadedMacros != null) {
+			result = overloadedMacros.containsKey(numOfArguments);
+		}
+		return result;
+	}
+
+	@Override
+	public String macro(String macroName, Object... args) throws PebbleException {
+		String result = null;
+		boolean found = false;
+
+		// check child template first
+		if (this.child != null && this.child.hasMacro(macroName, args.length)) {
+			found = true;
+			result = this.child.macro(macroName, args);
+
+			// check current template
+		} else if (hasMacro(macroName, args.length)) {
+			found = true;
+			Map<Integer, Macro> overloadedMacros = macros.get(macroName);
+			Macro macro = overloadedMacros.get(args.length);
+
+			macro.init();
+			result = macro.call(args);
+		}
+
+		// check imported templates
+		for (PebbleTemplate template : importedTemplates) {
+			if (template.hasMacro(macroName, args.length)) {
+				found = true;
+				result = template.macro(macroName, args);
+			}
+		}
+
+		// delegate to parent template
+		if (!found) {
+			if (this.parent != null) {
+				result = this.parent.macro(macroName, args);
+			} else {
+				throw new PebbleException(String.format("Function or Macro [%s] does not exist.", macroName));
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public void registerBlock(Block block) {
+		blocks.put(block.getName(), block);
+	}
+
+	@Override
+	public boolean hasBlock(String blockName) {
+		return blocks.containsKey(blockName);
+	}
+
+	@Override
+	public String block(String blockName, Context context, boolean ignoreOverriden) throws PebbleException, IOException {
+		StringWriter writer = new StringWriter();
+		block(blockName, context, ignoreOverriden, writer);
+		return writer.toString();
+	}
+
+	@Override
+	public void block(String blockName, Context context, boolean ignoreOverriden, Writer writer)
+			throws PebbleException, IOException {
+		if (!ignoreOverriden && this.child != null && this.child.hasBlock(blockName)) {
+			this.child.block(blockName, context, false, writer);
+		} else if (blocks.containsKey(blockName)) {
+			Block block = blocks.get(blockName);
+			block.evaluate(writer, context);
+		} else {
+			if (this.parent != null) {
+				this.parent.block(blockName, context, true, writer);
+			}
+		}
 
 	}
 
@@ -266,20 +334,22 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 		return filter.apply(input, arguments);
 	}
 
-	protected Object applyFunction(String functionName, Object... args) throws PebbleException {
+	protected Object applyFunctionOrMacro(String functionName, Object... args) throws PebbleException {
+		Map<String, SimpleFunction> functions = engine.getFunctions();
+		if (functions.containsKey(functionName)) {
+			return applyFunction(functions.get(functionName), args);
+		}
+
+		return macro(functionName, args);
+	}
+
+	private Object applyFunction(SimpleFunction function, Object... args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
 
 		Collections.addAll(arguments, args);
 
-		Map<String, SimpleFunction> functions = engine.getFunctions();
-		SimpleFunction function = functions.get(functionName);
-
 		if (function instanceof TemplateAware) {
 			((TemplateAware) function).setTemplate(this);
-		}
-
-		if (function == null) {
-			throw new PebbleException(String.format("Function [%s] does not exist.", functionName));
 		}
 		return function.execute(arguments);
 	}
@@ -342,5 +412,29 @@ public abstract class AbstractPebbleTemplate implements PebbleTemplate {
 	@Override
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	@Override
+	public PebbleTemplate getParent() {
+		return parent;
+	}
+
+	@Override
+	public void setParent(PebbleTemplate parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public PebbleTemplate getChild() {
+		return child;
+	}
+
+	@Override
+	public void setChild(PebbleTemplate child) {
+		this.child = child;
+	}
+	
+	protected void addImportedTemplate(PebbleTemplate template){
+		this.importedTemplates.add(template);
 	}
 }

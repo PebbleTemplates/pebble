@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class CoreOperatorsTest extends AbstractTest {
 
 	@Test
-	public void testUnaryOperators() throws PebbleException {
+	public void testUnaryOperators() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -36,7 +37,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNotUnaryOperator() throws PebbleException {
+	public void testNotUnaryOperator() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -49,7 +50,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testBinaryOperators() throws PebbleException {
+	public void testBinaryOperators() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -68,7 +69,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void testBinaryOperatorOnAttribute() throws PebbleException {
+	public void testBinaryOperatorOnAttribute() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -90,7 +91,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void testUnaryOperatorOnAttribute() throws PebbleException {
+	public void testUnaryOperatorOnAttribute() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -105,7 +106,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNotUnaryOperatorOnAttribute() throws PebbleException {
+	public void testNotUnaryOperatorOnAttribute() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -118,9 +119,9 @@ public class CoreOperatorsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("no", writer.toString());
 	}
-	
+
 	@Test
-	public void testLogicOperatorOnAttributes() throws PebbleException {
+	public void testLogicOperatorOnAttributes() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -135,9 +136,8 @@ public class CoreOperatorsTest extends AbstractTest {
 		assertEquals("noyes", writer.toString());
 	}
 
-
 	@Test
-	public void testTernary() throws PebbleException {
+	public void testTernary() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -150,7 +150,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testComparisons() throws PebbleException {
+	public void testComparisons() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -161,9 +161,9 @@ public class CoreOperatorsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("yesyesyesyesyes", writer.toString());
 	}
-	
+
 	@Test
-	public void testComparisonsOnDifferingOperands() throws PebbleException {
+	public void testComparisonsOnDifferingOperands() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -176,7 +176,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test()
-	public void testEqualsOperator() throws PebbleException {
+	public void testEqualsOperator() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -191,7 +191,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test()
-	public void testEqualsOperatorWithNulls() throws PebbleException {
+	public void testEqualsOperatorWithNulls() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -206,7 +206,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test()
-	public void testNotEqualsOperator() throws PebbleException {
+	public void testNotEqualsOperator() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -221,7 +221,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	}
 
 	@Test()
-	public void testEqualsOperatorWithPrimitives() throws PebbleException {
+	public void testEqualsOperatorWithPrimitives() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -244,7 +244,7 @@ public class CoreOperatorsTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test()
-	public void testComparisonWithAttributeOperand() throws PebbleException {
+	public void testComparisonWithAttributeOperand() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 

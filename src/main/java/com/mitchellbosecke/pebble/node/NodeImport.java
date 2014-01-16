@@ -10,27 +10,19 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 
 public class NodeImport extends AbstractNode {
 
 	private final NodeExpression importExpression;
 
-	private final NodeExpressionDeclaration var;
-
-	public NodeImport(int lineNumber, NodeExpression importExpression, NodeExpressionDeclaration var) {
+	public NodeImport(int lineNumber, NodeExpression importExpression) {
 		super(lineNumber);
 		this.importExpression = importExpression;
-		this.var = var;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-
-		compiler.write("context.put(").string(var.getName()).raw(",");
-
-		compiler.raw("this.engine.compile(").subcompile(importExpression).raw(")");
-		compiler.raw(");\n");
+		compiler.raw("addImportedTemplate(this.engine.compile(").subcompile(importExpression).raw("));").raw("\n");
 	}
 
 }

@@ -130,9 +130,9 @@ public class PebbleEngine {
 	 * @throws SyntaxException
 	 * @throws LoaderException
 	 */
-	public PebbleTemplate compile(String templateName) throws SyntaxException, LoaderException, PebbleException {
-		return compile(templateName, true);
-	}
+	//public PebbleTemplate compile(String templateName) throws SyntaxException, LoaderException, PebbleException {
+	//	return compile(templateName, true);
+	//}
 
 	/**
 	 * 
@@ -147,7 +147,7 @@ public class PebbleEngine {
 	 * @throws LoaderException
 	 * @throws PebbleException
 	 */
-	private PebbleTemplate compile(String templateName, boolean isPrimary) throws SyntaxException, LoaderException,
+	public PebbleTemplate compile(String templateName) throws SyntaxException, LoaderException,
 			PebbleException {
 		if (this.loader == null) {
 			throw new LoaderException("Loader has not yet been specified.");
@@ -158,7 +158,7 @@ public class PebbleEngine {
 
 		loader.setCharset(charset);
 
-		if (isPrimary && cacheTemplates && cachedTemplates.containsKey(className)) {
+		if (cacheTemplates && cachedTemplates.containsKey(className)) {
 			instance = cachedTemplates.get(className);
 		} else {
 			/* template has not been compiled, we must compile it */
@@ -176,13 +176,6 @@ public class PebbleEngine {
 			TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
 			NodeRoot root = getParser().parse(tokenStream);
 			String javaSource = getCompiler().compile(root).getSource();
-
-			// if this template has a parent, lets make sure the parent is
-			// compiled first
-			if (root.hasParent()) {
-				this.compile(root.getParentFileName(), false);
-			}
-
 			instance = getCompiler().compileToJava(javaSource, className);
 
 			// give the template some KNOWLEDGE
@@ -190,14 +183,18 @@ public class PebbleEngine {
 			instance.setGeneratedJavaCode(javaSource);
 			instance.setSource(templateSource);
 			instance.setLocale(defaultLocale);
-
-			if (isPrimary) {
-				cachedTemplates.put(className, instance);
+			instance.initBlocks();
+			instance.initMacros();
+			if (root.hasParent()) {
+				PebbleTemplate parent = this.compile(root.getParentFileName());
+				parent.setChild(instance);
+				instance.setParent(parent);
 			}
+
+			cachedTemplates.put(className, instance);
 		}
-		if (isPrimary) {
-			fileManager.clear();
-		}
+		fileManager.clear();
+		
 		return instance;
 	}
 

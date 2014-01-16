@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.DateFormat;
@@ -27,7 +28,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class CoreFiltersTest extends AbstractTest {
 
 	@Test
-	public void testLower() throws PebbleException {
+	public void testLower() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -39,7 +40,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testUpper() throws PebbleException {
+	public void testUpper() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -50,7 +51,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDate() throws ParseException, PebbleException {
+	public void testDate() throws ParseException, PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -70,7 +71,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testUrlEncode() throws PebbleException {
+	public void testUrlEncode() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -81,7 +82,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testFormat() throws PebbleException {
+	public void testFormat() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -95,7 +96,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNumberFilterWithFormat() throws PebbleException {
+	public void testNumberFilterWithFormat() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -109,7 +110,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 	
 	@Test
-	public void testNumberFilterWithLocale() throws PebbleException {
+	public void testNumberFilterWithLocale() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -121,7 +122,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testAbbreviate() throws PebbleException {
+	public void testAbbreviate() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -134,7 +135,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testCapitalize() throws PebbleException {
+	public void testCapitalize() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -146,7 +147,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testTrim() throws PebbleException {
+	public void testTrim() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -158,7 +159,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testJsonEncode() throws PebbleException {
+	public void testJsonEncode() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -172,7 +173,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDefault() throws PebbleException {
+	public void testDefault() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 

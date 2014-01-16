@@ -24,7 +24,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionCall;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
@@ -336,21 +336,18 @@ public class ExpressionParser {
 		NodeExpressionArguments args = parseArguments();
 
 		/*
-		 * The following core functions have their own Nodes
-		 * and are compiled in unique ways for the sake of 
-		 * performance.
+		 * The following core functions have their own Nodes and are compiled in
+		 * unique ways for the sake of performance.
 		 */
 		switch ((String) functionName.getValue()) {
 			case "parent":
-				String parentClassName = this.parser.getEngine().getTemplateClassName(this.parser.getParentFileName());
-				return new NodeExpressionParentReference(node.getLineNumber(), parentClassName, parser.peekBlockStack());
+				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
 			case "block":
 				String blockName = (String) ((NodeExpressionString) args.getArgs()[0]).getValue();
 				return new NodeExpressionBlockReference(node.getLineNumber(), blockName, true);
 		}
-		
 
-		return new NodeExpressionFunctionCall(lineNumber, functionName, args);
+		return new NodeExpressionFunctionOrMacroCall(lineNumber, functionName, args);
 	}
 
 	private NodeExpression parseFilterExpression(NodeExpression node) throws SyntaxException {

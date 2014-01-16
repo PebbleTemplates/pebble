@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.DisplayableNode;
-import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionBlockReference extends NodeExpression implements DisplayableNode {
@@ -19,24 +18,24 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 	private final String name;
 
 	/*
-	 * output is true if the block is referenced in an expression using the
-	 * {{ block() }} function, otherwise it is false if it is referenced using block
-	 * tags, ie. {% block name %}{% endblock %}
+	 * output is true if the block is referenced in an expression using the {{
+	 * block() }} function, otherwise it is false if it is referenced using
+	 * block tags, ie. {% block name %}{% endblock %}
 	 */
-	private final boolean output;
+	private final boolean isExpression;
 
-	public NodeExpressionBlockReference(int lineNumber, String name, boolean output) {
+	public NodeExpressionBlockReference(int lineNumber, String name, boolean isExpression) {
 		super(lineNumber);
 		this.name = name;
-		this.output = output;
+		this.isExpression = isExpression;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		if (!this.output) {
-			compiler.raw("\n").write(String.format("%s%s(writer, context);\n", NodeBlock.BLOCK_PREFIX, this.name));
+		if (this.isExpression) {
+			compiler.raw("block(").string(this.name).raw(", context, false)");
 		} else {
-			compiler.raw(String.format("%s%s(context)", NodeBlock.BLOCK_PREFIX, this.name));
+			compiler.raw("\n").write("block(").string(this.name).raw(", context, false, writer);\n");
 		}
 	}
 

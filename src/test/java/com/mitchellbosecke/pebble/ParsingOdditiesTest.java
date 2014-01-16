@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -22,12 +23,12 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class ParsingOdditiesTest extends AbstractTest {
 
 	@Test
-	public void testExpressionInArguments() throws PebbleException {
+	public void testExpressionInArguments() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble
-				.compile("{{ _self.input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+				.compile("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -35,7 +36,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 	}
 
 	@Test
-	public void testStringConstantWithLinebreak() throws PebbleException {
+	public void testStringConstantWithLinebreak() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -47,7 +48,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 	}
 
 	@Test(expected = SyntaxException.class)
-	public void testStringWithDifferentQuotationMarks() throws PebbleException {
+	public void testStringWithDifferentQuotationMarks() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -59,7 +60,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSingleQuoteWithinDoubleQuotes() throws PebbleException {
+	public void testSingleQuoteWithinDoubleQuotes() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 

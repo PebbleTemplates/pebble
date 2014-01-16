@@ -24,7 +24,7 @@ public class NodeInclude extends AbstractNode implements DisplayableNode {
 	public void compile(Compiler compiler) {
 
 		compiler.raw("\n");
-		compiler.write("this.engine.compile(").subcompile(includeExpression).raw(").evaluate(writer.getWriter());");
+		compiler.write("this.engine.compile(").subcompile(includeExpression).raw(").evaluate(writer);");
 
 		compiler.raw("\n");
 	}

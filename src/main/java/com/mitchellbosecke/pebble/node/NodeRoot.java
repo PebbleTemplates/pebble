@@ -15,7 +15,6 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.utils.Context;
-import com.mitchellbosecke.pebble.utils.PebbleWrappedWriter;
 
 public class NodeRoot extends AbstractNode {
 
@@ -23,19 +22,16 @@ public class NodeRoot extends AbstractNode {
 
 	private final NodeBody body;
 
-	private final String parentClassName;
-
 	private final String parentFileName;
 
 	private final Map<String, NodeBlock> blocks;
 
 	private final Map<String, List<NodeMacro>> macros;
 
-	public NodeRoot(NodeBody body, String parentClassName, String parentFileName, Map<String, NodeBlock> blocks,
+	public NodeRoot(NodeBody body, String parentFileName, Map<String, NodeBlock> blocks,
 			Map<String, List<NodeMacro>> macros, String filename) {
 		super(0);
 		this.body = body;
-		this.parentClassName = parentClassName;
 		this.parentFileName = parentFileName;
 		this.blocks = blocks;
 		this.macros = macros;
@@ -49,17 +45,14 @@ public class NodeRoot extends AbstractNode {
 	@Override
 	public void compile(Compiler compiler) {
 		compileClassHeader(compiler);
-		if (this.parentClassName == null) {
-			compileBuildContentFunction(compiler);
-		}
-		compileBlockMethods(compiler);
-		compileMacroMethods(compiler);
+		compileBuildContentFunction(compiler);
+		compileBlocks(compiler);
+		compileMacros(compiler);
 		compileClassFooter(compiler);
 	}
 
 	private void compileClassHeader(Compiler compiler) {
-		String parentClass = this.parentClassName == null ? compiler.getEngine().getTemplateAbstractClass().getName()
-				: parentClassName;
+		String parentClass = compiler.getEngine().getTemplateAbstractClass().getName();
 
 		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME))
 				.raw("\n\n")
@@ -71,10 +64,6 @@ public class NodeRoot extends AbstractNode {
 				.raw(Context.class.getName())
 				.raw(";")
 				.raw("\n")
-				.write("import ")
-				.raw(PebbleWrappedWriter.class.getName())
-				.raw(";")
-				.raw("\n")
 				.raw("\n")
 				.write(String.format("public class %s extends %s implements %s {", compiler.getEngine()
 						.getTemplateClassName(filename), parentClass, compiler.getEngine().getTemplateInterfaceClass()
@@ -83,10 +72,13 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileBuildContentFunction(Compiler compiler) {
 		compiler.raw("\n\n")
-				.write("public void buildContent() throws com.mitchellbosecke.pebble.error.PebbleException {")
+				.write("public void buildContent(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.raw("\n").indent();
-
-		body.compile(compiler);
+		if(this.parentFileName != null){
+			compiler.write("getParent().buildContent(writer, context);");
+		}else{
+			body.compile(compiler);
+		}
 
 		compiler.outdent().raw("\n").write("}");
 	}
@@ -95,22 +87,26 @@ public class NodeRoot extends AbstractNode {
 		compiler.outdent().raw("\n\n").write("}");
 	}
 
-	private void compileBlockMethods(Compiler compiler) {
+	private void compileBlocks(Compiler compiler) {
+		compiler.raw("\n\n").write("public void initBlocks() {").raw("\n").indent();
 		for (NodeBlock block : blocks.values()) {
-			compiler.raw("\n\n").subcompile(block);
+			compiler.raw("\n").subcompile(block);
 		}
+		compiler.outdent().raw("\n").write("}");
 	}
-
-	private void compileMacroMethods(Compiler compiler) {
+	
+	private void compileMacros(Compiler compiler) {
+		compiler.raw("\n\n").write("public void initMacros() {").raw("\n").indent();
 		for (List<NodeMacro> overloadedMacros : macros.values()) {
 			for (NodeMacro macro : overloadedMacros) {
 				compiler.raw("\n\n").subcompile(macro);
 			}
 		}
+		compiler.outdent().raw("\n").write("}");
 	}
 
 	public boolean hasParent() {
-		return parentClassName != null;
+		return parentFileName != null;
 	}
 
 	public String getParentFileName() {

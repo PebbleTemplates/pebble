@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.template.Block;
 
 public class NodeBlock extends AbstractNode {
 
@@ -34,39 +35,21 @@ public class NodeBlock extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compileMainBlockMethod(compiler);
-		compileBlockMethodReturningString(compiler);
+		compiler.write("this.registerBlock(new ").raw(Block.class.getName()).raw("(){").raw("\n").indent();
+
+		compileGetNameMethod(compiler);
+		compileEvaluateMethod(compiler);
+		compiler.outdent().write("});");
 	}
 
-	/*
-	 * Block methods only require the context just in case a child is accessing
-	 * a parent block with the use of the parent() function, it's important the
-	 * parent is using the correct context.
-	 */
+	public void compileGetNameMethod(Compiler compiler) {
+		compiler.write("public String getName() { return ").string(name).raw("; }").raw("\n");
+	}
 
-	private void compileMainBlockMethod(Compiler compiler) {
-		compiler.write(
-				String.format(
-						"public void %s%s(PebbleWrappedWriter writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
-						BLOCK_PREFIX, this.name)).indent();
-
+	public void compileEvaluateMethod(Compiler compiler) {
+		compiler.write("public void evaluate(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {").indent();
 		compiler.subcompile(body);
-
-		compiler.raw("\n").outdent().write("}\n");
-	}
-
-	private void compileBlockMethodReturningString(Compiler compiler) {
-		compiler.write(
-				String.format(
-						"public String %s%s(Context context) throws com.mitchellbosecke.pebble.error.PebbleException {\n",
-						BLOCK_PREFIX, this.name)).indent();
-
-		compiler.write("java.io.StringWriter stringWriter = new java.io.StringWriter();\n");
-		compiler.write("PebbleWrappedWriter writer = new PebbleWrappedWriter(stringWriter);\n");
-		compiler.write(String.format("%s%s(writer, context);\n", BLOCK_PREFIX, this.name));
-		compiler.write("return stringWriter.toString();\n");
-
-		compiler.raw("\n").outdent().write("}\n");
+		compiler.outdent().raw("\n").write("}").raw("\n");
 	}
 
 }

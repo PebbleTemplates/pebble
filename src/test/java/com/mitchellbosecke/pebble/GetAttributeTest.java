@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class GetAttributeTest extends AbstractTest {
 
 	@Test
-	public void testOneLayerAttributeNesting() throws PebbleException {
+	public void testOneLayerAttributeNesting() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -37,7 +38,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testMultiLayerAttributeNesting() throws PebbleException {
+	public void testMultiLayerAttributeNesting() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -51,7 +52,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testHashmapAttribute() throws PebbleException {
+	public void testHashmapAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -67,7 +68,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testMethodAttribute() throws PebbleException {
+	public void testMethodAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -81,7 +82,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testGetMethodAttribute() throws PebbleException {
+	public void testGetMethodAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -95,7 +96,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testIsMethodAttribute() throws PebbleException {
+	public void testIsMethodAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -109,7 +110,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testComplexNestedAttributes() throws PebbleException {
+	public void testComplexNestedAttributes() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -124,7 +125,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNullObject() throws PebbleException {
+	public void testNullObject() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		pebble.setStrictVariables(false);
@@ -136,7 +137,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNonExistingAttribute() throws PebbleException {
+	public void testNonExistingAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		pebble.setStrictVariables(false);
@@ -154,7 +155,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNullAttribute() throws PebbleException {
+	public void testNullAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -169,7 +170,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test()
-	public void testPrimitiveAttribute() throws PebbleException {
+	public void testPrimitiveAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 

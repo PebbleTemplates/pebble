@@ -1,5 +1,5 @@
-{{ _self.input("company", "forcorp", "text") }}
-{{ _self.input("company", "forcorp", "text", "overloaded") }}
+{{ input("company", "forcorp", "text") }}
+{{ input("company", "forcorp", "text", "overloaded") }}
 {% macro input(name, value, type) %}
 	<input name="{{ name }}" value="{{ value }}" type="{{ type }}" />
 {% endmacro %}

@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -23,7 +24,16 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class CoreFunctionsTest extends AbstractTest {
 
 	@Test
-	public void testParentFunction() throws PebbleException {
+	public void testBlockFunction() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("function/template.block.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("Default Title\nDefault Title", writer.toString());
+	}
+
+	@Test
+	public void testParentFunction() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("function/template.child.peb");
 
 		Writer writer = new StringWriter();
@@ -38,7 +48,7 @@ public class CoreFunctionsTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void testParentBlockHasAccessToContext() throws PebbleException {
+	public void testParentBlockHasAccessToContext() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("function/template.childWithContext.peb");
 
 		Writer writer = new StringWriter();
@@ -47,16 +57,16 @@ public class CoreFunctionsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testBlockFunction() throws PebbleException {
-		PebbleTemplate template = pebble.compile("function/template.block.peb");
+	public void testParentThenMacro() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("function/template.childThenParentThenMacro.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
-		assertEquals("Default Title\nDefault Title", writer.toString());
+		assertEquals("test", writer.toString());
 	}
 
 	@Test
-	public void testSourceFunction() throws PebbleException {
+	public void testSourceFunction() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -69,7 +79,7 @@ public class CoreFunctionsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testMinFunction() throws PebbleException {
+	public void testMinFunction() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -85,7 +95,7 @@ public class CoreFunctionsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testMaxFunction() throws PebbleException {
+	public void testMaxFunction() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 

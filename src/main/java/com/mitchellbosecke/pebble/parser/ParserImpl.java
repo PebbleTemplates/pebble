@@ -134,9 +134,7 @@ public class ParserImpl implements Parser {
 
 		NodeBody body = subparse();
 
-		String parentClassName = parentFileName == null ? null : engine.getTemplateClassName(parentFileName);
-
-		NodeRoot root = new NodeRoot(body, parentClassName, parentFileName, getBlocks(), getMacros(),
+		NodeRoot root = new NodeRoot(body, parentFileName, getBlocks(), getMacros(),
 				stream.getFilename());
 
 		/*

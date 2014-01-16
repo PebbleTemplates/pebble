@@ -3,6 +3,7 @@ package com.mitchellbosecke.pebble;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class EngineTest extends AbstractTest {
 
 	@Test(expected = RuntimeException.class)
-	public void strictVariablesNonExisting() throws PebbleException {
+	public void strictVariablesNonExisting() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(true);
@@ -32,7 +33,7 @@ public class EngineTest extends AbstractTest {
 	}
 
 	@Test
-	public void nonStrictVariablesNonExisting() throws PebbleException {
+	public void nonStrictVariablesNonExisting() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(false);
@@ -45,7 +46,7 @@ public class EngineTest extends AbstractTest {
 	}
 
 	@Test
-	public void strictVariablesExistingButNull() throws PebbleException {
+	public void strictVariablesExistingButNull() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(true);
@@ -60,7 +61,7 @@ public class EngineTest extends AbstractTest {
 	}
 
 	@Test(expected = AttributeNotFoundException.class)
-	public void strictVariablesMissingAttribute() throws PebbleException {
+	public void strictVariablesMissingAttribute() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(true);
@@ -75,7 +76,7 @@ public class EngineTest extends AbstractTest {
 	}
 
 	@Test
-	public void nonStrictVariablesMissingAttribute() throws PebbleException {
+	public void nonStrictVariablesMissingAttribute() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(false);
@@ -96,17 +97,17 @@ public class EngineTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void templatesWithSameNameOverridingCache() throws PebbleException {
+	public void templatesWithSameNameOverridingCache() throws PebbleException, IOException {
 		Loader loader = new PebbleDefaultLoader();
 		PebbleEngine engine = new PebbleEngine(loader);
 		engine.setCacheTemplates(true);
 
 		PebbleTemplate cache1 = engine.compile("templates/cache/cache1/template.cache.peb");
 		PebbleTemplate cache2 = engine.compile("templates/cache/cache2/template.cache.peb");
-		
+
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();
-		
+
 		cache1.evaluate(writer1);
 		cache2.evaluate(writer2);
 
@@ -128,13 +129,13 @@ public class EngineTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void templateCachedButBytecodeCleared() throws PebbleException {
+	public void templateCachedButBytecodeCleared() throws PebbleException, IOException {
 		PebbleTemplate template1 = pebble.compile("template.parent.peb");
 		PebbleTemplate template2 = pebble.compile("template.parent2.peb");
 
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();
-		
+
 		template1.evaluate(writer1);
 		template2.evaluate(writer2);
 

@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -21,7 +22,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class EscaperExtensionTest extends AbstractTest {
 
 	@Test
-	public void testEscapeHtml() throws PebbleException {
+	public void testEscapeHtml() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 

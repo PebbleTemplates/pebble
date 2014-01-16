@@ -8,6 +8,7 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -19,7 +20,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class InheritanceTest extends AbstractTest {
 
 	@Test
-	public void testSimpleInheritance() throws PebbleException {
+	public void testSimpleInheritance() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.parent.peb");
 
 		Writer writer = new StringWriter();
