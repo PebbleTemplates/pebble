@@ -100,7 +100,6 @@ public class EngineTest extends AbstractTest {
 	public void templatesWithSameNameOverridingCache() throws PebbleException, IOException {
 		Loader loader = new PebbleDefaultLoader();
 		PebbleEngine engine = new PebbleEngine(loader);
-		engine.setCacheTemplates(true);
 
 		PebbleTemplate cache1 = engine.compile("templates/cache/cache1/template.cache.peb");
 		PebbleTemplate cache2 = engine.compile("templates/cache/cache2/template.cache.peb");

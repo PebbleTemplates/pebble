@@ -20,6 +20,8 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
+import com.mitchellbosecke.pebble.cache.Cache;
+import com.mitchellbosecke.pebble.cache.DefaultTemplateCache;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.compiler.InMemoryForwardingFileManager;
@@ -69,7 +71,6 @@ public class PebbleEngine {
 	/*
 	 * User Editable Settings
 	 */
-	private boolean cacheTemplates = true;
 	private boolean strictVariables = false;
 	private String charset = "UTF-8";
 	private Locale defaultLocale = Locale.getDefault();
@@ -77,7 +78,7 @@ public class PebbleEngine {
 	/*
 	 * Templates that have already been compiled into Java
 	 */
-	private HashMap<String, PebbleTemplate> cachedTemplates = new HashMap<>();
+	private Cache<String,PebbleTemplate> templateCache;
 
 	/*
 	 * Extensions
@@ -112,6 +113,7 @@ public class PebbleEngine {
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
 		fileManager = new InMemoryForwardingFileManager();
+		templateCache = new DefaultTemplateCache();
 
 		// register default extensions
 		this.addExtension(new CoreExtension());
@@ -119,29 +121,11 @@ public class PebbleEngine {
 
 	}
 
-	/**
-	 * This will perform the entire compilation process on a given template. It
-	 * will load the template from the file system, tokenize it, parse it, and
-	 * then compile it to Java.
-	 * 
-	 * @param templateName
-	 *            The name of the template to load
-	 * @return An instance of the template that has been compiled into Java
-	 * @throws SyntaxException
-	 * @throws LoaderException
-	 */
-	//public PebbleTemplate compile(String templateName) throws SyntaxException, LoaderException, PebbleException {
-	//	return compile(templateName, true);
-	//}
 
 	/**
 	 * 
 	 * @param templateName
-	 * @param isPrimary
-	 *            Whether the template is the bottom template in a chain of
-	 *            inheritance. If it isn't, i.e. it is a parent template, then
-	 *            we do not check the cache and we avoid clearing the file
-	 *            manager.
+
 	 * @return
 	 * @throws SyntaxException
 	 * @throws LoaderException
@@ -154,13 +138,15 @@ public class PebbleEngine {
 		}
 
 		String className = this.getTemplateClassName(templateName);
-		PebbleTemplate instance;
+		PebbleTemplate instance = null;
 
 		loader.setCharset(charset);
 
-		if (cacheTemplates && cachedTemplates.containsKey(className)) {
-			instance = cachedTemplates.get(className);
-		} else {
+		if(templateCache != null){
+			instance = templateCache.get(className);
+		}
+		
+		if (instance == null){
 			/* template has not been compiled, we must compile it */
 
 			// load it
@@ -191,7 +177,7 @@ public class PebbleEngine {
 				instance.setParent(parent);
 			}
 
-			cachedTemplates.put(className, instance);
+			templateCache.put(className, instance);
 		}
 		fileManager.clear();
 		
@@ -401,12 +387,12 @@ public class PebbleEngine {
 		return templateAbstractClass;
 	}
 
-	public boolean isCacheTemplates() {
-		return cacheTemplates;
+	public Cache<String,PebbleTemplate> getTemplateCache() {
+		return templateCache;
 	}
 
-	public void setCacheTemplates(boolean cacheTemplates) {
-		this.cacheTemplates = cacheTemplates;
+	public void setTemplateCache(Cache<String,PebbleTemplate> cache) {
+		this.templateCache = cache;
 	}
 
 	public boolean isStrictVariables() {
