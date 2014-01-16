@@ -132,7 +132,7 @@ public class CoreExtension extends AbstractExtension {
 		filters.add(dateFilter);
 		filters.add(urlEncoderFilter);
 		filters.add(formatFilter);
-		filters.add(numberFilter);
+		filters.add(numberFormatFilter);
 		filters.add(abbreviateFilter);
 		filters.add(capitalizeFilter);
 		filters.add(trimFilter);
@@ -265,9 +265,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter numberFilter = new TemplateAwareFilter() {
+	private Filter numberFormatFilter = new TemplateAwareFilter() {
 		public String getName() {
-			return "number";
+			return "number_format";
 		}
 
 		public Object apply(Object input, List<Object> args) {
