@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -93,26 +92,24 @@ public class ConcurrencyTest extends AbstractTest {
 	}
 
 	/**
-	 * Currently ignoring the following test because it fails and I haven't decided if I want
-	 * to put in the possibly extreme amount of effort required to get it to work.
+	 * True concurrent compilation is not currently supported. The pebble engine
+	 * will only compile one at a time. This test simply makes sure that if a
+	 * user attempts to trigger concurrent compilation everything still succeeds
+	 * (despite it being executed one at a time behind the scenes).
 	 * 
-	 * It might be easier for me to provide a way for users to PREcompile their templates
-	 * before using them in a highly concurrent environment.
-	 *
 	 * @throws InterruptedException
 	 * @throws PebbleException
 	 */
-	@Ignore
 	@Test
 	public void testConcurrentCompilationOfMultipleTemplates() throws InterruptedException, PebbleException {
 		final PebbleEngine engine = new PebbleEngine();
 		final ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();
 
-		int numOfConcurrentThreads = 500;
+		int numOfConcurrentThreads = 100;
 		final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
 
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			semaphore.acquire(2);
 			es.submit(new Runnable() {
 				@Override

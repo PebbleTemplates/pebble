@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
 
 import org.apache.commons.io.IOUtils;
 
@@ -98,6 +99,12 @@ public class PebbleEngine {
 	private Map<String, Object> globalVariables;
 	private Map<String, SimpleFunction> functions;
 
+	/**
+	 * compilationMutex ensures that only one template is being compiled at a
+	 * time. Only concurrent evaluation is supported at this time.
+	 */
+	private final Semaphore compilationMutex = new Semaphore(1);
+
 	public PebbleEngine() {
 		this(new PebbleDefaultLoader());
 	}
@@ -143,7 +150,8 @@ public class PebbleEngine {
 
 		return loadingTemplateCache.get(className, new Callable<PebbleTemplate>() {
 
-			public PebbleTemplate call() throws PebbleException {
+			public PebbleTemplate call() throws PebbleException, InterruptedException {
+				compilationMutex.acquire();
 				PebbleTemplate instance = null;
 				/* template has not been compiled, we must compile it */
 
@@ -162,6 +170,10 @@ public class PebbleEngine {
 				String javaSource = getCompiler().compile(root).getSource();
 				instance = getCompiler().compileToJava(javaSource, className);
 
+				// we are now done with the non-thread-safe objects, so release
+				// mutex
+				compilationMutex.release();
+
 				// give the template some KNOWLEDGE
 				instance.setEngine(self);
 				instance.setGeneratedJavaCode(javaSource);
@@ -169,6 +181,7 @@ public class PebbleEngine {
 				instance.setLocale(defaultLocale);
 				instance.initBlocks();
 				instance.initMacros();
+
 				if (root.hasParent()) {
 					PebbleTemplate parent = self.compile(root.getParentFileName());
 					parent.setChild(instance);

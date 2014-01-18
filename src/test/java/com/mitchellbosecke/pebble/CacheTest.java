@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.ConcurrencyTest.TestObject;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.PebbleDefaultLoader;
