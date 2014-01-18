@@ -17,11 +17,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
 
-import com.mitchellbosecke.pebble.cache.Cache;
-import com.mitchellbosecke.pebble.cache.DefaultTemplateCache;
+import com.mitchellbosecke.pebble.cache.DefaultTemplateLoadingCache;
+import com.mitchellbosecke.pebble.cache.TemplateLoadingCache;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.compiler.InMemoryForwardingFileManager;
@@ -78,7 +79,7 @@ public class PebbleEngine {
 	/*
 	 * Templates that have already been compiled into Java
 	 */
-	private Cache<String,PebbleTemplate> templateCache;
+	private TemplateLoadingCache<String, PebbleTemplate> loadingTemplateCache;
 
 	/*
 	 * Extensions
@@ -113,7 +114,7 @@ public class PebbleEngine {
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
 		fileManager = new InMemoryForwardingFileManager();
-		templateCache = new DefaultTemplateCache();
+		loadingTemplateCache = new DefaultTemplateLoadingCache();
 
 		// register default extensions
 		this.addExtension(new CoreExtension());
@@ -121,67 +122,64 @@ public class PebbleEngine {
 
 	}
 
-
 	/**
 	 * 
 	 * @param templateName
-
+	 * 
 	 * @return
 	 * @throws SyntaxException
 	 * @throws LoaderException
 	 * @throws PebbleException
 	 */
-	public PebbleTemplate compile(String templateName) throws SyntaxException, LoaderException,
-			PebbleException {
+	public PebbleTemplate compile(final String templateName) throws SyntaxException, LoaderException, PebbleException {
+
 		if (this.loader == null) {
 			throw new LoaderException("Loader has not yet been specified.");
 		}
 
-		String className = this.getTemplateClassName(templateName);
-		PebbleTemplate instance = null;
+		final String className = this.getTemplateClassName(templateName);
 
-		loader.setCharset(charset);
+		final PebbleEngine self = this;
 
-		if(templateCache != null){
-			instance = templateCache.get(className);
-		}
-		
-		if (instance == null){
-			/* template has not been compiled, we must compile it */
+		return loadingTemplateCache.get(className, new Callable<PebbleTemplate>() {
 
-			// load it
-			Reader templateReader = loader.getReader(templateName);
-			String templateSource = "";
-			try {
-				templateSource = IOUtils.toString(templateReader);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			public PebbleTemplate call() throws PebbleException {
+				PebbleTemplate instance = null;
+				/* template has not been compiled, we must compile it */
+
+				// load it
+				Reader templateReader = loader.getReader(templateName);
+				String templateSource = "";
+				try {
+					templateSource = IOUtils.toString(templateReader);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
+				NodeRoot root = getParser().parse(tokenStream);
+				String javaSource = getCompiler().compile(root).getSource();
+				instance = getCompiler().compileToJava(javaSource, className);
+
+				// give the template some KNOWLEDGE
+				instance.setEngine(self);
+				instance.setGeneratedJavaCode(javaSource);
+				instance.setSource(templateSource);
+				instance.setLocale(defaultLocale);
+				instance.initBlocks();
+				instance.initMacros();
+				if (root.hasParent()) {
+					PebbleTemplate parent = self.compile(root.getParentFileName());
+					parent.setChild(instance);
+					instance.setParent(parent);
+				}
+
+				fileManager.clear();
+
+				return instance;
 			}
-
-			TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
-			NodeRoot root = getParser().parse(tokenStream);
-			String javaSource = getCompiler().compile(root).getSource();
-			instance = getCompiler().compileToJava(javaSource, className);
-
-			// give the template some KNOWLEDGE
-			instance.setEngine(this);
-			instance.setGeneratedJavaCode(javaSource);
-			instance.setSource(templateSource);
-			instance.setLocale(defaultLocale);
-			instance.initBlocks();
-			instance.initMacros();
-			if (root.hasParent()) {
-				PebbleTemplate parent = this.compile(root.getParentFileName());
-				parent.setChild(instance);
-				instance.setParent(parent);
-			}
-
-			templateCache.put(className, instance);
-		}
-		fileManager.clear();
-		
-		return instance;
+		});
 	}
 
 	public void setLoader(Loader loader) {
@@ -387,12 +385,12 @@ public class PebbleEngine {
 		return templateAbstractClass;
 	}
 
-	public Cache<String,PebbleTemplate> getTemplateCache() {
-		return templateCache;
+	public TemplateLoadingCache<String, PebbleTemplate> getTemplateCache() {
+		return loadingTemplateCache;
 	}
 
-	public void setTemplateCache(Cache<String,PebbleTemplate> cache) {
-		this.templateCache = cache;
+	public void setTemplateCache(TemplateLoadingCache<String, PebbleTemplate> cache) {
+		this.loadingTemplateCache = cache;
 	}
 
 	public boolean isStrictVariables() {

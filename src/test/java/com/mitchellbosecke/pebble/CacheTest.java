@@ -6,89 +6,24 @@ import static org.junit.Assert.assertFalse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.ConcurrencyTest.TestObject;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.PebbleDefaultLoader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
-public class EngineTest extends AbstractTest {
-
-	@Test(expected = RuntimeException.class)
-	public void strictVariablesNonExisting() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(true);
-
-		PebbleTemplate template = pebble.compile("{{ nonExisting }}");
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-	}
-
-	@Test
-	public void nonStrictVariablesNonExisting() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(false);
-
-		PebbleTemplate template = pebble.compile("{{ nonExisting }}");
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("", writer.toString());
-	}
-
-	@Test
-	public void strictVariablesExistingButNull() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(true);
-
-		PebbleTemplate template = pebble.compile("{{ existingButNull }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("existingButNull", null);
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("", writer.toString());
-	}
-
-	@Test(expected = AttributeNotFoundException.class)
-	public void strictVariablesMissingAttribute() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(true);
-
-		PebbleTemplate template = pebble.compile("{{ dave.username }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("dave", new User());
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("", writer.toString());
-	}
-
-	@Test
-	public void nonStrictVariablesMissingAttribute() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(false);
-
-		PebbleTemplate template = pebble.compile("{{ dave.username }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("dave", new User());
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("", writer.toString());
-	}
+public class CacheTest extends AbstractTest {
 
 	/**
 	 * There was once an issue where the cache was unable to differentiate
@@ -146,7 +81,71 @@ public class EngineTest extends AbstractTest {
 				+ "GRANDFATHER TEXT BELOW FOOT", writer2.toString());
 	}
 
-	private class User {
+	@Test
+	public void testConcurrentCacheHitting() throws InterruptedException, PebbleException {
+		final PebbleEngine engine = new PebbleEngine();
+		final ExecutorService es = Executors.newCachedThreadPool();
+		final AtomicInteger totalFailed = new AtomicInteger();
 
+		int numOfConcurrentThreads = 1000;
+		final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
+
+		for (int i = 0; i < 100000; i++) {
+			semaphore.acquire();
+			es.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						PebbleTemplate template = engine.compile("templates/template.concurrent1.peb");
+
+						int a = r.nextInt();
+						int b = r.nextInt();
+						int c = r.nextInt();
+
+						TestObject testObject = new TestObject(a, b, c);
+
+						StringWriter writer = new StringWriter();
+						Map<String, Object> context = new HashMap<>();
+						context.put("test", testObject);
+						template.evaluate(writer, context);
+
+						String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
+								.append(c).toString();
+
+						String actualResult = writer.toString();
+						if (!expectedResult.equals(actualResult)) {
+							totalFailed.incrementAndGet();
+						}
+
+					} catch (IOException | PebbleException e) {
+						e.printStackTrace();
+						totalFailed.incrementAndGet();
+					} finally {
+						semaphore.release();
+					}
+				}
+			});
+			if (totalFailed.intValue() > 0) {
+				break;
+			}
+		}
+		// Wait for them all to complete
+		semaphore.acquire(numOfConcurrentThreads);
+		assertEquals(0, totalFailed.intValue());
 	}
+
+	static Random r = new SecureRandom();
+
+	public static class TestObject {
+		final public int a;
+		final public int b;
+		final public int c;
+
+		private TestObject(int a, int b, int c) {
+			this.a = a;
+			this.b = b;
+			this.c = c;
+		}
+	}
+
 }

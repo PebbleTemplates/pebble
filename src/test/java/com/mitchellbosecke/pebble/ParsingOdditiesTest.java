@@ -27,8 +27,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble
-				.compile("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+		PebbleTemplate template = pebble.compile("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
