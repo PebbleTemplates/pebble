@@ -46,7 +46,6 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
-import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
@@ -66,8 +65,7 @@ public class PebbleEngine {
 	/*
 	 * Final Settings
 	 */
-	private final Class<?> templateInterfaceClass = PebbleTemplate.class;
-	private final Class<?> templateAbstractClass = AbstractPebbleTemplate.class;
+	private final Class<?> templateParentClass = PebbleTemplate.class;
 	private final String templateClassPrefix = "PebbleTemplate";
 
 	/*
@@ -389,13 +387,9 @@ public class PebbleEngine {
 		}
 		return this.templateClassPrefix + classNameHash;
 	}
-
-	public Class<?> getTemplateInterfaceClass() {
-		return templateInterfaceClass;
-	}
-
-	public Class<?> getTemplateAbstractClass() {
-		return templateAbstractClass;
+	
+	public Class<?> getTemplateParentClass() {
+		return templateParentClass;
 	}
 
 	public TemplateLoadingCache<String, PebbleTemplate> getTemplateCache() {

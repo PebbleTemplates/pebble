@@ -52,7 +52,7 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileClassHeader(Compiler compiler) {
-		String parentClass = compiler.getEngine().getTemplateAbstractClass().getName();
+		String parentClass = compiler.getEngine().getTemplateParentClass().getName();
 
 		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME))
 				.raw("\n\n")
@@ -65,18 +65,17 @@ public class NodeRoot extends AbstractNode {
 				.raw(";")
 				.raw("\n")
 				.raw("\n")
-				.write(String.format("public class %s extends %s implements %s {", compiler.getEngine()
-						.getTemplateClassName(filename), parentClass, compiler.getEngine().getTemplateInterfaceClass()
-						.getName())).indent();
+				.write(String.format("public class %s extends %s {", compiler.getEngine()
+						.getTemplateClassName(filename), parentClass)).indent();
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {
 		compiler.raw("\n\n")
 				.write("public void buildContent(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.raw("\n").indent();
-		if(this.parentFileName != null){
+		if (this.parentFileName != null) {
 			compiler.write("getParent().buildContent(writer, context);");
-		}else{
+		} else {
 			body.compile(compiler);
 		}
 
@@ -94,7 +93,7 @@ public class NodeRoot extends AbstractNode {
 		}
 		compiler.outdent().raw("\n").write("}");
 	}
-	
+
 	private void compileMacros(Compiler compiler) {
 		compiler.raw("\n\n").write("public void initMacros() {").raw("\n").indent();
 		for (List<NodeMacro> overloadedMacros : macros.values()) {

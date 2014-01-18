@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.template.AbstractPebbleTemplate;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CompilerImpl implements Compiler {
@@ -197,11 +197,11 @@ public class CompilerImpl implements Compiler {
 			e.printStackTrace();
 		}
 
-		AbstractPebbleTemplate template;
+		PebbleTemplate template;
 		try {
 
 			ClassLoader cl = fileManager.getClassLoader(null);
-			template = (AbstractPebbleTemplate) cl.loadClass(fullClassName).newInstance();
+			template = (PebbleTemplate) cl.loadClass(fullClassName).newInstance();
 
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new PebbleException("Compilation error occurred");
