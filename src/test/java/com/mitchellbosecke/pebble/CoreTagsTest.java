@@ -49,6 +49,22 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
+	public void testFlush() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "start{% flush %}end";
+		PebbleTemplate template = pebble.compile(source);
+
+		FlushAwareWriter writer = new FlushAwareWriter();
+		template.evaluate(writer);
+		List<String> flushedBuffers = writer.getFlushedBuffers();
+
+		assertEquals("start", flushedBuffers.get(0));
+		assertEquals("startend", flushedBuffers.get(1));
+	}
+
+	@Test
 	public void testFor() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
@@ -130,7 +146,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("HELLO\n", writer.toString());
 	}
-	
+
 	@Test
 	public void testMacroFromAnotherFile() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macro2.peb");
@@ -173,6 +189,20 @@ public class CoreTagsTest extends AbstractTest {
 
 		public String getUsername() {
 			return username;
+		}
+	}
+
+	public class FlushAwareWriter extends StringWriter {
+		private List<String> buffers = new ArrayList<>();
+
+		@Override
+		public void flush() {
+			buffers.add(this.getBuffer().toString());
+			super.flush();
+		}
+
+		public List<String> getFlushedBuffers() {
+			return buffers;
 		}
 	}
 }
