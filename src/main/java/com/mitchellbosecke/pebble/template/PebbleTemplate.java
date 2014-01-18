@@ -69,25 +69,12 @@ public abstract class PebbleTemplate {
 
 		buildContent(writer, context);
 
-		try {
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new PebbleException("Unable to flush or close writer.");
-		}
+		writer.flush();
 	}
 
 	private Context initContext() {
 		Context context = new Context(engine.isStrictVariables());
 		context.putAll(engine.getGlobalVariables());
-
-		/*
-		 * some global variables that have to be implemented here because they
-		 * are unique to the particular template.
-		 */
-		// context.put("_self", this);
-		// context.put("_context", context);
 		return context;
 	}
 
