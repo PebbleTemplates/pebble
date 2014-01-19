@@ -23,8 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
@@ -61,6 +59,7 @@ import com.mitchellbosecke.pebble.tokenParser.ParallelTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.utils.OperatorUtils;
+import com.mitchellbosecke.pebble.utils.StringUtils;
 
 public class CoreExtension extends AbstractExtension {
 

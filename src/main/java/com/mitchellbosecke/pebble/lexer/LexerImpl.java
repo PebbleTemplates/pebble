@@ -17,8 +17,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
@@ -26,6 +24,7 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.utils.Pair;
 import com.mitchellbosecke.pebble.utils.StringLengthComparator;
+import com.mitchellbosecke.pebble.utils.StringUtils;
 
 public class LexerImpl implements Lexer {
 
@@ -416,8 +415,9 @@ public class LexerImpl implements Lexer {
 	 */
 	private void pushToken(Token.Type type, String value) {
 		// ignore empty text tokens
-		if (type.equals(Token.Type.TEXT) && StringUtils.isEmpty(value))
+		if (type.equals(Token.Type.TEXT) && StringUtils.isEmpty(value)){
 			return;
+		}
 		this.tokens.add(new Token(type, value, this.lineNumber));
 	}
 
