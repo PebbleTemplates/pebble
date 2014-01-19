@@ -66,6 +66,21 @@ public interface Compiler {
 	 * @return this
 	 */
 	public Compiler outdent();
+	
+	/**
+	 * Adds a new line
+	 * 
+	 * @return this
+	 */
+	public Compiler newline();
+	
+	
+	/**
+	 * Adds multiple new lines
+	 * 
+	 * @return this
+	 */
+	public Compiler newline(int numOfLines);
 
 	/**
 	 * Starts a brand new compilation. This should ONLY be called by the main

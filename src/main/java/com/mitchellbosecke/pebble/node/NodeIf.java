@@ -35,20 +35,20 @@ public class NodeIf extends AbstractNode {
 		boolean isFirst = true;
 		for (Pair<NodeExpression, NodeBody> ifStatement : conditionsWithBodies) {
 			if (!isFirst) {
-				compiler.raw("\n").outdent().write("} else if (");
+				compiler.newline().outdent().write("} else if (");
 			} else {
-				compiler.raw("\n").write("if (");
+				compiler.newline().write("if (");
 			}
 
-			compiler.subcompile(ifStatement.getLeft()).raw(") {\n").indent().subcompile(ifStatement.getRight());
+			compiler.subcompile(ifStatement.getLeft()).raw(") {").newline().indent().subcompile(ifStatement.getRight());
 
 		}
 
 		if (elseBody != null) {
-			compiler.raw("\n").outdent().write("} else {\n").indent().subcompile(elseBody);
+			compiler.newline().outdent().write("} else {").newline().indent().subcompile(elseBody);
 		}
 
-		compiler.raw("\n").outdent().write("}\n");
+		compiler.newline().outdent().write("}").newline();
 	}
 
 }

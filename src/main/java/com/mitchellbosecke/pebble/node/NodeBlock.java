@@ -33,7 +33,7 @@ public class NodeBlock extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.write("this.registerBlock(new ").raw(Block.class.getName()).raw("(){").raw("\n").indent();
+		compiler.write("this.registerBlock(new ").raw(Block.class.getName()).raw("(){").newline().indent();
 
 		compileGetNameMethod(compiler);
 		compileEvaluateMethod(compiler);
@@ -41,13 +41,15 @@ public class NodeBlock extends AbstractNode {
 	}
 
 	public void compileGetNameMethod(Compiler compiler) {
-		compiler.write("public String getName() { return ").string(name).raw("; }").raw("\n");
+		compiler.write("public String getName() { return ").string(name).raw("; }").newline();
 	}
 
 	public void compileEvaluateMethod(Compiler compiler) {
-		compiler.write("public void evaluate(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {").indent();
+		compiler.write(
+				"public void evaluate(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
+				.newline().indent();
 		compiler.subcompile(body);
-		compiler.outdent().raw("\n").write("}").raw("\n");
+		compiler.outdent().newline().write("}").newline();
 	}
 
 }

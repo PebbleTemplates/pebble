@@ -25,16 +25,18 @@ public class NodeParallel extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.write("evaluateInParallel(writer, context, new ").raw(Evaluatable.class.getName()).raw("(){").raw("\n").indent();
+		compiler.write("evaluateInParallel(writer, context, new ").raw(Evaluatable.class.getName()).raw("(){")
+				.newline().indent();
 
 		compiler.write("public void evaluate(java.io.Writer writer, ").raw(Context.class.getName())
-				.raw(" context) throws ").raw(PebbleException.class.getName()).raw(", java.io.IOException {").raw("\n").indent();
+				.raw(" context) throws ").raw(PebbleException.class.getName()).raw(", java.io.IOException {").newline()
+				.indent();
 
 		body.compile(compiler);
 
-		compiler.outdent().write("}").raw("\n");
+		compiler.outdent().write("}").newline();
 
-		compiler.outdent().write("});").raw("\n");
+		compiler.outdent().write("});").newline();
 	}
 
 }

@@ -115,6 +115,19 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
+	public Compiler newline() {
+		return newline(1);
+	}
+
+	@Override
+	public Compiler newline(int numOfNewLines) {
+		for (int i = 0; i < numOfNewLines; i++) {
+			raw("\n");
+		}
+		return this;
+	}
+
+	@Override
 	public String getSource() {
 		return builder.toString();
 	}

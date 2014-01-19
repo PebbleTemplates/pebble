@@ -23,10 +23,10 @@ public class NodeInclude extends AbstractNode implements DisplayableNode {
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.raw("\n");
+		compiler.newline();
 		compiler.write("this.engine.compile(").subcompile(includeExpression).raw(").evaluate(writer);");
 
-		compiler.raw("\n");
+		compiler.newline();
 	}
 
 }

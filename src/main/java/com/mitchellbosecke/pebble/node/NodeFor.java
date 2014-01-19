@@ -37,13 +37,14 @@ public class NodeFor extends AbstractNode {
 	public void compile(Compiler compiler) {
 
 		if (elseBody != null) {
-			compiler.raw("\n").write("if (((Iterable)").subcompile(iterable).raw(").iterator().hasNext()){\n").indent();
+			compiler.newline().write("if (((Iterable)").subcompile(iterable).raw(").iterator().hasNext()){").newline()
+					.indent();
 
 			compileForLoop(compiler);
 
-			compiler.raw("\n").outdent().write("} else {\n").indent().subcompile(elseBody);
+			compiler.newline().outdent().write("} else {\n").indent().subcompile(elseBody);
 
-			compiler.raw("\n").outdent().write("}\n");
+			compiler.newline().outdent().write("}").newline();
 		} else {
 			compileForLoop(compiler);
 		}
@@ -51,29 +52,31 @@ public class NodeFor extends AbstractNode {
 
 	private void compileForLoop(Compiler compiler) {
 
-		compiler.write("context = pushContext(context);\n");
-		compiler.write("context.put(\"loop\", new HashMap<>());\n");
+		compiler.write("context = pushContext(context);").newline();
+		compiler.write("context.put(\"loop\", new HashMap<>());").newline();
 
 		// create the special "loop" variable
-		compiler.write("((Map<String,Object>)context.get(\"loop\")).put(\"index\", 0);\n");
+		compiler.write("((Map<String,Object>)context.get(\"loop\")).put(\"index\", 0);").newline();
 
 		// iterate through loop first to calculate length
 		compiler.write("((Map<String,Object>)context.get(\"loop\")).put(\"length\", ").raw(ObjectUtils.class.getName())
-				.raw(".getIteratorSize((Iterable)").subcompile(iterable).raw("));\n");
+				.raw(".getIteratorSize((Iterable)").subcompile(iterable).raw("));").newline();
 
 		// start the for loop
-		compiler.write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){\n")
-				.indent();
+		compiler.write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){")
+				.newline().indent();
 
 		compiler.write("context.put(").string(iterationVariable.getName()).raw(",").raw(iterationVariable.getName())
-				.raw(");\n").subcompile(body).raw("\n");
+				.raw(");").newline().subcompile(body).newline();
 
 		// increment the special loop.index variable
-		compiler.write("((Map<String,Object>)context.get(\"loop\")).put(\"index\", (int)((Map<String,Object>)context.get(\"loop\")).get(\"index\") + 1);\n");
+		compiler.write(
+				"((Map<String,Object>)context.get(\"loop\")).put(\"index\", (int)((Map<String,Object>)context.get(\"loop\")).get(\"index\") + 1);")
+				.newline();
 
-		compiler.outdent().raw("\n").write("}\n");
+		compiler.outdent().newline().write("}").newline();
 
 		// remove context variables that are specific to this for loop
-		compiler.write("context = popContext(context);\n");
+		compiler.write("context = popContext(context);").newline();
 	}
 }

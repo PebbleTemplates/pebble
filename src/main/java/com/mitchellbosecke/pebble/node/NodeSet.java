@@ -26,7 +26,7 @@ public class NodeSet extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("\n").write("context.put(").string(name.getName()).raw(",").subcompile(value).raw(");\n");
+		compiler.newline().write("context.put(").string(name.getName()).raw(",").subcompile(value).raw(");").newline();
 	}
 
 }

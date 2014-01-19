@@ -19,11 +19,7 @@ public class NodeFlush extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-
-		compiler.raw("\n");
-		compiler.write("writer.flush();");
-
-		compiler.raw("\n");
+		compiler.newline().write("writer.flush();").newline();
 	}
 
 }

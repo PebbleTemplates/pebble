@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.template.AbstractMacro;
 
 public class NodeMacro extends AbstractNode {
-	
+
 	private final NodeExpressionArguments args;
 
 	private final String name;
@@ -31,7 +31,7 @@ public class NodeMacro extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.write("this.registerMacro(new ").raw(AbstractMacro.class.getName()).raw("(){").raw("\n").indent();
+		compiler.write("this.registerMacro(new ").raw(AbstractMacro.class.getName()).raw("(){").newline().indent();
 
 		compileGetNameMethod(compiler);
 		compileGetNumberOfArguments(compiler);
@@ -42,12 +42,12 @@ public class NodeMacro extends AbstractNode {
 	}
 
 	public void compileGetNameMethod(Compiler compiler) {
-		compiler.write("public String getName() { return ").string(name).raw("; }").raw("\n");
+		compiler.write("public String getName() { return ").string(name).raw("; }").newline();
 	}
 
 	public void compileGetNumberOfArguments(Compiler compiler) {
 		compiler.write("public int getNumberOfArguments() { return ").raw(String.valueOf(args.getArgs().length))
-				.raw("; }").raw("\n");
+				.raw("; }").newline();
 	}
 
 	public void compileInit(Compiler compiler) {
@@ -55,10 +55,10 @@ public class NodeMacro extends AbstractNode {
 
 		for (NodeExpression arg : args.getArgs()) {
 			NodeExpressionDeclaration variableDeclaration = (NodeExpressionDeclaration) arg;
-			compiler.write("argNames.add(").string(variableDeclaration.getName()).raw(");").raw("\n");
+			compiler.write("argNames.add(").string(variableDeclaration.getName()).raw(");").newline();
 		}
 
-		compiler.outdent().write("}").raw("\n");
+		compiler.outdent().write("}").newline();
 
 	}
 
@@ -67,6 +67,6 @@ public class NodeMacro extends AbstractNode {
 				"public void evaluate(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.indent();
 		compiler.subcompile(body);
-		compiler.outdent().raw("\n").write("}").raw("\n");
+		compiler.outdent().newline().write("}").newline();
 	}
 }

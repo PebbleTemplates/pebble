@@ -57,54 +57,54 @@ public class NodeRoot extends AbstractNode {
 	private void compileClassHeader(Compiler compiler, String className) {
 		String parentClass = compiler.getEngine().getTemplateParentClass().getName();
 
-		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME)).raw("\n\n")
-				.write("import java.util.Map;").raw("\n").write("import java.util.HashMap;").raw("\n").write("import ")
-				.raw(Context.class.getName()).raw(";").raw("\n").raw("\n")
+		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME)).newline(2)
+				.write("import java.util.Map;").newline().write("import java.util.HashMap;").newline().write("import ")
+				.raw(Context.class.getName()).raw(";").newline(2)
 				.write(String.format("public class %s extends %s {", className, parentClass)).indent();
 	}
 
 	private void compileConstructor(Compiler compiler, String className) {
-		compiler.raw("\n\n").write("public ").raw(className).raw(" (String javaCode, String source, ")
-				.raw(PebbleEngine.class.getName()).raw(" engine) {").raw("\n");
+		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, String source, ")
+				.raw(PebbleEngine.class.getName()).raw(" engine) {").newline();
 
-		compiler.indent().write("super(javaCode, source, engine);").raw("\n");
+		compiler.indent().write("super(javaCode, source, engine);").newline();
 
-		compiler.outdent().write("}").raw("\n\n");
+		compiler.outdent().write("}").newline(2);
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {
-		compiler.raw("\n\n")
+		compiler.newline(2)
 				.write("public void buildContent(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
-				.raw("\n").indent();
+				.newline().indent();
 		if (this.parentFileName != null) {
 			compiler.write("getParent().buildContent(writer, context);");
 		} else {
 			body.compile(compiler);
 		}
 
-		compiler.outdent().raw("\n").write("}");
+		compiler.outdent().newline().write("}");
 	}
 
 	private void compileClassFooter(Compiler compiler) {
-		compiler.outdent().raw("\n\n").write("}");
+		compiler.outdent().newline(2).write("}");
 	}
 
 	private void compileBlocks(Compiler compiler) {
-		compiler.raw("\n\n").write("public void initBlocks() {").raw("\n").indent();
+		compiler.newline(2).write("public void initBlocks() {").newline().indent();
 		for (NodeBlock block : blocks.values()) {
-			compiler.raw("\n").subcompile(block);
+			compiler.newline().subcompile(block);
 		}
-		compiler.outdent().raw("\n").write("}");
+		compiler.outdent().newline().write("}");
 	}
 
 	private void compileMacros(Compiler compiler) {
-		compiler.raw("\n\n").write("public void initMacros() {").raw("\n").indent();
+		compiler.newline(2).write("public void initMacros() {").newline().indent();
 		for (List<NodeMacro> overloadedMacros : macros.values()) {
 			for (NodeMacro macro : overloadedMacros) {
-				compiler.raw("\n\n").subcompile(macro);
+				compiler.newline(2).subcompile(macro);
 			}
 		}
-		compiler.outdent().raw("\n").write("}");
+		compiler.outdent().newline().write("}");
 	}
 
 	public boolean hasParent() {

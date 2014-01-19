@@ -35,7 +35,7 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 		if (this.isExpression) {
 			compiler.raw("block(").string(this.name).raw(", context, false)");
 		} else {
-			compiler.raw("\n").write("block(").string(this.name).raw(", context, false, writer);\n");
+			compiler.newline().write("block(").string(this.name).raw(", context, false, writer);").newline();
 		}
 	}
 
