@@ -15,9 +15,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.template.AbstractMacro;
 
 public class NodeMacro extends AbstractNode {
-
-	public static final String MACRO_PREFIX = "macro_";
-
+	
 	private final NodeExpressionArguments args;
 
 	private final String name;

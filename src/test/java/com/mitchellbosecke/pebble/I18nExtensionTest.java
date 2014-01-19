@@ -43,10 +43,9 @@ public class I18nExtensionTest extends AbstractTest {
 		pebble.addExtension(new I18nExtension());
 
 		PebbleTemplate template = pebble.compile("{{ message('testMessages','greeting') }}");
-		template.setLocale(new Locale("es_US"));
 
 		Writer writer = new StringWriter();
-		template.evaluate(writer);
+		template.evaluate(writer, new Locale("es_US"));
 		assertEquals("Hola", writer.toString());
 	}
 }

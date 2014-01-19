@@ -8,10 +8,13 @@ public class Context extends HashMap<String, Object> {
 
 	private final boolean strictVariables;
 
-	private Context parent;
+	private final Context parent;
+	
+	public static final String GLOBAL_VARIABLE_LOCALE = "_locale";
 
-	public Context(boolean strictVariables) {
+	public Context(boolean strictVariables, Context parent) {
 		this.strictVariables = strictVariables;
+		this.parent = parent;
 	}
 
 	@Override
@@ -31,10 +34,6 @@ public class Context extends HashMap<String, Object> {
 
 	public Context getParent() {
 		return parent;
-	}
-
-	public void setParent(Context parent) {
-		this.parent = parent;
 	}
 
 	public boolean isStrictVariables() {

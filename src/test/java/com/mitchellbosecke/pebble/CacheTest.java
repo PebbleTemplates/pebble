@@ -113,6 +113,8 @@ public class CacheTest extends AbstractTest {
 
 						String actualResult = writer.toString();
 						if (!expectedResult.equals(actualResult)) {
+							System.out.println("Expected: " + expectedResult);
+							System.out.println("Actual: " + actualResult);
 							totalFailed.incrementAndGet();
 						}
 
@@ -124,6 +126,8 @@ public class CacheTest extends AbstractTest {
 					}
 				}
 			});
+			
+			// quick fail
 			if (totalFailed.intValue() > 0) {
 				break;
 			}

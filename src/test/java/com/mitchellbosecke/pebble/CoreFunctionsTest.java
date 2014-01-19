@@ -66,19 +66,6 @@ public class CoreFunctionsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSourceFunction() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-
-		String source = "{{ source() }}";
-		PebbleTemplate template = pebble.compile(source);
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals(source, writer.toString());
-	}
-
-	@Test
 	public void testMinFunction() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);

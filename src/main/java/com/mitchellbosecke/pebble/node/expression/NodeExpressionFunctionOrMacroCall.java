@@ -27,7 +27,7 @@ public class NodeExpressionFunctionOrMacroCall extends NodeExpression {
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.raw("applyFunctionOrMacro(").string(String.valueOf(functionName.getValue()));
+		compiler.raw("applyFunctionOrMacro(").string(String.valueOf(functionName.getValue())).raw(", context");
 
 		if (args != null) {
 			for (NodeExpression arg : args.getArgs()) {

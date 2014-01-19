@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
 
 import org.apache.commons.io.IOUtils;
@@ -74,9 +75,10 @@ public class PebbleEngine {
 	private boolean strictVariables = false;
 	private String charset = "UTF-8";
 	private Locale defaultLocale = Locale.getDefault();
+	private ExecutorService executorService;
 
-	/*
-	 * Templates that have already been compiled into Java
+	/**
+	 * Template cache
 	 */
 	private TemplateLoadingCache<String, PebbleTemplate> loadingTemplateCache;
 
@@ -151,7 +153,6 @@ public class PebbleEngine {
 			public PebbleTemplate call() throws PebbleException, InterruptedException {
 				compilationMutex.acquire();
 				PebbleTemplate instance = null;
-				/* template has not been compiled, we must compile it */
 
 				// load it
 				Reader templateReader = loader.getReader(templateName);
@@ -166,17 +167,13 @@ public class PebbleEngine {
 				TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
 				NodeRoot root = getParser().parse(tokenStream);
 				String javaSource = getCompiler().compile(root).getSource();
-				instance = getCompiler().compileToJava(javaSource, className);
+				instance = getCompiler().instantiateTemplate(javaSource, className, templateSource);
 
 				// we are now done with the non-thread-safe objects, so release
-				// mutex
+				// the compilation mutex
 				compilationMutex.release();
 
 				// give the template some KNOWLEDGE
-				instance.setEngine(self);
-				instance.setGeneratedJavaCode(javaSource);
-				instance.setSource(templateSource);
-				instance.setLocale(defaultLocale);
 				instance.initBlocks();
 				instance.initMacros();
 
@@ -186,7 +183,7 @@ public class PebbleEngine {
 					instance.setParent(parent);
 				}
 
-				fileManager.clear();
+				//fileManager.clear();
 
 				return instance;
 			}
@@ -387,7 +384,7 @@ public class PebbleEngine {
 		}
 		return this.templateClassPrefix + classNameHash;
 	}
-	
+
 	public Class<?> getTemplateParentClass() {
 		return templateParentClass;
 	}
@@ -422,5 +419,13 @@ public class PebbleEngine {
 
 	public void setDefaultLocale(Locale locale) {
 		this.defaultLocale = locale;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
 	}
 }

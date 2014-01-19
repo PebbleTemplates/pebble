@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.extension;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -29,7 +28,7 @@ public class I18nExtension extends AbstractExtension {
 		return functions;
 	}
 
-	private SimpleFunction messageFunction = new TemplateAwareSimpleFunction() {
+	private SimpleFunction messageFunction = new LocaleAwareSimpleFunction() {
 
 		@Override
 		public String getName() {
@@ -41,7 +40,6 @@ public class I18nExtension extends AbstractExtension {
 			String basename = (String) args.get(0);
 			String key = (String) args.get(1);
 
-			Locale locale = template.getLocale();
 			ResourceBundle bundle = ResourceBundle.getBundle(basename, locale);
 
 			return bundle.getObject(key);

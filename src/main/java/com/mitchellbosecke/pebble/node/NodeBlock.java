@@ -14,8 +14,6 @@ import com.mitchellbosecke.pebble.template.Block;
 
 public class NodeBlock extends AbstractNode {
 
-	public static final String BLOCK_PREFIX = "block_";
-
 	private NodeBody body;
 	private String name;
 

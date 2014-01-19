@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +59,7 @@ import com.mitchellbosecke.pebble.tokenParser.IfTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ImportTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.IncludeTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.ParallelTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.utils.OperatorUtils;
@@ -89,6 +89,7 @@ public class CoreExtension extends AbstractExtension {
 		parsers.add(new IncludeTokenParser());
 		parsers.add(new SetTokenParser());
 		parsers.add(new FlushTokenParser());
+		parsers.add(new ParallelTokenParser());
 		return parsers;
 	}
 
@@ -162,7 +163,6 @@ public class CoreExtension extends AbstractExtension {
 		 * includes the block and parent functions.
 		 */
 
-		functions.add(sourceFunction);
 		functions.add(minFunction);
 		functions.add(maxFunction);
 		return functions;
@@ -173,9 +173,9 @@ public class CoreExtension extends AbstractExtension {
 
 		/*
 		 * The following core global variables are defined in
-		 * AbstractPebbleTemplate.initContext():
+		 * PebbleTemplate.initContext():
 		 * 
-		 * _self
+		 * _locale
 		 */
 
 		return null;
@@ -232,7 +232,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter dateFilter = new TemplateAwareFilter() {
+	private Filter dateFilter = new LocaleAwareFilter() {
 		public String getName() {
 			return "date";
 		}
@@ -243,8 +243,6 @@ public class CoreExtension extends AbstractExtension {
 
 			DateFormat existingFormat = null;
 			DateFormat intendedFormat = null;
-
-			Locale locale = template.getLocale();
 
 			if (args.size() == 1) {
 				arg = (Date) input;
@@ -265,7 +263,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter numberFormatFilter = new TemplateAwareFilter() {
+	private Filter numberFormatFilter = new LocaleAwareFilter() {
 		public String getName() {
 			return "number_format";
 		}
@@ -277,7 +275,7 @@ public class CoreExtension extends AbstractExtension {
 				Format format = new DecimalFormat((String) args.get(0));
 				return format.format(number);
 			} else {
-				NumberFormat numberFormat = NumberFormat.getInstance(template.getLocale());
+				NumberFormat numberFormat = NumberFormat.getInstance(locale);
 				return numberFormat.format(number);
 			}
 		}
@@ -418,17 +416,6 @@ public class CoreExtension extends AbstractExtension {
 		public Boolean apply(Object input, List<Object> args) {
 
 			return input instanceof Iterable;
-		}
-	};
-
-	private SimpleFunction sourceFunction = new TemplateAwareSimpleFunction() {
-		public String getName() {
-			return "source";
-		}
-
-		public Object execute(List<Object> args) {
-			return template.getSource();
-
 		}
 	};
 

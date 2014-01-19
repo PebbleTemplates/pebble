@@ -11,6 +11,8 @@ package com.mitchellbosecke.pebble.compiler;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -31,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CompilerImpl implements Compiler {
@@ -124,7 +125,8 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplate compileToJava(String javaSource, String className) throws PebbleException {
+	public PebbleTemplate instantiateTemplate(String javaSource, String className, String templateSource)
+			throws PebbleException {
 
 		String fullClassName = PebbleTemplate.COMPILED_PACKAGE_NAME + "." + className;
 
@@ -201,9 +203,14 @@ public class CompilerImpl implements Compiler {
 		try {
 
 			ClassLoader cl = fileManager.getClassLoader(null);
-			template = (PebbleTemplate) cl.loadClass(fullClassName).newInstance();
+			Constructor<?> constructor = cl.loadClass(fullClassName).getDeclaredConstructor(String.class, String.class,
+					PebbleEngine.class);
 
-		} catch (IllegalAccessException | InstantiationException e) {
+			// constructor.setAccessible(true);
+			template = (PebbleTemplate) constructor.newInstance(javaSource, templateSource, engine);
+
+		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | InstantiationException
+				| InvocationTargetException | IllegalArgumentException e) {
 			throw new PebbleException("Compilation error occurred");
 		} catch (ClassNotFoundException e) {
 			throw new PebbleException(String.format("Could not find generated class: %s", fullClassName));
@@ -211,5 +218,4 @@ public class CompilerImpl implements Compiler {
 
 		return template;
 	}
-
 }

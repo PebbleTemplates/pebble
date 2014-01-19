@@ -71,6 +71,9 @@ public class ConcurrencyTest extends AbstractTest {
 
 						String actualResult = writer.toString();
 						if (!expectedResult.equals(actualResult)) {
+							System.out.println("Expected: " + expectedResult);
+							System.out.println("Actual: " + actualResult);
+							System.out.println("");
 							totalFailed.incrementAndGet();
 						}
 

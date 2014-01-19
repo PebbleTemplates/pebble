@@ -31,7 +31,7 @@ public class NodeExpressionFilter extends NodeExpression {
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.raw("applyFilter(").string(String.valueOf(filterName.getValue()));
+		compiler.raw("applyFilter(").string(String.valueOf(filterName.getValue())).raw(", context");
 
 		compiler.raw(",").subcompile(node);
 

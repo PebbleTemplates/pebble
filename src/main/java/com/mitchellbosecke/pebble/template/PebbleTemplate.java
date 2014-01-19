@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -27,69 +30,98 @@ import com.mitchellbosecke.pebble.extension.SimpleFunction;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.utils.Context;
+import com.mitchellbosecke.pebble.utils.FutureWriter;
+import com.mitchellbosecke.pebble.utils.LocaleAware;
 import com.mitchellbosecke.pebble.utils.ReflectionUtils;
-import com.mitchellbosecke.pebble.utils.TemplateAware;
 
 public abstract class PebbleTemplate {
 
 	public final static String COMPILED_PACKAGE_NAME = "com.mitchellbosecke.pebble.template.compiled";
 
-	private String generatedJavaCode;
-	private String source;
+	private final String generatedJavaCode;
+	private final String source;
 
-	protected Writer writer;
-	protected Context context;
-	protected PebbleEngine engine;
+	protected final PebbleEngine engine;
 
 	private PebbleTemplate parent;
 	private PebbleTemplate child;
-	private final List<PebbleTemplate> importedTemplates = new ArrayList<>();
 
+	private final List<PebbleTemplate> importedTemplates = new ArrayList<>();
 	private final Map<String, Block> blocks = new HashMap<>();
 	private final Map<String, Map<Integer, Macro>> macros = new HashMap<>();
 
-	private Locale locale;
+	public PebbleTemplate(String generatedJavaCode, String source, PebbleEngine engine) {
+		this.generatedJavaCode = generatedJavaCode;
+		this.source = source;
+		this.engine = engine;
+	}
 
 	public abstract void buildContent(Writer writer, Context context) throws IOException, PebbleException;
 
 	public void evaluate(Writer writer) throws PebbleException, IOException {
-		Context context = initContext();
+		Context context = initContext(engine.getDefaultLocale());
+		evaluate(writer, context);
+	}
+
+	public void evaluate(Writer writer, Locale locale) throws PebbleException, IOException {
+		Context context = initContext(locale);
 		evaluate(writer, context);
 	}
 
 	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
-		Context context = initContext();
+		Context context = initContext(engine.getDefaultLocale());
+		context.putAll(map);
+		evaluate(writer, context);
+	}
+
+	public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
+		Context context = initContext(locale);
 		context.putAll(map);
 		evaluate(writer, context);
 	}
 
 	private void evaluate(Writer writer, Context context) throws PebbleException, IOException {
-		this.writer = writer;
-		this.context = context;
-
+		if (engine.getExecutorService() != null) {
+			writer = new FutureWriter(writer, engine.getExecutorService());
+		}
 		buildContent(writer, context);
-
 		writer.flush();
 	}
 
-	private Context initContext() {
-		Context context = new Context(engine.isStrictVariables());
+	protected void evaluateInParallel(Writer writer, final Context context, final Evaluatable parallelEvaluation)
+			throws PebbleException, IOException {
+		ExecutorService es = engine.getExecutorService();
+
+		if (es == null) {
+			throw new PebbleException(
+					"The parallel tag can not be used unless you provide an ExecutorService to the PebbleEngine.");
+		}
+
+		final Writer stringWriter = new StringWriter();
+		Future<String> future = es.submit(new Callable<String>() {
+			@Override
+			public String call() throws PebbleException, IOException {
+				parallelEvaluation.evaluate(stringWriter, context);
+				return stringWriter.toString();
+			}
+		});
+		((FutureWriter) writer).enqueue(future);
+	}
+
+	private Context initContext(Locale locale) {
+		Context context = new Context(engine.isStrictVariables(), null);
 		context.putAll(engine.getGlobalVariables());
+		context.put("_locale", locale);
 		return context;
 	}
 
-	protected void pushContext() {
-		Context context = new Context(this.context.isStrictVariables());
-		context.setParent(this.context);
-		this.context = context;
+	protected Context pushContext(Context parentContext) {
+		Context context = new Context(parentContext.isStrictVariables(), parentContext);
+		return context;
 	}
 
-	protected void popContext() {
-		this.context = this.context.getParent();
-	}
-
-	public void setEngine(PebbleEngine engine) {
-		this.engine = engine;
+	protected Context popContext(Context currentContext) {
+		return currentContext.getParent();
 	}
 
 	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute)
@@ -126,9 +158,9 @@ public abstract class PebbleTemplate {
 		boolean found = false;
 
 		// check child template first
-		if (this.child != null && this.child.hasMacro(macroName, args.length)) {
+		if (this.getChild() != null && this.getChild().hasMacro(macroName, args.length)) {
 			found = true;
-			result = this.child.macro(macroName, args);
+			result = this.getChild().macro(macroName, args);
 
 			// check current template
 		} else if (hasMacro(macroName, args.length)) {
@@ -150,8 +182,8 @@ public abstract class PebbleTemplate {
 
 		// delegate to parent template
 		if (!found) {
-			if (this.parent != null) {
-				result = this.parent.macro(macroName, args);
+			if (this.getParent() != null) {
+				result = this.getParent().macro(macroName, args);
 			} else {
 				throw new PebbleException(String.format("Function or Macro [%s] does not exist.", macroName));
 			}
@@ -176,20 +208,26 @@ public abstract class PebbleTemplate {
 
 	public void block(String blockName, Context context, boolean ignoreOverriden, Writer writer)
 			throws PebbleException, IOException {
-		if (!ignoreOverriden && this.child != null && this.child.hasBlock(blockName)) {
-			this.child.block(blockName, context, false, writer);
+
+		// check child
+		if (!ignoreOverriden && this.getChild() != null && this.getChild().hasBlock(blockName)) {
+			this.getChild().block(blockName, context, false, writer);
+
+			// check this template
 		} else if (blocks.containsKey(blockName)) {
 			Block block = blocks.get(blockName);
 			block.evaluate(writer, context);
+
+			// delegate to parent
 		} else {
-			if (this.parent != null) {
-				this.parent.block(blockName, context, true, writer);
+			if (this.getParent() != null) {
+				this.getParent().block(blockName, context, true, writer);
 			}
 		}
 
 	}
 
-	protected Object applyFilter(String filterName, Object... args) throws PebbleException {
+	protected Object applyFilter(String filterName, Context context, Object... args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
 
 		// extract input object
@@ -203,8 +241,8 @@ public abstract class PebbleTemplate {
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
 
-		if (filter instanceof TemplateAware) {
-			((TemplateAware) filter).setTemplate(this);
+		if (filter instanceof LocaleAware) {
+			((LocaleAware) filter).setLocale((Locale)context.get(Context.GLOBAL_VARIABLE_LOCALE));
 		}
 
 		if (filter == null) {
@@ -213,22 +251,22 @@ public abstract class PebbleTemplate {
 		return filter.apply(input, arguments);
 	}
 
-	protected Object applyFunctionOrMacro(String functionName, Object... args) throws PebbleException {
+	protected Object applyFunctionOrMacro(String functionName, Context context, Object... args) throws PebbleException {
 		Map<String, SimpleFunction> functions = engine.getFunctions();
 		if (functions.containsKey(functionName)) {
-			return applyFunction(functions.get(functionName), args);
+			return applyFunction(functions.get(functionName), context, args);
 		}
 
 		return macro(functionName, args);
 	}
 
-	private Object applyFunction(SimpleFunction function, Object... args) throws PebbleException {
+	private Object applyFunction(SimpleFunction function, Context context, Object... args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
 
 		Collections.addAll(arguments, args);
 
-		if (function instanceof TemplateAware) {
-			((TemplateAware) function).setTemplate(this);
+		if (function instanceof LocaleAware) {
+			((LocaleAware) function).setLocale((Locale)context.get(Context.GLOBAL_VARIABLE_LOCALE));
 		}
 		return function.execute(arguments);
 	}
@@ -263,44 +301,20 @@ public abstract class PebbleTemplate {
 		return test.apply(input, arguments);
 	}
 
-	public void setGeneratedJavaCode(String generatedJavaCode) {
-		this.generatedJavaCode = generatedJavaCode;
-	}
-
 	public String getGeneratedJavaCode() {
 		return generatedJavaCode;
-	}
-
-	public void setSource(String source) {
-		this.source = source;
 	}
 
 	public String getSource() {
 		return this.source;
 	}
 
-	public Locale getLocale() {
-		return this.locale;
-	}
-
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
-
 	public PebbleTemplate getParent() {
 		return parent;
 	}
 
-	public void setParent(PebbleTemplate parent) {
-		this.parent = parent;
-	}
-
 	public PebbleTemplate getChild() {
 		return child;
-	}
-
-	public void setChild(PebbleTemplate child) {
-		this.child = child;
 	}
 
 	protected void addImportedTemplate(PebbleTemplate template) {
@@ -310,4 +324,12 @@ public abstract class PebbleTemplate {
 	public abstract void initBlocks();
 
 	public abstract void initMacros();
+
+	public void setParent(PebbleTemplate parent) {
+		this.parent = parent;
+	}
+
+	public void setChild(PebbleTemplate child) {
+		this.child = child;
+	}
 }

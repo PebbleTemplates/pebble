@@ -1,0 +1,40 @@
+/*******************************************************************************
+ * This file is part of Pebble.
+ * 
+ * Original work Copyright (c) 2009-2013 by the Twig Team
+ * Modified work Copyright (c) 2013 by Mitchell Bösecke
+ * 
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ ******************************************************************************/
+package com.mitchellbosecke.pebble.node;
+
+import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.Evaluatable;
+import com.mitchellbosecke.pebble.utils.Context;
+
+public class NodeParallel extends AbstractNode {
+
+	private NodeBody body;
+
+	public NodeParallel(int lineNumber, NodeBody body) {
+		super(lineNumber);
+		this.body = body;
+	}
+
+	@Override
+	public void compile(Compiler compiler) {
+		compiler.write("evaluateInParallel(writer, context, new ").raw(Evaluatable.class.getName()).raw("(){").raw("\n").indent();
+
+		compiler.write("public void evaluate(java.io.Writer writer, ").raw(Context.class.getName())
+				.raw(" context) throws ").raw(PebbleException.class.getName()).raw(", java.io.IOException {").raw("\n").indent();
+
+		body.compile(compiler);
+
+		compiler.outdent().write("}").raw("\n");
+
+		compiler.outdent().write("});").raw("\n");
+	}
+
+}

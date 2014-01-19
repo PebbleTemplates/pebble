@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
@@ -178,6 +179,45 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("alex", writer.toString());
+	}
+
+	@Test(timeout = 4000)
+	public void testParallel() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setExecutorService(Executors.newCachedThreadPool());
+
+		String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end";
+		PebbleTemplate template = pebble.compile(source);
+
+		Writer writer = new StringWriter();
+		Map<String, Object> context = new HashMap<>();
+		context.put("slowObject", new SlowObject());
+		template.evaluate(writer, context);
+
+		assertEquals("beginning first middle second end", writer.toString());
+	}
+
+	public class SlowObject {
+		public String first() {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "first";
+		}
+
+		public String second() {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "second";
+		}
 	}
 
 	public class User {

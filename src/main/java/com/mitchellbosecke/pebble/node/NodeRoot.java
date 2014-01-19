@@ -12,6 +12,7 @@ package com.mitchellbosecke.pebble.node;
 import java.util.List;
 import java.util.Map;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.utils.Context;
@@ -44,29 +45,31 @@ public class NodeRoot extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compileClassHeader(compiler);
+		String className = compiler.getEngine().getTemplateClassName(filename);
+		compileClassHeader(compiler, className);
+		compileConstructor(compiler, className);
 		compileBuildContentFunction(compiler);
 		compileBlocks(compiler);
 		compileMacros(compiler);
 		compileClassFooter(compiler);
 	}
 
-	private void compileClassHeader(Compiler compiler) {
+	private void compileClassHeader(Compiler compiler, String className) {
 		String parentClass = compiler.getEngine().getTemplateParentClass().getName();
 
-		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME))
-				.raw("\n\n")
-				.write("import java.util.Map;")
-				.raw("\n")
-				.write("import java.util.HashMap;")
-				.raw("\n")
-				.write("import ")
-				.raw(Context.class.getName())
-				.raw(";")
-				.raw("\n")
-				.raw("\n")
-				.write(String.format("public class %s extends %s {", compiler.getEngine()
-						.getTemplateClassName(filename), parentClass)).indent();
+		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME)).raw("\n\n")
+				.write("import java.util.Map;").raw("\n").write("import java.util.HashMap;").raw("\n").write("import ")
+				.raw(Context.class.getName()).raw(";").raw("\n").raw("\n")
+				.write(String.format("public class %s extends %s {", className, parentClass)).indent();
+	}
+
+	private void compileConstructor(Compiler compiler, String className) {
+		compiler.raw("\n\n").write("public ").raw(className).raw(" (String javaCode, String source, ")
+				.raw(PebbleEngine.class.getName()).raw(" engine) {").raw("\n");
+
+		compiler.indent().write("super(javaCode, source, engine);").raw("\n");
+
+		compiler.outdent().write("}").raw("\n\n");
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {

@@ -14,7 +14,7 @@ public abstract class AbstractMacro implements Macro {
 	protected List<String> argNames = new ArrayList<>();
 	
 	protected Context getLocalContext(Object[] argValues){
-		Context context = new Context(true);
+		Context context = new Context(true, null);
 		
 		for(int i = 0; i < argValues.length; i++){
 			String argName = argNames.get(i);
