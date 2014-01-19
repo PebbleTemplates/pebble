@@ -1,0 +1,2 @@
+{% extends 'templates/cache/template.cacheParent.peb' %}
+{% block title %}child{% endblock %}

@@ -13,28 +13,26 @@ public abstract class AbstractMacro implements Macro {
 	
 	protected List<String> argNames = new ArrayList<>();
 	
-	protected Context getLocalContext(Object[] argValues){
-		Context context = new Context(true, null);
-		
+	protected void addArgumentsToLocalScope(Context context, Object[] argValues){
 		for(int i = 0; i < argValues.length; i++){
 			String argName = argNames.get(i);
 			Object argValue = argValues[i];
 			
 			context.put(argName, argValue);
 		}
-		
-		return context;
 	}
 	
-	public String call(Object[] argValues) throws PebbleException{
+	public String call(Context context, Object[] argValues) throws PebbleException{
 		StringWriter writer = new StringWriter();
 		
-		Context context = getLocalContext(argValues);
+		context.pushLocalScope();
+		addArgumentsToLocalScope(context, argValues);
 		try {
 			evaluate(writer, context);
 		} catch (IOException e) {
 			throw new PebbleException("Error occurred while calling macro");
 		}
+		context.popScope();
 		return writer.toString();
 	}
 	

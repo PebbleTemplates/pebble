@@ -77,7 +77,8 @@ public class NodeRoot extends AbstractNode {
 				.write("public void buildContent(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.newline().indent();
 		if (this.parentFileName != null) {
-			compiler.write("getParent().buildContent(writer, context);");
+			compiler.write("context.pushInheritanceChain(this);").newline();
+			compiler.write("getParent().buildContent(writer, context);").newline();
 		} else {
 			body.compile(compiler);
 		}

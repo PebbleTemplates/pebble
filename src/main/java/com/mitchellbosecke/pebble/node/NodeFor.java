@@ -52,7 +52,7 @@ public class NodeFor extends AbstractNode {
 
 	private void compileForLoop(Compiler compiler) {
 
-		compiler.write("context = pushContext(context);").newline();
+		compiler.write("context.pushScope();").newline();
 		compiler.write("context.put(\"loop\", new HashMap<>());").newline();
 
 		// create the special "loop" variable
@@ -77,6 +77,6 @@ public class NodeFor extends AbstractNode {
 		compiler.outdent().newline().write("}").newline();
 
 		// remove context variables that are specific to this for loop
-		compiler.write("context = popContext(context);").newline();
+		compiler.write("context.popScope();").newline();
 	}
 }

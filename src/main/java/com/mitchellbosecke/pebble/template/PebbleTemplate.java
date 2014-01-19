@@ -43,7 +43,6 @@ public abstract class PebbleTemplate {
 	protected final PebbleEngine engine;
 
 	private PebbleTemplate parent;
-	private PebbleTemplate child;
 
 	private final List<PebbleTemplate> importedTemplates = new ArrayList<>();
 	private final Map<String, Block> blocks = new HashMap<>();
@@ -107,19 +106,10 @@ public abstract class PebbleTemplate {
 	}
 
 	private Context initContext(Locale locale) {
-		Context context = new Context(engine.isStrictVariables(), null);
+		Context context = new Context(engine.isStrictVariables());
 		context.putAll(engine.getGlobalVariables());
-		context.put("_locale", locale);
+		context.setLocale(locale);
 		return context;
-	}
-
-	protected Context pushContext(Context parentContext) {
-		Context context = new Context(parentContext.isStrictVariables(), parentContext);
-		return context;
-	}
-
-	protected Context popContext(Context currentContext) {
-		return currentContext.getParent();
 	}
 
 	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute)
@@ -151,37 +141,41 @@ public abstract class PebbleTemplate {
 		return result;
 	}
 
-	public String macro(String macroName, Object... args) throws PebbleException {
+	public String macro(String macroName, Context context, Object... args) throws PebbleException {
 		String result = null;
 		boolean found = false;
+		
+		PebbleTemplate childTemplate = context.getChildTemplate();
 
 		// check child template first
-		if (this.getChild() != null && this.getChild().hasMacro(macroName, args.length)) {
+		if (childTemplate != null && childTemplate.hasMacro(macroName, args.length)) {
 			found = true;
-			result = this.getChild().macro(macroName, args);
+			context.popInheritanceChain();
+			result = childTemplate.macro(macroName, context, args);
 
-			// check current template
+		// check current template
 		} else if (hasMacro(macroName, args.length)) {
 			found = true;
 			Map<Integer, Macro> overloadedMacros = macros.get(macroName);
 			Macro macro = overloadedMacros.get(args.length);
 
 			macro.init();
-			result = macro.call(args);
+			result = macro.call(context, args);
 		}
 
 		// check imported templates
 		for (PebbleTemplate template : importedTemplates) {
 			if (template.hasMacro(macroName, args.length)) {
 				found = true;
-				result = template.macro(macroName, args);
+				result = template.macro(macroName, context, args);
 			}
 		}
 
 		// delegate to parent template
 		if (!found) {
 			if (this.getParent() != null) {
-				result = this.getParent().macro(macroName, args);
+				context.pushInheritanceChain(this);
+				result = this.getParent().macro(macroName, context, args);
 			} else {
 				throw new PebbleException(String.format("Function or Macro [%s] does not exist.", macroName));
 			}
@@ -206,10 +200,13 @@ public abstract class PebbleTemplate {
 
 	public void block(String blockName, Context context, boolean ignoreOverriden, Writer writer)
 			throws PebbleException, IOException {
+		
+		PebbleTemplate childTemplate = context.getChildTemplate();
 
 		// check child
-		if (!ignoreOverriden && this.getChild() != null && this.getChild().hasBlock(blockName)) {
-			this.getChild().block(blockName, context, false, writer);
+		if (!ignoreOverriden && childTemplate != null && childTemplate.hasBlock(blockName)) {
+			context.popInheritanceChain();
+			childTemplate.block(blockName, context, false, writer);
 
 			// check this template
 		} else if (blocks.containsKey(blockName)) {
@@ -219,6 +216,7 @@ public abstract class PebbleTemplate {
 			// delegate to parent
 		} else {
 			if (this.getParent() != null) {
+				context.pushInheritanceChain(this);
 				this.getParent().block(blockName, context, true, writer);
 			}
 		}
@@ -240,7 +238,7 @@ public abstract class PebbleTemplate {
 		Filter filter = filters.get(filterName);
 
 		if (filter instanceof LocaleAware) {
-			((LocaleAware) filter).setLocale((Locale) context.get(Context.GLOBAL_VARIABLE_LOCALE));
+			((LocaleAware) filter).setLocale(context.getLocale());
 		}
 
 		if (filter == null) {
@@ -255,7 +253,7 @@ public abstract class PebbleTemplate {
 			return applyFunction(functions.get(functionName), context, args);
 		}
 
-		return macro(functionName, args);
+		return macro(functionName, context, args);
 	}
 
 	private Object applyFunction(SimpleFunction function, Context context, Object... args) throws PebbleException {
@@ -264,7 +262,7 @@ public abstract class PebbleTemplate {
 		Collections.addAll(arguments, args);
 
 		if (function instanceof LocaleAware) {
-			((LocaleAware) function).setLocale((Locale) context.get(Context.GLOBAL_VARIABLE_LOCALE));
+			((LocaleAware) function).setLocale(context.getLocale());
 		}
 		return function.execute(arguments);
 	}
@@ -307,10 +305,6 @@ public abstract class PebbleTemplate {
 		return parent;
 	}
 
-	public PebbleTemplate getChild() {
-		return child;
-	}
-
 	protected void addImportedTemplate(PebbleTemplate template) {
 		this.importedTemplates.add(template);
 	}
@@ -321,9 +315,5 @@ public abstract class PebbleTemplate {
 
 	public void setParent(PebbleTemplate parent) {
 		this.parent = parent;
-	}
-
-	public void setChild(PebbleTemplate child) {
-		this.child = child;
 	}
 }

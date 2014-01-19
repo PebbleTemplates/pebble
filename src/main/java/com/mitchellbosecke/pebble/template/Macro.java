@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.template;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.utils.Context;
 
 public interface Macro {
 
@@ -19,5 +20,5 @@ public interface Macro {
 	
 	public void init();
 
-	public String call(Object[] argValues) throws PebbleException;
+	public String call(Context context, Object[] argValues) throws PebbleException;
 }

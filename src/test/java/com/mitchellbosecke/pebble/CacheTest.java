@@ -50,6 +50,35 @@ public class CacheTest extends AbstractTest {
 		assertFalse(cache1Output.equals(cache2Output));
 
 	}
+	
+	/**
+	 * There was an issue where each template was storing a reference to it's
+	 * child and this was being cached. This is an issue because a template
+	 * can have many different children.
+	 * 
+	 * @throws PebbleException
+	 */
+	@Test
+	public void ensureChildTemplateNotCached() throws PebbleException, IOException {
+		Loader loader = new PebbleDefaultLoader();
+		PebbleEngine engine = new PebbleEngine(loader);
+
+		PebbleTemplate cache1 = engine.compile("templates/cache/template.cacheChild.peb");
+		PebbleTemplate cache2 = engine.compile("templates/cache/template.cacheParent.peb");
+
+		Writer writer1 = new StringWriter();
+		Writer writer2 = new StringWriter();
+
+		cache1.evaluate(writer1);
+		cache2.evaluate(writer2);
+
+		String cache1Output = writer1.toString();
+		String cache2Output = writer2.toString();
+
+		assertEquals("child", cache1Output);
+		assertEquals("parent", cache2Output);
+
+	}
 
 	/**
 	 * An issue occurred where the engine would mistake the existence of the

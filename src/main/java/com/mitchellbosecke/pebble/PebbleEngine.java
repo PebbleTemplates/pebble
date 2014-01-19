@@ -182,7 +182,6 @@ public class PebbleEngine {
 
 				if (root.hasParent()) {
 					PebbleTemplate parent = self.compile(root.getParentFileName());
-					parent.setChild(instance);
 					instance.setParent(parent);
 				}
 
