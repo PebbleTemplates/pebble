@@ -27,7 +27,6 @@ import com.mitchellbosecke.pebble.cache.DefaultTemplateLoadingCache;
 import com.mitchellbosecke.pebble.cache.TemplateLoadingCache;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
-import com.mitchellbosecke.pebble.compiler.InMemoryForwardingFileManager;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.SyntaxException;
@@ -61,7 +60,6 @@ public class PebbleEngine {
 	private final Parser parser;
 	private final Lexer lexer;
 	private final Compiler compiler;
-	private final InMemoryForwardingFileManager fileManager;
 
 	/*
 	 * Final Settings
@@ -120,7 +118,6 @@ public class PebbleEngine {
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
-		fileManager = new InMemoryForwardingFileManager();
 		loadingTemplateCache = new DefaultTemplateLoadingCache();
 
 		// register default extensions
@@ -173,7 +170,7 @@ public class PebbleEngine {
 				// the compilation mutex
 				compilationMutex.release();
 
-				// give the template some KNOWLEDGE
+				// init blocks and macros
 				instance.initBlocks();
 				instance.initMacros();
 
@@ -182,8 +179,6 @@ public class PebbleEngine {
 					parent.setChild(instance);
 					instance.setParent(parent);
 				}
-
-				//fileManager.clear();
 
 				return instance;
 			}
@@ -208,10 +203,6 @@ public class PebbleEngine {
 
 	public Compiler getCompiler() {
 		return compiler;
-	}
-
-	public InMemoryForwardingFileManager getFileManager() {
-		return fileManager;
 	}
 
 	public void addExtension(Extension extension) {

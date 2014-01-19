@@ -24,11 +24,6 @@ public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<Sta
 
 	private static final Logger logger = LoggerFactory.getLogger(InMemoryForwardingFileManager.class);
 
-	/**
-	 * Instance of JavaClassObject that will store the compiled bytecode of our
-	 * classes. When templates utilize inheritance, this map will have to store
-	 * the entire chain of inherited classes in order for compilation to be successful.
-	 */
 	private final Map<String, ByteArrayJavaFileObject> javaFileObjects = new HashMap<>();
 
 	public InMemoryForwardingFileManager() {
@@ -45,6 +40,10 @@ public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<Sta
 				logger.debug(String.format("Finding class: %s", name));
 
 				ByteArrayJavaFileObject fileObject = javaFileObjects.get(name);
+				
+				// the fileobject is no longer required
+				javaFileObjects.remove(name);
+				
 				Class<?> clazz;
 				if (fileObject != null) {
 					byte[] bytes = fileObject.getBytes();
@@ -100,15 +99,6 @@ public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<Sta
 	@Override
 	public void close() throws IOException {
 		super.close();
-	}
-
-	/**
-	 * The pebble engine will clear all the java file objects from this file manager
-	 * when it is done with a successful CHAIN of compilations (compiling a child AND all associated
-	 * parent templates). 
-	 */
-	public void clear() {
-		this.javaFileObjects.clear();
 	}
 
 }

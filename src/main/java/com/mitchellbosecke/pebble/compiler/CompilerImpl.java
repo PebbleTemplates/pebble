@@ -142,7 +142,7 @@ public class CompilerImpl implements Compiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		InMemoryForwardingFileManager fileManager = engine.getFileManager();
+		InMemoryForwardingFileManager fileManager = new InMemoryForwardingFileManager();
 
 		/*
 		 * Prepare a list of compilation units (java source code file objects)
