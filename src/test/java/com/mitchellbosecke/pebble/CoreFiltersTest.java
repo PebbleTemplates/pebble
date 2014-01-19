@@ -159,20 +159,6 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testJsonEncode() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-
-		PebbleTemplate template = pebble.compile("{{ obj | json }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("obj", new User("Alex"));
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("{\"username\":\"Alex\"}", writer.toString());
-	}
-
-	@Test
 	public void testDefault() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);

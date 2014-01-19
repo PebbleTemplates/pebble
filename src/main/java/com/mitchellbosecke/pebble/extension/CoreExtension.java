@@ -25,8 +25,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
@@ -137,7 +135,6 @@ public class CoreExtension extends AbstractExtension {
 		filters.add(abbreviateFilter);
 		filters.add(capitalizeFilter);
 		filters.add(trimFilter);
-		filters.add(jsonEncodeFilter);
 		filters.add(defaultFilter);
 		return filters;
 	}
@@ -197,7 +194,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			return ((String) input).toUpperCase();
@@ -313,24 +310,6 @@ public class CoreExtension extends AbstractExtension {
 		public Object apply(Object input, List<Object> args) {
 			String str = (String) input;
 			return str.trim();
-		}
-	};
-
-	private Filter jsonEncodeFilter = new Filter() {
-		public String getName() {
-			return "json";
-		}
-
-		public Object apply(Object input, List<Object> args) {
-
-			ObjectMapper mapper = new ObjectMapper();
-
-			String json = null;
-			try {
-				json = mapper.writeValueAsString(input);
-			} catch (JsonProcessingException e) {
-			}
-			return json;
 		}
 	};
 
