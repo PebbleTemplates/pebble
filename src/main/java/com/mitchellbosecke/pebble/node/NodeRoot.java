@@ -64,10 +64,10 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileConstructor(Compiler compiler, String className) {
-		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, String source, ")
+		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, ")
 				.raw(PebbleEngine.class.getName()).raw(" engine) {").newline();
 
-		compiler.indent().write("super(javaCode, source, engine);").newline();
+		compiler.indent().write("super(javaCode, engine);").newline();
 
 		compiler.outdent().write("}").newline(2);
 	}

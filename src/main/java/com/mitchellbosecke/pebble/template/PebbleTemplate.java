@@ -39,7 +39,6 @@ public abstract class PebbleTemplate {
 	public final static String COMPILED_PACKAGE_NAME = "com.mitchellbosecke.pebble.template.compiled";
 
 	private final String generatedJavaCode;
-	private final String source;
 
 	protected final PebbleEngine engine;
 
@@ -50,9 +49,8 @@ public abstract class PebbleTemplate {
 	private final Map<String, Block> blocks = new HashMap<>();
 	private final Map<String, Map<Integer, Macro>> macros = new HashMap<>();
 
-	public PebbleTemplate(String generatedJavaCode, String source, PebbleEngine engine) {
+	public PebbleTemplate(String generatedJavaCode, PebbleEngine engine) {
 		this.generatedJavaCode = generatedJavaCode;
-		this.source = source;
 		this.engine = engine;
 	}
 
@@ -242,7 +240,7 @@ public abstract class PebbleTemplate {
 		Filter filter = filters.get(filterName);
 
 		if (filter instanceof LocaleAware) {
-			((LocaleAware) filter).setLocale((Locale)context.get(Context.GLOBAL_VARIABLE_LOCALE));
+			((LocaleAware) filter).setLocale((Locale) context.get(Context.GLOBAL_VARIABLE_LOCALE));
 		}
 
 		if (filter == null) {
@@ -266,7 +264,7 @@ public abstract class PebbleTemplate {
 		Collections.addAll(arguments, args);
 
 		if (function instanceof LocaleAware) {
-			((LocaleAware) function).setLocale((Locale)context.get(Context.GLOBAL_VARIABLE_LOCALE));
+			((LocaleAware) function).setLocale((Locale) context.get(Context.GLOBAL_VARIABLE_LOCALE));
 		}
 		return function.execute(arguments);
 	}
@@ -303,10 +301,6 @@ public abstract class PebbleTemplate {
 
 	public String getGeneratedJavaCode() {
 		return generatedJavaCode;
-	}
-
-	public String getSource() {
-		return this.source;
 	}
 
 	public PebbleTemplate getParent() {

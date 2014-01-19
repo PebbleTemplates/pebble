@@ -21,8 +21,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
 
-import org.apache.commons.io.IOUtils;
-
 import com.mitchellbosecke.pebble.cache.DefaultTemplateLoadingCache;
 import com.mitchellbosecke.pebble.cache.TemplateLoadingCache;
 import com.mitchellbosecke.pebble.compiler.Compiler;
@@ -50,6 +48,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBrokerImpl;
+import com.mitchellbosecke.pebble.utils.IOUtils;
 
 public class PebbleEngine {
 
@@ -153,18 +152,25 @@ public class PebbleEngine {
 
 				// load it
 				Reader templateReader = loader.getReader(templateName);
-				String templateSource = "";
+
+				/*
+				 * load template into a String.
+				 * 
+				 * TODO: Pass the reader to the Lexer and just let the lexer
+				 * iterate through the characters without having to use an
+				 * intermediary string.
+				 */
+				String templateSource = null;
 				try {
 					templateSource = IOUtils.toString(templateReader);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new LoaderException("Could not load template");
 				}
 
 				TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
 				NodeRoot root = getParser().parse(tokenStream);
 				String javaSource = getCompiler().compile(root).getSource();
-				instance = getCompiler().instantiateTemplate(javaSource, className, templateSource);
+				instance = getCompiler().instantiateTemplate(javaSource, className);
 
 				// we are now done with the non-thread-safe objects, so release
 				// the compilation mutex
