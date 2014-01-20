@@ -81,6 +81,7 @@ public class EscaperExtension extends AbstractExtension {
 					break;
 				case '/':
 					result.append("&#x2F;");
+					break;
 				default:
 					result.append(charac);
 					break;

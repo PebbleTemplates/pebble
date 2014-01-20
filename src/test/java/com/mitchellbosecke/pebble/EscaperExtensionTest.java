@@ -26,10 +26,10 @@ public class EscaperExtensionTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ '<test>' | escape }}");
+		PebbleTemplate template = pebble.compile("{{ '&<>\"\\'/' | escape }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
-		assertEquals("&lt;test&gt;", writer.toString());
+		assertEquals("&amp;&lt;&gt;&quot;&#x27;&#x2F;", writer.toString());
 	}
 }
