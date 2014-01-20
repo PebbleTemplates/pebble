@@ -138,7 +138,7 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplate instantiateTemplate(String javaSource, String className) throws PebbleException {
+	public PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent) throws PebbleException {
 
 		String fullClassName = PebbleTemplate.COMPILED_PACKAGE_NAME + "." + className;
 
@@ -216,10 +216,10 @@ public class CompilerImpl implements Compiler {
 
 			ClassLoader cl = fileManager.getClassLoader(null);
 			Constructor<?> constructor = cl.loadClass(fullClassName).getDeclaredConstructor(String.class,
-					PebbleEngine.class);
+					PebbleEngine.class, PebbleTemplate.class);
 
 			constructor.setAccessible(true);
-			template = (PebbleTemplate) constructor.newInstance(javaSource, engine);
+			template = (PebbleTemplate) constructor.newInstance(javaSource, engine, parent);
 
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | InstantiationException
 				| InvocationTargetException | IllegalArgumentException e) {

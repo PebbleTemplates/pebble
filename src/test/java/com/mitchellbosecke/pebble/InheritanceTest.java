@@ -30,4 +30,15 @@ public class InheritanceTest extends AbstractTest {
 				+ "GRANDFATHER TEXT BELOW FOOT", writer.toString());
 	}
 
+	@Test
+	public void testMultiLevelInheritance() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.child.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tCHILD HEAD\n"
+				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
+				+ "GRANDFATHER TEXT BELOW FOOT", writer.toString());
+	}
+
 }

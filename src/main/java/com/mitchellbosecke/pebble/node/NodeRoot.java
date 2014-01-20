@@ -9,6 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -46,12 +48,22 @@ public class NodeRoot extends AbstractNode {
 	@Override
 	public void compile(Compiler compiler) {
 		String className = compiler.getEngine().getTemplateClassName(filename);
+		
+		compileMetaInformationInComments(compiler);
 		compileClassHeader(compiler, className);
 		compileConstructor(compiler, className);
 		compileBuildContentFunction(compiler);
 		compileBlocks(compiler);
 		compileMacros(compiler);
 		compileClassFooter(compiler);
+	}
+	
+	private void compileMetaInformationInComments(Compiler compiler){
+		compiler.write("/*").newline();
+		compiler.write(" * Filename: ").raw(filename).newline();
+		compiler.write(" * Parent filename: ").raw(parentFileName).newline();
+		compiler.write(" * Compiled on: ").raw(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())).newline();
+		compiler.write(" */").newline();
 	}
 
 	private void compileClassHeader(Compiler compiler, String className) {
@@ -65,9 +77,9 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileConstructor(Compiler compiler, String className) {
 		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, ")
-				.raw(PebbleEngine.class.getName()).raw(" engine) {").newline();
+				.raw(PebbleEngine.class.getName()).raw(" engine, ").raw(PebbleTemplate.class.getName()).raw(" parent) {").newline();
 
-		compiler.indent().write("super(javaCode, engine);").newline();
+		compiler.indent().write("super(javaCode, engine, parent);").newline();
 
 		compiler.outdent().write("}").newline(2);
 	}

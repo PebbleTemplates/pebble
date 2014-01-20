@@ -42,15 +42,16 @@ public abstract class PebbleTemplate {
 
 	protected final PebbleEngine engine;
 
-	private PebbleTemplate parent;
+	private final PebbleTemplate parent;
 
 	private final List<PebbleTemplate> importedTemplates = new ArrayList<>();
 	private final Map<String, Block> blocks = new HashMap<>();
 	private final Map<String, Map<Integer, Macro>> macros = new HashMap<>();
 
-	public PebbleTemplate(String generatedJavaCode, PebbleEngine engine) {
+	public PebbleTemplate(String generatedJavaCode, PebbleEngine engine, PebbleTemplate parent) {
 		this.generatedJavaCode = generatedJavaCode;
 		this.engine = engine;
+		this.parent = parent;
 	}
 
 	public abstract void buildContent(Writer writer, Context context) throws IOException, PebbleException;
@@ -144,7 +145,7 @@ public abstract class PebbleTemplate {
 	public String macro(String macroName, Context context, Object... args) throws PebbleException {
 		String result = null;
 		boolean found = false;
-		
+
 		PebbleTemplate childTemplate = context.getChildTemplate();
 
 		// check child template first
@@ -152,8 +153,9 @@ public abstract class PebbleTemplate {
 			found = true;
 			context.popInheritanceChain();
 			result = childTemplate.macro(macroName, context, args);
+			context.pushInheritanceChain(childTemplate);
 
-		// check current template
+			// check current template
 		} else if (hasMacro(macroName, args.length)) {
 			found = true;
 			Map<Integer, Macro> overloadedMacros = macros.get(macroName);
@@ -164,10 +166,12 @@ public abstract class PebbleTemplate {
 		}
 
 		// check imported templates
-		for (PebbleTemplate template : importedTemplates) {
-			if (template.hasMacro(macroName, args.length)) {
-				found = true;
-				result = template.macro(macroName, context, args);
+		if (!found) {
+			for (PebbleTemplate template : importedTemplates) {
+				if (template.hasMacro(macroName, args.length)) {
+					found = true;
+					result = template.macro(macroName, context, args);
+				}
 			}
 		}
 
@@ -176,6 +180,7 @@ public abstract class PebbleTemplate {
 			if (this.getParent() != null) {
 				context.pushInheritanceChain(this);
 				result = this.getParent().macro(macroName, context, args);
+				context.popInheritanceChain();
 			} else {
 				throw new PebbleException(String.format("Function or Macro [%s] does not exist.", macroName));
 			}
@@ -200,13 +205,14 @@ public abstract class PebbleTemplate {
 
 	public void block(String blockName, Context context, boolean ignoreOverriden, Writer writer)
 			throws PebbleException, IOException {
-		
+
 		PebbleTemplate childTemplate = context.getChildTemplate();
 
 		// check child
 		if (!ignoreOverriden && childTemplate != null && childTemplate.hasBlock(blockName)) {
 			context.popInheritanceChain();
 			childTemplate.block(blockName, context, false, writer);
+			context.pushInheritanceChain(childTemplate);
 
 			// check this template
 		} else if (blocks.containsKey(blockName)) {
@@ -218,6 +224,7 @@ public abstract class PebbleTemplate {
 			if (this.getParent() != null) {
 				context.pushInheritanceChain(this);
 				this.getParent().block(blockName, context, true, writer);
+				context.popInheritanceChain();
 			}
 		}
 
@@ -312,8 +319,4 @@ public abstract class PebbleTemplate {
 	public abstract void initBlocks();
 
 	public abstract void initMacros();
-
-	public void setParent(PebbleTemplate parent) {
-		this.parent = parent;
-	}
 }

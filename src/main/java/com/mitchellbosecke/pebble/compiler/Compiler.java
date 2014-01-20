@@ -139,7 +139,7 @@ public interface Compiler {
 	 * @return The final PebbleTemplate instance
 	 * @throws PebbleException
 	 */
-	PebbleTemplate instantiateTemplate(String javaSource, String className)
+	PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent)
 			throws PebbleException;
 
 }

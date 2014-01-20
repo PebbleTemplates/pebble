@@ -170,20 +170,22 @@ public class PebbleEngine {
 				TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
 				NodeRoot root = getParser().parse(tokenStream);
 				String javaSource = getCompiler().compile(root).getSource();
-				instance = getCompiler().instantiateTemplate(javaSource, className);
-
+				
 				// we are now done with the non-thread-safe objects, so release
 				// the compilation mutex
 				compilationMutex.release();
+				
+				PebbleTemplate parent = null;
+				if(root.hasParent()){
+					parent = self.compile(root.getParentFileName());
+				}
+				instance = getCompiler().instantiateTemplate(javaSource, className, parent);
+
+
 
 				// init blocks and macros
 				instance.initBlocks();
 				instance.initMacros();
-
-				if (root.hasParent()) {
-					PebbleTemplate parent = self.compile(root.getParentFileName());
-					instance.setParent(parent);
-				}
 
 				return instance;
 			}
