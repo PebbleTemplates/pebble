@@ -114,7 +114,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ 1000000 | number_format }}");
+		PebbleTemplate template = pebble.compile("{{ 1000000 | numberformat }}");
 		
 		Writer writer = new StringWriter();
 		template.evaluate(writer);

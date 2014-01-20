@@ -33,9 +33,9 @@ public class ReflectionUtils {
 		String attributeCapitalized = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
 
 		/*
-		 * Entry in hash map.
+		 * Entry in a map.
 		 * 
-		 * Has priority because: - for loop stores variables in a hash map -
+		 * Has priority because 'for' loop stores variables in a map and
 		 * doesn't require reflection and is therefore really fast
 		 */
 		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {

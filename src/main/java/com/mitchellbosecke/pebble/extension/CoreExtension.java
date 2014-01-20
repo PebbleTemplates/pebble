@@ -261,10 +261,13 @@ public class CoreExtension extends AbstractExtension {
 
 	private Filter numberFormatFilter = new LocaleAwareFilter() {
 		public String getName() {
-			return "number_format";
+			return "numberformat";
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			Number number = (Number) input;
 
 			if (args.size() > 0) {
