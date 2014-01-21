@@ -27,6 +27,30 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreFiltersTest extends AbstractTest {
 
+	
+	@Test
+	public void testFilterWithNullInput() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ null | lower }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("", writer.toString());
+	}
+	
+	@Test
+	public void testChainedFiltersWithNullInput() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ null | upper | lower }}");
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("", writer.toString());
+	}
+	
 	@Test
 	public void testLower() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -38,6 +62,9 @@ public class CoreFiltersTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("template", writer.toString());
 	}
+	
+
+
 
 	@Test
 	public void testUpper() throws PebbleException, IOException {

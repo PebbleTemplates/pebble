@@ -232,6 +232,10 @@ public abstract class PebbleTemplate {
 
 	protected Object applyFilter(String filterName, Context context, Object... args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
+		
+		if(args == null || args[0] == null){
+			return null;
+		}
 
 		// extract input object
 		Object input = args[0];
