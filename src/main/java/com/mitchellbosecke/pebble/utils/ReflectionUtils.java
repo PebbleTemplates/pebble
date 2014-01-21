@@ -1,5 +1,6 @@
 package com.mitchellbosecke.pebble.utils;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -63,7 +64,7 @@ public class ReflectionUtils {
 		Map<String, Member> memberCache = context.getAttributeCache().get(clazz);
 		if (memberCache != null) {
 			member = memberCache.get(attributeName);
-		}else{
+		} else {
 			memberCache = new HashMap<>();
 			context.getAttributeCache().put(clazz, memberCache);
 		}
@@ -115,7 +116,12 @@ public class ReflectionUtils {
 			}
 		}
 
+		if(member != null){
+			((AccessibleObject) member).setAccessible(true);
+		}
+
 		memberCache.put(attributeName, member);
+		
 		return member;
 	}
 }
