@@ -278,7 +278,7 @@ public abstract class PebbleTemplate {
 		if (var == null) {
 			return "";
 		} else {
-			return String.valueOf(var);
+			return var.toString();
 		}
 	}
 

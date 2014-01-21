@@ -100,7 +100,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("You owe me {{ 10000.235166 | number_format(currencyFormat) }}.");
+		PebbleTemplate template = pebble.compile("You owe me {{ 10000.235166 | numberformat(currencyFormat) }}.");
 		Map<String, Object> context = new HashMap<>();
 		context.put("currencyFormat", "$#,###,###,##0.00");
 		
