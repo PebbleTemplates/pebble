@@ -1,8 +1,9 @@
 package com.mitchellbosecke.pebble.utils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
@@ -10,107 +11,111 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 
 public class ReflectionUtils {
 
-	public static Object getAttribute(Context context, Object object, String attribute, Object[] args) throws PebbleException {
+	public static Object getAttribute(Context context, Object object, String attributeName, Object[] args)
+			throws PebbleException {
 		if (object == null) {
-			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attribute));
+			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attributeName));
 		}
 
 		// hold onto original name for error reporting
-		String originalAttributeName = attribute;
+		String originalAttributeName = attributeName;
 
 		Class<?> clazz = object.getClass();
 
 		Object result = null;
 
-		boolean found = false;
-
-		Method method = null;
-
-		// capitalize first letter of attribute for the following attempts
-		String attributeCapitalized = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
-
-		/*
-		 * Entry in a map.
-		 * 
-		 * Has priority because 'for' loop stores variables in a map and doesn't
-		 * require reflection and is therefore really fast
-		 */
-		if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
-			result = ((Map<?, ?>) object).get(attribute);
-			found = true;
+		// first we check maps, as they are a bit of an exception
+		if (args.length == 0 && object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
+			return ((Map<?, ?>) object).get(attributeName);
 		}
 
+		Member member = null;
+		if (attributeName != null) {
+			member = findMember(context, object, attributeName, args);
+		}
+
+		if ((attributeName == null || member == null) && context.isStrictVariables()) {
+			throw new AttributeNotFoundException(
+					String.format(
+							"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+							originalAttributeName, clazz));
+		}
+
+		try {
+			if (member instanceof Method) {
+				result = ((Method) member).invoke(object, args);
+			} else if (member instanceof Field) {
+				result = ((Field) member).get(object);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return result;
+	}
+
+	private static Member findMember(Context context, Object object, String attributeName, Object[] args) {
+
+		Class<?> clazz = object.getClass();
+
+		Member member = null;
+
+		// check if it's cached
+		Map<String, Member> memberCache = context.getAttributeCache().get(clazz);
+		if (memberCache != null) {
+			member = memberCache.get(attributeName);
+		}else{
+			memberCache = new HashMap<>();
+			context.getAttributeCache().put(clazz, memberCache);
+		}
+
+		// capitalize first letter of attribute for the following attempts
+		String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
+
 		// check get method
-		if (!found) {
+		if (member == null) {
 			try {
-				method = clazz.getMethod("get" + attributeCapitalized);
-				found = true;
+				member = clazz.getMethod("get" + attributeCapitalized);
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// check is method
-		if (!found) {
+		if (member == null) {
 			try {
-				method = clazz.getMethod("is" + attributeCapitalized);
-				found = true;
+				member = clazz.getMethod("is" + attributeCapitalized);
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
-		
+
 		// check has method
-		if (!found) {
+		if (member == null) {
 			try {
-				method = clazz.getMethod("has" + attributeCapitalized);
-				found = true;
+				member = clazz.getMethod("has" + attributeCapitalized);
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// check if attribute is a public method
-		if (!found) {
+		if (member == null) {
 			try {
-				method = clazz.getMethod(attribute);
-				found = true;
+				Class<?>[] argClasses = new Class<?>[args.length];
+				for (int i = 0; i < args.length; i++) {
+					argClasses[i] = args[i].getClass();
+				}
+				member = clazz.getMethod(attributeName, argClasses);
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// public field
-		if (!found) {
-
+		if (member == null && args.length == 0) {
 			try {
-				Field field = clazz.getField(attribute);
-				result = field.get(object);
-				found = true;
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				member = clazz.getField(attributeName);
+			} catch (NoSuchFieldException | SecurityException e) {
 			}
 		}
 
-		if (method != null) {
-			try {
-				if (args.length > 0) {
-					result = method.invoke(object, args);
-				} else {
-					result = method.invoke(object);
-				}
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				if (e instanceof InvocationTargetException) {
-					((InvocationTargetException) e).getTargetException().printStackTrace();
-				}
-			}
-		}
-
-		if (!found) {
-			if (context.isStrictVariables()) {
-				throw new AttributeNotFoundException(
-						String.format(
-								"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-								originalAttributeName, clazz));
-			} else {
-				result = null;
-			}
-		}
-		return result;
+		memberCache.put(attributeName, member);
+		return member;
 	}
 }
