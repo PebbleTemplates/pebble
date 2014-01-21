@@ -63,7 +63,10 @@ public class ReflectionUtils {
 		// check if it's cached
 		Map<String, Member> memberCache = context.getAttributeCache().get(clazz);
 		if (memberCache != null) {
-			member = memberCache.get(attributeName);
+			if(memberCache.containsKey(attributeName)){
+				// quick return
+				return memberCache.get(attributeName);
+			}
 		} else {
 			memberCache = new HashMap<>();
 			context.getAttributeCache().put(clazz, memberCache);
