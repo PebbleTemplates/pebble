@@ -28,7 +28,6 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.SimpleFunction;
 import com.mitchellbosecke.pebble.extension.Test;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 import com.mitchellbosecke.pebble.utils.Context;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
 import com.mitchellbosecke.pebble.utils.LocaleAware;
@@ -113,14 +112,9 @@ public abstract class PebbleTemplate {
 		return context;
 	}
 
-	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute)
+	protected Object getAttribute(Context context, Object object, String attribute, Object... args)
 			throws PebbleException {
-		return getAttribute(type, object, attribute, new Object[0]);
-	}
-
-	protected Object getAttribute(NodeExpressionGetAttributeOrMethod.Type type, Object object, String attribute,
-			Object... args) throws PebbleException {
-		return ReflectionUtils.getAttribute(engine, type, object, attribute, args);
+		return ReflectionUtils.getAttribute(context, object, attribute, args);
 	}
 
 	public void registerMacro(Macro macro) {
@@ -232,18 +226,19 @@ public abstract class PebbleTemplate {
 
 	protected Object applyFilter(String filterName, Context context, Object... args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
-		
-		if(args == null || args[0] == null){
-			return null;
+
+		// args is null if the input was null
+		Object input = null;
+		if (args != null) {
+			input = args[0];
 		}
 
-		// extract input object
-		Object input = args[0];
-
 		// remove input from original args array
-		args = Arrays.copyOfRange(args, 1, args.length);
+		if (args != null) {
+			args = Arrays.copyOfRange(args, 1, args.length);
+			Collections.addAll(arguments, args);
+		}
 
-		Collections.addAll(arguments, args);
 
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);

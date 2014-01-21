@@ -5,15 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
 
 public class ReflectionUtils {
 
-	public static Object getAttribute(PebbleEngine engine, NodeExpressionGetAttributeOrMethod.Type type, Object object,
-			String attribute, Object... args) throws PebbleException {
+	public static Object getAttribute(Context context, Object object, String attribute, Object[] args) throws PebbleException {
 		if (object == null) {
 			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attribute));
 		}
@@ -35,15 +32,12 @@ public class ReflectionUtils {
 		/*
 		 * Entry in a map.
 		 * 
-		 * Has priority because 'for' loop stores variables in a map and
-		 * doesn't require reflection and is therefore really fast
+		 * Has priority because 'for' loop stores variables in a map and doesn't
+		 * require reflection and is therefore really fast
 		 */
-		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {
-
-			if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
-				result = ((Map<?, ?>) object).get(attribute);
-				found = true;
-			}
+		if (object instanceof Map && ((Map<?, ?>) object).containsKey(attribute)) {
+			result = ((Map<?, ?>) object).get(attribute);
+			found = true;
 		}
 
 		// check get method
@@ -63,6 +57,15 @@ public class ReflectionUtils {
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
+		
+		// check has method
+		if (!found) {
+			try {
+				method = clazz.getMethod("has" + attributeCapitalized);
+				found = true;
+			} catch (NoSuchMethodException | SecurityException e) {
+			}
+		}
 
 		// check if attribute is a public method
 		if (!found) {
@@ -74,7 +77,7 @@ public class ReflectionUtils {
 		}
 
 		// public field
-		if (!found && NodeExpressionGetAttributeOrMethod.Type.ANY.equals(type)) {
+		if (!found) {
 
 			try {
 				Field field = clazz.getField(attribute);
@@ -99,7 +102,7 @@ public class ReflectionUtils {
 		}
 
 		if (!found) {
-			if (engine.isStrictVariables()) {
+			if (context.isStrictVariables()) {
 				throw new AttributeNotFoundException(
 						String.format(
 								"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",

@@ -183,6 +183,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			return ((String) input).toLowerCase();
 		}
 	};
@@ -206,6 +209,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			String arg = (String) input;
 			try {
 				arg = URLEncoder.encode(arg, charset);
@@ -221,6 +227,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			String arg = (String) input;
 			Object[] formatArgs = args.toArray();
 
@@ -234,7 +243,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
-
+			if(input == null){
+				return null;
+			}
 			Date arg = null;
 
 			DateFormat existingFormat = null;
@@ -286,6 +297,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			String str = (String) input;
 			int maxWidth = (Integer) args.get(0);
 
@@ -299,6 +313,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			String str = (String) input;
 			return StringUtils.capitalize(str);
 		}
@@ -310,6 +327,9 @@ public class CoreExtension extends AbstractExtension {
 		}
 
 		public Object apply(Object input, List<Object> args) {
+			if(input == null){
+				return null;
+			}
 			String str = (String) input;
 			return str.trim();
 		}

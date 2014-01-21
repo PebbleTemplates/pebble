@@ -25,7 +25,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttributeOrMethod;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
@@ -403,16 +403,12 @@ public class ExpressionParser {
 
 			NodeExpressionConstant constant = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
 
+			NodeExpressionArguments arguments = null;
 			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
-
-				NodeExpressionArguments arguments = this.parseArguments();
-				node = new NodeExpressionGetAttributeOrMethod(lineNumber,
-						NodeExpressionGetAttributeOrMethod.Type.METHOD, node, constant, arguments);
-
-			} else {
-				node = new NodeExpressionGetAttributeOrMethod(lineNumber, NodeExpressionGetAttributeOrMethod.Type.ANY,
-						node, constant);
-			}
+				arguments = this.parseArguments();
+			} 
+			
+			node = new NodeExpressionGetAttribute(lineNumber, node, constant, arguments);
 
 		}
 		return node;
