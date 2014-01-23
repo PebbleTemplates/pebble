@@ -4,7 +4,6 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
@@ -32,10 +31,23 @@ public class ReflectionUtils {
 
 		Member member = null;
 		if (attributeName != null) {
-			member = findMember(context, object, attributeName, args);
+			// check if it's cached
+			ClassAttributeCacheEntry cacheEntry = context.getAttributeCache().get(clazz);
+			if (cacheEntry == null) {
+				cacheEntry = new ClassAttributeCacheEntry();
+				context.getAttributeCache().put(clazz, cacheEntry);
+			}
+
+			if (cacheEntry.hasAttribute(attributeName)) {
+				member = cacheEntry.getAttribute(attributeName);
+			} else {
+				member = findMember(object, attributeName, args);
+				cacheEntry.putAttribute(attributeName, member);
+			}
+
 		}
 
-		if ((attributeName == null || member == null) && context.isStrictVariables()) {
+		if (member == null && context.isStrictVariables()) {
 			throw new AttributeNotFoundException(
 					String.format(
 							"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
@@ -54,23 +66,11 @@ public class ReflectionUtils {
 		return result;
 	}
 
-	private static Member findMember(Context context, Object object, String attributeName, Object[] args) {
+	private static Member findMember(Object object, String attributeName, Object[] args) {
 
 		Class<?> clazz = object.getClass();
 
 		Member member = null;
-
-		// check if it's cached
-		Map<String, Member> memberCache = context.getAttributeCache().get(clazz);
-		if (memberCache != null) {
-			if(memberCache.containsKey(attributeName)){
-				// quick return
-				return memberCache.get(attributeName);
-			}
-		} else {
-			memberCache = new HashMap<>();
-			context.getAttributeCache().put(clazz, memberCache);
-		}
 
 		// capitalize first letter of attribute for the following attempts
 		String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
@@ -119,12 +119,10 @@ public class ReflectionUtils {
 			}
 		}
 
-		if(member != null){
+		if (member != null) {
 			((AccessibleObject) member).setAccessible(true);
 		}
 
-		memberCache.put(attributeName, member);
-		
 		return member;
 	}
 }

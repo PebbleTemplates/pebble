@@ -1,6 +1,5 @@
 package com.mitchellbosecke.pebble.utils;
 
-import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -17,7 +16,7 @@ public class Context {
 	
 	private final Stack<Scope> scopes;
 	
-	private final Map<Class<?>, Map<String, Member>> attributeCache;
+	private final Map<Class<?>, ClassAttributeCacheEntry> attributeCache;
 
 	private Locale locale;
 
@@ -104,7 +103,7 @@ public class Context {
 		this.locale = locale;
 	}
 
-	public Map<Class<?>, Map<String, Member>> getAttributeCache() {
+	public Map<Class<?>, ClassAttributeCacheEntry> getAttributeCache() {
 		return attributeCache;
 	}
 

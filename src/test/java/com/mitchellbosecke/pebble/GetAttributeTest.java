@@ -39,6 +39,19 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
+	public void testAttributeCacheHitting() throws PebbleException, IOException {
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+
+		PebbleTemplate template = pebble.compile("hello {{ object.name }}{{ object.name }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("object", new SimpleObject());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+	}
+
+	@Test
 	public void testMultiLayerAttributeNesting() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
@@ -151,7 +164,7 @@ public class GetAttributeTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("hello ", writer.toString());
 	}
-	
+
 	@Test(expected = AttributeNotFoundException.class)
 	public void testNonExistingAttributeWithStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
@@ -181,7 +194,7 @@ public class GetAttributeTest extends AbstractTest {
 		assertEquals("hello ", writer.toString());
 
 	}
-	
+
 	/**
 	 * Should behave the same as it does with strictVariables = false.
 	 * 
