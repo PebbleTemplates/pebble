@@ -34,7 +34,7 @@ public class DefaultTemplateLoadingCache implements TemplateLoadingCache {
 			if (e.getCause() instanceof PebbleException) {
 				throw (PebbleException) e.getCause();
 			}
-			throw new RuntimeException("An error occurred while retrieving from cache");
+			throw new RuntimeException("An error occurred while retrieving from cache", e);
 		}
 	}
 
