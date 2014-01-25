@@ -211,8 +211,8 @@
 	</dependencies>
 	
 	<scm>
-		<connection>scm:git://github.com/mbosecke/pebble.git</connection>
-		<developerConnection>scm:git@github.com:mbosecke/pebble.git</developerConnection>
+		<connection>scm:git:git://github.com/mbosecke/pebble.git</connection>
+		<developerConnection>scm:git:git@github.com:mbosecke/pebble.git</developerConnection>
 		<url>http://github.com/mbosecke/pebble.git</url>
 	  <tag>HEAD</tag>
   </scm>
