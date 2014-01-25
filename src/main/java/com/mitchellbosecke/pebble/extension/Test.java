@@ -15,5 +15,5 @@ public interface Test {
 
 	public String getName();
 	
-	public Boolean apply(Object input, List<Object> args);
+	public boolean apply(Object input, List<Object> args);
 }

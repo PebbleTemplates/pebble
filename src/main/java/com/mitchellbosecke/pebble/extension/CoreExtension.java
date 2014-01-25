@@ -356,7 +356,7 @@ public class CoreExtension extends AbstractExtension {
 			return "even";
 		}
 
-		public Boolean apply(Object input, List<Object> args) {
+		public boolean apply(Object input, List<Object> args) {
 
 			Integer obj = (Integer) input;
 			return (obj % 2 == 0);
@@ -368,7 +368,7 @@ public class CoreExtension extends AbstractExtension {
 			return "odd";
 		}
 
-		public Boolean apply(Object input, List<Object> args) {
+		public boolean apply(Object input, List<Object> args) {
 
 			return evenTest.apply(input, args) == false;
 		}
@@ -379,7 +379,7 @@ public class CoreExtension extends AbstractExtension {
 			return "null";
 		}
 
-		public Boolean apply(Object input, List<Object> args) {
+		public boolean apply(Object input, List<Object> args) {
 
 			return input == null;
 		}
@@ -390,7 +390,7 @@ public class CoreExtension extends AbstractExtension {
 			return "empty";
 		}
 
-		public Boolean apply(Object input, List<Object> args) {
+		public boolean apply(Object input, List<Object> args) {
 			boolean isEmpty = input == null;
 
 			if (!isEmpty && input instanceof String) {
@@ -414,7 +414,7 @@ public class CoreExtension extends AbstractExtension {
 			return "iterable";
 		}
 
-		public Boolean apply(Object input, List<Object> args) {
+		public boolean apply(Object input, List<Object> args) {
 
 			return input instanceof Iterable;
 		}

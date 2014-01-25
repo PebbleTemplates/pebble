@@ -10,7 +10,7 @@ import java.util.concurrent.FutureTask;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
-public class DefaultTemplateLoadingCache implements TemplateLoadingCache<String, PebbleTemplate> {
+public class DefaultTemplateLoadingCache implements TemplateLoadingCache {
 
 	private final ConcurrentMap<String, Future<PebbleTemplate>> cache = new ConcurrentHashMap<>();
 
@@ -31,8 +31,8 @@ public class DefaultTemplateLoadingCache implements TemplateLoadingCache<String,
 		try {
 			return future.get();
 		} catch (ExecutionException | InterruptedException e) {
-			if(e.getCause() instanceof PebbleException){
-				throw (PebbleException)e.getCause();
+			if (e.getCause() instanceof PebbleException) {
+				throw (PebbleException) e.getCause();
 			}
 			throw new RuntimeException("An error occurred while retrieving from cache");
 		}

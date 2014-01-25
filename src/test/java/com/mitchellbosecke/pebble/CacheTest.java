@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.PebbleDefaultLoader;
+import com.mitchellbosecke.pebble.loader.DefaultLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CacheTest extends AbstractTest {
@@ -32,7 +32,7 @@ public class CacheTest extends AbstractTest {
 	 */
 	@Test
 	public void templatesWithSameNameOverridingCache() throws PebbleException, IOException {
-		Loader loader = new PebbleDefaultLoader();
+		Loader loader = new DefaultLoader();
 		PebbleEngine engine = new PebbleEngine(loader);
 
 		PebbleTemplate cache1 = engine.compile("templates/cache/cache1/template.cache.peb");
@@ -60,7 +60,7 @@ public class CacheTest extends AbstractTest {
 	 */
 	@Test
 	public void ensureChildTemplateNotCached() throws PebbleException, IOException {
-		Loader loader = new PebbleDefaultLoader();
+		Loader loader = new DefaultLoader();
 		PebbleEngine engine = new PebbleEngine(loader);
 
 		PebbleTemplate cache1 = engine.compile("templates/cache/template.cacheChild.peb");

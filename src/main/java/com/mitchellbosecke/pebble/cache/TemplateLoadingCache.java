@@ -3,8 +3,9 @@ package com.mitchellbosecke.pebble.cache;
 import java.util.concurrent.Callable;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
-public interface TemplateLoadingCache<K,V> {
+public interface TemplateLoadingCache {
 	
-	public V get(K key, Callable<V> loadingFunction) throws PebbleException;
+	public PebbleTemplate get(String key, Callable<PebbleTemplate> loadingFunction) throws PebbleException;
 }

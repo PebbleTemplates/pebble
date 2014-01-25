@@ -38,7 +38,7 @@ import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.PebbleDefaultLoader;
+import com.mitchellbosecke.pebble.loader.DefaultLoader;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -77,7 +77,7 @@ public class PebbleEngine {
 	/**
 	 * Template cache
 	 */
-	private TemplateLoadingCache<String, PebbleTemplate> loadingTemplateCache;
+	private TemplateLoadingCache loadingTemplateCache;
 
 	/*
 	 * Extensions
@@ -103,7 +103,7 @@ public class PebbleEngine {
 	private final Semaphore compilationMutex = new Semaphore(1);
 
 	public PebbleEngine() {
-		this(new PebbleDefaultLoader());
+		this(new DefaultLoader());
 	}
 
 	/**
@@ -170,18 +170,16 @@ public class PebbleEngine {
 				TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
 				NodeRoot root = getParser().parse(tokenStream);
 				String javaSource = getCompiler().compile(root).getSource();
-				
+
 				// we are now done with the non-thread-safe objects, so release
 				// the compilation mutex
 				compilationMutex.release();
-				
+
 				PebbleTemplate parent = null;
-				if(root.hasParent()){
+				if (root.hasParent()) {
 					parent = self.compile(root.getParentFileName());
 				}
 				instance = getCompiler().instantiateTemplate(javaSource, className, parent);
-
-
 
 				// init blocks and macros
 				instance.initBlocks();
@@ -387,11 +385,11 @@ public class PebbleEngine {
 		return templateParentClass;
 	}
 
-	public TemplateLoadingCache<String, PebbleTemplate> getTemplateCache() {
+	public TemplateLoadingCache getTemplateCache() {
 		return loadingTemplateCache;
 	}
 
-	public void setTemplateCache(TemplateLoadingCache<String, PebbleTemplate> cache) {
+	public void setTemplateCache(TemplateLoadingCache cache) {
 		this.loadingTemplateCache = cache;
 	}
 

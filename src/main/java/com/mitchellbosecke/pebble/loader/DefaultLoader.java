@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
-public class PebbleDefaultLoader implements Loader {
+public class DefaultLoader implements Loader {
 
-	private static final Logger logger = LoggerFactory.getLogger(PebbleDefaultLoader.class);
+	private static final Logger logger = LoggerFactory.getLogger(DefaultLoader.class);
 
 	private String prefix;
 
@@ -59,7 +59,7 @@ public class PebbleDefaultLoader implements Loader {
 		is = ccl.getResourceAsStream(location);
 
 		// try ResourceLoader's class loader
-		ClassLoader rcl = PebbleDefaultLoader.class.getClassLoader();
+		ClassLoader rcl = DefaultLoader.class.getClassLoader();
 		if (is == null) {
 			is = rcl.getResourceAsStream(location);
 		}
