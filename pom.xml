@@ -78,14 +78,56 @@
 			  	<groupId>org.apache.maven.plugins</groupId>
 			  	<artifactId>maven-javadoc-plugin</artifactId>
 			  	<version>2.9.1</version>
+			  	<configuration>
+			  		<outputDirectory>${project.build.directory}/javadoc</outputDirectory>
+			        <reportOutputDirectory>${project.reporting.outputDirectory}/javadoc</reportOutputDirectory>
+			        <excludes>
+			            <exclude>**/*.txt</exclude>
+			        </excludes>
+			        <header>
+			            <![CDATA[
+			                <a href="http://www.mitchellbosecke.com/pebble" target="_blank">Home</a>
+			            ]]>
+			        </header>
+			  	</configuration>
 			  	<executions>
 			    	<execution>
-			      	<id>attach-javadocs</id>
-			      	<goals>
-			        	<goal>jar</goal>
-			      	</goals>
+				      	<id>attach-javadocs</id>
+				      	<goals>
+				        	<goal>jar</goal>
+				      	</goals>
 			    	</execution>
+			    	<execution>
+			            <id>aggregate</id>
+			            <goals>
+			                <goal>aggregate</goal>
+			            </goals>
+			            <phase>site</phase>
+			        </execution>
 			  	</executions>
+			</plugin>
+			<plugin>
+			    <groupId>com.github.github</groupId>
+			    <artifactId>site-maven-plugin</artifactId>
+			    <version>0.9</version>
+			    <configuration>
+			    	<!-- <dryRun>true</dryRun> -->
+			        <path>${project.version}</path>
+			        <message>Creating site for ${project.version}</message>
+			        <!-- sets the ~/.m2/setting.xml profile -->
+			        <server>github</server>
+			        <outputDirectory>${project.build.directory}/site/javadoc</outputDirectory>
+			        <repositoryName>pebble</repositoryName>
+			        <repositoryOwner>mbosecke</repositoryOwner>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>site</goal>
+			            </goals>
+			            <phase>site</phase>
+			        </execution>
+			    </executions>
 			</plugin>
 			<plugin>
         		<groupId>org.apache.maven.plugins</groupId>
@@ -169,8 +211,8 @@
 	</dependencies>
 	
 	<scm>
-		<connection>scm:git:git://github.com/mbosecke/pebble.git</connection>
-		<developerConnection>scm:git:git@github.com:mbosecke/pebble.git</developerConnection>
+		<connection>scm:git://github.com/mbosecke/pebble.git</connection>
+		<developerConnection>scm:git@github.com:mbosecke/pebble.git</developerConnection>
 		<url>http://github.com/mbosecke/pebble.git</url>
 	  <tag>HEAD</tag>
   </scm>
