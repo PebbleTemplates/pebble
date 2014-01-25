@@ -5,6 +5,11 @@ For more information please visit the [website](http://www.mitchellbosecke.com/p
 
 Pebble is in early development stages. It is not ready for production use.
 
+Currently looking for contributors! In particular:
+- Bug reports / fixes
+- API feedback
+- Performance Optimizations
+
 ## License
 
     Original work Copyright (c) 2009-2013 by the Twig Team
