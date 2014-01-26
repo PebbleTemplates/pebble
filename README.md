@@ -9,6 +9,7 @@ Currently looking for contributors! In particular:
 - Bug reports / fixes
 - API feedback
 - Performance Optimizations
+- Tools and IDE integration
 
 ## License
 

@@ -32,6 +32,7 @@ import com.mitchellbosecke.pebble.extension.CoreExtension;
 import com.mitchellbosecke.pebble.extension.EscaperExtension;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.I18nExtension;
 import com.mitchellbosecke.pebble.extension.SimpleFunction;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.lexer.Lexer;
@@ -122,6 +123,7 @@ public class PebbleEngine {
 		// register default extensions
 		this.addExtension(new CoreExtension());
 		this.addExtension(new EscaperExtension());
+		this.addExtension(new I18nExtension());
 
 	}
 
