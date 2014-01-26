@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.compiler;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.CompilationException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -140,6 +141,6 @@ public interface Compiler {
 	 * @throws PebbleException
 	 */
 	PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent)
-			throws PebbleException;
+			throws CompilationException;
 
 }

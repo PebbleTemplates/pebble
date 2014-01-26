@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.CompilationException;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -139,7 +139,7 @@ public class CompilerImpl implements Compiler {
 
 	@Override
 	public PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent)
-			throws PebbleException {
+			throws CompilationException {
 
 		String fullClassName = PebbleTemplate.COMPILED_PACKAGE_NAME + "." + className;
 
@@ -204,7 +204,7 @@ public class CompilerImpl implements Compiler {
 				logger.error(String.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic));
 			}
 
-			throw new PebbleException(null, "Compilation error occurred");
+			throw new CompilationException(null, "Compilation error occurred");
 		}
 		try {
 			fileManager.close();// Close the file manager
@@ -225,9 +225,9 @@ public class CompilerImpl implements Compiler {
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | InstantiationException
 				| InvocationTargetException | IllegalArgumentException e) {
 			e.printStackTrace();
-			throw new PebbleException(e, "Compilation error occurred");
+			throw new CompilationException(e, "Compilation error occurred");
 		} catch (ClassNotFoundException e) {
-			throw new PebbleException(e, String.format("Could not find generated class: %s", fullClassName));
+			throw new CompilationException(e, String.format("Could not find generated class: %s", fullClassName));
 		}
 
 		return template;

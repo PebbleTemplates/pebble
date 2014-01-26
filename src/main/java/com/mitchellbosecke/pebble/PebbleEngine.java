@@ -27,7 +27,6 @@ import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.extension.CoreExtension;
 import com.mitchellbosecke.pebble.extension.EscaperExtension;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -132,11 +131,9 @@ public class PebbleEngine {
 	 * @param templateName
 	 * 
 	 * @return
-	 * @throws SyntaxException
-	 * @throws LoaderException
 	 * @throws PebbleException
 	 */
-	public PebbleTemplate compile(final String templateName) throws SyntaxException, LoaderException, PebbleException {
+	public PebbleTemplate compile(final String templateName) throws PebbleException {
 
 		if (this.loader == null) {
 			throw new LoaderException(null, "Loader has not yet been specified.");
@@ -148,7 +145,7 @@ public class PebbleEngine {
 
 		return loadingTemplateCache.get(className, new Callable<PebbleTemplate>() {
 
-			public PebbleTemplate call() throws PebbleException, InterruptedException {
+			public PebbleTemplate call() throws InterruptedException, PebbleException {
 				compilationMutex.acquire();
 				PebbleTemplate instance = null;
 
