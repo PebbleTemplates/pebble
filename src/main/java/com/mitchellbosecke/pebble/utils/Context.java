@@ -54,7 +54,7 @@ public class Context {
 		}
 
 		if (!found && isStrictVariables()) {
-			throw new AttributeNotFoundException(String.format(
+			throw new AttributeNotFoundException(null, String.format(
 					"Variable [%s] does not exist and strict variables is set to true.", String.valueOf(key)));
 		}
 		return result;

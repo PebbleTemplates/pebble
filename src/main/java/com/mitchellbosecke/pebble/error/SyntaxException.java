@@ -18,8 +18,8 @@ public class SyntaxException extends PebbleException {
 	 * @param lineNumber	Line number of where the exception occurred
 	 * @param filename	Filename of the file in which the exception occurred
 	 */
-	public SyntaxException(String message, int lineNumber, String filename) {
-		super(message, lineNumber, filename);
+	public SyntaxException(Throwable cause, String message, int lineNumber, String filename) {
+		super(cause, message, lineNumber, filename);
 	}
 
 	/**

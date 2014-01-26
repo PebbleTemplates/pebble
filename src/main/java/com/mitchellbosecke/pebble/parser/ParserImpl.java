@@ -134,8 +134,7 @@ public class ParserImpl implements Parser {
 
 		NodeBody body = subparse();
 
-		NodeRoot root = new NodeRoot(body, parentFileName, getBlocks(), getMacros(),
-				stream.getFilename());
+		NodeRoot root = new NodeRoot(body, parentFileName, getBlocks(), getMacros(), stream.getFilename());
 
 		/*
 		 * Resume the parser state
@@ -185,9 +184,9 @@ public class ParserImpl implements Parser {
 				case PRINT_START:
 
 					/*
-					 * We are entering a print delimited region at this point. These regions
-					 * will contain some sort of expression so let's pass
-					 * control to our expression parser.
+					 * We are entering a print delimited region at this point.
+					 * These regions will contain some sort of expression so
+					 * let's pass control to our expression parser.
 					 */
 
 					// go to the next token because the current one is just the
@@ -221,7 +220,7 @@ public class ParserImpl implements Parser {
 					 * should not consume it.
 					 */
 					if (!Token.Type.NAME.equals(token.getType())) {
-						throw new SyntaxException("A block must start with a tag name.", token.getLineNumber(),
+						throw new SyntaxException(null, "A block must start with a tag name.", token.getLineNumber(),
 								stream.getFilename());
 					}
 
@@ -237,7 +236,7 @@ public class ParserImpl implements Parser {
 					TokenParser subparser = tokenParserBroker.getTokenParser(token.getValue());
 
 					if (subparser == null) {
-						throw new SyntaxException(String.format("Unexpected tag name \"%s\"", token.getValue()),
+						throw new SyntaxException(null, String.format("Unexpected tag name \"%s\"", token.getValue()),
 								token.getLineNumber(), stream.getFilename());
 					}
 
@@ -253,8 +252,8 @@ public class ParserImpl implements Parser {
 					break;
 
 				default:
-					throw new SyntaxException("Parser ended in undefined state.", stream.current().getLineNumber(),
-							stream.getFilename());
+					throw new SyntaxException(null, "Parser ended in undefined state.", stream.current()
+							.getLineNumber(), stream.getFilename());
 			}
 		}
 

@@ -251,7 +251,7 @@ public class ExpressionParser {
 
 			// not found, syntax error
 			default:
-				throw new SyntaxException(String.format("Unexpected token \"%s\" of value \"%s\"", token.getType()
+				throw new SyntaxException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token.getType()
 						.toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
 		}
 
@@ -455,7 +455,7 @@ public class ExpressionParser {
 
 		String[] reserved = new String[] { "true", "false", "null", "none" };
 		if (Arrays.asList(reserved).contains(token.getValue())) {
-			throw new SyntaxException(String.format("Can not assign a value to %s", token.getValue()),
+			throw new SyntaxException(null, String.format("Can not assign a value to %s", token.getValue()),
 					token.getLineNumber(), stream.getFilename());
 		}
 

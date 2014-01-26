@@ -30,7 +30,7 @@ public abstract class AbstractMacro implements Macro {
 		try {
 			evaluate(writer, context);
 		} catch (IOException e) {
-			throw new PebbleException("Error occurred while calling macro");
+			throw new PebbleException(e, "Error occurred while calling macro");
 		}
 		context.popScope();
 		return writer.toString();

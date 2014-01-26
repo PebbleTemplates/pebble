@@ -49,6 +49,7 @@ public class ReflectionUtils {
 
 		if (member == null && context.isStrictVariables()) {
 			throw new AttributeNotFoundException(
+					null,
 					String.format(
 							"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
 							originalAttributeName, clazz));

@@ -25,7 +25,7 @@ public class ExtendsTokenParser extends AbstractTokenParser {
 		stream.next();
 		
 		if (this.parser.getParentFileName() != null) {
-			throw new SyntaxException("Multiple extend tags are not allowed.",
+			throw new SyntaxException(null, "Multiple extend tags are not allowed.",
 					lineNumber, parser.getStream().getFilename());
 		}
 		

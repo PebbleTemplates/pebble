@@ -174,7 +174,7 @@ public class LexerImpl implements Lexer {
 		// make sure that all brackets have been closed, else throw an error
 		if (!this.brackets.isEmpty()) {
 			String expected = brackets.pop().getLeft();
-			throw new SyntaxException(String.format("Unclosed \"%s\"", expected), lineNumber, filename);
+			throw new SyntaxException(null, String.format("Unclosed \"%s\"", expected), lineNumber, filename);
 		}
 
 		return new TokenStream(tokens, filename);
@@ -279,7 +279,7 @@ public class LexerImpl implements Lexer {
 
 		boolean match = matcher.find(cursor);
 		if (!match) {
-			throw new SyntaxException("Unclosed comment.", lineNumber, filename);
+			throw new SyntaxException(null, "Unclosed comment.", lineNumber, filename);
 		}
 
 		// move cursor to end of comment delimiter
@@ -344,7 +344,7 @@ public class LexerImpl implements Lexer {
 			// closing bracket
 			else if (")]}".indexOf(character) >= 0) {
 				if (brackets.isEmpty())
-					throw new SyntaxException("Unexpected \"" + character + "\"", lineNumber, filename);
+					throw new SyntaxException(null, "Unexpected \"" + character + "\"", lineNumber, filename);
 				else {
 					HashMap<String, String> validPairs = new HashMap<>();
 					validPairs.put("(", ")");
@@ -353,7 +353,7 @@ public class LexerImpl implements Lexer {
 					String lastBracket = brackets.pop().getLeft();
 					String expected = validPairs.get(lastBracket);
 					if (!expected.equals(character)) {
-						throw new SyntaxException("Unclosed \"" + expected + "\"", lineNumber, filename);
+						throw new SyntaxException(null, "Unclosed \"" + expected + "\"", lineNumber, filename);
 					}
 				}
 			}
@@ -387,7 +387,7 @@ public class LexerImpl implements Lexer {
 		}
 
 		// we should have found something and returned by this point
-		throw new SyntaxException(String.format("Unexpected character \"%s\"", source.charAt(cursor)), lineNumber,
+		throw new SyntaxException(null, String.format("Unexpected character \"%s\"", source.charAt(cursor)), lineNumber,
 				filename);
 
 	}
@@ -415,7 +415,7 @@ public class LexerImpl implements Lexer {
 	 */
 	private void pushToken(Token.Type type, String value) {
 		// ignore empty text tokens
-		if (type.equals(Token.Type.TEXT) && StringUtils.isEmpty(value)){
+		if (type.equals(Token.Type.TEXT) && StringUtils.isEmpty(value)) {
 			return;
 		}
 		this.tokens.add(new Token(type, value, this.lineNumber));

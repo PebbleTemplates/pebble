@@ -28,7 +28,7 @@ public class IfTokenParser extends AbstractTokenParser {
 	public Node parse(Token token) throws SyntaxException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
-		
+
 		// skip the 'if' token
 		stream.next();
 
@@ -66,6 +66,7 @@ public class IfTokenParser extends AbstractTokenParser {
 					break;
 				default:
 					throw new SyntaxException(
+							null,
 							String.format("Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\""),
 							stream.current().getLineNumber(), stream.getFilename());
 			}

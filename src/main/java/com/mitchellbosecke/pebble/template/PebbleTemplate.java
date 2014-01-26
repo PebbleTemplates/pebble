@@ -90,7 +90,7 @@ public abstract class PebbleTemplate {
 		ExecutorService es = engine.getExecutorService();
 
 		if (es == null) {
-			throw new PebbleException(
+			throw new PebbleException(null,
 					"The parallel tag can not be used unless you provide an ExecutorService to the PebbleEngine.");
 		}
 
@@ -176,7 +176,7 @@ public abstract class PebbleTemplate {
 				result = this.getParent().macro(macroName, context, args);
 				context.popInheritanceChain();
 			} else {
-				throw new PebbleException(String.format("Function or Macro [%s] does not exist.", macroName));
+				throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));
 			}
 		}
 
@@ -239,7 +239,6 @@ public abstract class PebbleTemplate {
 			Collections.addAll(arguments, args);
 		}
 
-
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
 
@@ -248,7 +247,7 @@ public abstract class PebbleTemplate {
 		}
 
 		if (filter == null) {
-			throw new PebbleException(String.format("Filter [%s] does not exist.", filterName));
+			throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName));
 		}
 		return filter.apply(input, arguments);
 	}

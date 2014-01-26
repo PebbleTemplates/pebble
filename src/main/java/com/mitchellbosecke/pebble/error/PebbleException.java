@@ -17,21 +17,15 @@ public class PebbleException extends Exception {
 	protected String message;
 	protected PebbleException previous;
 
-	public PebbleException(String message) {
-		this(message, null, null);
+	public PebbleException(Throwable cause, String message) {
+		this(cause, message, null, null);
 	}
 
-	public PebbleException(String message, Integer lineNumber, String filename) {
-		this(message, lineNumber, filename, null);
-	}
-
-	public PebbleException(String message, Integer lineNumber, String filename,
-			PebbleException previous) {
-		super(String.format("%s(%s:%d)", message, filename, lineNumber));
+	public PebbleException(Throwable cause, String message, Integer lineNumber, String filename) {
+		super(String.format("%s(%s:%d)", message, filename, lineNumber), cause);
 		this.message = message;
 		this.lineNumber = lineNumber;
 		this.filename = filename;
-		this.previous = previous;
 	}
 
 }

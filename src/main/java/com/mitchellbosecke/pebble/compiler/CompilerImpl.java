@@ -138,7 +138,8 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent) throws PebbleException {
+	public PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent)
+			throws PebbleException {
 
 		String fullClassName = PebbleTemplate.COMPILED_PACKAGE_NAME + "." + className;
 
@@ -203,7 +204,7 @@ public class CompilerImpl implements Compiler {
 				logger.error(String.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic));
 			}
 
-			throw new PebbleException("Compilation error occurred");
+			throw new PebbleException(null, "Compilation error occurred");
 		}
 		try {
 			fileManager.close();// Close the file manager
@@ -224,9 +225,9 @@ public class CompilerImpl implements Compiler {
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | InstantiationException
 				| InvocationTargetException | IllegalArgumentException e) {
 			e.printStackTrace();
-			throw new PebbleException("Compilation error occurred");
+			throw new PebbleException(e, "Compilation error occurred");
 		} catch (ClassNotFoundException e) {
-			throw new PebbleException(String.format("Could not find generated class: %s", fullClassName));
+			throw new PebbleException(e, String.format("Could not find generated class: %s", fullClassName));
 		}
 
 		return template;

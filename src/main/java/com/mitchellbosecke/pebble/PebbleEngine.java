@@ -38,8 +38,8 @@ import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.DefaultLoader;
+import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -139,7 +139,7 @@ public class PebbleEngine {
 	public PebbleTemplate compile(final String templateName) throws SyntaxException, LoaderException, PebbleException {
 
 		if (this.loader == null) {
-			throw new LoaderException("Loader has not yet been specified.");
+			throw new LoaderException(null, "Loader has not yet been specified.");
 		}
 
 		final String className = this.getTemplateClassName(templateName);
@@ -166,7 +166,7 @@ public class PebbleEngine {
 				try {
 					templateSource = IOUtils.toString(templateReader);
 				} catch (IOException e) {
-					throw new LoaderException("Could not load template");
+					throw new LoaderException(e, "Could not load template");
 				}
 
 				TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);

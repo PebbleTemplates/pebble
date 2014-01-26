@@ -91,7 +91,7 @@ public class DefaultLoader implements Loader {
 		}
 
 		if (is == null) {
-			throw new LoaderException("Could not find template \"" + location + "\"");
+			throw new LoaderException(null, "Could not find template \"" + location + "\"");
 		}
 
 		try {

@@ -97,13 +97,13 @@ public class TokenStream {
 		Token token = tokens.get(current);
 		if (value == null) {
 			if (!token.test(type)) {
-				throw new SyntaxException("Unexpected token of value ["
+				throw new SyntaxException(null, "Unexpected token of value ["
 						+ token.getValue() + "] expected token of type " + type
 						+ " ", token.getLineNumber(), filename);
 			}
 		} else {
 			if (!token.test(type, value)) {
-				throw new SyntaxException("Unexpected token of value ["
+				throw new SyntaxException(null, "Unexpected token of value ["
 						+ token.getValue() + "] expected [" + value 
 						+ "] ", token.getLineNumber(), filename);
 			}
