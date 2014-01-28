@@ -1,0 +1,5 @@
+{{ repeat('one') }}
+{{ repeat('two') }}
+{% macro repeat(input) %}
+{{ input }}
+{% endmacro %}

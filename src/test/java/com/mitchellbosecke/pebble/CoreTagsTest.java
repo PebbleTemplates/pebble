@@ -128,8 +128,23 @@ public class CoreTagsTest extends AbstractTest {
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
-		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n",
-				writer.toString());
+		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
+	}
+	
+	/**
+	 * There was an issue where the second invokation of a macro
+	 * did not have access to the original arguments any more.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testMacroInvokedTwice() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.macroDouble.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("onetwo", writer.toString());
 	}
 
 	/**

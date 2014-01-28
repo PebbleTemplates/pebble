@@ -1,4 +1,4 @@
-{{ input("company", "forcorp", "text") }}
+{{ input("company", "google", "text") }}
 {% macro input(name, value, type) %}
 	<input name="{{ name }}" value="{{ value }}" type="{{ type }}" />
 {% endmacro %}

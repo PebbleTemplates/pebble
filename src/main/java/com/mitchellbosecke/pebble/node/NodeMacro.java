@@ -45,7 +45,7 @@ public class NodeMacro extends AbstractNode {
 	}
 
 	public void compileInit(Compiler compiler) {
-		compiler.write("public void init(){").indent();
+		compiler.write("public void init(){").indent().newline();
 
 		for (NodeExpression arg : args.getArgs()) {
 			NodeExpressionDeclaration variableDeclaration = (NodeExpressionDeclaration) arg;

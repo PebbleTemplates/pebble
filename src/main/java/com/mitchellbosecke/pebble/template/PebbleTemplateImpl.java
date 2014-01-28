@@ -119,6 +119,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	public void registerMacro(Macro macro) {
 		macros.put(macro.getName(), macro);
+		macro.init();
 	}
 
 	public boolean hasMacro(String macroName) {
@@ -143,7 +144,6 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 			found = true;
 			Macro macro = macros.get(macroName);
 
-			macro.init();
 			result = macro.call(context, args);
 		}
 
