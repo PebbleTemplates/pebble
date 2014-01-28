@@ -27,7 +27,7 @@ public class EscaperExtension extends AbstractExtension {
 		return filters;
 	}
 
-	private Filter escapeFilter = new Filter() {
+	private static Filter escapeFilter = new Filter() {
 		public String getName() {
 			return "escape";
 		}
@@ -54,7 +54,7 @@ public class EscaperExtension extends AbstractExtension {
 		}
 	};
 
-	private String htmlEscape(String input) {
+	private static String htmlEscape(String input) {
 		if (input == null) {
 			return input;
 		}

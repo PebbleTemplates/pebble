@@ -45,6 +45,7 @@ import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBrokerImpl;
@@ -63,7 +64,7 @@ public class PebbleEngine {
 	/*
 	 * Final Settings
 	 */
-	private final Class<?> templateParentClass = PebbleTemplate.class;
+	private final Class<?> templateParentClass = PebbleTemplateImpl.class;
 	private final String templateClassPrefix = "PebbleTemplate";
 
 	/*
@@ -145,9 +146,9 @@ public class PebbleEngine {
 
 		return loadingTemplateCache.get(className, new Callable<PebbleTemplate>() {
 
-			public PebbleTemplate call() throws InterruptedException, PebbleException {
+			public PebbleTemplateImpl call() throws InterruptedException, PebbleException {
 				compilationMutex.acquire();
-				PebbleTemplate instance = null;
+				PebbleTemplateImpl instance = null;
 
 				// load it
 				Reader templateReader = loader.getReader(templateName);
@@ -174,9 +175,9 @@ public class PebbleEngine {
 				// the compilation mutex
 				compilationMutex.release();
 
-				PebbleTemplate parent = null;
+				PebbleTemplateImpl parent = null;
 				if (root.hasParent()) {
-					parent = self.compile(root.getParentFileName());
+					parent = (PebbleTemplateImpl) self.compile(root.getParentFileName());
 				}
 				instance = getCompiler().instantiateTemplate(javaSource, className, parent);
 

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.CompilationException;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class CompilerImpl implements Compiler {
 
@@ -138,10 +138,10 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent)
+	public PebbleTemplateImpl instantiateTemplate(String javaSource, String className, PebbleTemplateImpl parent)
 			throws CompilationException {
 
-		String fullClassName = PebbleTemplate.COMPILED_PACKAGE_NAME + "." + className;
+		String fullClassName = PebbleTemplateImpl.COMPILED_PACKAGE_NAME + "." + className;
 
 		/* Instantiating the java compiler */
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -171,7 +171,7 @@ public class CompilerImpl implements Compiler {
 		StringBuilder sb = new StringBuilder();
 
 		try {
-			URL urlLocationOfPebbleTemplate = PebbleTemplate.class.getProtectionDomain().getCodeSource().getLocation();
+			URL urlLocationOfPebbleTemplate = PebbleTemplateImpl.class.getProtectionDomain().getCodeSource().getLocation();
 
 			// replace spaces
 			String locationOfPebbleTemplate = urlLocationOfPebbleTemplate.toString().replace(" ", "%20");
@@ -212,15 +212,15 @@ public class CompilerImpl implements Compiler {
 			e.printStackTrace();
 		}
 
-		PebbleTemplate template;
+		PebbleTemplateImpl template;
 		try {
 
 			ClassLoader cl = fileManager.getClassLoader(null);
 			Constructor<?> constructor = cl.loadClass(fullClassName).getDeclaredConstructor(String.class,
-					PebbleEngine.class, PebbleTemplate.class);
+					PebbleEngine.class, PebbleTemplateImpl.class);
 
 			constructor.setAccessible(true);
-			template = (PebbleTemplate) constructor.newInstance(javaSource, engine, parent);
+			template = (PebbleTemplateImpl) constructor.newInstance(javaSource, engine, parent);
 
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | InstantiationException
 				| InvocationTargetException | IllegalArgumentException e) {

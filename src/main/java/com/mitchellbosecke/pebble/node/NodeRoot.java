@@ -16,7 +16,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.Context;
 
 public class NodeRoot extends AbstractNode {
@@ -69,7 +69,7 @@ public class NodeRoot extends AbstractNode {
 	private void compileClassHeader(Compiler compiler, String className) {
 		String parentClass = compiler.getEngine().getTemplateParentClass().getName();
 
-		compiler.write(String.format("package %s;", PebbleTemplate.COMPILED_PACKAGE_NAME)).newline(2)
+		compiler.write(String.format("package %s;", PebbleTemplateImpl.COMPILED_PACKAGE_NAME)).newline(2)
 				.write("import java.util.Map;").newline().write("import java.util.HashMap;").newline().write("import ")
 				.raw(Context.class.getName()).raw(";").newline(2)
 				.write(String.format("public class %s extends %s {", className, parentClass)).indent();
@@ -77,7 +77,7 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileConstructor(Compiler compiler, String className) {
 		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, ")
-				.raw(PebbleEngine.class.getName()).raw(" engine, ").raw(PebbleTemplate.class.getName()).raw(" parent) {").newline();
+				.raw(PebbleEngine.class.getName()).raw(" engine, ").raw(PebbleTemplateImpl.class.getName()).raw(" parent) {").newline();
 
 		compiler.indent().write("super(javaCode, engine, parent);").newline();
 

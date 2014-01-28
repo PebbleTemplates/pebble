@@ -18,7 +18,7 @@ import javax.tools.ToolProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
@@ -76,7 +76,7 @@ public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<Sta
 
 		ArrayList<JavaFileObject> out = new ArrayList<>();
 
-		if (packageName.startsWith(PebbleTemplate.COMPILED_PACKAGE_NAME)) {
+		if (packageName.startsWith(PebbleTemplateImpl.COMPILED_PACKAGE_NAME)) {
 			out.addAll(new ArrayList<>(javaFileObjects.values()));
 		}
 

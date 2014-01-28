@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class Context {
 
 	private final boolean strictVariables;
 
-	private final Stack<PebbleTemplate> inheritanceChain;
+	private final Stack<PebbleTemplateImpl> inheritanceChain;
 	
 	private final Stack<Scope> scopes;
 	
@@ -60,7 +60,7 @@ public class Context {
 		return result;
 	}
 	
-	public void pushInheritanceChain(PebbleTemplate template){
+	public void pushInheritanceChain(PebbleTemplateImpl template){
 		this.inheritanceChain.push(template);
 	}
 	
@@ -68,7 +68,7 @@ public class Context {
 		this.inheritanceChain.pop();
 	}
 	
-	public PebbleTemplate getChildTemplate() {
+	public PebbleTemplateImpl getChildTemplate() {
 		if(inheritanceChain.isEmpty()){
 			return null;
 		}

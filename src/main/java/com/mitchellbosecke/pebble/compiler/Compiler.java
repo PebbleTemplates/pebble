@@ -13,7 +13,7 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.CompilationException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public interface Compiler {
 
@@ -140,7 +140,7 @@ public interface Compiler {
 	 * @return The final PebbleTemplate instance
 	 * @throws PebbleException
 	 */
-	PebbleTemplate instantiateTemplate(String javaSource, String className, PebbleTemplate parent)
+	PebbleTemplateImpl instantiateTemplate(String javaSource, String className, PebbleTemplateImpl parent)
 			throws CompilationException;
 
 }

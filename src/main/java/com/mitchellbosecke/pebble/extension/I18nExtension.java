@@ -28,7 +28,7 @@ public class I18nExtension extends AbstractExtension {
 		return functions;
 	}
 
-	private SimpleFunction messageFunction = new LocaleAwareSimpleFunction() {
+	private static SimpleFunction messageFunction = new LocaleAwareSimpleFunction() {
 
 		@Override
 		public String getName() {

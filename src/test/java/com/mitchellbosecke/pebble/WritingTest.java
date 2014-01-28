@@ -42,11 +42,11 @@ public class WritingTest extends AbstractTest {
 
 		assertEquals("firstsecond", writer.toString());
 	}
-	
+
 	public class UncloseableWriter extends StringWriter {
-		
+
 		@Override
-		public void close(){
+		public void close() {
 			throw new RuntimeException("Can not close this writer.");
 		}
 	}

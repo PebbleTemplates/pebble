@@ -63,15 +63,12 @@ import com.mitchellbosecke.pebble.utils.StringUtils;
 
 public class CoreExtension extends AbstractExtension {
 
-	private String charset = "UTF-8";
+	private static final String charset = "UTF-8";
 
-	@SuppressWarnings("unused")
-	private PebbleEngine engine;
 
 	@Override
 	public void initRuntime(PebbleEngine engine) {
-		this.engine = engine;
-		charset = engine.getCharset();
+
 	}
 
 	@Override
@@ -177,7 +174,7 @@ public class CoreExtension extends AbstractExtension {
 		return null;
 	}
 
-	private Filter lowerFilter = new Filter() {
+	private static Filter lowerFilter = new Filter() {
 		public String getName() {
 			return "lower";
 		}
@@ -190,7 +187,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter upperFilter = new Filter() {
+	private static Filter upperFilter = new Filter() {
 		public String getName() {
 			return "upper";
 		}
@@ -203,7 +200,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter urlEncoderFilter = new Filter() {
+	private static Filter urlEncoderFilter = new Filter() {
 		public String getName() {
 			return "urlencode";
 		}
@@ -221,7 +218,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter formatFilter = new Filter() {
+	private static Filter formatFilter = new Filter() {
 		public String getName() {
 			return "format";
 		}
@@ -237,7 +234,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter dateFilter = new LocaleAwareFilter() {
+	private static Filter dateFilter = new LocaleAwareFilter() {
 		public String getName() {
 			return "date";
 		}
@@ -270,7 +267,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter numberFormatFilter = new LocaleAwareFilter() {
+	private static Filter numberFormatFilter = new LocaleAwareFilter() {
 		public String getName() {
 			return "numberformat";
 		}
@@ -291,7 +288,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter abbreviateFilter = new Filter() {
+	private static Filter abbreviateFilter = new Filter() {
 		public String getName() {
 			return "abbreviate";
 		}
@@ -307,7 +304,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter capitalizeFilter = new Filter() {
+	private static Filter capitalizeFilter = new Filter() {
 		public String getName() {
 			return "capitalize";
 		}
@@ -321,7 +318,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter trimFilter = new Filter() {
+	private static Filter trimFilter = new Filter() {
 		public String getName() {
 			return "trim";
 		}
@@ -335,7 +332,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Filter defaultFilter = new Filter() {
+	private static Filter defaultFilter = new Filter() {
 		public String getName() {
 			return "default";
 		}
@@ -351,7 +348,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Test evenTest = new Test() {
+	private static Test evenTest = new Test() {
 		public String getName() {
 			return "even";
 		}
@@ -363,7 +360,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Test oddTest = new Test() {
+	private static Test oddTest = new Test() {
 		public String getName() {
 			return "odd";
 		}
@@ -374,7 +371,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Test nullTest = new Test() {
+	private static Test nullTest = new Test() {
 		public String getName() {
 			return "null";
 		}
@@ -385,7 +382,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Test emptyTest = new Test() {
+	private static Test emptyTest = new Test() {
 		public String getName() {
 			return "empty";
 		}
@@ -409,7 +406,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private Test iterableTest = new Test() {
+	private static Test iterableTest = new Test() {
 		public String getName() {
 			return "iterable";
 		}
@@ -420,7 +417,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private SimpleFunction minFunction = new SimpleFunction() {
+	private static SimpleFunction minFunction = new SimpleFunction() {
 		public String getName() {
 			return "min";
 		}
@@ -440,7 +437,7 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private SimpleFunction maxFunction = new SimpleFunction() {
+	private static SimpleFunction maxFunction = new SimpleFunction() {
 		public String getName() {
 			return "max";
 		}
