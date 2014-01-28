@@ -1,8 +1,4 @@
 {{ input("company", "forcorp", "text") }}
-{{ input("company", "forcorp", "text", "overloaded") }}
 {% macro input(name, value, type) %}
 	<input name="{{ name }}" value="{{ value }}" type="{{ type }}" />
-{% endmacro %}
-{% macro input(name, value, type, overload) %}
-	<input name="{{ name }}" value="{{ value }}" type="{{ type }}" data-overload="{{ overload }}"/>
 {% endmacro %}

@@ -34,7 +34,6 @@ public class NodeMacro extends AbstractNode {
 		compiler.write("this.registerMacro(new ").raw(AbstractMacro.class.getName()).raw("(){").newline().indent();
 
 		compileGetNameMethod(compiler);
-		compileGetNumberOfArguments(compiler);
 		compileInit(compiler);
 		compileEvaluate(compiler);
 		compiler.outdent().write("});");
@@ -43,11 +42,6 @@ public class NodeMacro extends AbstractNode {
 
 	public void compileGetNameMethod(Compiler compiler) {
 		compiler.write("public String getName() { return ").string(name).raw("; }").newline();
-	}
-
-	public void compileGetNumberOfArguments(Compiler compiler) {
-		compiler.write("public int getNumberOfArguments() { return ").raw(String.valueOf(args.getArgs().length))
-				.raw("; }").newline();
 	}
 
 	public void compileInit(Compiler compiler) {

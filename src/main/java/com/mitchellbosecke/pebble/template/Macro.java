@@ -16,8 +16,6 @@ public interface Macro {
 
 	public String getName();
 	
-	public int getNumberOfArguments();
-	
 	public void init();
 
 	public String call(Context context, Object[] argValues) throws PebbleException;

@@ -45,7 +45,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 	private final Map<String, Block> blocks = new HashMap<>();
-	private final Map<String, Map<Integer, Macro>> macros = new HashMap<>();
+	private final Map<String, Macro> macros = new HashMap<>();
 
 	public PebbleTemplateImpl(String generatedJavaCode, PebbleEngine engine, PebbleTemplateImpl parent) {
 		this.generatedJavaCode = generatedJavaCode;
@@ -118,22 +118,11 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	}
 
 	public void registerMacro(Macro macro) {
-		Map<Integer, Macro> overloadedMacros = macros.get(macro.getName());
-
-		if (overloadedMacros == null) {
-			overloadedMacros = new HashMap<Integer, Macro>();
-		}
-		overloadedMacros.put(macro.getNumberOfArguments(), macro);
-		macros.put(macro.getName(), overloadedMacros);
+		macros.put(macro.getName(), macro);
 	}
 
-	public boolean hasMacro(String macroName, int numOfArguments) {
-		boolean result = false;
-		Map<Integer, Macro> overloadedMacros = macros.get(macroName);
-		if (overloadedMacros != null) {
-			result = overloadedMacros.containsKey(numOfArguments);
-		}
-		return result;
+	public boolean hasMacro(String macroName) {
+		return macros.containsKey(macroName);
 	}
 
 	public String macro(String macroName, Context context, Object... args) throws PebbleException {
@@ -143,17 +132,16 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		PebbleTemplateImpl childTemplate = context.getChildTemplate();
 
 		// check child template first
-		if (childTemplate != null && childTemplate.hasMacro(macroName, args.length)) {
+		if (childTemplate != null && childTemplate.hasMacro(macroName)) {
 			found = true;
 			context.popInheritanceChain();
 			result = childTemplate.macro(macroName, context, args);
 			context.pushInheritanceChain(childTemplate);
 
 			// check current template
-		} else if (hasMacro(macroName, args.length)) {
+		} else if (hasMacro(macroName)) {
 			found = true;
-			Map<Integer, Macro> overloadedMacros = macros.get(macroName);
-			Macro macro = overloadedMacros.get(args.length);
+			Macro macro = macros.get(macroName);
 
 			macro.init();
 			result = macro.call(context, args);
@@ -162,7 +150,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		// check imported templates
 		if (!found) {
 			for (PebbleTemplateImpl template : importedTemplates) {
-				if (template.hasMacro(macroName, args.length)) {
+				if (template.hasMacro(macroName)) {
 					found = true;
 					result = template.macro(macroName, context, args);
 				}
@@ -311,7 +299,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	}
 
 	protected void addImportedTemplate(PebbleTemplate template) {
-		this.importedTemplates.add((PebbleTemplateImpl)template);
+		this.importedTemplates.add((PebbleTemplateImpl) template);
 	}
 
 	public abstract void initBlocks();

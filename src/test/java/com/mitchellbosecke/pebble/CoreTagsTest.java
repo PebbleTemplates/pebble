@@ -128,8 +128,7 @@ public class CoreTagsTest extends AbstractTest {
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
-		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n"
-				+ "	<input name=\"company\" value=\"forcorp\" type=\"text\" data-overload=\"overloaded\"/>\n",
+		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n",
 				writer.toString());
 	}
 

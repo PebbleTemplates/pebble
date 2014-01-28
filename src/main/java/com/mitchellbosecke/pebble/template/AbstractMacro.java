@@ -10,21 +10,26 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.utils.Context;
 
 public abstract class AbstractMacro implements Macro {
-	
+
 	protected List<String> argNames = new ArrayList<>();
-	
-	protected void addArgumentsToLocalScope(Context context, Object[] argValues){
-		for(int i = 0; i < argValues.length; i++){
-			String argName = argNames.get(i);
-			Object argValue = argValues[i];
-			
+
+	private void addArgumentsToLocalScope(Context context, Object[] argValues) {
+		int i = 0;
+		for (String argName : argNames) {
+			Object argValue = null;
+
+			if (i < argValues.length) {
+				argValue = argValues[i];
+			}
+
 			context.put(argName, argValue);
+			i++;
 		}
 	}
-	
-	public String call(Context context, Object[] argValues) throws PebbleException{
+
+	public String call(Context context, Object[] argValues) throws PebbleException {
 		StringWriter writer = new StringWriter();
-		
+
 		context.pushLocalScope();
 		addArgumentsToLocalScope(context, argValues);
 		try {
@@ -35,7 +40,7 @@ public abstract class AbstractMacro implements Macro {
 		context.popScope();
 		return writer.toString();
 	}
-	
+
 	public abstract void evaluate(Writer writer, Context context) throws PebbleException, IOException;
-	
+
 }
