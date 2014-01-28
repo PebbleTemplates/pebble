@@ -1,3 +1,9 @@
+## v0.1.4-beta (2014-01-27)
+- The i18n extension is now enabled by default
+- Improved exception handling (storing cause where applicable)
+- PebbleEngine now returns a PebbleTemplate interface with a small subset of original methods
+- Refactored function/filter/test interfaces into functional interfaces (preparation for Java 8)
+
 ## v0.1.3-beta (2014-01-25)
 - More unit tests and minor bug fixes
 - Fixed issue where child templates were being inappropriately cached.
