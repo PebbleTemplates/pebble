@@ -1,3 +1,6 @@
+## v0.1.5-beta (2014-01-27)
+- Fixed major bug from v0.1.4 that prevented macros from being invoked more than once
+
 ## v0.1.4-beta (2014-01-27)
 - The i18n extension is now enabled by default
 - Improved exception handling (storing cause where applicable)
