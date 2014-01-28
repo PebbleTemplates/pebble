@@ -9,8 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 
@@ -21,17 +22,13 @@ public class EscaperExtension extends AbstractExtension {
 	}
 
 	@Override
-	public List<Filter> getFilters() {
-		ArrayList<Filter> filters = new ArrayList<>();
-		filters.add(escapeFilter);
+	public Map<String, Filter> getFilters() {
+		Map<String, Filter> filters = new HashMap<>();
+		filters.put("escape", escapeFilter);
 		return filters;
 	}
 
 	private static Filter escapeFilter = new Filter() {
-		public String getName() {
-			return "escape";
-		}
-
 		public Object apply(Object inputObject, List<Object> args) {
 			String input = (String) inputObject;
 

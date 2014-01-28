@@ -9,8 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -22,19 +23,13 @@ public class I18nExtension extends AbstractExtension {
 	}
 
 	@Override
-	public List<SimpleFunction> getFunctions() {
-		ArrayList<SimpleFunction> functions = new ArrayList<>();
-		functions.add(messageFunction);
+	public Map<String, SimpleFunction> getFunctions() {
+		Map<String, SimpleFunction> functions = new HashMap<>();
+		functions.put("message", messageFunction);
 		return functions;
 	}
 
 	private static SimpleFunction messageFunction = new LocaleAwareSimpleFunction() {
-
-		@Override
-		public String getName() {
-			return "message";
-		}
-
 		@Override
 		public Object execute(List<Object> args) {
 			String basename = (String) args.get(0);

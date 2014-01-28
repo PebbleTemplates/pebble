@@ -40,17 +40,17 @@ public abstract class AbstractExtension implements Extension {
 	}
 	
 	@Override
-	public List<Filter> getFilters(){
+	public Map<String,Filter> getFilters(){
 		return null;
 	}
 	
 	@Override
-	public List<Test> getTests(){
+	public Map<String, Test> getTests(){
 		return null;
 	}
 	
 	@Override
-	public List<SimpleFunction> getFunctions(){
+	public Map<String, SimpleFunction> getFunctions(){
 		return null;
 	}
 

@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,6 @@ import com.mitchellbosecke.pebble.utils.StringUtils;
 public class CoreExtension extends AbstractExtension {
 
 	private static final String charset = "UTF-8";
-
 
 	@Override
 	public void initRuntime(PebbleEngine engine) {
@@ -120,35 +120,35 @@ public class CoreExtension extends AbstractExtension {
 	}
 
 	@Override
-	public List<Filter> getFilters() {
-		ArrayList<Filter> filters = new ArrayList<>();
-		filters.add(lowerFilter);
-		filters.add(upperFilter);
-		filters.add(dateFilter);
-		filters.add(urlEncoderFilter);
-		filters.add(formatFilter);
-		filters.add(numberFormatFilter);
-		filters.add(abbreviateFilter);
-		filters.add(capitalizeFilter);
-		filters.add(trimFilter);
-		filters.add(defaultFilter);
+	public Map<String, Filter> getFilters() {
+		Map<String, Filter> filters = new HashMap<>();
+		filters.put("lower", lowerFilter);
+		filters.put("upper", upperFilter);
+		filters.put("date", dateFilter);
+		filters.put("urlencode", urlEncoderFilter);
+		filters.put("format", formatFilter);
+		filters.put("numberformat", numberFormatFilter);
+		filters.put("abbreviate", abbreviateFilter);
+		filters.put("capitalize", capitalizeFilter);
+		filters.put("trim", trimFilter);
+		filters.put("default", defaultFilter);
 		return filters;
 	}
 
 	@Override
-	public List<Test> getTests() {
-		ArrayList<Test> tests = new ArrayList<>();
-		tests.add(evenTest);
-		tests.add(oddTest);
-		tests.add(nullTest);
-		tests.add(emptyTest);
-		tests.add(iterableTest);
+	public Map<String, Test> getTests() {
+		Map<String, Test> tests = new HashMap<>();
+		tests.put("even", evenTest);
+		tests.put("odd", oddTest);
+		tests.put("null", nullTest);
+		tests.put("empty", emptyTest);
+		tests.put("iterable", iterableTest);
 		return tests;
 	}
 
 	@Override
-	public List<SimpleFunction> getFunctions() {
-		ArrayList<SimpleFunction> functions = new ArrayList<>();
+	public Map<String, SimpleFunction> getFunctions() {
+		Map<String, SimpleFunction> functions = new HashMap<>();
 
 		/*
 		 * For efficiency purposes, some core functions are individually parsed
@@ -156,8 +156,8 @@ public class CoreExtension extends AbstractExtension {
 		 * includes the block and parent functions.
 		 */
 
-		functions.add(minFunction);
-		functions.add(maxFunction);
+		functions.put("min", minFunction);
+		functions.put("max", maxFunction);
 		return functions;
 	}
 
@@ -175,12 +175,8 @@ public class CoreExtension extends AbstractExtension {
 	}
 
 	private static Filter lowerFilter = new Filter() {
-		public String getName() {
-			return "lower";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			return ((String) input).toLowerCase();
@@ -188,10 +184,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter upperFilter = new Filter() {
-		public String getName() {
-			return "upper";
-		}
-
 		public Object apply(Object input, List<Object> args) {
 			if (input == null) {
 				return null;
@@ -201,12 +193,8 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter urlEncoderFilter = new Filter() {
-		public String getName() {
-			return "urlencode";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			String arg = (String) input;
@@ -219,12 +207,8 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter formatFilter = new Filter() {
-		public String getName() {
-			return "format";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			String arg = (String) input;
@@ -235,12 +219,8 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter dateFilter = new LocaleAwareFilter() {
-		public String getName() {
-			return "date";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			Date arg = null;
@@ -268,12 +248,8 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter numberFormatFilter = new LocaleAwareFilter() {
-		public String getName() {
-			return "numberformat";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			Number number = (Number) input;
@@ -289,12 +265,8 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter abbreviateFilter = new Filter() {
-		public String getName() {
-			return "abbreviate";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			String str = (String) input;
@@ -305,12 +277,8 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter capitalizeFilter = new Filter() {
-		public String getName() {
-			return "capitalize";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			String str = (String) input;
@@ -319,12 +287,8 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter trimFilter = new Filter() {
-		public String getName() {
-			return "trim";
-		}
-
 		public Object apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				return null;
 			}
 			String str = (String) input;
@@ -333,10 +297,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter defaultFilter = new Filter() {
-		public String getName() {
-			return "default";
-		}
-
 		public Object apply(Object input, List<Object> args) {
 
 			Object defaultObj = args.get(0);
@@ -349,10 +309,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Test evenTest = new Test() {
-		public String getName() {
-			return "even";
-		}
-
 		public boolean apply(Object input, List<Object> args) {
 
 			Integer obj = (Integer) input;
@@ -361,10 +317,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Test oddTest = new Test() {
-		public String getName() {
-			return "odd";
-		}
-
 		public boolean apply(Object input, List<Object> args) {
 
 			return evenTest.apply(input, args) == false;
@@ -372,10 +324,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Test nullTest = new Test() {
-		public String getName() {
-			return "null";
-		}
-
 		public boolean apply(Object input, List<Object> args) {
 
 			return input == null;
@@ -383,10 +331,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Test emptyTest = new Test() {
-		public String getName() {
-			return "empty";
-		}
-
 		public boolean apply(Object input, List<Object> args) {
 			boolean isEmpty = input == null;
 
@@ -407,10 +351,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Test iterableTest = new Test() {
-		public String getName() {
-			return "iterable";
-		}
-
 		public boolean apply(Object input, List<Object> args) {
 
 			return input instanceof Iterable;
@@ -418,10 +358,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static SimpleFunction minFunction = new SimpleFunction() {
-		public String getName() {
-			return "min";
-		}
-
 		public Object execute(List<Object> args) {
 			Object min = null;
 			for (Object candidate : args) {
@@ -438,9 +374,6 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static SimpleFunction maxFunction = new SimpleFunction() {
-		public String getName() {
-			return "max";
-		}
 
 		public Object execute(List<Object> args) {
 			Object min = null;

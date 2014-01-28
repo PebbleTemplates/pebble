@@ -26,21 +26,21 @@ public interface Extension {
 	 * 
 	 * @return A list of filters. It is okay to return null.
 	 */
-	public List<Filter> getFilters();
+	public Map<String, Filter> getFilters();
 
 	/**
 	 * Use this method to provide custom tests.
 	 * 
 	 * @return A list of tests. It is okay to return null.
 	 */
-	public List<Test> getTests();
+	public Map<String, Test> getTests();
 	
 	/**
 	 * Use this method to provide custom functions.
 	 * 
 	 * @return A list of functions. It is okay to return null.
 	 */
-	public List<SimpleFunction> getFunctions();
+	public Map<String, SimpleFunction> getFunctions();
 
 	/**
 	 * Use this method to provide custom tags.

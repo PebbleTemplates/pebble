@@ -11,9 +11,8 @@ package com.mitchellbosecke.pebble.extension;
 
 import java.util.List;
 
+//@FunctionalInterface
 public interface Filter {
-
-	public String getName();
 
 	public Object apply(Object input, List<Object> args);
 }

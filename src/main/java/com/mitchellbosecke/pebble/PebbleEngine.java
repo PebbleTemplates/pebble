@@ -17,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
@@ -274,22 +275,22 @@ public class PebbleEngine {
 
 		// filters
 		if (extension.getFilters() != null) {
-			for (Filter filter : extension.getFilters()) {
-				this.filters.put(filter.getName(), filter);
+			for (Entry<String, Filter> entry : extension.getFilters().entrySet()) {
+				this.filters.put(entry.getKey(), entry.getValue());
 			}
 		}
 
 		// tests
 		if (extension.getTests() != null) {
-			for (Test test : extension.getTests()) {
-				this.tests.put(test.getName(), test);
+			for (Entry<String, Test> entry : extension.getTests().entrySet()) {
+				this.tests.put(entry.getKey(), entry.getValue());
 			}
 		}
 
 		// tests
 		if (extension.getFunctions() != null) {
-			for (SimpleFunction function : extension.getFunctions()) {
-				this.functions.put(function.getName(), function);
+			for (Entry<String, SimpleFunction> entry : extension.getFunctions().entrySet()) {
+				this.functions.put(entry.getKey(), entry.getValue());
 			}
 		}
 
