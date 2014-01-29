@@ -1,0 +1,9 @@
+{{ repeat(1) }}
+
+{% macro repeat(input) %}
+{{ input }}
+{% endmacro %}
+
+{% macro repeat(input) %}
+{{ input + 1 }}
+{% endmacro %}

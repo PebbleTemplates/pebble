@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -145,6 +146,16 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("onetwo", writer.toString());
+	}
+	
+	@Ignore
+	@Test(expected = PebbleException.class)
+	public void testDuplicateMacro() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.macroDuplicate.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("1", writer.toString());
 	}
 
 	/**
