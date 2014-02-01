@@ -1,4 +1,4 @@
-package com.mitchellbosecke.pebble.utils;
+package com.mitchellbosecke.pebble.template;
 
 import java.lang.reflect.Member;
 import java.util.HashMap;

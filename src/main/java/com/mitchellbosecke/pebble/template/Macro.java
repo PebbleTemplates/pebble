@@ -10,7 +10,6 @@
 package com.mitchellbosecke.pebble.template;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.utils.Context;
 
 public interface Macro {
 

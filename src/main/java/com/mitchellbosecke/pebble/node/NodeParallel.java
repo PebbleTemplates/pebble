@@ -11,8 +11,8 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.Context;
 import com.mitchellbosecke.pebble.template.Evaluatable;
-import com.mitchellbosecke.pebble.utils.Context;
 
 public class NodeParallel extends AbstractNode {
 

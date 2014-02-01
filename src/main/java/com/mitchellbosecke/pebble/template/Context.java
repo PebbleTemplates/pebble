@@ -1,4 +1,4 @@
-package com.mitchellbosecke.pebble.utils;
+package com.mitchellbosecke.pebble.template;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class Context {
 

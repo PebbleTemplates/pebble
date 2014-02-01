@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.utils.Context;
 
 public interface Block {
 

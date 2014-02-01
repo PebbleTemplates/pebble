@@ -8,6 +8,8 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.ClassAttributeCacheEntry;
+import com.mitchellbosecke.pebble.template.Context;
 
 public class ReflectionUtils {
 

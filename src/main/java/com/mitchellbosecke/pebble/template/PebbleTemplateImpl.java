@@ -28,7 +28,6 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.SimpleFunction;
 import com.mitchellbosecke.pebble.extension.Test;
-import com.mitchellbosecke.pebble.utils.Context;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
 import com.mitchellbosecke.pebble.utils.LocaleAware;
 import com.mitchellbosecke.pebble.utils.ReflectionUtils;
