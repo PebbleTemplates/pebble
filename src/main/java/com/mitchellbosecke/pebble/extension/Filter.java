@@ -9,12 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
-import java.util.List;
 import java.util.Map;
 
 public interface Filter {
-	
-	public List<String> getArgumentNames();
 	
 	public Object apply(Object input, Map<String, Object> args);
 }

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,10 +27,11 @@ import java.util.concurrent.Future;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.LocaleAware;
+import com.mitchellbosecke.pebble.extension.NamedArguments;
 import com.mitchellbosecke.pebble.extension.SimpleFunction;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
-import com.mitchellbosecke.pebble.utils.LocaleAware;
 import com.mitchellbosecke.pebble.utils.ReflectionUtils;
 
 public abstract class PebbleTemplateImpl implements PebbleTemplate {
@@ -237,15 +239,11 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 			((LocaleAware) filter).setLocale(context.getLocale());
 		}
 
-		// turn arguments into a named argument map
-		Map<String, Object> namedArguments = new HashMap<>();
-		int i = 0;
-		if (filter.getArgumentNames() != null) {
-			for (String name : filter.getArgumentNames()) {
-				Object value = arguments.size() > i ? arguments.get(i) : null;
-				namedArguments.put(name, value);
-				i++;
-			}
+		Map<String, Object> namedArguments = null;
+		if (filter instanceof NamedArguments) {
+			namedArguments = getNamedArguments((NamedArguments) filter, arguments);
+		} else {
+			namedArguments = getPositionalArguments(arguments);
 		}
 
 		return filter.apply(input, namedArguments);
@@ -268,7 +266,49 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		if (function instanceof LocaleAware) {
 			((LocaleAware) function).setLocale(context.getLocale());
 		}
-		return function.execute(arguments);
+
+		Map<String, Object> namedArguments = null;
+		if (function instanceof NamedArguments) {
+			namedArguments = getNamedArguments((NamedArguments) function, arguments);
+		} else {
+			namedArguments = getPositionalArguments(arguments);
+		}
+		return function.execute(namedArguments);
+	}
+
+	private Map<String, Object> getNamedArguments(NamedArguments invokable, List<Object> arguments) {
+		Map<String, Object> namedArguments = new HashMap<>();
+
+		Iterator<Object> argumentIterator = arguments.iterator();
+		Iterator<String> nameIterator = invokable.getArgumentNames().iterator();
+
+		while (nameIterator.hasNext()) {
+
+			String name = nameIterator.next();
+			// if argument has name, break from this loop
+
+			if (argumentIterator.hasNext()) {
+				namedArguments.put(name, argumentIterator.next());
+			} else {
+				namedArguments.put(name, null);
+			}
+		}
+
+		while (argumentIterator.hasNext()) {
+			Object arg = argumentIterator.next();
+			// place named arg in map
+		}
+		return namedArguments;
+	}
+
+	private Map<String, Object> getPositionalArguments(List<Object> arguments) {
+		Map<String, Object> namedArguments = new HashMap<>();
+		int position = 0;
+		for (Object arg : arguments) {
+			namedArguments.put(String.valueOf(position), arg);
+			position++;
+		}
+		return namedArguments;
 	}
 
 	protected String printVariable(Object var) {
@@ -298,7 +338,14 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 		Map<String, Test> tests = engine.getTests();
 		Test test = tests.get(testName);
-		return test.apply(input, arguments);
+
+		Map<String, Object> namedArguments = null;
+		if (test instanceof NamedArguments) {
+			namedArguments = getNamedArguments((NamedArguments) test, arguments);
+		} else {
+			namedArguments = getPositionalArguments(arguments);
+		}
+		return test.apply(input, namedArguments);
 	}
 
 	public String getGeneratedJavaCode() {

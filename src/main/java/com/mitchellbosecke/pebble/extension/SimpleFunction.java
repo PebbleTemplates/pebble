@@ -8,14 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
-import java.util.List;
-
-import com.mitchellbosecke.pebble.utils.Function;
+import java.util.Map;
 
 //@FunctionalInterface
-public interface SimpleFunction extends Function<Object, List<Object>> {
+public interface SimpleFunction {
 	
-	@Override
-	public Object execute(List<Object> args);
+	public Object execute(Map<String, Object> args);
 
 }

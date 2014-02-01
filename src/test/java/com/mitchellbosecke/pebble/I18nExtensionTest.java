@@ -16,7 +16,7 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.I18nExtension;
+import com.mitchellbosecke.pebble.extension.i18n.I18nExtension;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;

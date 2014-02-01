@@ -9,10 +9,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
-import java.util.List;
+import java.util.Map;
 
 //@FunctionalInterface
 public interface Test {
 	
-	public boolean apply(Object input, List<Object> args);
+	public boolean apply(Object input, Map<String, Object> args);
 }
