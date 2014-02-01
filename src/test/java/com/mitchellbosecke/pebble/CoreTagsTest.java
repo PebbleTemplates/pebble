@@ -207,6 +207,22 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", writer.toString());
 	}
+	
+	/**
+	 * Ensures that when including a template it is safe to 
+	 * have conflicting block names.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testIncludeOverridesBlocks() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.includeOverrideBlock.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("TWO\nONE\nTWO\n", writer.toString());
+	}
 
 	@Test
 	public void testSet() throws PebbleException, IOException {
