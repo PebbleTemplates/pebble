@@ -165,6 +165,17 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("onetwo", writer.toString());
 	}
 	
+	@Test
+	public void testMacroInvokationWithoutAllArguments() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleTemplate template = pebble.compile("{{ test('1') }}{% macro test(one,two) %}{{ one }}{{ two }}{% endmacro %}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("1", writer.toString());
+	}
+	
 	@Ignore
 	@Test(expected = PebbleException.class)
 	public void testDuplicateMacro() throws PebbleException, IOException {
