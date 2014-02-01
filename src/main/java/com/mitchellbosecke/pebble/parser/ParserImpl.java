@@ -69,7 +69,7 @@ public class ParserImpl implements Parser {
 	 * Macros to be compiled. Macros can be overloaded by name which explains
 	 * why it's a Map of Lists.
 	 */
-	private Map<String, List<NodeMacro>> macros;
+	private Map<String, NodeMacro> macros;
 
 	/**
 	 * blockStack stores the names of the nested blocks to ensure that we always
@@ -99,7 +99,7 @@ public class ParserImpl implements Parser {
 	 * Private constructor that takes in all stateful data
 	 */
 	private ParserImpl(PebbleEngine engine, TokenStream stream, String parentFileName, Map<String, NodeBlock> blocks,
-			Map<String, List<NodeMacro>> macros) {
+			Map<String,NodeMacro> macros) {
 		this.engine = engine;
 		this.stream = stream;
 		this.parentFileName = parentFileName;
@@ -130,7 +130,7 @@ public class ParserImpl implements Parser {
 		this.blocks = new HashMap<>();
 		this.blockStack = new Stack<>();
 
-		this.setMacros(new HashMap<String, List<NodeMacro>>());
+		this.setMacros(new HashMap<String, NodeMacro>());
 
 		NodeBody body = subparse();
 
@@ -319,24 +319,16 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public Map<String, List<NodeMacro>> getMacros() {
+	public Map<String, NodeMacro> getMacros() {
 		return macros;
 	}
 
 	@Override
-	public void addMacro(String name, NodeMacro macro) {
-		Map<String, List<NodeMacro>> existingMacros = getMacros();
-		List<NodeMacro> macros;
-		if (getMacros().containsKey(name)) {
-			macros = getMacros().get(name);
-		} else {
-			macros = new ArrayList<NodeMacro>();
-			existingMacros.put(name, macros);
-		}
-		macros.add(macro);
+	public void addMacro(String name, NodeMacro macro){
+		macros.put(name, macro);
 	}
 
-	public void setMacros(Map<String, List<NodeMacro>> macros) {
+	public void setMacros(Map<String, NodeMacro> macros) {
 		this.macros = macros;
 	}
 

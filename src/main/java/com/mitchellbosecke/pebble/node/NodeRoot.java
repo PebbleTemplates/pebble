@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -29,10 +28,10 @@ public class NodeRoot extends AbstractNode {
 
 	private final Map<String, NodeBlock> blocks;
 
-	private final Map<String, List<NodeMacro>> macros;
+	private final Map<String, NodeMacro> macros;
 
 	public NodeRoot(NodeBody body, String parentFileName, Map<String, NodeBlock> blocks,
-			Map<String, List<NodeMacro>> macros, String filename) {
+			Map<String, NodeMacro> macros, String filename) {
 		super(0);
 		this.body = body;
 		this.parentFileName = parentFileName;
@@ -112,11 +111,11 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileMacros(Compiler compiler) {
 		compiler.newline(2).write("public void initMacros() {").newline().indent();
-		for (List<NodeMacro> overloadedMacros : macros.values()) {
-			for (NodeMacro macro : overloadedMacros) {
-				compiler.newline(2).subcompile(macro);
-			}
+
+		for (NodeMacro macro : macros.values()) {
+			compiler.newline(2).subcompile(macro);
 		}
+		
 		compiler.outdent().newline().write("}");
 	}
 

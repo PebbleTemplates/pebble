@@ -40,8 +40,13 @@ public class MacroTokenParser extends AbstractTokenParser {
 
 		// skip the 'endmacro' token
 		stream.next();
-		
+
 		stream.expect(Token.Type.EXECUTE_END);
+
+		if (this.parser.getMacros().containsKey(macroName)) {
+			throw new SyntaxException(null, "Can not have more than one macro with the same name. [" + macroName + "]",
+					lineNumber, stream.getFilename());
+		}
 
 		this.parser.addMacro(macroName, new NodeMacro(lineNumber, macroName, args, body));
 		return null;

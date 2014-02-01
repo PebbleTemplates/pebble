@@ -9,7 +9,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
-import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -68,7 +67,7 @@ public interface Parser {
 
 	void setBlocks(Map<String, NodeBlock> blocks);
 
-	Map<String,  List<NodeMacro>> getMacros();
+	Map<String,  NodeMacro> getMacros();
 	
 	public void addMacro(String name, NodeMacro macro);
 

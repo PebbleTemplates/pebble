@@ -21,6 +21,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.SyntaxException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -143,6 +144,17 @@ public class CoreTagsTest extends AbstractTest {
 	@Test
 	public void testMacro() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macro1.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
+	}
+	
+	@Test(expected=SyntaxException.class)
+	public void testMacrosWithSameName() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleTemplate template = pebble.compile("{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
