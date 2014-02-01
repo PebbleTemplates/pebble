@@ -14,7 +14,7 @@ import com.mitchellbosecke.pebble.utils.Function;
 
 //@FunctionalInterface
 public interface SimpleFunction extends Function<Object, List<Object>> {
-
+	
 	@Override
 	public Object execute(List<Object> args);
 

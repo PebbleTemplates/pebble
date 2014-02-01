@@ -126,7 +126,6 @@ public class CoreExtension extends AbstractExtension {
 		filters.put("upper", upperFilter);
 		filters.put("date", dateFilter);
 		filters.put("urlencode", urlEncoderFilter);
-		filters.put("format", formatFilter);
 		filters.put("numberformat", numberFormatFilter);
 		filters.put("abbreviate", abbreviateFilter);
 		filters.put("capitalize", capitalizeFilter);
@@ -164,18 +163,15 @@ public class CoreExtension extends AbstractExtension {
 	@Override
 	public Map<String, Object> getGlobalVariables() {
 
-		/*
-		 * The following core global variables are defined in
-		 * PebbleTemplate.initContext():
-		 * 
-		 * _locale
-		 */
-
 		return null;
 	}
 
 	private static Filter lowerFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			return null;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
@@ -184,7 +180,11 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter upperFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			return null;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
@@ -193,7 +193,11 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter urlEncoderFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			return null;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
@@ -206,56 +210,55 @@ public class CoreExtension extends AbstractExtension {
 		}
 	};
 
-	private static Filter formatFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
-			if (input == null) {
-				return null;
-			}
-			String arg = (String) input;
-			Object[] formatArgs = args.toArray();
-
-			return String.format(arg, formatArgs);
-		}
-	};
-
 	private static Filter dateFilter = new LocaleAwareFilter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			List<String> names = new ArrayList<>();
+			names.add("format");
+			names.add("existingFormat");
+			return names;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
-			Date arg = null;
+			Date date = null;
 
 			DateFormat existingFormat = null;
 			DateFormat intendedFormat = null;
 
-			if (args.size() == 1) {
-				arg = (Date) input;
-				intendedFormat = new SimpleDateFormat((String) args.get(0), locale);
-			} else if (args.size() == 2) {
+			intendedFormat = new SimpleDateFormat((String) args.get("format"), locale);
 
-				existingFormat = new SimpleDateFormat((String) args.get(0), locale);
-				intendedFormat = new SimpleDateFormat((String) args.get(1), locale);
-
+			if (args.get("existingFormat") != null) {
+				existingFormat = new SimpleDateFormat((String) args.get("existingFormat"), locale);
 				try {
-					arg = existingFormat.parse((String) input);
+					date = existingFormat.parse((String) input);
 				} catch (ParseException e) {
-					// TODO: figure out what to do here
+					throw new RuntimeException("Could not parse date", e);
 				}
+			} else {
+				date = (Date) input;
 			}
 
-			return intendedFormat.format(arg);
+			return intendedFormat.format(date);
 		}
 	};
 
 	private static Filter numberFormatFilter = new LocaleAwareFilter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			List<String> names = new ArrayList<>();
+			names.add("format");
+			return names;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
 			Number number = (Number) input;
 
-			if (args.size() > 0) {
-				Format format = new DecimalFormat((String) args.get(0));
+			if (args.get("format") != null) {
+				Format format = new DecimalFormat((String) args.get("format"));
 				return format.format(number);
 			} else {
 				NumberFormat numberFormat = NumberFormat.getInstance(locale);
@@ -265,19 +268,29 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter abbreviateFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			List<String> names = new ArrayList<>();
+			names.add("length");
+			return names;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
 			String str = (String) input;
-			int maxWidth = (Integer) args.get(0);
+			int maxWidth = (Integer) args.get("length");
 
 			return StringUtils.abbreviate(str, maxWidth);
 		}
 	};
 
 	private static Filter capitalizeFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			return null;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
@@ -287,7 +300,11 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter trimFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			return null;
+		}
+
+		public Object apply(Object input, Map<String, Object> args) {
 			if (input == null) {
 				return null;
 			}
@@ -297,9 +314,15 @@ public class CoreExtension extends AbstractExtension {
 	};
 
 	private static Filter defaultFilter = new Filter() {
-		public Object apply(Object input, List<Object> args) {
+		public List<String> getArgumentNames() {
+			List<String> names = new ArrayList<>();
+			names.add("default");
+			return names;
+		}
 
-			Object defaultObj = args.get(0);
+		public Object apply(Object input, Map<String, Object> args) {
+
+			Object defaultObj = args.get("default");
 
 			if (emptyTest.apply(input, new ArrayList<>())) {
 				return defaultObj;
@@ -310,7 +333,7 @@ public class CoreExtension extends AbstractExtension {
 
 	private static Test evenTest = new Test() {
 		public boolean apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				throw new IllegalArgumentException("Can not pass null value to \"even\" test.");
 			}
 
@@ -321,7 +344,7 @@ public class CoreExtension extends AbstractExtension {
 
 	private static Test oddTest = new Test() {
 		public boolean apply(Object input, List<Object> args) {
-			if(input == null){
+			if (input == null) {
 				throw new IllegalArgumentException("Can not pass null value to \"odd\" test.");
 			}
 			return evenTest.apply(input, args) == false;

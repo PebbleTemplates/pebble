@@ -229,14 +229,26 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
 
+		if (filter == null) {
+			throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName));
+		}
+
 		if (filter instanceof LocaleAware) {
 			((LocaleAware) filter).setLocale(context.getLocale());
 		}
 
-		if (filter == null) {
-			throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName));
+		// turn arguments into a named argument map
+		Map<String, Object> namedArguments = new HashMap<>();
+		int i = 0;
+		if (filter.getArgumentNames() != null) {
+			for (String name : filter.getArgumentNames()) {
+				Object value = arguments.size() > i ? arguments.get(i) : null;
+				namedArguments.put(name, value);
+				i++;
+			}
 		}
-		return filter.apply(input, arguments);
+
+		return filter.apply(input, namedArguments);
 	}
 
 	protected Object applyFunctionOrMacro(String functionName, Context context, Object... args) throws PebbleException {

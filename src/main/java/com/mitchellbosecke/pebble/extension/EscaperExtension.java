@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,14 +30,18 @@ public class EscaperExtension extends AbstractExtension {
 	}
 
 	private static Filter escapeFilter = new Filter() {
-		public Object apply(Object inputObject, List<Object> args) {
+		public List<String> getArgumentNames(){
+			List<String> names = new ArrayList<>();
+			names.add("strategy");
+			return names;
+		}
+		public Object apply(Object inputObject, Map<String,Object> args) {
 			String input = (String) inputObject;
 
 			String strategy = "html";
-			try {
-				strategy = (String) args.get(0);
-			} catch (IndexOutOfBoundsException e) {
-				// user did not provide strategy which is okay.
+			
+			if(args.get("strategy") != null ){
+				strategy = (String) args.get("strategy");
 			}
 
 			switch (strategy) {

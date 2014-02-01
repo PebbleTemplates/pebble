@@ -10,9 +10,11 @@
 package com.mitchellbosecke.pebble.extension;
 
 import java.util.List;
+import java.util.Map;
 
-//@FunctionalInterface
 public interface Filter {
-
-	public Object apply(Object input, List<Object> args);
+	
+	public List<String> getArgumentNames();
+	
+	public Object apply(Object input, Map<String, Object> args);
 }

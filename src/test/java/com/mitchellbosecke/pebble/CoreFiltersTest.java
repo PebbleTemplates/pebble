@@ -89,7 +89,7 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		String source = "{{ realDate | date(\"MM/dd/yyyy\") }}{{ realDate | date(format) }}{{ stringDate | date(\"yyyy-MMMM-d\", \"yyyy/MMMM/d\") }}";
+		String source = "{{ realDate | date('MM/dd/yyyy') }}{{ realDate | date(format) }}{{ stringDate | date('yyyy/MMMM/d','yyyy-MMMM-d') }}";
 
 		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();
@@ -135,32 +135,6 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.compile("{{ null | urlencode }}");
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("", writer.toString());
-	}
-
-	@Test
-	public void testFormat() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-
-		PebbleTemplate template = pebble.compile("{{ 'I like %s and %s.' | format(foo, 'bar') }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("foo", "foo");
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("I like foo and bar.", writer.toString());
-	}
-
-	@Test
-	public void testFormatWithNullInput() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-
-		PebbleTemplate template = pebble.compile("{{ null | format(foo, 'bar') }}");
-
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("", writer.toString());
