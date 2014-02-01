@@ -36,6 +36,18 @@ public class CoreTestsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("yesyes", writer.toString());
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullEven() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if null is even %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.compile(source);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+	}
 
 	@Test
 	public void testOdd() throws PebbleException, IOException {
@@ -48,6 +60,18 @@ public class CoreTestsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("yesyes", writer.toString());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullOdd() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if null is odd %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.compile(source);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
 	}
 
 	@Test
@@ -94,7 +118,7 @@ public class CoreTestsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("yesyesyes", writer.toString());
-	}
+	} 
 
 	@Test
 	public void testIsnt() throws PebbleException, IOException {

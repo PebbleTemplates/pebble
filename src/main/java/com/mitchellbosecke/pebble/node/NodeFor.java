@@ -37,16 +37,20 @@ public class NodeFor extends AbstractNode {
 	public void compile(Compiler compiler) {
 
 		if (elseBody != null) {
-			compiler.newline().write("if (((Iterable)").subcompile(iterable).raw(").iterator().hasNext()){").newline()
-					.indent();
+			compiler.newline().write("if (").subcompile(iterable).write(" != null && ((Iterable)").subcompile(iterable)
+					.raw(").iterator().hasNext()){").newline().indent();
 
 			compileForLoop(compiler);
 
-			compiler.newline().outdent().write("} else {\n").indent().subcompile(elseBody);
+			compiler.newline().outdent().write("} else {").newline().indent().subcompile(elseBody);
 
 			compiler.newline().outdent().write("}").newline();
 		} else {
+			compiler.newline().write("if (").subcompile(iterable).write(" != null){").newline().indent();
+
 			compileForLoop(compiler);
+
+			compiler.newline().outdent().write("}").newline();
 		}
 	}
 

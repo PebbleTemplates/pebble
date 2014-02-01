@@ -83,6 +83,23 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("[2]0Alex1Bob", writer.toString());
 	}
+	
+	
+	@Test
+	public void testForWithNullIterable() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% for user in users %}{{ loop.index }}{% endfor %}";
+		PebbleTemplate template = pebble.compile(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("users", null);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("", writer.toString());
+	}
 
 	/**
 	 * There were compilation issues when having two for loops in the same

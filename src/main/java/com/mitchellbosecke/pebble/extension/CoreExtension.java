@@ -310,6 +310,9 @@ public class CoreExtension extends AbstractExtension {
 
 	private static Test evenTest = new Test() {
 		public boolean apply(Object input, List<Object> args) {
+			if(input == null){
+				throw new IllegalArgumentException("Can not pass null value to \"even\" test.");
+			}
 
 			Integer obj = (Integer) input;
 			return (obj % 2 == 0);
@@ -318,7 +321,9 @@ public class CoreExtension extends AbstractExtension {
 
 	private static Test oddTest = new Test() {
 		public boolean apply(Object input, List<Object> args) {
-
+			if(input == null){
+				throw new IllegalArgumentException("Can not pass null value to \"odd\" test.");
+			}
 			return evenTest.apply(input, args) == false;
 		}
 	};
