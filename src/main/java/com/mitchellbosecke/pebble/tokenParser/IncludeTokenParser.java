@@ -9,7 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.node.NodeInclude;
 public class IncludeTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws SyntaxException {
+	public Node parse(Token token) throws ParserException {
 
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();

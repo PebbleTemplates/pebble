@@ -12,7 +12,7 @@ package com.mitchellbosecke.pebble.parser;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeBlock;
@@ -23,9 +23,9 @@ import com.mitchellbosecke.pebble.utils.Function;
 
 public interface Parser {
 
-	public NodeRoot parse(TokenStream stream) throws SyntaxException;
+	public NodeRoot parse(TokenStream stream) throws ParserException;
 
-	public NodeBody subparse() throws SyntaxException;
+	public NodeBody subparse() throws ParserException;
 
 	/**
 	 * Provides the stream of tokens which ultimately need to be 
@@ -41,9 +41,9 @@ public interface Parser {
 	 * 
 	 * @param stopCondition
 	 * @return
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws SyntaxException;
+	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws ParserException;
 	
 	public void setParentFileName(String parentFileName);
 

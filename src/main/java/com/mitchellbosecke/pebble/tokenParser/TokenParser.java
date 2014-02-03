@@ -9,7 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.parser.Parser;
@@ -61,8 +61,8 @@ public interface TokenParser {
 	 * 
 	 * @param token
 	 * @return
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	public Node parse(Token token) throws SyntaxException;
+	public Node parse(Token token) throws ParserException;
 
 }

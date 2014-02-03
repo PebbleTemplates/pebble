@@ -12,7 +12,7 @@ package com.mitchellbosecke.pebble.tokenParser;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
@@ -25,7 +25,7 @@ import com.mitchellbosecke.pebble.utils.Pair;
 public class IfTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws SyntaxException {
+	public Node parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 
@@ -65,7 +65,7 @@ public class IfTokenParser extends AbstractTokenParser {
 					end = true;
 					break;
 				default:
-					throw new SyntaxException(
+					throw new ParserException(
 							null,
 							String.format("Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\""),
 							stream.current().getLineNumber(), stream.getFilename());

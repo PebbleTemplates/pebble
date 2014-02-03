@@ -15,7 +15,7 @@ import java.io.Writer;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -46,7 +46,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		assertEquals("test\ntest", writer.toString());
 	}
 
-	@Test(expected = SyntaxException.class)
+	@Test(expected = ParserException.class)
 	public void testStringWithDifferentQuotationMarks() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);

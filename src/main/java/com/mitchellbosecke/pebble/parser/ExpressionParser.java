@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeExpression;
@@ -26,11 +26,11 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -61,9 +61,9 @@ public class ExpressionParser {
 	 * The public entry point for parsing an expression.
 	 * 
 	 * @return NodeExpression the expression that has been parsed.
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	public NodeExpression parseExpression() throws SyntaxException {
+	public NodeExpression parseExpression() throws ParserException {
 		return parseExpression(0);
 	}
 
@@ -75,9 +75,9 @@ public class ExpressionParser {
 	 * @see http://en.wikipedia.org/wiki/Operator-precedence_parser
 	 * 
 	 * @return The NodeExpression representing the parsed expression.
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private NodeExpression parseExpression(int minPrecedence) throws SyntaxException {
+	private NodeExpression parseExpression(int minPrecedence) throws ParserException {
 
 		this.stream = parser.getStream();
 		Token token = stream.current();
@@ -153,6 +153,7 @@ public class ExpressionParser {
 			} catch (InstantiationException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw new ParserException(e, "Error instantiating operator node [" + operatorNodeClass.getName() + "]");
 			}
 
 			finalExpression.setLineNumber(stream.current().getLineNumber());
@@ -199,9 +200,9 @@ public class ExpressionParser {
 	 * binary operator. Ex. "var.field", "true", "12", etc.
 	 * 
 	 * @return NodeExpression The expression that it found.
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private NodeExpression subparseExpression() throws SyntaxException {
+	private NodeExpression subparseExpression() throws ParserException {
 		Token token = stream.current();
 		NodeExpression node = null;
 
@@ -251,7 +252,7 @@ public class ExpressionParser {
 
 			// not found, syntax error
 			default:
-				throw new SyntaxException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token
+				throw new ParserException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token
 						.getType().toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
 		}
 
@@ -260,7 +261,7 @@ public class ExpressionParser {
 		return parsePostfixExpression(node);
 	}
 
-	private NodeExpression parseTernaryExpression(NodeExpression expression) throws SyntaxException {
+	private NodeExpression parseTernaryExpression(NodeExpression expression) throws ParserException {
 		while (this.stream.current().test(Token.Type.PUNCTUATION, "?")) {
 
 			int lineNumber = stream.current().getLineNumber();
@@ -298,9 +299,9 @@ public class ExpressionParser {
 	 *            The expression that we have already discovered
 	 * @return Either the original expression that was passed in or a slightly
 	 *         modified version of it, depending on what was discovered.
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private NodeExpression parsePostfixExpression(NodeExpression node) throws SyntaxException {
+	private NodeExpression parsePostfixExpression(NodeExpression node) throws ParserException {
 		Token current;
 		while (true) {
 			current = stream.current();
@@ -328,7 +329,7 @@ public class ExpressionParser {
 		return node;
 	}
 
-	private NodeExpression parseFunctionOrMacroInvokation(NodeExpression node) throws SyntaxException {
+	private NodeExpression parseFunctionOrMacroInvokation(NodeExpression node) throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -350,7 +351,7 @@ public class ExpressionParser {
 		return new NodeExpressionFunctionOrMacroCall(lineNumber, functionName, args);
 	}
 
-	private NodeExpression parseFilterExpression(NodeExpression node) throws SyntaxException {
+	private NodeExpression parseFilterExpression(NodeExpression node) throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -379,9 +380,9 @@ public class ExpressionParser {
 	 * @param node
 	 *            The expression parsed so far
 	 * @return NodeExpression The parsed subscript expression
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private NodeExpression parseSubscriptExpression(NodeExpression node) throws SyntaxException {
+	private NodeExpression parseSubscriptExpression(NodeExpression node) throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -405,11 +406,11 @@ public class ExpressionParser {
 		return node;
 	}
 
-	public NodeExpressionArguments parseArguments() throws SyntaxException {
+	public NodeExpressionArguments parseArguments() throws ParserException {
 		return parseArguments(false);
 	}
 
-	public NodeExpressionArguments parseArguments(boolean isMacroDefinition) throws SyntaxException {
+	public NodeExpressionArguments parseArguments(boolean isMacroDefinition) throws ParserException {
 		List<NodeExpression> vars = new ArrayList<>();
 		this.stream = this.parser.getStream();
 
@@ -442,7 +443,7 @@ public class ExpressionParser {
 		return new NodeExpressionArguments(lineNumber, vars);
 	}
 
-	public NodeExpressionNewVariableName parseNewVariableName() throws SyntaxException {
+	public NodeExpressionNewVariableName parseNewVariableName() throws ParserException {
 
 		// set the stream because this function may be called externally (for
 		// and set token parsers)
@@ -452,7 +453,7 @@ public class ExpressionParser {
 
 		String[] reserved = new String[] { "true", "false", "null", "none" };
 		if (Arrays.asList(reserved).contains(token.getValue())) {
-			throw new SyntaxException(null, String.format("Can not assign a value to %s", token.getValue()),
+			throw new ParserException(null, String.format("Can not assign a value to %s", token.getValue()),
 					token.getLineNumber(), stream.getFilename());
 		}
 

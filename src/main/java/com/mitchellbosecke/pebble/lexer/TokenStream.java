@@ -12,7 +12,7 @@ package com.mitchellbosecke.pebble.lexer;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 
 public class TokenStream {
@@ -56,9 +56,9 @@ public class TokenStream {
 	 * @param type
 	 *            The type of token that we expect
 	 * @return The current token
-	 * @throws SyntaxException 
+	 * @throws ParserException 
 	 */
-	public Token expect(Token.Type type) throws SyntaxException {
+	public Token expect(Token.Type type) throws ParserException {
 		return expect(type, null, null);
 	}
 	
@@ -70,9 +70,9 @@ public class TokenStream {
 	 * @param type
 	 *            The type of token that we expect
 	 * @return The current token
-	 * @throws SyntaxException 
+	 * @throws ParserException 
 	 */
-	public Token expect(Token.Type type, String value) throws SyntaxException {
+	public Token expect(Token.Type type, String value) throws ParserException {
 		return expect(type, value, null);
 	}
 
@@ -90,20 +90,20 @@ public class TokenStream {
 	 * @param message
 	 *            The message of the exception if the expectation fails
 	 * @return The current token
-	 * @throws SyntaxException 
+	 * @throws ParserException 
 	 */
-	public Token expect(Token.Type type, String value, String message) throws SyntaxException {
+	public Token expect(Token.Type type, String value, String message) throws ParserException {
 		// TODO: message isn't used
 		Token token = tokens.get(current);
 		if (value == null) {
 			if (!token.test(type)) {
-				throw new SyntaxException(null, "Unexpected token of value ["
+				throw new ParserException(null, "Unexpected token of value ["
 						+ token.getValue() + "] expected token of type " + type
 						+ " ", token.getLineNumber(), filename);
 			}
 		} else {
 			if (!token.test(type, value)) {
-				throw new SyntaxException(null, "Unexpected token of value ["
+				throw new ParserException(null, "Unexpected token of value ["
 						+ token.getValue() + "] expected [" + value 
 						+ "] ", token.getLineNumber(), filename);
 			}

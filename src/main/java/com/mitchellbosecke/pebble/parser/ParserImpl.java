@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
@@ -108,7 +108,7 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public NodeRoot parse(TokenStream stream) throws SyntaxException {
+	public NodeRoot parse(TokenStream stream) throws ParserException {
 
 		// token parsers which have come from the extensions
 		this.tokenParserBroker = engine.getTokenParserBroker();
@@ -149,7 +149,7 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public NodeBody subparse() throws SyntaxException {
+	public NodeBody subparse() throws ParserException {
 		return subparse(null);
 	}
 
@@ -161,7 +161,7 @@ public class ParserImpl implements Parser {
 	 * @param stopCondition	A stopping condition provided by a token parser
 	 * @return Node		The root node of the generated Abstract Syntax Tree
 	 */
-	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws SyntaxException {
+	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws ParserException {
 
 		// these nodes will be the children of the root node
 		List<Node> nodes = new ArrayList<>();
@@ -220,7 +220,7 @@ public class ParserImpl implements Parser {
 					 * should not consume it.
 					 */
 					if (!Token.Type.NAME.equals(token.getType())) {
-						throw new SyntaxException(null, "A block must start with a tag name.", token.getLineNumber(),
+						throw new ParserException(null, "A block must start with a tag name.", token.getLineNumber(),
 								stream.getFilename());
 					}
 
@@ -236,7 +236,7 @@ public class ParserImpl implements Parser {
 					TokenParser subparser = tokenParserBroker.getTokenParser(token.getValue());
 
 					if (subparser == null) {
-						throw new SyntaxException(null, String.format("Unexpected tag name \"%s\"", token.getValue()),
+						throw new ParserException(null, String.format("Unexpected tag name \"%s\"", token.getValue()),
 								token.getLineNumber(), stream.getFilename());
 					}
 
@@ -252,7 +252,7 @@ public class ParserImpl implements Parser {
 					break;
 
 				default:
-					throw new SyntaxException(null, "Parser ended in undefined state.", stream.current()
+					throw new ParserException(null, "Parser ended in undefined state.", stream.current()
 							.getLineNumber(), stream.getFilename());
 			}
 		}

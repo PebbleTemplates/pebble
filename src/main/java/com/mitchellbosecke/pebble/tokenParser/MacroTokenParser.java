@@ -9,7 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
@@ -21,7 +21,7 @@ import com.mitchellbosecke.pebble.utils.Function;
 public class MacroTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws SyntaxException {
+	public Node parse(Token token) throws ParserException {
 
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
@@ -44,7 +44,7 @@ public class MacroTokenParser extends AbstractTokenParser {
 		stream.expect(Token.Type.EXECUTE_END);
 
 		if (this.parser.getMacros().containsKey(macroName)) {
-			throw new SyntaxException(null, "Can not have more than one macro with the same name. [" + macroName + "]",
+			throw new ParserException(null, "Can not have more than one macro with the same name. [" + macroName + "]",
 					lineNumber, stream.getFilename());
 		}
 

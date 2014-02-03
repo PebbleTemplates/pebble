@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.SyntaxException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -120,10 +120,10 @@ public class LexerImpl implements Lexer {
 	 *            The raw contents of the template
 	 * @param name
 	 *            The name of the template (used for meaningful error messages)
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
 	@Override
-	public TokenStream tokenize(String source, String name) throws SyntaxException {
+	public TokenStream tokenize(String source, String name) throws ParserException {
 
 		// standardize the character used for line breaks
 		this.source = source.replaceAll("(\r\n|\n)", "\n");
@@ -174,7 +174,7 @@ public class LexerImpl implements Lexer {
 		// make sure that all brackets have been closed, else throw an error
 		if (!this.brackets.isEmpty()) {
 			String expected = brackets.pop().getLeft();
-			throw new SyntaxException(null, String.format("Unclosed \"%s\"", expected), lineNumber, filename);
+			throw new ParserException(null, String.format("Unclosed \"%s\"", expected), lineNumber, filename);
 		}
 
 		return new TokenStream(tokens, filename);
@@ -229,9 +229,9 @@ public class LexerImpl implements Lexer {
 	/**
 	 * Tokenizes between execute delimiters.
 	 * 
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private void lexExecute() throws SyntaxException {
+	private void lexExecute() throws ParserException {
 		Matcher matcher = regexExecuteClose.matcher(source.substring(cursor));
 
 		// check if we are at the execute closing delimiter
@@ -248,9 +248,9 @@ public class LexerImpl implements Lexer {
 	/**
 	 * Tokenizes between print delimiters.
 	 * 
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private void lexPrint() throws SyntaxException {
+	private void lexPrint() throws ParserException {
 		Matcher matcher = regexPrintClose.matcher(source.substring(cursor));
 
 		// check if we are at the print closing delimiter
@@ -270,16 +270,16 @@ public class LexerImpl implements Lexer {
 	 * Simply find the closing delimiter for the comment and move the cursor to
 	 * that point.
 	 * 
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private void lexComment() throws SyntaxException {
+	private void lexComment() throws ParserException {
 
 		// all we need to do is find the end of the comment.
 		Matcher matcher = regexCommentClose.matcher(source);
 
 		boolean match = matcher.find(cursor);
 		if (!match) {
-			throw new SyntaxException(null, "Unclosed comment.", lineNumber, filename);
+			throw new ParserException(null, "Unclosed comment.", lineNumber, filename);
 		}
 
 		// move cursor to end of comment delimiter
@@ -292,9 +292,9 @@ public class LexerImpl implements Lexer {
 	 * Tokenizing an expression which can be found within both execute and print
 	 * regions.
 	 * 
-	 * @throws SyntaxException
+	 * @throws ParserException
 	 */
-	private void lexExpression() throws SyntaxException {
+	private void lexExpression() throws ParserException {
 		String token;
 
 		// whitespace
@@ -344,7 +344,7 @@ public class LexerImpl implements Lexer {
 			// closing bracket
 			else if (")]}".indexOf(character) >= 0) {
 				if (brackets.isEmpty())
-					throw new SyntaxException(null, "Unexpected \"" + character + "\"", lineNumber, filename);
+					throw new ParserException(null, "Unexpected \"" + character + "\"", lineNumber, filename);
 				else {
 					HashMap<String, String> validPairs = new HashMap<>();
 					validPairs.put("(", ")");
@@ -353,7 +353,7 @@ public class LexerImpl implements Lexer {
 					String lastBracket = brackets.pop().getLeft();
 					String expected = validPairs.get(lastBracket);
 					if (!expected.equals(character)) {
-						throw new SyntaxException(null, "Unclosed \"" + expected + "\"", lineNumber, filename);
+						throw new ParserException(null, "Unclosed \"" + expected + "\"", lineNumber, filename);
 					}
 				}
 			}
@@ -387,7 +387,7 @@ public class LexerImpl implements Lexer {
 		}
 
 		// we should have found something and returned by this point
-		throw new SyntaxException(null, String.format("Unexpected character \"%s\"", source.charAt(cursor)), lineNumber,
+		throw new ParserException(null, String.format("Unexpected character \"%s\"", source.charAt(cursor)), lineNumber,
 				filename);
 
 	}
