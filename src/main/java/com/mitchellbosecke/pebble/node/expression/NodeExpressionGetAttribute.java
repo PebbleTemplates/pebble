@@ -40,9 +40,8 @@ public class NodeExpressionGetAttribute extends NodeExpression {
 		compiler.raw("getAttribute(context, ").subcompile(node).raw(",\"").subcompile(attributeOrMethod).raw("\"");
 
 		if (args != null) {
-			for (NodeExpression arg : args.getArgs()) {
-				compiler.raw(",").subcompile(arg);
-			}
+			compiler.raw(", ");
+			compiler.subcompile(args);
 		}
 		compiler.raw(") ");
 	}

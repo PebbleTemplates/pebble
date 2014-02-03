@@ -30,7 +30,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -357,26 +357,17 @@ public class ExpressionParser {
 		// skip over the | character
 		stream.next();
 
-		while (true) {
-			Token filterToken = stream.expect(Token.Type.NAME);
+		Token filterToken = stream.expect(Token.Type.NAME);
 
-			NodeExpressionConstant filterName = new NodeExpressionConstant(filterToken.getLineNumber(),
-					filterToken.getValue());
+		NodeExpressionConstant filterName = new NodeExpressionConstant(filterToken.getLineNumber(),
+				filterToken.getValue());
 
-			NodeExpressionArguments args = null;
-			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
-				args = this.parseArguments();
-			}
-
-			node = new NodeExpressionFilter(lineNumber, node, filterName, args);
-
-			if (!stream.current().test(Token.Type.PUNCTUATION, "|")) {
-				break;
-			} else {
-				// skip over the | character and the while loop will continue
-				stream.next();
-			}
+		NodeExpressionArguments args = null;
+		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
+			args = this.parseArguments();
 		}
+
+		node = new NodeExpressionFilter(lineNumber, node, filterName, args);
 
 		return node;
 	}
@@ -451,9 +442,10 @@ public class ExpressionParser {
 		return new NodeExpressionArguments(lineNumber, vars);
 	}
 
-	public NodeExpressionNewVariable parseNewVariableName() throws SyntaxException {
+	public NodeExpressionNewVariableName parseNewVariableName() throws SyntaxException {
 
-		// set the stream because this function may be called externally (for and set token parsers)
+		// set the stream because this function may be called externally (for
+		// and set token parsers)
 		this.stream = this.parser.getStream();
 		Token token = stream.current();
 		token.test(Token.Type.NAME);
@@ -465,6 +457,6 @@ public class ExpressionParser {
 		}
 
 		stream.next();
-		return new NodeExpressionNewVariable(token.getLineNumber(), token.getValue());
+		return new NodeExpressionNewVariableName(token.getLineNumber(), token.getValue());
 	}
 }

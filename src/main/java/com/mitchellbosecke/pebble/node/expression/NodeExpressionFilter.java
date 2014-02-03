@@ -36,9 +36,8 @@ public class NodeExpressionFilter extends NodeExpression {
 		compiler.raw(",").subcompile(node);
 
 		if (args != null) {
-			for (NodeExpression arg : args.getArgs()) {
-				compiler.raw(", ").subcompile(arg);
-			}
+			compiler.raw(", ");
+			compiler.subcompile(args);
 		}
 
 		compiler.raw(")");

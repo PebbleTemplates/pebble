@@ -10,15 +10,15 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 
 public class NodeSet extends AbstractNode {
 
-	private final NodeExpressionNewVariable name;
+	private final NodeExpressionNewVariableName name;
 
 	private final NodeExpression value;
 
-	public NodeSet(int lineNumber, NodeExpressionNewVariable name, NodeExpression value) {
+	public NodeSet(int lineNumber, NodeExpressionNewVariableName name, NodeExpression value) {
 		super(lineNumber);
 		this.name = name;
 		this.value = value;

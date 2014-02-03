@@ -10,12 +10,11 @@
 package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
 
 public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 
@@ -53,10 +52,9 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 
 		compiler.raw(",").subcompile(leftExpression);
 
-		if (args != null) {
-			for (NodeExpression arg : args.getArgs()) {
-				compiler.raw(", ").subcompile(arg);
-			}
+		if (args != null && !args.getArgs().isEmpty()) {
+			compiler.raw(", ");
+			compiler.subcompile(args);
 		}
 
 		compiler.raw(")");

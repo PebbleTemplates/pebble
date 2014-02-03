@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.template.AbstractMacro;
 
 public class NodeMacro extends AbstractNode {
@@ -48,7 +48,7 @@ public class NodeMacro extends AbstractNode {
 		compiler.write("public void init(){").indent().newline();
 
 		for (NodeExpression arg : args.getArgs()) {
-			NodeExpressionNewVariable variableDeclaration = (NodeExpressionNewVariable) arg;
+			NodeExpressionNewVariableName variableDeclaration = (NodeExpressionNewVariableName) arg;
 			compiler.write("argNames.add(").string(variableDeclaration.getName()).raw(");").newline();
 		}
 

@@ -29,18 +29,19 @@ public class NodeExpressionArguments extends NodeExpression {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("(");
 
-		int i = 0;
-		for (NodeExpression var : args) {
-			compiler.subcompile(var, true);
+		int amount = args.size();
 
-			if (i < (args.size() - 1)) {
+		int i = 1;
+		for (NodeExpression arg : args) {
+			compiler.subcompile(arg);
+
+			if (i < amount) {
 				compiler.raw(", ");
 			}
-		}
 
-		compiler.raw(")");
+			i++;
+		}
 	}
 
 	public List<NodeExpression> getArgs() {

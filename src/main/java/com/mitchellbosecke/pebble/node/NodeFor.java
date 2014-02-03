@@ -10,13 +10,13 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.utils.ObjectUtils;
 
 public class NodeFor extends AbstractNode {
 
-	private final NodeExpressionNewVariable iterationVariable;
+	private final NodeExpressionNewVariableName iterationVariable;
 
 	private final NodeExpressionContextVariable iterable;
 
@@ -24,7 +24,7 @@ public class NodeFor extends AbstractNode {
 
 	private final NodeBody elseBody;
 
-	public NodeFor(int lineNumber, NodeExpressionNewVariable iterationVariable, NodeExpressionContextVariable iterable,
+	public NodeFor(int lineNumber, NodeExpressionNewVariableName iterationVariable, NodeExpressionContextVariable iterable,
 			NodeBody body, NodeBody elseBody) {
 		super(lineNumber);
 		this.iterationVariable = iterationVariable;
