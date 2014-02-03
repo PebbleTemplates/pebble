@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 
 public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 
@@ -30,7 +30,7 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 			testName = ((NodeExpressionFunctionOrMacroCall) rightExpression).getFunctionName();
 			args = ((NodeExpressionFunctionOrMacroCall) rightExpression).getArguments();
 
-		} else if (rightExpression instanceof NodeExpressionVariableName){
+		} else if (rightExpression instanceof NodeExpressionContextVariable){
 
 			/*
 			 * We allow the user to omit the brackets when calling tests that
@@ -42,7 +42,7 @@ public class NodeExpressionBinaryIs extends NodeExpressionBinary {
 			 * tweaked to be more intelligent? Perhaps parser has access to test
 			 * names through the main engine?
 			 */
-			NodeExpressionVariableName name = (NodeExpressionVariableName) rightExpression;
+			NodeExpressionContextVariable name = (NodeExpressionContextVariable) rightExpression;
 			testName = new NodeExpressionConstant(name.getLineNumber(), name.getName());
 			
 		} else {

@@ -9,8 +9,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
@@ -18,33 +16,26 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionArguments extends NodeExpression {
 
-	private NodeExpression[] args;
+	/**
+	 * An invokation of a function or macro can contain full fledged expressions
+	 * in the arguments
+	 */
+	private List<NodeExpression> args;
 
-	public NodeExpressionArguments(int lineNumber, NodeExpression[] args) {
+	public NodeExpressionArguments(int lineNumber, List<NodeExpression> args) {
 		super(lineNumber);
 		this.args = args;
-	}
-
-	/**
-	 * NodeMacro will use this method to add a secret context and writer
-	 * arguments.
-	 */
-	public void addArgument(NodeExpressionDeclaration declaration) {
-		List<NodeExpression> arguments = new ArrayList<>(Arrays.asList(args));
-		arguments.add(declaration);
-		this.args = arguments.toArray(new NodeExpression[arguments.size()]);
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
 		compiler.raw("(");
 
-		NodeExpression var;
-		for (int i = 0; i < args.length; ++i) {
-			var = args[i];
+		int i = 0;
+		for (NodeExpression var : args) {
 			compiler.subcompile(var, true);
 
-			if (i < (args.length - 1)) {
+			if (i < (args.size() - 1)) {
 				compiler.raw(", ");
 			}
 		}
@@ -52,7 +43,7 @@ public class NodeExpressionArguments extends NodeExpression {
 		compiler.raw(")");
 	}
 
-	public NodeExpression[] getArgs() {
+	public List<NodeExpression> getArgs() {
 		return args;
 	}
 

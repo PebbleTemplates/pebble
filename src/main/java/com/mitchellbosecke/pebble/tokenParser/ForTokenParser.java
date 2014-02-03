@@ -16,8 +16,8 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeFor;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.utils.Function;
 
 public class ForTokenParser extends AbstractTokenParser {
@@ -31,7 +31,7 @@ public class ForTokenParser extends AbstractTokenParser {
 		stream.next();
 
 		// get the iteration variable
-		NodeExpressionDeclaration iterationVariable = this.parser.getExpressionParser().parseDeclarationExpression();
+		NodeExpressionNewVariable iterationVariable = this.parser.getExpressionParser().parseNewVariableName();
 
 		stream.expect(Token.Type.NAME, "in");
 
@@ -56,7 +56,7 @@ public class ForTokenParser extends AbstractTokenParser {
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionVariableName) iterable, body, elseBody);
+		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionContextVariable) iterable, body, elseBody);
 	}
 
 	private Function<Boolean, Token> decideForFork = new Function<Boolean, Token>() {

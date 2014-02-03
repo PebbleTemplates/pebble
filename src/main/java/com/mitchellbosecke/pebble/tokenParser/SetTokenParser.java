@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeSet;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
 
 public class SetTokenParser extends AbstractTokenParser {
 
@@ -27,7 +27,7 @@ public class SetTokenParser extends AbstractTokenParser {
 		// skip the 'set' token
 		stream.next();
 
-		NodeExpressionDeclaration name = this.parser.getExpressionParser().parseDeclarationExpression();
+		NodeExpressionNewVariable name = this.parser.getExpressionParser().parseNewVariableName();
 
 		stream.expect(Token.Type.PUNCTUATION, "=");
 		

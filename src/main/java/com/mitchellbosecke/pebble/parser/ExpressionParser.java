@@ -22,7 +22,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
@@ -30,7 +30,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -235,7 +235,7 @@ public class ExpressionParser {
 
 						// variable name
 						else {
-							node = new NodeExpressionVariableName(token.getLineNumber(), token.getValue());
+							node = new NodeExpressionContextVariable(token.getLineNumber(), token.getValue());
 						}
 						break;
 				}
@@ -251,8 +251,8 @@ public class ExpressionParser {
 
 			// not found, syntax error
 			default:
-				throw new SyntaxException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token.getType()
-						.toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
+				throw new SyntaxException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token
+						.getType().toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
 		}
 
 		// there may or may not be more to this expression - let's keep looking
@@ -319,7 +319,7 @@ public class ExpressionParser {
 			} else if (current.test(Token.Type.PUNCTUATION, "(")) {
 
 				// function call
-				node = parseFunctionExpression(node);
+				node = parseFunctionOrMacroInvokation(node);
 
 			} else {
 				break;
@@ -328,7 +328,7 @@ public class ExpressionParser {
 		return node;
 	}
 
-	private NodeExpression parseFunctionExpression(NodeExpression node) throws SyntaxException {
+	private NodeExpression parseFunctionOrMacroInvokation(NodeExpression node) throws SyntaxException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -343,7 +343,7 @@ public class ExpressionParser {
 			case "parent":
 				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
 			case "block":
-				String blockName = (String) ((NodeExpressionString) args.getArgs()[0]).getValue();
+				String blockName = (String) ((NodeExpressionString) args.getArgs().get(0)).getValue();
 				return new NodeExpressionBlockReference(node.getLineNumber(), blockName, true);
 		}
 
@@ -406,8 +406,8 @@ public class ExpressionParser {
 			NodeExpressionArguments arguments = null;
 			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 				arguments = this.parseArguments();
-			} 
-			
+			}
+
 			node = new NodeExpressionGetAttribute(lineNumber, node, constant, arguments);
 
 		}
@@ -418,7 +418,7 @@ public class ExpressionParser {
 		return parseArguments(false);
 	}
 
-	public NodeExpressionArguments parseArguments(boolean isMethodDefinition) throws SyntaxException {
+	public NodeExpressionArguments parseArguments(boolean isMacroDefinition) throws SyntaxException {
 		List<NodeExpression> vars = new ArrayList<>();
 		this.stream = this.parser.getStream();
 
@@ -432,9 +432,14 @@ public class ExpressionParser {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
 
-			if (isMethodDefinition) {
-				Token token = stream.expect(Token.Type.NAME);
-				vars.add(new NodeExpressionDeclaration(token.getLineNumber(), token.getValue()));
+			/*
+			 * A macro definition is the only place where arguments can not be
+			 * full fledged expressions. All other arguments will exist in
+			 * function or macro INVOKATIONS and can definitely contain full
+			 * expressions.
+			 */
+			if (isMacroDefinition) {
+				vars.add(parseNewVariableName());
 			} else {
 				vars.add(parseExpression());
 			}
@@ -443,12 +448,12 @@ public class ExpressionParser {
 
 		stream.expect(Token.Type.PUNCTUATION, ")");
 
-		return new NodeExpressionArguments(lineNumber, vars.toArray(new NodeExpression[vars.size()]));
+		return new NodeExpressionArguments(lineNumber, vars);
 	}
 
-	public NodeExpressionDeclaration parseDeclarationExpression() throws SyntaxException {
+	public NodeExpressionNewVariable parseNewVariableName() throws SyntaxException {
 
-		// set the stream because this function may be called externally
+		// set the stream because this function may be called externally (for and set token parsers)
 		this.stream = this.parser.getStream();
 		Token token = stream.current();
 		token.test(Token.Type.NAME);
@@ -460,6 +465,6 @@ public class ExpressionParser {
 		}
 
 		stream.next();
-		return new NodeExpressionDeclaration(token.getLineNumber(), token.getValue());
+		return new NodeExpressionNewVariable(token.getLineNumber(), token.getValue());
 	}
 }

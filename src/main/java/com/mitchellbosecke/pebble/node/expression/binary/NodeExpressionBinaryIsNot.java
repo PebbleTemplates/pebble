@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 
 public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
 
@@ -41,7 +41,7 @@ public class NodeExpressionBinaryIsNot extends NodeExpressionBinary {
 			 * TODO: Is this too much of a hack? Should the parser somehow be
 			 * tweaked to be more intelligent?
 			 */
-			NodeExpressionVariableName name = (NodeExpressionVariableName) rightExpression;
+			NodeExpressionContextVariable name = (NodeExpressionContextVariable) rightExpression;
 			testName = new NodeExpressionConstant(name.getLineNumber(), name.getName());
 		}
 

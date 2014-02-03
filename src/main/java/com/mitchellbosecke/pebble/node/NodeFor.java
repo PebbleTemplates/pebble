@@ -10,21 +10,21 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionDeclaration;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionVariableName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariable;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.utils.ObjectUtils;
 
 public class NodeFor extends AbstractNode {
 
-	private final NodeExpressionDeclaration iterationVariable;
+	private final NodeExpressionNewVariable iterationVariable;
 
-	private final NodeExpressionVariableName iterable;
+	private final NodeExpressionContextVariable iterable;
 
 	private final NodeBody body;
 
 	private final NodeBody elseBody;
 
-	public NodeFor(int lineNumber, NodeExpressionDeclaration iterationVariable, NodeExpressionVariableName iterable,
+	public NodeFor(int lineNumber, NodeExpressionNewVariable iterationVariable, NodeExpressionContextVariable iterable,
 			NodeBody body, NodeBody elseBody) {
 		super(lineNumber);
 		this.iterationVariable = iterationVariable;
@@ -67,7 +67,7 @@ public class NodeFor extends AbstractNode {
 				.raw(".getIteratorSize((Iterable)").subcompile(iterable).raw("));").newline();
 
 		// start the for loop
-		compiler.write("for(").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){")
+		compiler.write("for( Object ").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){")
 				.newline().indent();
 
 		compiler.write("context.put(").string(iterationVariable.getName()).raw(",").raw(iterationVariable.getName())
