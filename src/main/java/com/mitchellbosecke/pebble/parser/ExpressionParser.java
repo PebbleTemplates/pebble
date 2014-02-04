@@ -20,10 +20,11 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvokation;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvokation;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilter;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
@@ -31,6 +32,9 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryFilter;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestNegative;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestPositive;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -134,12 +138,26 @@ public class ExpressionParser {
 			BinaryOperator operator = binaryOperators.get(token.getValue());
 			stream.next();
 
-			/*
-			 * parse the expression on the right hand side of the operator while
-			 * maintaining proper associativity and precedence
-			 */
-			NodeExpression expressionRight = parseExpression(Associativity.LEFT.equals(operator.getAssociativity()) ? operator
-					.getPrecedence() + 1 : operator.getPrecedence());
+			NodeExpression expressionRight = null;
+
+			// the right hand expression of the FILTER operator is handled in a
+			// unique way
+			if (NodeExpressionBinaryFilter.class.equals(operator.getNodeClass())) {
+				expressionRight = parseFilterInvokationExpression();
+			}
+			// the right hand expression of TEST operators is handled in a
+			// unique way
+			else if (NodeExpressionBinaryTestPositive.class.equals(operator.getNodeClass())
+					|| NodeExpressionBinaryTestNegative.class.equals(operator.getNodeClass())) {
+				expressionRight = parseTestInvokationExpression();
+			} else {
+				/*
+				 * parse the expression on the right hand side of the operator
+				 * while maintaining proper associativity and precedence
+				 */
+				expressionRight = parseExpression(Associativity.LEFT.equals(operator.getAssociativity()) ? operator
+						.getPrecedence() + 1 : operator.getPrecedence());
+			}
 
 			/*
 			 * we have to wrap the left and right side expressions into one
@@ -151,7 +169,6 @@ public class ExpressionParser {
 			try {
 				finalExpression = operatorNodeClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new ParserException(e, "Error instantiating operator node [" + operatorNodeClass.getName() + "]");
 			}
@@ -312,11 +329,6 @@ public class ExpressionParser {
 				// calling a method
 				node = parseSubscriptExpression(node);
 
-			} else if (current.test(Token.Type.PUNCTUATION, "|")) {
-
-				// handle the filter operator
-				node = parseFilterExpression(node);
-
 			} else if (current.test(Token.Type.PUNCTUATION, "(")) {
 
 				// function call
@@ -351,12 +363,9 @@ public class ExpressionParser {
 		return new NodeExpressionFunctionOrMacroCall(lineNumber, functionName, args);
 	}
 
-	private NodeExpression parseFilterExpression(NodeExpression node) throws ParserException {
+	private NodeExpression parseFilterInvokationExpression() throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
-
-		// skip over the | character
-		stream.next();
 
 		Token filterToken = stream.expect(Token.Type.NAME);
 
@@ -368,9 +377,23 @@ public class ExpressionParser {
 			args = this.parseArguments();
 		}
 
-		node = new NodeExpressionFilter(lineNumber, node, filterName, args);
+		return new NodeExpressionFilterInvokation(lineNumber, filterName, args);
+	}
 
-		return node;
+	private NodeExpression parseTestInvokationExpression() throws ParserException {
+		TokenStream stream = parser.getStream();
+		int lineNumber = stream.current().getLineNumber();
+
+		Token testToken = stream.expect(Token.Type.NAME);
+
+		NodeExpressionConstant testName = new NodeExpressionConstant(testToken.getLineNumber(), testToken.getValue());
+
+		NodeExpressionArguments args = null;
+		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
+			args = this.parseArguments();
+		}
+
+		return new NodeExpressionTestInvokation(lineNumber, testName, args);
 	}
 
 	/**

@@ -23,5 +23,13 @@ public abstract class NodeExpressionBinary extends NodeExpression {
 	public void setRight(NodeExpression right){
 		this.rightExpression = right;
 	}
+	
+	public NodeExpressionBinary(int lineNumber){
+		super(lineNumber);
+	}
+	
+	public NodeExpressionBinary(){
+		
+	}
 
 }

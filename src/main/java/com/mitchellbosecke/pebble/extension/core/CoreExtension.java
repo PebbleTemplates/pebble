@@ -23,10 +23,9 @@ import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryDivide;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryFilter;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThan;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThanEquals;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIs;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryIsNot;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryLessThan;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryLessThanEquals;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryModulus;
@@ -34,6 +33,8 @@ import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryMul
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryOr;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinarySubtract;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestNegative;
+import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestPositive;
 import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryMinus;
 import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryNot;
 import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryPlus;
@@ -104,8 +105,18 @@ public class CoreExtension extends AbstractExtension {
 		operators.add(new BinaryOperatorImpl("*", 60, NodeExpressionBinaryMultiply.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("/", 60, NodeExpressionBinaryDivide.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("%", 60, NodeExpressionBinaryModulus.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("is", 100, NodeExpressionBinaryIs.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("is not", 100, NodeExpressionBinaryIsNot.class, Associativity.LEFT));
+
+		/*
+		 * The precedence of the "is", "is not", and "|" operators is completely
+		 * irrelevant here. These operators are uniquely handled by the
+		 * ExpressionParser and will ALWAYS have a higher precedence than all
+		 * other operators.
+		 */
+		operators.add(new BinaryOperatorImpl("is", 100, NodeExpressionBinaryTestPositive.class, Associativity.LEFT));
+		operators
+				.add(new BinaryOperatorImpl("is not", 100, NodeExpressionBinaryTestNegative.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("|", 110, NodeExpressionBinaryFilter.class, Associativity.LEFT));
+
 		return operators;
 	}
 
