@@ -10,22 +10,22 @@
 package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvokation;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvocation;
 
 public class NodeExpressionBinaryTestPositive extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		NodeExpressionTestInvokation testInvokation = (NodeExpressionTestInvokation) rightExpression;
+		NodeExpressionTestInvocation testInvokation = (NodeExpressionTestInvocation) rightExpression;
 
 		compiler.raw("applyTest(").string(String.valueOf(testInvokation.getTestName().getValue()));
 
 		compiler.raw(",").subcompile(leftExpression);
 
-		NodeExpressionArguments args = testInvokation.getArgs();
-		if (args != null && !args.getArgs().isEmpty()) {
+		NodeExpressionNamedArguments args = testInvokation.getArgs();
+		if (args != null && !args.isEmpty()) {
 			compiler.raw(", ");
 			compiler.subcompile(args);
 		}

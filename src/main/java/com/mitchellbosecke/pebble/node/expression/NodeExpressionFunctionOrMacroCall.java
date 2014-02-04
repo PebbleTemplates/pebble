@@ -15,10 +15,10 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 public class NodeExpressionFunctionOrMacroCall extends NodeExpression {
 
 	private final NodeExpressionConstant functionName;
-	private final NodeExpressionArguments args;
+	private final NodeExpressionNamedArguments args;
 
 	public NodeExpressionFunctionOrMacroCall(int lineNumber, NodeExpressionConstant functionName,
-			NodeExpressionArguments arguments) {
+			NodeExpressionNamedArguments arguments) {
 		super(lineNumber);
 		this.functionName = functionName;
 		this.args = arguments;
@@ -29,7 +29,7 @@ public class NodeExpressionFunctionOrMacroCall extends NodeExpression {
 
 		compiler.raw("applyFunctionOrMacro(").string(String.valueOf(functionName.getValue())).raw(", context");
 
-		if (args != null) {
+		if (args != null && !args.isEmpty()) {
 			compiler.raw(", ");
 			compiler.subcompile(args);
 		}
@@ -41,7 +41,7 @@ public class NodeExpressionFunctionOrMacroCall extends NodeExpression {
 		return functionName;
 	}
 
-	public NodeExpressionArguments getArguments() {
+	public NodeExpressionNamedArguments getArguments() {
 		return args;
 	}
 

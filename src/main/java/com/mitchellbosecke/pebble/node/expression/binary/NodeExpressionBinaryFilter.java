@@ -10,23 +10,24 @@
 package com.mitchellbosecke.pebble.node.expression.binary;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvokation;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvocation;
 
 public class NodeExpressionBinaryFilter extends NodeExpressionBinary {
 
 	@Override
-	public void compile(Compiler compiler) {	
-		
-		NodeExpressionFilterInvokation filterInvokation = (NodeExpressionFilterInvokation) rightExpression;
+	public void compile(Compiler compiler) {
 
-		compiler.raw("applyFilter(").string(String.valueOf(filterInvokation.getFilterName().getValue())).raw(", context");
+		NodeExpressionFilterInvocation filterInvokation = (NodeExpressionFilterInvocation) rightExpression;
+
+		compiler.raw("applyFilter(").string(String.valueOf(filterInvokation.getFilterName().getValue()))
+				.raw(", context");
 
 		compiler.raw(",").subcompile(leftExpression);
 
-		NodeExpressionArguments args = filterInvokation.getArgs();
-		if (args != null && !args.getArgs().isEmpty()) {
+		NodeExpressionNamedArguments args = filterInvokation.getArgs();
+		if (args != null && !args.isEmpty()) {
 			compiler.raw(", ");
 			compiler.subcompile(args);
 		}

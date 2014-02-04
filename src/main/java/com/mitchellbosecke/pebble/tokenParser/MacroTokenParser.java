@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeMacro;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.utils.Function;
 
 public class MacroTokenParser extends AbstractTokenParser {
@@ -31,7 +31,7 @@ public class MacroTokenParser extends AbstractTokenParser {
 
 		String macroName = stream.expect(Token.Type.NAME).getValue();
 
-		NodeExpressionArguments args = this.parser.getExpressionParser().parseArguments(true);
+		NodeExpressionNamedArguments args = this.parser.getExpressionParser().parseArguments(true);
 
 		stream.expect(Token.Type.EXECUTE_END);
 

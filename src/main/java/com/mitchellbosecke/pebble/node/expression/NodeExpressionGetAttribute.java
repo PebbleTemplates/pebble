@@ -25,10 +25,10 @@ public class NodeExpressionGetAttribute extends NodeExpression {
 
 	private final NodeExpression node;
 	private final NodeExpressionConstant attributeOrMethod;
-	private final NodeExpressionArguments args;
+	private final NodeExpressionNamedArguments args;
 
 	public NodeExpressionGetAttribute(int lineNumber, NodeExpression node, NodeExpressionConstant attribute,
-			NodeExpressionArguments args) {
+			NodeExpressionNamedArguments args) {
 		super(lineNumber);
 		this.node = node;
 		this.attributeOrMethod = attribute;

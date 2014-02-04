@@ -12,36 +12,35 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 
 /**
- * The right hand side to the filter expression.
+ * The right hand side to the test expression.
  * 
  * @author Mitchell
- *
+ * 
  */
-public class NodeExpressionFilterInvokation extends NodeExpressionBinary {
+public class NodeExpressionTestInvocation extends NodeExpressionBinary {
 
-	private final NodeExpressionConstant filterName;
+	private final NodeExpressionConstant testName;
 
-	private final NodeExpressionArguments args;
+	private final NodeExpressionNamedArguments args;
 
-	public NodeExpressionFilterInvokation(int lineNumber, NodeExpressionConstant filterName,
-			NodeExpressionArguments args) {
+	public NodeExpressionTestInvocation(int lineNumber, NodeExpressionConstant testName, NodeExpressionNamedArguments args) {
 		super(lineNumber);
-		this.filterName = filterName;
+		this.testName = testName;
 		this.args = args;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
 		// should not be called
-		throw new RuntimeException("Compile method on FilterInvokation node is not supported");
+		throw new RuntimeException("Compile method on TestInvokation node is not supported");
 	}
 
-	public NodeExpressionArguments getArgs() {
+	public NodeExpressionNamedArguments getArgs() {
 		return args;
 	}
 
-	public NodeExpressionConstant getFilterName() {
-		return filterName;
+	public NodeExpressionConstant getTestName() {
+		return testName;
 	}
 
 }

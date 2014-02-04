@@ -15,7 +15,9 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionBlockReference extends NodeExpression implements DisplayableNode {
 
-	private final String name;
+	private NodeExpressionNamedArguments args;
+
+	private String blockName;
 
 	/*
 	 * output is true if the block is referenced in an expression using the {{
@@ -24,18 +26,24 @@ public class NodeExpressionBlockReference extends NodeExpression implements Disp
 	 */
 	private final boolean isExpression;
 
-	public NodeExpressionBlockReference(int lineNumber, String name, boolean isExpression) {
+	public NodeExpressionBlockReference(int lineNumber, NodeExpressionNamedArguments args) {
 		super(lineNumber);
-		this.name = name;
-		this.isExpression = isExpression;
+		this.args = args;
+		this.isExpression = true;
+	}
+
+	public NodeExpressionBlockReference(int lineNumber, String blockName) {
+		super(lineNumber);
+		this.blockName = blockName;
+		this.isExpression = false;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
 		if (this.isExpression) {
-			compiler.raw("block(").string(this.name).raw(", context, false)");
+			compiler.raw("block(").subcompile(args).raw(", context, false)");
 		} else {
-			compiler.newline().write("block(").string(this.name).raw(", context, false, writer);").newline();
+			compiler.newline().write("block(").string(blockName).raw(", context, false, writer);").newline();
 		}
 	}
 

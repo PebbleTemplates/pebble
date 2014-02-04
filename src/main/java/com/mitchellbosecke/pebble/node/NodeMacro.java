@@ -10,19 +10,20 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionArguments;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.template.AbstractMacro;
 
 public class NodeMacro extends AbstractNode {
 
-	private final NodeExpressionArguments args;
+	private final NodeExpressionNamedArguments args;
 
 	private final String name;
 
 	private final NodeBody body;
 
-	public NodeMacro(int lineNumber, String name, NodeExpressionArguments args, NodeBody body) {
+	public NodeMacro(int lineNumber, String name, NodeExpressionNamedArguments args, NodeBody body) {
 		super(lineNumber);
 		this.name = name;
 		this.args = args;
@@ -47,9 +48,12 @@ public class NodeMacro extends AbstractNode {
 	public void compileInit(Compiler compiler) {
 		compiler.write("public void init(){").indent().newline();
 
-		for (NodeExpression arg : args.getArgs()) {
-			NodeExpressionNewVariableName variableDeclaration = (NodeExpressionNewVariableName) arg;
-			compiler.write("argNames.add(").string(variableDeclaration.getName()).raw(");").newline();
+		for (NodeExpressionNamedArgument arg : args.getArgs()) {
+			NodeExpressionNewVariableName variableName = arg.getName();
+
+			String name = variableName == null ? ((NodeExpressionNewVariableName) arg.getValue()).getName()
+					: variableName.getName();
+			compiler.write("argNames.add(").string(name).raw(");").newline();
 		}
 
 		compiler.outdent().write("}").newline();
