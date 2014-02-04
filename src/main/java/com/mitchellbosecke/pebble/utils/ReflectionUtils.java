@@ -13,8 +13,7 @@ import com.mitchellbosecke.pebble.template.Context;
 
 public class ReflectionUtils {
 
-	public static Object getAttribute(Context context, Object object, String attributeName, Object[] args)
-			throws PebbleException {
+	public static Object getAttribute(Context context, Object object, String attributeName) throws PebbleException {
 		if (object == null) {
 			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attributeName));
 		}
@@ -27,7 +26,7 @@ public class ReflectionUtils {
 		Object result = null;
 
 		// first we check maps, as they are a bit of an exception
-		if (args.length == 0 && object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
+		if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
 			return ((Map<?, ?>) object).get(attributeName);
 		}
 
@@ -43,7 +42,7 @@ public class ReflectionUtils {
 			if (cacheEntry.hasAttribute(attributeName)) {
 				member = cacheEntry.getAttribute(attributeName);
 			} else {
-				member = findMember(object, attributeName, args);
+				member = findMember(object, attributeName);
 				cacheEntry.putAttribute(attributeName, member);
 			}
 
@@ -59,7 +58,7 @@ public class ReflectionUtils {
 
 		try {
 			if (member instanceof Method) {
-				result = ((Method) member).invoke(object, args);
+				result = ((Method) member).invoke(object);
 			} else if (member instanceof Field) {
 				result = ((Field) member).get(object);
 			}
@@ -69,7 +68,7 @@ public class ReflectionUtils {
 		return result;
 	}
 
-	private static Member findMember(Object object, String attributeName, Object[] args) {
+	private static Member findMember(Object object, String attributeName) {
 
 		Class<?> clazz = object.getClass();
 
@@ -105,17 +104,13 @@ public class ReflectionUtils {
 		// check if attribute is a public method
 		if (member == null) {
 			try {
-				Class<?>[] argClasses = new Class<?>[args.length];
-				for (int i = 0; i < args.length; i++) {
-					argClasses[i] = args[i].getClass();
-				}
-				member = clazz.getMethod(attributeName, argClasses);
+				member = clazz.getMethod(attributeName);
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// public field
-		if (member == null && args.length == 0) {
+		if (member == null) {
 			try {
 				member = clazz.getField(attributeName);
 			} catch (NoSuchFieldException | SecurityException e) {

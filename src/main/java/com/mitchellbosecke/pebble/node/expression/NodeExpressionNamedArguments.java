@@ -27,10 +27,6 @@ public class NodeExpressionNamedArguments extends NodeExpression {
 		this.args = args;
 	}
 
-	/**
-	 * Only called when not actually using named arguments, such as when calling
-	 * a method of a context variable.
-	 */
 	@Override
 	public void compile(Compiler compiler) {
 

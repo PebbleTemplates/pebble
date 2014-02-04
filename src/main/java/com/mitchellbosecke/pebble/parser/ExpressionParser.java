@@ -347,7 +347,7 @@ public class ExpressionParser {
 		int lineNumber = stream.current().getLineNumber();
 
 		NodeExpressionConstant functionName = (NodeExpressionConstant) node;
-		NodeExpressionNamedArguments args = parseArguments();
+		NodeExpressionNamedArguments args = parseNamedArguments();
 
 		/*
 		 * The following core functions have their own Nodes and are compiled in
@@ -374,7 +374,7 @@ public class ExpressionParser {
 
 		NodeExpressionNamedArguments args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
-			args = this.parseArguments();
+			args = this.parseNamedArguments();
 		}
 
 		return new NodeExpressionFilterInvocation(lineNumber, filterName, args);
@@ -390,7 +390,7 @@ public class ExpressionParser {
 
 		NodeExpressionNamedArguments args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
-			args = this.parseArguments();
+			args = this.parseNamedArguments();
 		}
 
 		return new NodeExpressionTestInvocation(lineNumber, testName, args);
@@ -418,22 +418,17 @@ public class ExpressionParser {
 
 			NodeExpressionConstant constant = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
 
-			NodeExpressionNamedArguments arguments = null;
-			if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
-				arguments = this.parseArguments();
-			}
-
-			node = new NodeExpressionGetAttribute(lineNumber, node, constant, arguments);
+			node = new NodeExpressionGetAttribute(lineNumber, node, constant);
 
 		}
 		return node;
 	}
 
-	public NodeExpressionNamedArguments parseArguments() throws ParserException {
-		return parseArguments(false);
+	public NodeExpressionNamedArguments parseNamedArguments() throws ParserException {
+		return parseNamedArguments(false);
 	}
 
-	public NodeExpressionNamedArguments parseArguments(boolean isMacroDefinition) throws ParserException {
+	public NodeExpressionNamedArguments parseNamedArguments(boolean isMacroDefinition) throws ParserException {
 		List<NodeExpressionNamedArgument> vars = new ArrayList<>();
 		this.stream = this.parser.getStream();
 

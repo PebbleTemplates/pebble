@@ -110,6 +110,20 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
+	public void testHasMethodAttribute() throws PebbleException, IOException {
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+
+		PebbleTemplate template = pebble.compile("hello {{ object.name }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("object", new SimpleObject9());
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("hello Steve", writer.toString());
+	}
+
+	@Test
 	public void testIsMethodAttribute() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
@@ -267,6 +281,18 @@ public class GetAttributeTest extends AbstractTest {
 
 	public class SimpleObject8 {
 		public boolean name = true;
+	}
+
+	public class SimpleObject9 {
+		public String hasName() {
+			return "Steve";
+		}
+	}
+
+	public class SimpleObject10 {
+		public String getName(String name) {
+			return name;
+		}
 	}
 
 	public class ComplexObject {

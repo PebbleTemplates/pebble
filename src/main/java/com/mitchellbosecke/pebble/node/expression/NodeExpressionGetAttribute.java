@@ -25,25 +25,16 @@ public class NodeExpressionGetAttribute extends NodeExpression {
 
 	private final NodeExpression node;
 	private final NodeExpressionConstant attributeOrMethod;
-	private final NodeExpressionNamedArguments args;
 
-	public NodeExpressionGetAttribute(int lineNumber, NodeExpression node, NodeExpressionConstant attribute,
-			NodeExpressionNamedArguments args) {
+	public NodeExpressionGetAttribute(int lineNumber, NodeExpression node, NodeExpressionConstant attribute) {
 		super(lineNumber);
 		this.node = node;
 		this.attributeOrMethod = attribute;
-		this.args = args;
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("getAttribute(context, ").subcompile(node).raw(",\"").subcompile(attributeOrMethod).raw("\"");
-
-		if (args != null) {
-			compiler.raw(", ");
-			compiler.subcompile(args);
-		}
-		compiler.raw(") ");
+		compiler.raw("getAttribute(context, ").subcompile(node).raw(",\"").subcompile(attributeOrMethod).raw("\")");
 	}
 
 }

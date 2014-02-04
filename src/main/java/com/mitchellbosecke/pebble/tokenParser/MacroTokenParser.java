@@ -31,7 +31,7 @@ public class MacroTokenParser extends AbstractTokenParser {
 
 		String macroName = stream.expect(Token.Type.NAME).getValue();
 
-		NodeExpressionNamedArguments args = this.parser.getExpressionParser().parseArguments(true);
+		NodeExpressionNamedArguments args = this.parser.getExpressionParser().parseNamedArguments(true);
 
 		stream.expect(Token.Type.EXECUTE_END);
 

@@ -113,9 +113,8 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return context;
 	}
 
-	protected Object getAttribute(Context context, Object object, String attribute, Object... args)
-			throws PebbleException {
-		return ReflectionUtils.getAttribute(context, object, attribute, args);
+	protected Object getAttribute(Context context, Object object, String attribute) throws PebbleException {
+		return ReflectionUtils.getAttribute(context, object, attribute);
 	}
 
 	public void registerMacro(Macro macro) {
