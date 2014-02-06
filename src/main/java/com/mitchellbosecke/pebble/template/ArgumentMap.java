@@ -33,12 +33,12 @@ public class ArgumentMap {
 
 	public ArgumentMap add(String name, Object value) throws CompilationException {
 		if (name == null) {
-			if(!namedArguments.isEmpty()){
+			if (!namedArguments.isEmpty()) {
 				throw new CompilationException(null, "Positional arguments must occur before any named arguments.");
 			}
 			positionalArguments.add(value);
 		} else {
-			
+
 			getNamedArguments().put(name, value);
 		}
 		return this;

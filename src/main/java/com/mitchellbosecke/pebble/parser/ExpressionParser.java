@@ -92,7 +92,6 @@ public class ExpressionParser {
 		 * The first check is to see if the expression begins with a unary
 		 * operator, or an opening bracket, or neither.
 		 */
-
 		if (isUnary(token)) {
 			UnaryOperator operator = this.unaryOperators.get(token.getValue());
 			stream.next();
@@ -449,6 +448,11 @@ public class ExpressionParser {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
 
+			/*
+			 * Most arguments consist of VALUES with optional NAMES but in the
+			 * case of a macro definition the user is specifying NAMES with
+			 * optional default VALUES. Therefore the logic changes slightly.
+			 */
 			if (isMacroDefinition) {
 				argumentName = parseNewVariableName();
 				if (stream.current().test(Token.Type.PUNCTUATION, "=")) {
@@ -472,6 +476,14 @@ public class ExpressionParser {
 		return new NodeExpressionNamedArguments(lineNumber, vars);
 	}
 
+	/**
+	 * Parses a new variable that will need to be initialized in the Java code.
+	 * 
+	 * This is used for the set tag, the for loop, and in named arguments.
+	 * 
+	 * @return
+	 * @throws ParserException
+	 */
 	public NodeExpressionNewVariableName parseNewVariableName() throws ParserException {
 
 		// set the stream because this function may be called externally (for

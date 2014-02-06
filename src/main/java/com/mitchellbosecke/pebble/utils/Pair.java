@@ -8,6 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.utils;
 
+/**
+ * A small utility class used to pair relevant objects together.
+ * 
+ * @author Mitchell
+ * 
+ * @param <L>
+ * @param <R>
+ */
 public class Pair<L, R> {
 
 	private final L left;

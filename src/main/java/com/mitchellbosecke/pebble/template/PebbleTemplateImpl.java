@@ -44,7 +44,9 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	private final PebbleTemplateImpl parent;
 
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
+
 	private final Map<String, Block> blocks = new HashMap<>();
+
 	private final Map<String, Macro> macros = new HashMap<>();
 
 	public PebbleTemplateImpl(String generatedJavaCode, PebbleEngine engine, PebbleTemplateImpl parent) {
@@ -260,10 +262,11 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return test.apply(input, namedArguments);
 	}
 
-	private Map<String, Object> getNamedArguments(NamedArguments invokableWithNamedArguments, ArgumentMap arguments) throws PebbleException {
+	private Map<String, Object> getNamedArguments(NamedArguments invokableWithNamedArguments, ArgumentMap arguments)
+			throws PebbleException {
 		Map<String, Object> namedArguments = new HashMap<>();
 		List<String> argumentNames = invokableWithNamedArguments.getArgumentNames();
-		
+
 		if (argumentNames == null) {
 			if (arguments.getPositionalArguments().isEmpty()) {
 				return namedArguments;
@@ -282,9 +285,9 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 				namedArguments.put(nameIterator.next(), value);
 			}
 
-			for(Map.Entry<String, Object> arg : arguments.getNamedArguments().entrySet()){
+			for (Map.Entry<String, Object> arg : arguments.getNamedArguments().entrySet()) {
 				// check if user used an incorrect name
-				if(!argumentNames.contains(arg.getKey())){
+				if (!argumentNames.contains(arg.getKey())) {
 					throw new PebbleException(null, "The following named argument does not exist: " + arg.getKey());
 				}
 				namedArguments.put(arg.getKey(), arg.getValue());

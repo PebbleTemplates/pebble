@@ -26,23 +26,23 @@ public interface Parser {
 	public NodeBody subparse() throws ParserException;
 
 	/**
-	 * Provides the stream of tokens which ultimately need to be 
-	 * "parsed" into Nodes.
+	 * Provides the stream of tokens which ultimately need to be "parsed" into
+	 * Nodes.
 	 * 
 	 * @return TokenStream
 	 */
 	public TokenStream getStream();
-	
+
 	/**
-	 * Parses the existing TokenStream, starting at the current Token,
-	 * and ending when the stopCondition is fullfilled.
+	 * Parses the existing TokenStream, starting at the current Token, and
+	 * ending when the stopCondition is fullfilled.
 	 * 
 	 * @param stopCondition
 	 * @return
 	 * @throws ParserException
 	 */
 	public NodeBody subparse(StoppingCondition stopCondition) throws ParserException;
-	
+
 	public void setParentFileName(String parentFileName);
 
 	public ExpressionParser getExpressionParser();
@@ -52,12 +52,10 @@ public interface Parser {
 	public void pushBlockStack(String name);
 
 	public void popBlockStack();
-	
+
 	public String peekBlockStack();
 
 	public PebbleEngine getEngine();
-
-	
 
 	String getParentFileName();
 
@@ -65,8 +63,8 @@ public interface Parser {
 
 	void setBlocks(Map<String, NodeBlock> blocks);
 
-	Map<String,  NodeMacro> getMacros();
-	
+	Map<String, NodeMacro> getMacros();
+
 	public void addMacro(String name, NodeMacro macro);
 
 }

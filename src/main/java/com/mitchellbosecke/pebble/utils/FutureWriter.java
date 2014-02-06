@@ -8,6 +8,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+/**
+ * A Writer that will wrap around the user-provided writer if the user also
+ * provided an ExecutorService to the main PebbleEngine. A FutureWriter is
+ * capable of handling Futures that will return a string.
+ * 
+ * @author Mitchell
+ * 
+ */
 public class FutureWriter extends Writer {
 
 	private final ConcurrentLinkedQueue<Future<String>> orderedFutures = new ConcurrentLinkedQueue<>();

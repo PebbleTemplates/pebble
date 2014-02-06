@@ -1,5 +1,11 @@
 package com.mitchellbosecke.pebble.utils;
 
+/**
+ * Utility functions used by some of the core filters/tests.
+ * 
+ * @author Mitchell
+ * 
+ */
 public class StringUtils {
 
 	public static boolean isEmpty(String value) {
@@ -12,7 +18,7 @@ public class StringUtils {
 		}
 		return blank;
 	}
-	
+
 	public static boolean isBlank(String value) {
 		boolean blank = false;
 
@@ -38,16 +44,16 @@ public class StringUtils {
 	}
 
 	public static String abbreviate(String value, int maxWidth) {
-		if(value == null){
+		if (value == null) {
 			return null;
 		}
 		String ellipsis = "...";
 		int length = value.length();
-		
-		if(length < maxWidth){
+
+		if (length < maxWidth) {
 			return value;
 		}
-		if(length <= 3){
+		if (length <= 3) {
 			return value;
 		}
 		return value.substring(0, maxWidth - 3) + ellipsis;

@@ -7,21 +7,49 @@ import java.util.Stack;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 
+/**
+ * A context stores all of the variables that a template uses during evaluation
+ * as well as any other stateful information. Passing the entire state around in
+ * this class will assist with thread safety.
+ * 
+ * @author Mitchell
+ * 
+ */
 public class Context {
 
 	private final boolean strictVariables;
 
+	/**
+	 * A template will look to it's parent and children for overridden macros
+	 * and other features; this inheritance chain will help the template keep
+	 * track of where in the inheritance chain it currently is.
+	 */
 	private final Stack<PebbleTemplateImpl> inheritanceChain;
-	
+
+	/**
+	 * A scope is a set of visible variables. A trivial template will only have
+	 * one scope. New scopes are added with for loops and macros for example.
+	 * 
+	 * Most scopes will have a link to their parent scope which allow an
+	 * evaluation to look up the scope chain for variables. A macro is an
+	 * exception to this as it only has access to it's local variables.
+	 */
 	private final Stack<Scope> scopes;
-	
+
+	/**
+	 * We cache the attributes of objects for performance purposes.
+	 */
 	private final Map<Class<?>, ClassAttributeCacheEntry> attributeCache;
 
+	/**
+	 * The locale of this template. Will be used by LocaleAware filters,
+	 * functions, etc.
+	 */
 	private Locale locale;
 
 	public Context(boolean strictVariables) {
 		this.strictVariables = strictVariables;
-		
+
 		this.inheritanceChain = new Stack<>();
 		this.scopes = new Stack<>();
 		this.attributeCache = new HashMap<>();
@@ -38,6 +66,14 @@ public class Context {
 		scopes.peek().put(key, value);
 	}
 
+	/**
+	 * Will look for a variable, traveling upwards through the scope chain until
+	 * it is found.
+	 * 
+	 * @param key
+	 * @return
+	 * @throws AttributeNotFoundException
+	 */
 	public Object get(Object key) throws AttributeNotFoundException {
 
 		Object result = null;
@@ -58,29 +94,32 @@ public class Context {
 		}
 		return result;
 	}
-	
-	public void pushInheritanceChain(PebbleTemplateImpl template){
+
+	public void pushInheritanceChain(PebbleTemplateImpl template) {
 		this.inheritanceChain.push(template);
 	}
-	
-	public void popInheritanceChain(){
+
+	public void popInheritanceChain() {
 		this.inheritanceChain.pop();
 	}
-	
+
 	public PebbleTemplateImpl getChildTemplate() {
-		if(inheritanceChain.isEmpty()){
+		if (inheritanceChain.isEmpty()) {
 			return null;
 		}
 		return inheritanceChain.peek();
 	}
 
+	/**
+	 * Creates a new scope that contains a reference to the current scope.
+	 */
 	public void pushScope() {
 		scopes.push(new Scope(scopes.peek()));
 	}
 
 	/**
-	 * Pushes a scope that doesn't contain a reference to the previous scope.
-	 * This occurs for macros.
+	 * Pushes a new scope that doesn't contain a reference to the current scope.
+	 * This occurs for macros. Variable lookup will end at this scope.
 	 */
 	public void pushLocalScope() {
 		scopes.push(new Scope(null));

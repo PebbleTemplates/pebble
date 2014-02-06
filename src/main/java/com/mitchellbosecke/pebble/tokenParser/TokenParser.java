@@ -14,6 +14,14 @@ import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.parser.Parser;
 
+/**
+ * A TokenParser is responsible for converting a stream of Tokens into a Node. A
+ * TokenParser often has to temporarily delegate responsibility to Pebble's main
+ * Parser or Pebble's ExpressionParser.
+ * 
+ * @author Mitchell
+ * 
+ */
 public interface TokenParser {
 
 	/**
@@ -48,16 +56,17 @@ public interface TokenParser {
 	 * 
 	 * It is the responsibility of the TokenParser to ensure that when it is
 	 * complete, the "current" token of the primary Parser's TokenStream is
-	 * pointing to the NEXT token. USUALLY this means the last statement in 
-	 * this parse method, immediately prior to the return statement, is the 
-	 * following which will consume one token:
+	 * pointing to the NEXT token. USUALLY this means the last statement in this
+	 * parse method, immediately prior to the return statement, is the following
+	 * which will consume one token:
 	 * 
 	 * stream.expect(Token.Type.EXECUTE_END);
 	 * 
-	 * Here are two relatively simple examples of how TokenParsers are implemented:
+	 * Here are two relatively simple examples of how TokenParsers are
+	 * implemented:
 	 * 
-	 * 	- self contained:  com.mitchellbosecke.pebble.tokenParser.SetTokenParser
-	 *  - middle content:  com.mitchellbosecke.pebble.tokenParser.BlockTokenParser
+	 * - self contained: com.mitchellbosecke.pebble.tokenParser.SetTokenParser -
+	 * middle content: com.mitchellbosecke.pebble.tokenParser.BlockTokenParser
 	 * 
 	 * @param token
 	 * @return

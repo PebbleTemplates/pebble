@@ -51,6 +51,14 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBrokerImpl;
 import com.mitchellbosecke.pebble.utils.IOUtils;
 
+/**
+ * The main class used for compiling templates. The PebbleEngine is responsible
+ * for delegating responsibility to the lexer, parser, compiler, and template
+ * cache.
+ * 
+ * @author Mitchell
+ * 
+ */
 public class PebbleEngine {
 
 	/*
@@ -123,9 +131,11 @@ public class PebbleEngine {
 
 	/**
 	 * 
-	 * @param templateName
+	 * Loads, parses, and compiles a template into an instance of PebbleTemplate
+	 * and returns this instance.
 	 * 
-	 * @return
+	 * @param templateName
+	 * @return PebbleTemplate
 	 * @throws PebbleException
 	 */
 	public PebbleTemplate compile(final String templateName) throws PebbleException {
@@ -143,8 +153,6 @@ public class PebbleEngine {
 			public PebbleTemplateImpl call() throws InterruptedException, PebbleException {
 				compilationMutex.acquire();
 				PebbleTemplateImpl instance = null;
-
-				// load it
 				Reader templateReader = loader.getReader(templateName);
 
 				/*
@@ -210,7 +218,7 @@ public class PebbleEngine {
 
 	/**
 	 * Retrieves all of the information/tools from the provided extensions. This
-	 * includes unary operators, binary operations, and token parsers.
+	 * includes unary operators, binary operations, token parsers, etc
 	 */
 	private void initExtensions() {
 		if (extensionsInitialized) {
@@ -338,8 +346,7 @@ public class PebbleEngine {
 	}
 
 	/**
-	 * Gets the name that will be used for the final Java class when loading a
-	 * particular template.
+	 * Gets the name that will be used for the final compiled Java class.
 	 * 
 	 * @param templateName
 	 *            The template that we need a name for
@@ -368,11 +375,17 @@ public class PebbleEngine {
 		}
 		return "PebbleTemplate" + classNameHash;
 	}
-	
+
 	public TemplateLoadingCache getTemplateCache() {
 		return loadingTemplateCache;
 	}
 
+	/**
+	 * Sets the cache to be used for storing compiled PebbleTemplate instances.
+	 * 
+	 * @param cache
+	 *            The cache to be used
+	 */
 	public void setTemplateCache(TemplateLoadingCache cache) {
 		this.loadingTemplateCache = cache;
 	}
@@ -381,6 +394,14 @@ public class PebbleEngine {
 		return strictVariables;
 	}
 
+	/**
+	 * Changes the <code>strictVariables</code> setting of the PebbleEngine. If
+	 * strictVariables is equal to false (which is the default) then expressions
+	 * become much more null-safe and type issues are handled in a much more
+	 * graceful manner.
+	 * 
+	 * @param strictVariables
+	 */
 	public void setStrictVariables(boolean strictVariables) {
 		this.strictVariables = strictVariables;
 	}
@@ -397,6 +418,13 @@ public class PebbleEngine {
 		return defaultLocale;
 	}
 
+	/**
+	 * The default locale that will be passed to each template upon compilation.
+	 * An individual template can be given a new locale on evaluation.
+	 * 
+	 * @param locale
+	 *            The default locale to pass to all newly compiled templates.
+	 */
 	public void setDefaultLocale(Locale locale) {
 		this.defaultLocale = locale;
 	}
@@ -405,6 +433,13 @@ public class PebbleEngine {
 		return executorService;
 	}
 
+	/**
+	 * Providing an ExecutorService will enable some advanced multithreading
+	 * features such as the parallel tag.
+	 * 
+	 * @param executorService
+	 *            The ExecutorService to enable multithreading features.
+	 */
 	public void setExecutorService(ExecutorService executorService) {
 		this.executorService = executorService;
 	}

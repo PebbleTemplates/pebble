@@ -11,6 +11,14 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.ClassAttributeCacheEntry;
 import com.mitchellbosecke.pebble.template.Context;
 
+/**
+ * Used to get an attribute from an object. It will look up attributes in the
+ * following order: map entry, get method, is method, has method, public method,
+ * public field. It current only supports zero-argument methods.
+ * 
+ * @author Mitchell
+ * 
+ */
 public class ReflectionUtils {
 
 	public static Object getAttribute(Context context, Object object, String attributeName) throws PebbleException {

@@ -1,5 +1,18 @@
 package com.mitchellbosecke.pebble.utils;
 
+/**
+ * 
+ * This class acts as a sort of wrapper around Java's built in operators. This
+ * is necessary because Pebble treats all user provided variables as Objects
+ * even if they were originally primitives.
+ * <p>
+ * It's important that this class mimics the natural type conversion that Java
+ * will apply when performing operators. This can be found in section 5.6.2 of
+ * the Java 7 spec, under Binary Numeric Promotion.
+ * 
+ * @author Mitchell
+ * 
+ */
 public class OperatorUtils {
 
 	private enum Operation {
@@ -34,7 +47,7 @@ public class OperatorUtils {
 	}
 
 	public static boolean gt(Object op1, Object op2) {
-		return (boolean)wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN);
+		return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN);
 	}
 
 	public static boolean gte(Object op1, Object op2) {
@@ -42,11 +55,11 @@ public class OperatorUtils {
 	}
 
 	public static boolean lt(Object op1, Object op2) {
-		return (boolean)wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN);
+		return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN);
 	}
 
 	public static boolean lte(Object op1, Object op2) {
-		return (boolean)wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN_EQUALS);
+		return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN_EQUALS);
 	}
 
 	public static Object unaryPlus(Object op1) {
