@@ -11,20 +11,19 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.utils.ObjectUtils;
 
 public class NodeFor extends AbstractNode {
 
 	private final NodeExpressionNewVariableName iterationVariable;
 
-	private final NodeExpressionContextVariable iterable;
+	private final NodeExpression iterable;
 
 	private final NodeBody body;
 
 	private final NodeBody elseBody;
 
-	public NodeFor(int lineNumber, NodeExpressionNewVariableName iterationVariable, NodeExpressionContextVariable iterable,
+	public NodeFor(int lineNumber, NodeExpressionNewVariableName iterationVariable, NodeExpression iterable,
 			NodeBody body, NodeBody elseBody) {
 		super(lineNumber);
 		this.iterationVariable = iterationVariable;
@@ -37,8 +36,8 @@ public class NodeFor extends AbstractNode {
 	public void compile(Compiler compiler) {
 
 		if (elseBody != null) {
-			compiler.newline().write("if (").subcompile(iterable).write(" != null && ((Iterable)").subcompile(iterable)
-					.raw(").iterator().hasNext()){").newline().indent();
+			compiler.newline().write("if (").subcompile(iterable).write(" != null && ((Iterable)(").subcompile(iterable)
+					.raw(")).iterator().hasNext()){").newline().indent();
 
 			compileForLoop(compiler);
 
@@ -46,7 +45,7 @@ public class NodeFor extends AbstractNode {
 
 			compiler.newline().outdent().write("}").newline();
 		} else {
-			compiler.newline().write("if (").subcompile(iterable).write(" != null){").newline().indent();
+			compiler.newline().write("if (").subcompile(iterable).raw(" != null){").newline().indent();
 
 			compileForLoop(compiler);
 
@@ -67,7 +66,7 @@ public class NodeFor extends AbstractNode {
 				.raw(".getIteratorSize((Iterable)").subcompile(iterable).raw("));").newline();
 
 		// start the for loop
-		compiler.write("for( Object ").subcompile(iterationVariable).raw(" : (Iterable)").subcompile(iterable).raw("){")
+		compiler.write("for( Object ").subcompile(iterationVariable).raw(" : (Iterable)(").subcompile(iterable).raw(")){")
 				.newline().indent();
 
 		compiler.write("context.put(").string(iterationVariable.getName()).raw(",").raw(iterationVariable.getName())

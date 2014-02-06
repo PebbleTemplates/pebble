@@ -17,11 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -83,6 +82,32 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("[2]0Alex1Bob", writer.toString());
+	}
+	
+	/**
+	 * Issue #15
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testForIteratingOverProperty() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% for user in classroom.users %}{{ user.username }}{% endfor %}";
+		PebbleTemplate template = pebble.compile(source);
+		Map<String, Object> context = new HashMap<>();
+		List<User> users = new ArrayList<>();
+		users.add(new User("Alex"));
+		users.add(new User("Bob"));
+		Classroom classroom = new Classroom();
+		classroom.setUsers(users);
+		context.put("classroom", classroom);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("AlexBob", writer.toString());
 	}
 	
 	
@@ -309,6 +334,18 @@ public class CoreTagsTest extends AbstractTest {
 
 		public String getUsername() {
 			return username;
+		}
+	}
+	
+	public class Classroom {
+		private List<User> users = new ArrayList<>();
+
+		public List<User> getUsers() {
+			return users;
+		}
+
+		public void setUsers(List<User> users) {
+			this.users = users;
 		}
 	}
 

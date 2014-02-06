@@ -16,7 +16,6 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeFor;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
@@ -56,7 +55,7 @@ public class ForTokenParser extends AbstractTokenParser {
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionContextVariable) iterable, body, elseBody);
+		return new NodeFor(lineNumber, iterationVariable, (NodeExpression) iterable, body, elseBody);
 	}
 
 	private StoppingCondition decideForFork = new StoppingCondition() {
