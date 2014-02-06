@@ -62,12 +62,6 @@ public class PebbleEngine {
 	private final Compiler compiler;
 
 	/*
-	 * Final Settings
-	 */
-	private final Class<?> templateParentClass = PebbleTemplateImpl.class;
-	private final String templateClassPrefix = "PebbleTemplate";
-
-	/*
 	 * User Editable Settings
 	 */
 	private boolean strictVariables = false;
@@ -372,13 +366,9 @@ public class PebbleEngine {
 			// should not be here
 			e.printStackTrace();
 		}
-		return this.templateClassPrefix + classNameHash;
+		return "PebbleTemplate" + classNameHash;
 	}
-
-	public Class<?> getTemplateParentClass() {
-		return templateParentClass;
-	}
-
+	
 	public TemplateLoadingCache getTemplateCache() {
 		return loadingTemplateCache;
 	}

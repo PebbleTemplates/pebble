@@ -66,7 +66,7 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileClassHeader(Compiler compiler, String className) {
-		String parentClass = compiler.getEngine().getTemplateParentClass().getName();
+		String parentClass = PebbleTemplateImpl.class.getName();
 
 		compiler.write(String.format("package %s;", PebbleTemplateImpl.COMPILED_PACKAGE_NAME)).newline(2)
 				.write("import java.util.Map;").newline().write("import java.util.HashMap;").newline().write("import ")
