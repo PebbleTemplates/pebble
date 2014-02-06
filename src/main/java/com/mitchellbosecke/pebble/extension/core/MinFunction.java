@@ -1,14 +1,20 @@
 package com.mitchellbosecke.pebble.extension.core;
 
+import java.util.List;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.extension.SimpleFunction;
+import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.utils.OperatorUtils;
 
-public class MinFunction implements SimpleFunction {
+public class MinFunction implements Function {
 
 	@Override
-	public Object execute(Map<String,Object> args) {
+	public List<String> getArgumentNames() {
+		return null;
+	}
+
+	@Override
+	public Object execute(Map<String, Object> args) {
 		Object min = null;
 		for (Object candidate : args.values()) {
 			if (min == null) {

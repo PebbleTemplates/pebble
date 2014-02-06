@@ -11,9 +11,8 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.LocaleAware;
-import com.mitchellbosecke.pebble.extension.NamedArguments;
 
-public class DateFilter implements Filter, NamedArguments, LocaleAware {
+public class DateFilter implements Filter, LocaleAware {
 	
 	private Locale locale;
 	

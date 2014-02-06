@@ -22,13 +22,7 @@ public class NodeExpressionBinaryTestPositive extends NodeExpressionBinary {
 
 		compiler.raw("applyTest(").string(String.valueOf(testInvokation.getTestName().getValue()));
 
-		compiler.raw(",").subcompile(leftExpression);
-
-		NodeExpressionNamedArguments args = testInvokation.getArgs();
-		if (args != null && !args.isEmpty()) {
-			compiler.raw(", ");
-			compiler.subcompile(args);
-		}
+		compiler.raw(",").subcompile(leftExpression).raw(",").subcompile(testInvokation.getArgs());
 
 		compiler.raw(")");
 	}

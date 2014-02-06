@@ -12,12 +12,12 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
-public class NodeExpressionFunctionOrMacroCall extends NodeExpression {
+public class NodeExpressionFunctionOrMacroInvocation extends NodeExpression {
 
 	private final NodeExpressionConstant functionName;
 	private final NodeExpressionNamedArguments args;
 
-	public NodeExpressionFunctionOrMacroCall(int lineNumber, NodeExpressionConstant functionName,
+	public NodeExpressionFunctionOrMacroInvocation(int lineNumber, NodeExpressionConstant functionName,
 			NodeExpressionNamedArguments arguments) {
 		super(lineNumber);
 		this.functionName = functionName;
@@ -27,14 +27,8 @@ public class NodeExpressionFunctionOrMacroCall extends NodeExpression {
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.raw("applyFunctionOrMacro(").string(String.valueOf(functionName.getValue())).raw(", context");
-
-		if (args != null && !args.isEmpty()) {
-			compiler.raw(", ");
-			compiler.subcompile(args);
-		}
-
-		compiler.raw(")");
+		compiler.raw("applyFunctionOrMacro(").string(String.valueOf(functionName.getValue())).raw(", context")
+				.raw(", ").subcompile(args).raw(")");
 	}
 
 	public NodeExpressionConstant getFunctionName() {

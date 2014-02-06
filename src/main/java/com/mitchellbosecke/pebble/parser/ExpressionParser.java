@@ -19,16 +19,16 @@ import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReference;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReferenceAndFunction;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroCall;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroInvocation;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentReference;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentFunction;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvocation;
@@ -355,12 +355,12 @@ public class ExpressionParser {
 		 */
 		switch ((String) functionName.getValue()) {
 			case "parent":
-				return new NodeExpressionParentReference(node.getLineNumber(), parser.peekBlockStack());
+				return new NodeExpressionParentFunction(node.getLineNumber(), parser.peekBlockStack());
 			case "block":
-				return new NodeExpressionBlockReference(node.getLineNumber(), args);
+				return new NodeExpressionBlockReferenceAndFunction(node.getLineNumber(), args);
 		}
 
-		return new NodeExpressionFunctionOrMacroCall(lineNumber, functionName, args);
+		return new NodeExpressionFunctionOrMacroInvocation(lineNumber, functionName, args);
 	}
 
 	private NodeExpression parseFilterInvokationExpression() throws ParserException {
@@ -375,6 +375,8 @@ public class ExpressionParser {
 		NodeExpressionNamedArguments args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 			args = this.parseNamedArguments();
+		}else{
+			args = new NodeExpressionNamedArguments(lineNumber, null);
 		}
 
 		return new NodeExpressionFilterInvocation(lineNumber, filterName, args);
@@ -391,6 +393,8 @@ public class ExpressionParser {
 		NodeExpressionNamedArguments args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 			args = this.parseNamedArguments();
+		}else{
+			args = new NodeExpressionNamedArguments(lineNumber, null);
 		}
 
 		return new NodeExpressionTestInvocation(lineNumber, testName, args);
@@ -436,6 +440,7 @@ public class ExpressionParser {
 
 		stream.expect(Token.Type.PUNCTUATION, "(");
 
+		NodeExpressionNewVariableName argumentName = null;
 		NodeExpression argumentValue = null;
 		while (!stream.current().test(Token.Type.PUNCTUATION, ")")) {
 
@@ -450,12 +455,12 @@ public class ExpressionParser {
 			 * expressions.
 			 */
 			if (isMacroDefinition) {
-				argumentValue = parseNewVariableName();
+				argumentName = parseNewVariableName();
 			} else {
 				argumentValue = parseExpression();
 			}
 
-			NodeExpressionNamedArgument namedArgument = new NodeExpressionNamedArgument(null, argumentValue);
+			NodeExpressionNamedArgument namedArgument = new NodeExpressionNamedArgument(argumentName, argumentValue);
 			vars.add(namedArgument);
 		}
 

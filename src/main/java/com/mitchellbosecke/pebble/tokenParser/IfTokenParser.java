@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeIf;
-import com.mitchellbosecke.pebble.utils.Function;
+import com.mitchellbosecke.pebble.parser.StoppingCondition;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class IfTokenParser extends AbstractTokenParser {
@@ -76,16 +76,16 @@ public class IfTokenParser extends AbstractTokenParser {
 		return new NodeIf(lineNumber, conditionsWithBodies, elseBody);
 	}
 
-	private Function<Boolean, Token> decideIfFork = new Function<Boolean, Token>() {
+	private StoppingCondition decideIfFork = new StoppingCondition() {
 		@Override
-		public Boolean execute(Token token) {
+		public boolean evaluate(Token token) {
 			return token.test(Token.Type.NAME, "elseif", "else", "endif");
 		}
 	};
 
-	private Function<Boolean, Token> decideIfEnd = new Function<Boolean, Token>() {
+	private StoppingCondition decideIfEnd = new StoppingCondition() {
 		@Override
-		public Boolean execute(Token token) {
+		public boolean evaluate(Token token) {
 			return token.test(Token.Type.NAME, "endif");
 		}
 	};

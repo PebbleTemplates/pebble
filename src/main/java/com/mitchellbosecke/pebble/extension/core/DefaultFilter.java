@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.NamedArguments;
 import com.mitchellbosecke.pebble.extension.Test;
 
-public class DefaultFilter implements Filter, NamedArguments {
+public class DefaultFilter implements Filter {
 
 	@Override
 	public List<String> getArgumentNames() {

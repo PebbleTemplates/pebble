@@ -10,17 +10,16 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.LocaleAware;
-import com.mitchellbosecke.pebble.extension.NamedArguments;
 
-public class NumberFormatFilter implements Filter, LocaleAware, NamedArguments {
+public class NumberFormatFilter implements Filter, LocaleAware {
 
 	private Locale locale;
-	
+
 	@Override
-	public void setLocale(Locale locale){
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
+
 	@Override
 	public List<String> getArgumentNames() {
 		List<String> names = new ArrayList<>();

@@ -7,17 +7,16 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import com.mitchellbosecke.pebble.extension.LocaleAware;
-import com.mitchellbosecke.pebble.extension.NamedArguments;
-import com.mitchellbosecke.pebble.extension.SimpleFunction;
+import com.mitchellbosecke.pebble.extension.Function;
 
-public class MessageFunction implements SimpleFunction, NamedArguments, LocaleAware {
+public class MessageFunction implements Function, LocaleAware {
 
 	private Locale locale;
-	
-	public void setLocale(Locale locale){
+
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
+
 	@Override
 	public List<String> getArgumentNames() {
 		List<String> names = new ArrayList<>();
@@ -25,6 +24,7 @@ public class MessageFunction implements SimpleFunction, NamedArguments, LocaleAw
 		names.add("key");
 		return names;
 	}
+
 	@Override
 	public Object execute(Map<String, Object> args) {
 		String basename = (String) args.get("bundle");

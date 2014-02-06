@@ -16,9 +16,9 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeFor;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
-import com.mitchellbosecke.pebble.utils.Function;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
+import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class ForTokenParser extends AbstractTokenParser {
 
@@ -59,16 +59,16 @@ public class ForTokenParser extends AbstractTokenParser {
 		return new NodeFor(lineNumber, iterationVariable, (NodeExpressionContextVariable) iterable, body, elseBody);
 	}
 
-	private Function<Boolean, Token> decideForFork = new Function<Boolean, Token>() {
+	private StoppingCondition decideForFork = new StoppingCondition() {
 		@Override
-		public Boolean execute(Token token) {
+		public boolean evaluate(Token token) {
 			return token.test(Token.Type.NAME, "else", "endfor");
 		}
 	};
 
-	private Function<Boolean, Token> decideForEnd = new Function<Boolean, Token>() {
+	private StoppingCondition decideForEnd = new StoppingCondition() {
 		@Override
-		public Boolean execute(Token token) {
+		public boolean evaluate(Token token) {
 			return token.test(Token.Type.NAME, "endfor");
 		}
 	};

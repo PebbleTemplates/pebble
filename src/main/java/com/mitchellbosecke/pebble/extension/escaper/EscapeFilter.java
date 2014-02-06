@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.NamedArguments;
 
-public class EscapeFilter implements Filter, NamedArguments {
+public class EscapeFilter implements Filter {
 
 	public List<String> getArgumentNames() {
 		List<String> names = new ArrayList<>();

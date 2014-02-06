@@ -31,7 +31,9 @@ public class NodeExpressionTestInvocation extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		// should not be called
+		/*
+		 * The NodeExpressionBinaryTestPositive.class will handle compilation
+		 */
 		throw new RuntimeException("Compile method on TestInvokation node is not supported");
 	}
 

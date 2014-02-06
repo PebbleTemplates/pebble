@@ -1,11 +1,17 @@
 package com.mitchellbosecke.pebble.extension.core;
 
+import java.util.List;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.extension.SimpleFunction;
+import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.utils.OperatorUtils;
 
-public class MaxFunction implements SimpleFunction {
+public class MaxFunction implements Function {
+
+	@Override
+	public List<String> getArgumentNames() {
+		return null;
+	}
 
 	@Override
 	public Object execute(Map<String, Object> args) {

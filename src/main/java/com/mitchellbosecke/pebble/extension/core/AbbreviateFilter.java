@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.NamedArguments;
 import com.mitchellbosecke.pebble.utils.StringUtils;
 
-public class AbbreviateFilter implements Filter, NamedArguments {
+public class AbbreviateFilter implements Filter{
 
 	@Override
 	public List<String> getArgumentNames() {

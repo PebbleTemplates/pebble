@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
-import com.mitchellbosecke.pebble.utils.Function;
+import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class MacroTokenParser extends AbstractTokenParser {
 
@@ -52,9 +52,9 @@ public class MacroTokenParser extends AbstractTokenParser {
 		return null;
 	}
 
-	private Function<Boolean, Token> decideMacroEnd = new Function<Boolean, Token>() {
+	private StoppingCondition decideMacroEnd = new StoppingCondition() {
 		@Override
-		public Boolean execute(Token token) {
+		public boolean evaluate(Token token) {
 			return token.test(Token.Type.NAME, "endmacro");
 		}
 	};

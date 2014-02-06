@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.NodeExpression;
+import com.mitchellbosecke.pebble.template.ArgumentMap;
 
 public class NodeExpressionNamedArguments extends NodeExpression {
 
@@ -30,23 +31,19 @@ public class NodeExpressionNamedArguments extends NodeExpression {
 	@Override
 	public void compile(Compiler compiler) {
 
-		int amount = args.size();
+		compiler.raw(ArgumentMap.class.getName()).raw(".create()");
 
-		int i = 1;
-		for (NodeExpression arg : args) {
-			compiler.subcompile(arg);
-
-			if (i < amount) {
-				compiler.raw(", ");
+		if (args != null) {
+			for (NodeExpressionNamedArgument arg : args) {
+				compiler.raw(".add(");
+				if (arg.getName() == null) {
+					compiler.raw("null");
+				} else {
+					compiler.string(arg.getName().getName());
+				}
+				compiler.raw(",").subcompile(arg.getValue()).raw(")");
 			}
-
-			i++;
 		}
-
-	}
-
-	public boolean isEmpty() {
-		return args.isEmpty();
 	}
 
 	/**

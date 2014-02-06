@@ -13,13 +13,11 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.NodeRoot;
-import com.mitchellbosecke.pebble.utils.Function;
 
 public interface Parser {
 
@@ -43,7 +41,7 @@ public interface Parser {
 	 * @return
 	 * @throws ParserException
 	 */
-	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws ParserException;
+	public NodeBody subparse(StoppingCondition stopCondition) throws ParserException;
 	
 	public void setParentFileName(String parentFileName);
 

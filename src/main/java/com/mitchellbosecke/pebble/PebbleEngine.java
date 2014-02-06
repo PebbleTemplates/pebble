@@ -29,7 +29,7 @@ import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.SimpleFunction;
+import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.extension.core.CoreExtension;
 import com.mitchellbosecke.pebble.extension.escaper.EscaperExtension;
@@ -95,7 +95,7 @@ public class PebbleEngine {
 	private Map<String, Filter> filters;
 	private Map<String, Test> tests;
 	private Map<String, Object> globalVariables;
-	private Map<String, SimpleFunction> functions;
+	private Map<String, Function> functions;
 
 	/**
 	 * compilationMutex ensures that only one template is being compiled at a
@@ -329,7 +329,7 @@ public class PebbleEngine {
 		return this.tests;
 	}
 
-	public Map<String, SimpleFunction> getFunctions() {
+	public Map<String, Function> getFunctions() {
 		if (!this.extensionsInitialized) {
 			initExtensions();
 		}

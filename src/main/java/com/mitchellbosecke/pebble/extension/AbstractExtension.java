@@ -50,7 +50,7 @@ public abstract class AbstractExtension implements Extension {
 	}
 	
 	@Override
-	public Map<String, SimpleFunction> getFunctions(){
+	public Map<String, Function> getFunctions(){
 		return null;
 	}
 

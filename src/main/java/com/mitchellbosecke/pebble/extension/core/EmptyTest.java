@@ -1,12 +1,18 @@
 package com.mitchellbosecke.pebble.extension.core;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.utils.StringUtils;
 
 public class EmptyTest implements Test{
+	
+	@Override
+	public List<String> getArgumentNames() {
+		return null;
+	}
 
 	@Override
 	public boolean apply(Object input, Map<String, Object> args) {

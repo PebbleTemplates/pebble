@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,9 +26,9 @@ import java.util.concurrent.Future;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.NamedArguments;
-import com.mitchellbosecke.pebble.extension.SimpleFunction;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
 import com.mitchellbosecke.pebble.utils.ReflectionUtils;
@@ -119,56 +118,10 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	public void registerMacro(Macro macro) {
 		macros.put(macro.getName(), macro);
-		macro.init();
 	}
 
 	public boolean hasMacro(String macroName) {
 		return macros.containsKey(macroName);
-	}
-
-	public String macro(String macroName, Context context, Object... args) throws PebbleException {
-		String result = null;
-		boolean found = false;
-
-		PebbleTemplateImpl childTemplate = context.getChildTemplate();
-
-		// check child template first
-		if (childTemplate != null && childTemplate.hasMacro(macroName)) {
-			found = true;
-			context.popInheritanceChain();
-			result = childTemplate.macro(macroName, context, args);
-			context.pushInheritanceChain(childTemplate);
-
-			// check current template
-		} else if (hasMacro(macroName)) {
-			found = true;
-			Macro macro = macros.get(macroName);
-
-			result = macro.call(context, args);
-		}
-
-		// check imported templates
-		if (!found) {
-			for (PebbleTemplateImpl template : importedTemplates) {
-				if (template.hasMacro(macroName)) {
-					found = true;
-					result = template.macro(macroName, context, args);
-				}
-			}
-		}
-
-		// delegate to parent template
-		if (!found) {
-			if (this.getParent() != null) {
-				context.pushInheritanceChain(this);
-				result = this.getParent().macro(macroName, context, args);
-				context.popInheritanceChain();
-			} else {
-				throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));
-			}
-		}
-
-		return result;
 	}
 
 	public void registerBlock(Block block) {
@@ -212,20 +165,76 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	}
 
-	protected Object applyFilter(String filterName, Context context, Object... args) throws PebbleException {
+	protected Object applyFunctionOrMacro(String functionName, Context context, ArgumentMap args)
+			throws PebbleException {
+		Map<String, Function> functions = engine.getFunctions();
+		if (functions.containsKey(functionName)) {
+			return applyFunction(functions.get(functionName), context, args);
+		}
+		return macro(functionName, context, args);
+	}
+
+	private Object applyFunction(Function function, Context context, ArgumentMap args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
 
-		// args is null if the input was null
-		Object input = null;
-		if (args != null) {
-			input = args[0];
+		Collections.addAll(arguments, args);
+
+		if (function instanceof LocaleAware) {
+			((LocaleAware) function).setLocale(context.getLocale());
 		}
 
-		// remove input from original args array
-		if (args != null) {
-			args = Arrays.copyOfRange(args, 1, args.length);
-			Collections.addAll(arguments, args);
+		Map<String, Object> namedArguments = getNamedArguments((NamedArguments) function, args);
+		return function.execute(namedArguments);
+	}
+
+	public String macro(String macroName, Context context, ArgumentMap args) throws PebbleException {
+		String result = null;
+		boolean found = false;
+
+		PebbleTemplateImpl childTemplate = context.getChildTemplate();
+
+		// check child template first
+		if (childTemplate != null && childTemplate.hasMacro(macroName)) {
+			found = true;
+			context.popInheritanceChain();
+			result = childTemplate.macro(macroName, context, args);
+			context.pushInheritanceChain(childTemplate);
+
+			// check current template
+		} else if (hasMacro(macroName)) {
+			found = true;
+			Macro macro = macros.get(macroName);
+
+			Map<String, Object> namedArguments = getNamedArguments((NamedArguments) macro, args);
+			result = macro.call(context, namedArguments);
 		}
+
+		// check imported templates
+		if (!found) {
+			for (PebbleTemplateImpl template : importedTemplates) {
+				if (template.hasMacro(macroName)) {
+					found = true;
+					result = template.macro(macroName, context, args);
+				}
+			}
+		}
+
+		// delegate to parent template
+		if (!found) {
+			if (this.getParent() != null) {
+				context.pushInheritanceChain(this);
+				result = this.getParent().macro(macroName, context, args);
+				context.popInheritanceChain();
+			} else {
+				throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));
+			}
+		}
+
+		return result;
+	}
+
+	protected Object applyFilter(String filterName, Context context, Object input, ArgumentMap args)
+			throws PebbleException {
 
 		Map<String, Filter> filters = engine.getFilters();
 		Filter filter = filters.get(filterName);
@@ -238,75 +247,43 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 			((LocaleAware) filter).setLocale(context.getLocale());
 		}
 
-		Map<String, Object> namedArguments = null;
-		if (filter instanceof NamedArguments) {
-			namedArguments = getNamedArguments((NamedArguments) filter, arguments);
-		} else {
-			namedArguments = getPositionalArguments(arguments);
-		}
+		Map<String, Object> namedArguments = getNamedArguments((NamedArguments) filter, args);
 
 		return filter.apply(input, namedArguments);
 	}
 
-	protected Object applyFunctionOrMacro(String functionName, Context context, Object... args) throws PebbleException {
-		Map<String, SimpleFunction> functions = engine.getFunctions();
-		if (functions.containsKey(functionName)) {
-			return applyFunction(functions.get(functionName), context, args);
-		}
+	protected boolean applyTest(String testName, Object input, ArgumentMap args) {
+		Map<String, Test> tests = engine.getTests();
+		Test test = tests.get(testName);
 
-		return macro(functionName, context, args);
+		Map<String, Object> namedArguments = getNamedArguments((NamedArguments) test, args);
+		return test.apply(input, namedArguments);
 	}
 
-	private Object applyFunction(SimpleFunction function, Context context, Object... args) throws PebbleException {
-		List<Object> arguments = new ArrayList<>();
-
-		Collections.addAll(arguments, args);
-
-		if (function instanceof LocaleAware) {
-			((LocaleAware) function).setLocale(context.getLocale());
-		}
-
-		Map<String, Object> namedArguments = null;
-		if (function instanceof NamedArguments) {
-			namedArguments = getNamedArguments((NamedArguments) function, arguments);
-		} else {
-			namedArguments = getPositionalArguments(arguments);
-		}
-		return function.execute(namedArguments);
-	}
-
-	private Map<String, Object> getNamedArguments(NamedArguments invokable, List<Object> arguments) {
+	private Map<String, Object> getNamedArguments(NamedArguments invokableWithNamedArguments, ArgumentMap arguments) {
 		Map<String, Object> namedArguments = new HashMap<>();
-
-		Iterator<Object> argumentIterator = arguments.iterator();
-		Iterator<String> nameIterator = invokable.getArgumentNames().iterator();
-
-		while (nameIterator.hasNext()) {
-
-			String name = nameIterator.next();
-			// if argument has name, break from this loop
-
-			if (argumentIterator.hasNext()) {
-				namedArguments.put(name, argumentIterator.next());
-			} else {
-				namedArguments.put(name, null);
+		List<String> argumentNames = invokableWithNamedArguments.getArgumentNames();
+		if (argumentNames == null) {
+			if (arguments.getPositionalArguments().isEmpty()) {
+				return namedArguments;
 			}
+
+			/* Some functions such as min and max use un-named varags */
+			else {
+				for (int i = 0; i < arguments.getPositionalArguments().size(); i++) {
+					namedArguments.put(String.valueOf(i), arguments.getPositionalArguments().get(i));
+				}
+			}
+		} else {
+			Iterator<String> nameIterator = argumentNames.iterator();
+
+			for (Object value : arguments.getPositionalArguments()) {
+				namedArguments.put(nameIterator.next(), value);
+			}
+
+			namedArguments.putAll(arguments.getNamedArguments());
 		}
 
-		while (argumentIterator.hasNext()) {
-			Object arg = argumentIterator.next();
-			// place named arg in map
-		}
-		return namedArguments;
-	}
-
-	private Map<String, Object> getPositionalArguments(List<Object> arguments) {
-		Map<String, Object> namedArguments = new HashMap<>();
-		int position = 0;
-		for (Object arg : arguments) {
-			namedArguments.put(String.valueOf(position), arg);
-			position++;
-		}
 		return namedArguments;
 	}
 
@@ -316,35 +293,6 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		} else {
 			return var.toString();
 		}
-	}
-
-	protected boolean applyTest(String testName, Object... args) {
-		ArrayList<Object> arguments = new ArrayList<>();
-		Object input;
-
-		// if args is null, it's because there was ONE argument and that
-		// argument happens to be null
-		if (args == null) {
-			input = null;
-		} else {
-			input = args[0];
-
-			// remove input from original args array
-			args = Arrays.copyOfRange(args, 1, args.length);
-
-			Collections.addAll(arguments, args);
-		}
-
-		Map<String, Test> tests = engine.getTests();
-		Test test = tests.get(testName);
-
-		Map<String, Object> namedArguments = null;
-		if (test instanceof NamedArguments) {
-			namedArguments = getNamedArguments((NamedArguments) test, arguments);
-		} else {
-			namedArguments = getPositionalArguments(arguments);
-		}
-		return test.apply(input, namedArguments);
 	}
 
 	public String getGeneratedJavaCode() {

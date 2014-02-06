@@ -40,7 +40,7 @@ public interface Extension {
 	 * 
 	 * @return A list of functions. It is okay to return null.
 	 */
-	public Map<String, SimpleFunction> getFunctions();
+	public Map<String, Function> getFunctions();
 
 	/**
 	 * Use this method to provide custom tags.

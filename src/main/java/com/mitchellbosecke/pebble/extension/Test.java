@@ -11,8 +11,7 @@ package com.mitchellbosecke.pebble.extension;
 
 import java.util.Map;
 
-//@FunctionalInterface
-public interface Test {
-	
+public interface Test extends NamedArguments {
+
 	public boolean apply(Object input, Map<String, Object> args);
 }

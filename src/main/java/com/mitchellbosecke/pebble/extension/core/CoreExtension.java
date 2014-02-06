@@ -17,7 +17,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.SimpleFunction;
+import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
@@ -147,8 +147,8 @@ public class CoreExtension extends AbstractExtension {
 	}
 
 	@Override
-	public Map<String, SimpleFunction> getFunctions() {
-		Map<String, SimpleFunction> functions = new HashMap<>();
+	public Map<String, Function> getFunctions() {
+		Map<String, Function> functions = new HashMap<>();
 
 		/*
 		 * For efficiency purposes, some core functions are individually parsed

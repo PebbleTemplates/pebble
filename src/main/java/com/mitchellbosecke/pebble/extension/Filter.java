@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.extension;
 
 import java.util.Map;
 
-public interface Filter {
-	
+public interface Filter extends NamedArguments {
+
 	public Object apply(Object input, Map<String, Object> args);
 }

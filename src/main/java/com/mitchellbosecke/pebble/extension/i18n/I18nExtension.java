@@ -14,7 +14,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
-import com.mitchellbosecke.pebble.extension.SimpleFunction;
+import com.mitchellbosecke.pebble.extension.Function;
 
 public class I18nExtension extends AbstractExtension {
 
@@ -23,8 +23,8 @@ public class I18nExtension extends AbstractExtension {
 	}
 
 	@Override
-	public Map<String, SimpleFunction> getFunctions() {
-		Map<String, SimpleFunction> functions = new HashMap<>();
+	public Map<String, Function> getFunctions() {
+		Map<String, Function> functions = new HashMap<>();
 		functions.put("message", new MessageFunction());
 		return functions;
 	}

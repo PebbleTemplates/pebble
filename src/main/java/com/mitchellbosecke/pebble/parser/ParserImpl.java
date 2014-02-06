@@ -29,7 +29,6 @@ import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.node.NodeText;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
-import com.mitchellbosecke.pebble.utils.Function;
 
 public class ParserImpl implements Parser {
 
@@ -99,7 +98,7 @@ public class ParserImpl implements Parser {
 	 * Private constructor that takes in all stateful data
 	 */
 	private ParserImpl(PebbleEngine engine, TokenStream stream, String parentFileName, Map<String, NodeBlock> blocks,
-			Map<String,NodeMacro> macros) {
+			Map<String, NodeMacro> macros) {
 		this.engine = engine;
 		this.stream = stream;
 		this.parentFileName = parentFileName;
@@ -161,7 +160,7 @@ public class ParserImpl implements Parser {
 	 * @param stopCondition	A stopping condition provided by a token parser
 	 * @return Node		The root node of the generated Abstract Syntax Tree
 	 */
-	public NodeBody subparse(Function<Boolean, Token> stopCondition) throws ParserException {
+	public NodeBody subparse(StoppingCondition stopCondition) throws ParserException {
 
 		// these nodes will be the children of the root node
 		List<Node> nodes = new ArrayList<>();
@@ -228,7 +227,7 @@ public class ParserImpl implements Parser {
 					// that parser provided a stopping condition (ex. checking
 					// for the 'endif' token) let's check for that condition
 					// now.
-					if (stopCondition != null && stopCondition.execute(token)) {
+					if (stopCondition != null && stopCondition.evaluate(token)) {
 						return new NodeBody(token.getLineNumber(), nodes);
 					}
 
@@ -324,7 +323,7 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public void addMacro(String name, NodeMacro macro){
+	public void addMacro(String name, NodeMacro macro) {
 		macros.put(name, macro);
 	}
 

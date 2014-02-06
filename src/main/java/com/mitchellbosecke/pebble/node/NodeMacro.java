@@ -9,6 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
@@ -35,7 +38,7 @@ public class NodeMacro extends AbstractNode {
 		compiler.write("this.registerMacro(new ").raw(AbstractMacro.class.getName()).raw("(){").newline().indent();
 
 		compileGetNameMethod(compiler);
-		compileInit(compiler);
+		compileGetArgumentNamesMethod(compiler);
 		compileEvaluate(compiler);
 		compiler.outdent().write("});");
 
@@ -45,17 +48,18 @@ public class NodeMacro extends AbstractNode {
 		compiler.write("public String getName() { return ").string(name).raw("; }").newline();
 	}
 
-	public void compileInit(Compiler compiler) {
-		compiler.write("public void init(){").indent().newline();
+	public void compileGetArgumentNamesMethod(Compiler compiler) {
+		compiler.write("public ").raw(List.class.getName()).raw("<String> getArgumentNames(){").indent().newline();
+
+		compiler.write(List.class.getName()).raw("<String> result = new ").raw(ArrayList.class.getName()).raw("<>();")
+				.newline();
 
 		for (NodeExpressionNamedArgument arg : args.getArgs()) {
 			NodeExpressionNewVariableName variableName = arg.getName();
-
-			String name = variableName == null ? ((NodeExpressionNewVariableName) arg.getValue()).getName()
-					: variableName.getName();
-			compiler.write("argNames.add(").string(name).raw(");").newline();
+			compiler.write("result.add(").string(variableName.getName()).raw(");").newline();
 		}
 
+		compiler.write("return result;").newline();
 		compiler.outdent().write("}").newline();
 
 	}

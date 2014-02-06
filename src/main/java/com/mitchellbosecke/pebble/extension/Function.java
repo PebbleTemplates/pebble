@@ -10,9 +10,8 @@ package com.mitchellbosecke.pebble.extension;
 
 import java.util.Map;
 
-//@FunctionalInterface
-public interface SimpleFunction {
-	
+public interface Function extends NamedArguments {
+
 	public Object execute(Map<String, Object> args);
 
 }

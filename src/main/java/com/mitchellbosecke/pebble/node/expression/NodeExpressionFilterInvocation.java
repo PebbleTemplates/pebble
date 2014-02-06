@@ -32,7 +32,9 @@ public class NodeExpressionFilterInvocation extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		// should not be called
+		/*
+		 * The NodeExpressionBinaryFilter.class will handle compilation
+		 */
 		throw new RuntimeException("Compile method on FilterInvokation node is not supported");
 	}
 

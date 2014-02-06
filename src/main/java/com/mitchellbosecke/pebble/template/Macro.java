@@ -9,13 +9,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
+import java.util.Map;
 
-public interface Macro {
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.NamedArguments;
+
+public interface Macro extends NamedArguments {
 
 	public String getName();
-	
-	public void init();
 
-	public String call(Context context, Object[] argValues) throws PebbleException;
+	public String call(Context context, Map<String, Object> args) throws PebbleException;
 }
