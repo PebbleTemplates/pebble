@@ -50,6 +50,22 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("no", writer.toString());
 	}
 
+    @Test
+    public void testIfWithDirectProperty() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
+
+        String source = "{% if variable %}yes{% else %}no{% endif %}";
+        PebbleTemplate template = pebble.compile(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("variable", true);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("yes", writer.toString());
+    }
+
 	@Test
 	public void testFlush() throws PebbleException, IOException {
 		Loader loader = new StringLoader();

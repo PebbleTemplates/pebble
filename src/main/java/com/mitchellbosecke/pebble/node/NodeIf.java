@@ -40,7 +40,8 @@ public class NodeIf extends AbstractNode {
 				compiler.newline().write("if (");
 			}
 
-			compiler.subcompile(ifStatement.getLeft()).raw(") {").newline().indent().subcompile(ifStatement.getRight());
+			compiler.raw("(Boolean) ").subcompile(ifStatement.getLeft()).raw(") {").
+			        newline().indent().subcompile(ifStatement.getRight());
 
 		}
 
