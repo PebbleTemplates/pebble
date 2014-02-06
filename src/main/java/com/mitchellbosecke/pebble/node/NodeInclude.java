@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class NodeInclude extends AbstractNode implements DisplayableNode {
 
@@ -24,7 +25,8 @@ public class NodeInclude extends AbstractNode implements DisplayableNode {
 	public void compile(Compiler compiler) {
 
 		compiler.newline();
-		compiler.write("this.engine.compile(").subcompile(includeExpression).raw(").evaluate(writer);");
+		compiler.write("((").raw(PebbleTemplateImpl.class.getName()).raw(")this.engine.compile(")
+				.subcompile(includeExpression).raw(")).evaluate(writer, context);");
 
 		compiler.newline();
 	}

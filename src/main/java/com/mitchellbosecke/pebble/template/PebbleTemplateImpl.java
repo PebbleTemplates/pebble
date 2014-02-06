@@ -77,7 +77,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		evaluate(writer, context);
 	}
 
-	private void evaluate(Writer writer, Context context) throws PebbleException, IOException {
+	public void evaluate(Writer writer, Context context) throws PebbleException, IOException {
 		if (engine.getExecutorService() != null) {
 			writer = new FutureWriter(writer, engine.getExecutorService());
 		}

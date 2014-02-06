@@ -256,6 +256,22 @@ public class CoreTagsTest extends AbstractTest {
 	}
 	
 	/**
+	 * Issue #16
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testIncludePropagatesContext() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.includePropagatesContext.peb");
+		Writer writer = new StringWriter();
+		Map<String, Object> context = new HashMap<>();
+		context.put("name", "Mitchell");
+		template.evaluate(writer, context);
+		assertEquals("Mitchell", writer.toString());
+	}
+	
+	/**
 	 * Ensures that when including a template it is safe to 
 	 * have conflicting block names.
 	 * 
