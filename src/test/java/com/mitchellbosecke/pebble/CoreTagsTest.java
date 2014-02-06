@@ -188,7 +188,6 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("1", writer.toString());
 	}
 	
-	@Ignore
 	@Test(expected = PebbleException.class)
 	public void testDuplicateMacro() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macroDuplicate.peb");
