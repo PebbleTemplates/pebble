@@ -32,4 +32,16 @@ public class EscaperExtensionTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("&amp;&lt;&gt;&quot;&#x27;&#x2F;", writer.toString());
 	}
+	
+	@Test
+	public void testEscapeWithNamedArguments() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ '&<>\"\\'/' | escape(strategy='html') }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("&amp;&lt;&gt;&quot;&#x27;&#x2F;", writer.toString());
+	}
 }

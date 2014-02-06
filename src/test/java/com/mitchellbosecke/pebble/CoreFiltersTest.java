@@ -103,6 +103,24 @@ public class CoreFiltersTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("07/01/20122012-July-12012/July/1", writer.toString());
 	}
+	
+	@Test
+	public void testDateWithNamedArguments() throws ParseException, PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', format='yyyy/MMMM/d') }}";
+
+		PebbleTemplate template = pebble.compile(source);
+		Map<String, Object> context = new HashMap<>();
+		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
+		Date realDate = format.parse("2012-July-01");
+		context.put("stringDate", format.format(realDate));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("2012/July/1", writer.toString());
+	}
 
 	@Test
 	public void testDateWithNullInput() throws ParseException, PebbleException, IOException {
@@ -141,7 +159,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNumberFilterWithFormat() throws PebbleException, IOException {
+	public void testNumberFormatFilterWithFormat() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -153,9 +171,23 @@ public class CoreFiltersTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("You owe me $10,000.24.", writer.toString());
 	}
+	
+	@Test
+	public void testNumberFormatFilterWithNamedArgument() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("You owe me {{ 10000.235166 | numberformat(format=currencyFormat) }}.");
+		Map<String, Object> context = new HashMap<>();
+		context.put("currencyFormat", "$#,###,###,##0.00");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("You owe me $10,000.24.", writer.toString());
+	}
 
 	@Test
-	public void testNumberFilterWithNullInput() throws PebbleException, IOException {
+	public void testNumberFormatFilterWithNullInput() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -167,7 +199,7 @@ public class CoreFiltersTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNumberFilterWithLocale() throws PebbleException, IOException {
+	public void testNumberFormatFilterWithLocale() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -184,6 +216,18 @@ public class CoreFiltersTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		PebbleTemplate template = pebble.compile("{{ 'This is a test of the abbreviate filter' | abbreviate(16) }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("This is a tes...", writer.toString());
+	}
+	
+	@Test
+	public void testAbbreviateWithNamedArguments() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ 'This is a test of the abbreviate filter' | abbreviate(length=16) }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -275,6 +319,21 @@ public class CoreFiltersTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("ONE TWO THREE 4", writer.toString());
+	}
+	
+	@Test
+	public void testDefaultWithNamedArguments() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble
+				.compile("{{ obj|default(default='ONE') }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("obj", null);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("ONE", writer.toString());
 	}
 
 	public class User {

@@ -144,13 +144,13 @@ public class ExpressionParser {
 			// the right hand expression of the FILTER operator is handled in a
 			// unique way
 			if (NodeExpressionBinaryFilter.class.equals(operator.getNodeClass())) {
-				expressionRight = parseFilterInvokationExpression();
+				expressionRight = parseFilterInvocationExpression();
 			}
 			// the right hand expression of TEST operators is handled in a
 			// unique way
 			else if (NodeExpressionBinaryTestPositive.class.equals(operator.getNodeClass())
 					|| NodeExpressionBinaryTestNegative.class.equals(operator.getNodeClass())) {
-				expressionRight = parseTestInvokationExpression();
+				expressionRight = parseTestInvocationExpression();
 			} else {
 				/*
 				 * parse the expression on the right hand side of the operator
@@ -333,7 +333,7 @@ public class ExpressionParser {
 			} else if (current.test(Token.Type.PUNCTUATION, "(")) {
 
 				// function call
-				node = parseFunctionOrMacroInvokation(node);
+				node = parseFunctionOrMacroInvocation(node);
 
 			} else {
 				break;
@@ -342,7 +342,7 @@ public class ExpressionParser {
 		return node;
 	}
 
-	private NodeExpression parseFunctionOrMacroInvokation(NodeExpression node) throws ParserException {
+	private NodeExpression parseFunctionOrMacroInvocation(NodeExpression node) throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -363,7 +363,7 @@ public class ExpressionParser {
 		return new NodeExpressionFunctionOrMacroInvocation(lineNumber, functionName, args);
 	}
 
-	private NodeExpression parseFilterInvokationExpression() throws ParserException {
+	private NodeExpression parseFilterInvocationExpression() throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -375,14 +375,14 @@ public class ExpressionParser {
 		NodeExpressionNamedArguments args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 			args = this.parseNamedArguments();
-		}else{
+		} else {
 			args = new NodeExpressionNamedArguments(lineNumber, null);
 		}
 
 		return new NodeExpressionFilterInvocation(lineNumber, filterName, args);
 	}
 
-	private NodeExpression parseTestInvokationExpression() throws ParserException {
+	private NodeExpression parseTestInvocationExpression() throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
@@ -393,7 +393,7 @@ public class ExpressionParser {
 		NodeExpressionNamedArguments args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
 			args = this.parseNamedArguments();
-		}else{
+		} else {
 			args = new NodeExpressionNamedArguments(lineNumber, null);
 		}
 
@@ -427,6 +427,8 @@ public class ExpressionParser {
 		}
 		return node;
 	}
+	
+
 
 	public NodeExpressionNamedArguments parseNamedArguments() throws ParserException {
 		return parseNamedArguments(false);
@@ -447,18 +449,21 @@ public class ExpressionParser {
 			if (!vars.isEmpty()) {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
-
-			/*
-			 * A macro definition is the only place where arguments can not be
-			 * full fledged expressions. All other arguments will exist in
-			 * function or macro INVOKATIONS and can definitely contain full
-			 * expressions.
-			 */
-			if (isMacroDefinition) {
+			
+			if(isMacroDefinition){
 				argumentName = parseNewVariableName();
-			} else {
+				if (stream.current().test(Token.Type.PUNCTUATION, "=")) {
+					stream.expect(Token.Type.PUNCTUATION, "=");
+					argumentValue = parseExpression();
+				}
+			}else{
+				if (stream.peek().test(Token.Type.PUNCTUATION, "=")) {
+					argumentName = parseNewVariableName();
+					stream.expect(Token.Type.PUNCTUATION, "=");
+				}
 				argumentValue = parseExpression();
 			}
+			
 
 			NodeExpressionNamedArgument namedArgument = new NodeExpressionNamedArgument(argumentName, argumentValue);
 			vars.add(namedArgument);

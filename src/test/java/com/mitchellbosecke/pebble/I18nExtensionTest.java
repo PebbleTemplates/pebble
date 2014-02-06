@@ -35,6 +35,19 @@ public class I18nExtensionTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("Hello", writer.toString());
 	}
+	
+	@Test
+	public void testMessageWithNamedArguments() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.addExtension(new I18nExtension());
+
+		PebbleTemplate template = pebble.compile("{{ message(bundle='testMessages',key='greeting') }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("Hello", writer.toString());
+	}
 
 	@Test
 	public void testLookupWithLocale() throws PebbleException, IOException {
