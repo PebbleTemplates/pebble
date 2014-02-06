@@ -252,7 +252,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return filter.apply(input, namedArguments);
 	}
 
-	protected boolean applyTest(String testName, Object input, ArgumentMap args) {
+	protected boolean applyTest(String testName, Object input, ArgumentMap args) throws PebbleException {
 		Map<String, Test> tests = engine.getTests();
 		Test test = tests.get(testName);
 
@@ -260,9 +260,10 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return test.apply(input, namedArguments);
 	}
 
-	private Map<String, Object> getNamedArguments(NamedArguments invokableWithNamedArguments, ArgumentMap arguments) {
+	private Map<String, Object> getNamedArguments(NamedArguments invokableWithNamedArguments, ArgumentMap arguments) throws PebbleException {
 		Map<String, Object> namedArguments = new HashMap<>();
 		List<String> argumentNames = invokableWithNamedArguments.getArgumentNames();
+		
 		if (argumentNames == null) {
 			if (arguments.getPositionalArguments().isEmpty()) {
 				return namedArguments;
@@ -281,7 +282,13 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 				namedArguments.put(nameIterator.next(), value);
 			}
 
-			namedArguments.putAll(arguments.getNamedArguments());
+			for(Map.Entry<String, Object> arg : arguments.getNamedArguments().entrySet()){
+				// check if user used an incorrect name
+				if(!argumentNames.contains(arg.getKey())){
+					throw new PebbleException(null, "The following named argument does not exist: " + arg.getKey());
+				}
+				namedArguments.put(arg.getKey(), arg.getValue());
+			}
 		}
 
 		return namedArguments;
