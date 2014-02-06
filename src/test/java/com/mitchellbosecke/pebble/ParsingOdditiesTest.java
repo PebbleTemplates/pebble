@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.mitchellbosecke.pebble.error.CompilationException;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
@@ -46,6 +47,24 @@ public class ParsingOdditiesTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{{ stringDate | date('yyyy/MMMM/d', existingFormat='yyyy-MMMM-d') }}";
+
+		PebbleTemplate template = pebble.compile(source);
+		Map<String, Object> context = new HashMap<>();
+		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
+		Date realDate = format.parse("2012-July-01");
+		context.put("stringDate", format.format(realDate));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("2012/July/1", writer.toString());
+	}
+	
+	@Test(expected = CompilationException.class)
+	public void testPositionalArgumentAfterNamedArguments() throws PebbleException, IOException, ParseException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
 		PebbleTemplate template = pebble.compile(source);
 		Map<String, Object> context = new HashMap<>();

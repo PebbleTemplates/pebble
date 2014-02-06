@@ -427,8 +427,6 @@ public class ExpressionParser {
 		}
 		return node;
 	}
-	
-
 
 	public NodeExpressionNamedArguments parseNamedArguments() throws ParserException {
 		return parseNamedArguments(false);
@@ -442,28 +440,28 @@ public class ExpressionParser {
 
 		stream.expect(Token.Type.PUNCTUATION, "(");
 
-		NodeExpressionNewVariableName argumentName = null;
-		NodeExpression argumentValue = null;
 		while (!stream.current().test(Token.Type.PUNCTUATION, ")")) {
+
+			NodeExpressionNewVariableName argumentName = null;
+			NodeExpression argumentValue = null;
 
 			if (!vars.isEmpty()) {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
-			
-			if(isMacroDefinition){
+
+			if (isMacroDefinition) {
 				argumentName = parseNewVariableName();
 				if (stream.current().test(Token.Type.PUNCTUATION, "=")) {
 					stream.expect(Token.Type.PUNCTUATION, "=");
 					argumentValue = parseExpression();
 				}
-			}else{
+			} else {
 				if (stream.peek().test(Token.Type.PUNCTUATION, "=")) {
 					argumentName = parseNewVariableName();
 					stream.expect(Token.Type.PUNCTUATION, "=");
 				}
 				argumentValue = parseExpression();
 			}
-			
 
 			NodeExpressionNamedArgument namedArgument = new NodeExpressionNamedArgument(argumentName, argumentValue);
 			vars.add(namedArgument);
