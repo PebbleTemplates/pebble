@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
-public class DefaultLoader implements Loader {
+public class FileLoader implements Loader {
 
-	private static final Logger logger = LoggerFactory.getLogger(DefaultLoader.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
 	private String prefix;
 
@@ -53,16 +53,6 @@ public class DefaultLoader implements Loader {
 
 		String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
 		logger.debug("Looking for template in {}.", location);
-
-		// try ContextClassLoader
-		ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-		is = ccl.getResourceAsStream(location);
-
-		// try ResourceLoader's class loader
-		ClassLoader rcl = DefaultLoader.class.getClassLoader();
-		if (is == null) {
-			is = rcl.getResourceAsStream(location);
-		}
 
 		/*
 		 * if template name contains path segments, move those segments into the

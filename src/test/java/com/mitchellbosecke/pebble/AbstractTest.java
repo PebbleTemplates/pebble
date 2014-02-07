@@ -9,7 +9,6 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.DefaultLoader;
 import com.mitchellbosecke.pebble.parser.Parser;
 
 public abstract class AbstractTest {
@@ -22,12 +21,10 @@ public abstract class AbstractTest {
 
 	public AbstractTest() {
 
-		Loader templateLoader = new DefaultLoader();
-		templateLoader.setPrefix("templates");
-		
 		// main testing engine uses all default settings
-		pebble = new PebbleEngine(templateLoader);
-		
+		pebble = new PebbleEngine();
+		pebble.getLoader().setPrefix("templates");
+
 		loader = pebble.getLoader();
 		lexer = pebble.getLexer();
 		parser = pebble.getParser();

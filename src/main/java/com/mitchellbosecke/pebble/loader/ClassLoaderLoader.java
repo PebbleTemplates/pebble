@@ -1,0 +1,99 @@
+/*******************************************************************************
+ * This file is part of Pebble.
+ * 
+ * Original work Copyright (c) 2009-2013 by the Twig Team
+ * Modified work Copyright (c) 2013 by Mitchell Bösecke
+ * 
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ ******************************************************************************/
+package com.mitchellbosecke.pebble.loader;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mitchellbosecke.pebble.error.LoaderException;
+
+public class ClassLoaderLoader implements Loader {
+
+	private static final Logger logger = LoggerFactory.getLogger(ClassLoaderLoader.class);
+
+	private String prefix;
+
+	private String suffix;
+
+	private String charset = "UTF-8";
+
+	@Override
+	public Reader getReader(String templateName) throws LoaderException {
+
+		InputStreamReader isr = null;
+		Reader reader = null;
+
+		InputStream is = null;
+
+		StringBuilder path = new StringBuilder("");
+		if (getPrefix() != null) {
+
+			path.append(getPrefix());
+
+			if (!getPrefix().endsWith(String.valueOf(File.separatorChar))) {
+				path.append(File.separatorChar);
+			}
+		}
+
+		String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
+		logger.debug("Looking for template in {}.", location);
+
+		ClassLoader rcl = ClassLoaderLoader.class.getClassLoader();
+		if (is == null) {
+			is = rcl.getResourceAsStream(location);
+		}
+
+		if (is == null) {
+			throw new LoaderException(null, "Could not find template \"" + location + "\"");
+		}
+
+		try {
+			isr = new InputStreamReader(is, charset);
+			reader = new BufferedReader(isr);
+		} catch (UnsupportedEncodingException e) {
+		}
+
+		return reader;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	@Override
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	@Override
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	@Override
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
+}

@@ -14,7 +14,9 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -37,7 +39,9 @@ import com.mitchellbosecke.pebble.extension.i18n.I18nExtension;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.loader.DefaultLoader;
+import com.mitchellbosecke.pebble.loader.ClassLoaderLoader;
+import com.mitchellbosecke.pebble.loader.DelegatingLoader;
+import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
@@ -106,7 +110,7 @@ public class PebbleEngine {
 	private final Semaphore compilationMutex = new Semaphore(1);
 
 	public PebbleEngine() {
-		this(new DefaultLoader());
+		this(null);
 	}
 
 	/**
@@ -116,6 +120,15 @@ public class PebbleEngine {
 	 *            The template loader for this engine
 	 */
 	public PebbleEngine(Loader loader) {
+
+		// set up a default loader if necessary
+		if (loader == null) {
+			List<Loader> defaultLoadingStrategies = new ArrayList<>();
+			defaultLoadingStrategies.add(new ClassLoaderLoader());
+			defaultLoadingStrategies.add(new FileLoader());
+			loader = new DelegatingLoader(defaultLoadingStrategies);
+		}
+
 		this.loader = loader;
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
