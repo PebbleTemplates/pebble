@@ -77,6 +77,44 @@ public class ParsingOdditiesTest extends AbstractTest {
 		assertEquals("2012/July/1", writer.toString());
 	}
 	
+	@Test
+	public void testVariableNamePrefixedWithOperatorName() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("organization", "organization");
+		context.put("nothing", "nothing");
+		context.put("andy", "andy");
+		context.put("equalsy", "equalsy");
+		context.put("istanbul", "istanbul");
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("organization nothing andy equalsy istanbul", writer.toString());
+	}
+	
+	@Test
+	public void testAttributeNamePrefixedWithOperatorName() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ foo.org }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("foo", new Foo("success"));
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("success", writer.toString());
+	}
+	
+	public static class Foo {
+		public String org;
+		
+		public Foo(String org){
+			this.org = org;
+		}
+	}
+	
 	@Test(expected=PebbleException.class)
 	public void testIncorrectlyNamedArgument() throws PebbleException, IOException {
 		Loader loader = new StringLoader();

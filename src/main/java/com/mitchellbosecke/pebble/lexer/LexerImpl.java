@@ -88,6 +88,9 @@ public class LexerImpl implements Lexer {
 	 */
 	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
 	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
+
+	// the negative lookbehind assertion is used to ignore escaped quotation
+	// marks
 	private static final Pattern REGEX_STRING = Pattern.compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))",
 			Pattern.DOTALL);
 	private static final String PUNCTUATION = "()[]{}?:.,|=";
@@ -588,6 +591,13 @@ public class LexerImpl implements Lexer {
 				regex.append("|");
 			}
 			regex.append(Pattern.quote(operator));
+
+			/*
+			 * negative lookahead assertion to make sure the next character is
+			 * NOT an alpha character. This ensures user can type "organization"
+			 * without the "or" being parsed as an operator.
+			 */
+			regex.append("(?![a-zA-Z])");
 		}
 
 		return Pattern.compile(regex.toString());
