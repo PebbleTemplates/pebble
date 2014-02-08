@@ -1,3 +1,4 @@
+{# used by CoreFunctionsTest.testParentFunction #}
 {% extends "function/template.parent.peb" %}
 child text
 {% block head %}

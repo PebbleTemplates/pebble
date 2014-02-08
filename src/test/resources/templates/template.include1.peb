@@ -1,3 +1,4 @@
+{# used by CoreTagsTest.testInclude #}
 {% include "template.include2.peb" %}
 TEMPLATE1
 {% include "template.include2.peb" %}

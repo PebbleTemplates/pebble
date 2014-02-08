@@ -1,1 +1,2 @@
+{# used by CoreTagsTest.testIncludePropagatesContext #}
 {{ name }}

@@ -1,2 +1,3 @@
+{# used by CoreFunctionsTest.testParentThenMacro #}
 {% block head %}{{ returnItem('test') }}{% endblock head %}
 {% macro returnItem(item) %}{{ item }}{% endmacro %}

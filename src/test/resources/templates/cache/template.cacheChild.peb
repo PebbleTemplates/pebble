@@ -1,2 +1,3 @@
+{# used by CacheTest.ensureChildTemplateNotCached #}
 {% extends 'templates/cache/template.cacheParent.peb' %}
 {% block title %}child{% endblock %}

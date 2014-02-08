@@ -1,1 +1,2 @@
+{# used by CacheTest.ensureChildTemplateNotCached #}
 {% block title %}parent{% endblock %}

@@ -1,3 +1,4 @@
+{# used by CoreTagsTest.testDuplicateMacro #}
 {{ repeat(1) }}
 
 {% macro repeat(input) %}
