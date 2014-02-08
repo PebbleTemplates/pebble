@@ -27,7 +27,7 @@ public class CompilerTest extends AbstractTest {
 	public void testCompile() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		
+
 		PebbleTemplate template = pebble.compile("hello {{ test }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("test", "TEST");
@@ -36,12 +36,33 @@ public class CompilerTest extends AbstractTest {
 		assertEquals(writer.toString(), "hello TEST");
 	}
 
+	/**
+	 * There was an issue where one failed template would prevent future
+	 * templates from being compiled.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test(timeout = 3000)
+	public void testCompilationMutexIsAlwaysReleased() throws PebbleException, IOException {
+
+		try {
+			pebble.compile("non-existing");
+		} catch (Exception e) {
+
+		}
+		PebbleTemplate template = pebble.compile("template.general.peb");
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("test", writer.toString());
+	}
+
 	@Test
 	public void testEscapeCharactersText() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.escapeCharactersInText.peb");
 		Map<String, Object> context = new HashMap<>();
 		Writer writer = new StringWriter();
-		template.evaluate(writer,context);
+		template.evaluate(writer, context);
 	}
 
 }
