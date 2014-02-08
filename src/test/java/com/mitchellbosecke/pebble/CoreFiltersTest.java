@@ -263,11 +263,11 @@ public class CoreFiltersTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ ' this should be capitalized.' | capitalize }}");
+		PebbleTemplate template = pebble.compile("{{ ' \nthis should be capitalized.' | capitalize }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
-		assertEquals(" This should be capitalized.", writer.toString());
+		assertEquals(" \nThis should be capitalized.", writer.toString());
 	}
 
 	@Test
@@ -304,6 +304,18 @@ public class CoreFiltersTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals(" Test Test Test TEST TEST", writer.toString());
+	}
+	
+	@Test
+	public void testTitleWithLeadingWhitespace() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ ' \ntest' | title }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals(" \nTest", writer.toString());
 	}
 
 	@Test

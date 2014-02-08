@@ -28,7 +28,7 @@ public class TitleFilter implements Filter {
 		boolean capitalizeNextCharacter = true;
 
 		for (char c : value.toCharArray()) {
-			if (Character.isSpaceChar(c)) {
+			if (Character.isWhitespace(c)) {
 				capitalizeNextCharacter = true;
 			} else if (capitalizeNextCharacter) {
 				c = Character.toTitleCase(c);
