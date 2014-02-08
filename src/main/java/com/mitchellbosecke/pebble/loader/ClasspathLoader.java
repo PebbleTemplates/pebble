@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
-public class ClassLoaderLoader implements Loader {
+public class ClasspathLoader implements Loader {
 
-	private static final Logger logger = LoggerFactory.getLogger(ClassLoaderLoader.class);
+	private static final Logger logger = LoggerFactory.getLogger(ClasspathLoader.class);
 
 	private String prefix;
 
@@ -52,7 +52,7 @@ public class ClassLoaderLoader implements Loader {
 		String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
 		logger.debug("Looking for template in {}.", location);
 
-		ClassLoader rcl = ClassLoaderLoader.class.getClassLoader();
+		ClassLoader rcl = ClasspathLoader.class.getClassLoader();
 		if (is == null) {
 			is = rcl.getResourceAsStream(location);
 		}

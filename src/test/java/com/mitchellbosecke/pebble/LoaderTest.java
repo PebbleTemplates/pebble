@@ -10,7 +10,7 @@ import java.net.URL;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.ClassLoaderLoader;
+import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -19,7 +19,7 @@ public class LoaderTest extends AbstractTest {
 
 	@Test
 	public void testClassLoaderLoader() throws PebbleException, IOException {
-		Loader loader = new ClassLoaderLoader();
+		Loader loader = new ClasspathLoader();
 		loader.setPrefix("templates");
 		PebbleEngine engine = new PebbleEngine(loader);
 		PebbleTemplate template1 = engine.compile("template.loaderTest.peb");
@@ -31,7 +31,7 @@ public class LoaderTest extends AbstractTest {
 
 	@Test
 	public void testClassLoaderLoaderWithNestedTemplate() throws PebbleException, IOException {
-		Loader loader = new ClassLoaderLoader();
+		Loader loader = new ClasspathLoader();
 		loader.setPrefix("templates");
 		PebbleEngine engine = new PebbleEngine(loader);
 		PebbleTemplate template1 = engine.compile("loader/template.loaderTest.peb");

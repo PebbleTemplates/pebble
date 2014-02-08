@@ -40,7 +40,7 @@ import com.mitchellbosecke.pebble.extension.i18n.I18nExtension;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.loader.ClassLoaderLoader;
+import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
@@ -125,7 +125,7 @@ public class PebbleEngine {
 		// set up a default loader if necessary
 		if (loader == null) {
 			List<Loader> defaultLoadingStrategies = new ArrayList<>();
-			defaultLoadingStrategies.add(new ClassLoaderLoader());
+			defaultLoadingStrategies.add(new ClasspathLoader());
 			defaultLoadingStrategies.add(new FileLoader());
 			loader = new DelegatingLoader(defaultLoadingStrategies);
 		}
