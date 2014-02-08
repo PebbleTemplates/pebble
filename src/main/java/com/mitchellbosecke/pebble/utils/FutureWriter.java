@@ -2,6 +2,7 @@ package com.mitchellbosecke.pebble.utils;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
@@ -40,15 +41,23 @@ public class FutureWriter extends Writer {
 
 	@Override
 	public void write(final char[] cbuf, final int off, final int len) throws IOException {
+
+		/*
+		 * We need to make a copy of the character buffer because the Writer
+		 * class will continue to reuse it in other threads which might
+		 * overwrite the contents.
+		 */
+		final char[] finalCharacterBuffer = Arrays.copyOf(cbuf, len);
+
 		if (orderedFutures.isEmpty()) {
-			internalWriter.write(cbuf, off, len);
+			internalWriter.write(finalCharacterBuffer, off, len);
 		} else {
 			Future<String> future = es.submit(new Callable<String>() {
 
 				@Override
 				public String call() throws Exception {
 					char[] chars = new char[len];
-					System.arraycopy(cbuf, off, chars, 0, len);
+					System.arraycopy(finalCharacterBuffer, off, chars, 0, len);
 					return new String(chars);
 				}
 

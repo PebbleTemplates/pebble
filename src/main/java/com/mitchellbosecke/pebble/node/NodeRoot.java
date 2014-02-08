@@ -30,8 +30,8 @@ public class NodeRoot extends AbstractNode {
 
 	private final Map<String, NodeMacro> macros;
 
-	public NodeRoot(NodeBody body, String parentFileName, Map<String, NodeBlock> blocks,
-			Map<String, NodeMacro> macros, String filename) {
+	public NodeRoot(NodeBody body, String parentFileName, Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros,
+			String filename) {
 		super(0);
 		this.body = body;
 		this.parentFileName = parentFileName;
@@ -47,7 +47,7 @@ public class NodeRoot extends AbstractNode {
 	@Override
 	public void compile(Compiler compiler) {
 		String className = compiler.getEngine().getTemplateClassName(filename);
-		
+
 		compileMetaInformationInComments(compiler);
 		compileClassHeader(compiler, className);
 		compileConstructor(compiler, className);
@@ -56,12 +56,13 @@ public class NodeRoot extends AbstractNode {
 		compileMacros(compiler);
 		compileClassFooter(compiler);
 	}
-	
-	private void compileMetaInformationInComments(Compiler compiler){
+
+	private void compileMetaInformationInComments(Compiler compiler) {
 		compiler.write("/*").newline();
 		compiler.write(" * Filename: ").raw(filename).newline();
 		compiler.write(" * Parent filename: ").raw(parentFileName).newline();
-		compiler.write(" * Compiled on: ").raw(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())).newline();
+		compiler.write(" * Compiled on: ").raw(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()))
+				.newline();
 		compiler.write(" */").newline();
 	}
 
@@ -76,7 +77,8 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileConstructor(Compiler compiler, String className) {
 		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, ")
-				.raw(PebbleEngine.class.getName()).raw(" engine, ").raw(PebbleTemplateImpl.class.getName()).raw(" parent) {").newline();
+				.raw(PebbleEngine.class.getName()).raw(" engine, ").raw(PebbleTemplateImpl.class.getName())
+				.raw(" parent) {").newline();
 
 		compiler.indent().write("super(javaCode, engine, parent);").newline();
 
@@ -84,8 +86,8 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {
-		compiler.newline(2)
-				.write("public void buildContent(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
+		compiler.write(
+				"public void buildContent(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.newline().indent();
 		if (this.parentFileName != null) {
 			compiler.write("context.pushInheritanceChain(this);").newline();
@@ -94,29 +96,27 @@ public class NodeRoot extends AbstractNode {
 			body.compile(compiler);
 		}
 
-		compiler.outdent().newline().write("}");
-	}
-
-	private void compileClassFooter(Compiler compiler) {
-		compiler.outdent().newline(2).write("}");
+		compiler.outdent().write("}").newline(2);
 	}
 
 	private void compileBlocks(Compiler compiler) {
-		compiler.newline(2).write("public void initBlocks() {").newline().indent();
+		compiler.write("public void initBlocks() {").newline().indent();
 		for (NodeBlock block : blocks.values()) {
-			compiler.newline().subcompile(block);
+			compiler.subcompile(block).newline();
 		}
-		compiler.outdent().newline().write("}");
+		compiler.outdent().newline().write("}").newline(2);
 	}
 
 	private void compileMacros(Compiler compiler) {
-		compiler.newline(2).write("public void initMacros() {").newline().indent();
-
+		compiler.write("public void initMacros() {").newline().indent();
 		for (NodeMacro macro : macros.values()) {
-			compiler.newline(2).subcompile(macro);
+			compiler.subcompile(macro).newline();
 		}
-		
-		compiler.outdent().newline().write("}");
+		compiler.outdent().newline().write("}").newline(2);
+	}
+
+	private void compileClassFooter(Compiler compiler) {
+		compiler.outdent().write("}");
 	}
 
 	public boolean hasParent() {

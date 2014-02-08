@@ -1,3 +1,13 @@
+## v0.2.0-beta (2014-02-08)
+- Implemented named arguments.
+- Added dependency on google guava for template cache.
+- Split the default loader class into multiple discrete loaders.
+- Added the `title` filter.
+- Fixed issue where compilation mutex might not have been released.
+- Fixed parsing issues if variable names were prefixed with operator names.
+- Fixed issue where included templates didn't have access to context.
+- Fixed issue where `if` tag could not be used directly on a boolean variable.
+
 ## v0.1.5-beta (2014-01-27)
 - Fixed major bug from v0.1.4 that prevented macros from being invoked more than once
 

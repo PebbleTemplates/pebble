@@ -50,21 +50,21 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("no", writer.toString());
 	}
 
-    @Test
-    public void testIfWithDirectProperty() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+	@Test
+	public void testIfWithDirectProperty() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
 
-        String source = "{% if variable %}yes{% else %}no{% endif %}";
-        PebbleTemplate template = pebble.compile(source);
-        Map<String, Object> context = new HashMap<>();
-        context.put("variable", true);
+		String source = "{% if variable %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.compile(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("variable", true);
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("yes", writer.toString());
-    }
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
 
 	@Test
 	public void testFlush() throws PebbleException, IOException {
@@ -99,7 +99,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("[2]0Alex1Bob", writer.toString());
 	}
-	
+
 	/**
 	 * Issue #15
 	 * 
@@ -125,8 +125,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("AlexBob", writer.toString());
 	}
-	
-	
+
 	@Test
 	public void testForWithNullIterable() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -134,7 +133,7 @@ public class CoreTagsTest extends AbstractTest {
 
 		String source = "{% for user in users %}{{ loop.index }}{% endfor %}";
 		PebbleTemplate template = pebble.compile(source);
-		
+
 		Map<String, Object> context = new HashMap<>();
 		context.put("users", null);
 
@@ -190,21 +189,22 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
 	}
-	
-	@Test(expected=ParserException.class)
+
+	@Test(expected = ParserException.class)
 	public void testMacrosWithSameName() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		PebbleTemplate template = pebble.compile("{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}");
+		PebbleTemplate template = pebble
+				.compile("{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
 	}
-	
+
 	/**
-	 * There was an issue where the second invokation of a macro
-	 * did not have access to the original arguments any more.
+	 * There was an issue where the second invokation of a macro did not have
+	 * access to the original arguments any more.
 	 * 
 	 * @throws PebbleException
 	 * @throws IOException
@@ -217,18 +217,19 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("onetwo", writer.toString());
 	}
-	
+
 	@Test
 	public void testMacroInvokationWithoutAllArguments() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		PebbleTemplate template = pebble.compile("{{ test('1') }}{% macro test(one,two) %}{{ one }}{{ two }}{% endmacro %}");
+		PebbleTemplate template = pebble
+				.compile("{{ test('1') }}{% macro test(one,two) %}{{ one }}{{ two }}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("1", writer.toString());
 	}
-	
+
 	@Test(expected = PebbleException.class)
 	public void testDuplicateMacro() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macroDuplicate.peb");
@@ -270,7 +271,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", writer.toString());
 	}
-	
+
 	/**
 	 * Issue #16
 	 * 
@@ -286,10 +287,10 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("Mitchell", writer.toString());
 	}
-	
+
 	/**
-	 * Ensures that when including a template it is safe to 
-	 * have conflicting block names.
+	 * Ensures that when including a template it is safe to have conflicting
+	 * block names.
 	 * 
 	 * @throws PebbleException
 	 * @throws IOException
@@ -318,13 +319,12 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("alex", writer.toString());
 	}
 
-	@Test(timeout = 4000)
+	@Test(timeout = 3000)
 	public void testParallel() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setExecutorService(Executors.newCachedThreadPool());
-
-		String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end";
+		String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end {% parallel %}{{ slowObject.third }}{% endparallel %}";
 		PebbleTemplate template = pebble.compile(source);
 
 		Writer writer = new StringWriter();
@@ -332,13 +332,14 @@ public class CoreTagsTest extends AbstractTest {
 		context.put("slowObject", new SlowObject());
 		template.evaluate(writer, context);
 
-		assertEquals("beginning first middle second end", writer.toString());
+		assertEquals("beginning first middle second end third", writer.toString());
+
 	}
 
 	public class SlowObject {
 		public String first() {
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -355,6 +356,16 @@ public class CoreTagsTest extends AbstractTest {
 			}
 			return "second";
 		}
+
+		public String third() {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "third";
+		}
 	}
 
 	public class User {
@@ -368,7 +379,7 @@ public class CoreTagsTest extends AbstractTest {
 			return username;
 		}
 	}
-	
+
 	public class Classroom {
 		private List<User> users = new ArrayList<>();
 
