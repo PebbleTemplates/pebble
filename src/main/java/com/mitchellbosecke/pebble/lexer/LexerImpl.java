@@ -593,11 +593,14 @@ public class LexerImpl implements Lexer {
 			regex.append(Pattern.quote(operator));
 
 			/*
-			 * negative lookahead assertion to make sure the next character is
-			 * NOT an alpha character. This ensures user can type "organization"
-			 * without the "or" being parsed as an operator.
+			 * If the operator ends in an alpha character we use a negative
+			 * lookahead assertion to make sure the next character in the stream
+			 * is NOT an alpha character. This ensures user can type
+			 * "organization" without the "or" being parsed as an operator.
 			 */
-			regex.append("(?![a-zA-Z])");
+			if (Character.isAlphabetic(operator.charAt(operator.length() - 1))) {
+				regex.append("(?![a-zA-Z])");
+			}
 		}
 
 		return Pattern.compile(regex.toString());

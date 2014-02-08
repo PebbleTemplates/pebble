@@ -1,5 +1,6 @@
 package com.mitchellbosecke.pebble.extension.core;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -19,16 +20,27 @@ public class CapitalizeFilter implements Filter {
 		}
 		String value = (String) input;
 
-		if (value == null || (value.length() == 0)) {
+		if (value.length() == 0) {
 			return value;
+		}
+		
+		StringBuilder result = new StringBuilder();
+		
+		
+		char[] chars = value.toCharArray();
+		for(int i = 0; i < chars.length; i++){
+			char c = chars[i];
+			
+			if(Character.isWhitespace(c)){
+				result.append(c);
+			}else{
+				result.append(Character.toTitleCase(c));
+				result.append(Arrays.copyOfRange(chars, i + 1, chars.length));
+				break;
+			}
 		}
 
-		char firstCharacter = value.charAt(0);
-		if (Character.isTitleCase(firstCharacter)) {
-			return value;
-		}
-		return new StringBuilder(value.length()).append(Character.toTitleCase(firstCharacter))
-				.append(value.substring(1)).toString();
+		return result.toString();
 	}
 
 }

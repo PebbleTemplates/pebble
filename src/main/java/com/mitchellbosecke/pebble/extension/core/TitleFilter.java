@@ -19,7 +19,7 @@ public class TitleFilter implements Filter {
 		}
 		String value = (String) input;
 
-		if (value == null || (value.length() == 0)) {
+		if (value.length() == 0) {
 			return value;
 		}
 

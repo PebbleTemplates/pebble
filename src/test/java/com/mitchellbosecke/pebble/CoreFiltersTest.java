@@ -257,6 +257,18 @@ public class CoreFiltersTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("This should be capitalized.", writer.toString());
 	}
+	
+	@Test
+	public void testCapitalizeWithLeadingWhitespace() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ ' this should be capitalized.' | capitalize }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals(" This should be capitalized.", writer.toString());
+	}
 
 	@Test
 	public void testCapitalizeWithNullInput() throws PebbleException, IOException {
