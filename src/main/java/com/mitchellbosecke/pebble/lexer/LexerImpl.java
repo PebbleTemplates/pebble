@@ -24,7 +24,6 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.utils.Pair;
 import com.mitchellbosecke.pebble.utils.StringLengthComparator;
-import com.mitchellbosecke.pebble.utils.StringUtils;
 
 public class LexerImpl implements Lexer {
 
@@ -387,8 +386,8 @@ public class LexerImpl implements Lexer {
 		}
 
 		// we should have found something and returned by this point
-		throw new ParserException(null, String.format("Unexpected character \"%s\"", source.charAt(cursor)), lineNumber,
-				filename);
+		throw new ParserException(null, String.format("Unexpected character \"%s\"", source.charAt(cursor)),
+				lineNumber, filename);
 
 	}
 
@@ -415,7 +414,7 @@ public class LexerImpl implements Lexer {
 	 */
 	private void pushToken(Token.Type type, String value) {
 		// ignore empty text tokens
-		if (type.equals(Token.Type.TEXT) && StringUtils.isEmpty(value)) {
+		if (type.equals(Token.Type.TEXT) && (value == null || "".equals(value))) {
 			return;
 		}
 		this.tokens.add(new Token(type, value, this.lineNumber));

@@ -281,6 +281,18 @@ public class CoreFiltersTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("", writer.toString());
 	}
+	
+	@Test
+	public void testTitle() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		PebbleTemplate template = pebble.compile("{{ null | title }} {{ 'test' | title }} {{ 'test test' | title }} {{ 'TEST TEST' | title }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals(" Test Test Test TEST TEST", writer.toString());
+	}
 
 	@Test
 	public void testTrim() throws PebbleException, IOException {

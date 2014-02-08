@@ -123,26 +123,27 @@ public class CoreExtension extends AbstractExtension {
 	@Override
 	public Map<String, Filter> getFilters() {
 		Map<String, Filter> filters = new HashMap<>();
-		filters.put("lower", new LowerFilter());
-		filters.put("upper", new UpperFilter());
-		filters.put("date", new DateFilter());
-		filters.put("urlencode", new UrlEncoderFilter());
-		filters.put("numberformat", new NumberFormatFilter());
 		filters.put("abbreviate", new AbbreviateFilter());
 		filters.put("capitalize", new CapitalizeFilter());
-		filters.put("trim", new TrimFilter());
+		filters.put("date", new DateFilter());
 		filters.put("default", new DefaultFilter());
+		filters.put("lower", new LowerFilter());
+		filters.put("numberformat", new NumberFormatFilter());
+		filters.put("title", new TitleFilter());
+		filters.put("trim", new TrimFilter());
+		filters.put("upper", new UpperFilter());
+		filters.put("urlencode", new UrlEncoderFilter());
 		return filters;
 	}
 
 	@Override
 	public Map<String, Test> getTests() {
 		Map<String, Test> tests = new HashMap<>();
-		tests.put("even", new EvenTest());
-		tests.put("odd", new OddTest());
-		tests.put("null", new NullTest());
 		tests.put("empty", new EmptyTest());
+		tests.put("even", new EvenTest());
 		tests.put("iterable", new IterableTest());
+		tests.put("null", new NullTest());
+		tests.put("odd", new OddTest());
 		return tests;
 	}
 
@@ -156,8 +157,8 @@ public class CoreExtension extends AbstractExtension {
 		 * includes the block and parent functions.
 		 */
 
-		functions.put("min", new MinFunction());
 		functions.put("max", new MaxFunction());
+		functions.put("min", new MinFunction());
 		return functions;
 	}
 

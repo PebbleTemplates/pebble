@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
 
-public class CapitalizeFilter implements Filter {
+public class TitleFilter implements Filter {
 
 	@Override
 	public List<String> getArgumentNames() {
@@ -23,12 +23,21 @@ public class CapitalizeFilter implements Filter {
 			return value;
 		}
 
-		char firstCharacter = value.charAt(0);
-		if (Character.isTitleCase(firstCharacter)) {
-			return value;
+		StringBuilder result = new StringBuilder();
+
+		boolean capitalizeNextCharacter = true;
+
+		for (char c : value.toCharArray()) {
+			if (Character.isSpaceChar(c)) {
+				capitalizeNextCharacter = true;
+			} else if (capitalizeNextCharacter) {
+				c = Character.toTitleCase(c);
+				capitalizeNextCharacter = false;
+			}
+			result.append(c);
 		}
-		return new StringBuilder(value.length()).append(Character.toTitleCase(firstCharacter))
-				.append(value.substring(1)).toString();
+
+		return result.toString();
 	}
 
 }

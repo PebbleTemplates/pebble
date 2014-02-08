@@ -3,7 +3,7 @@ package com.mitchellbosecke.pebble.utils;
 import java.util.Iterator;
 
 /**
- * Convencience class, particularily used by the NodeFor class.
+ * Convenience class, particularily used by the NodeFor class.
  * 
  * @author Mitchell
  * 

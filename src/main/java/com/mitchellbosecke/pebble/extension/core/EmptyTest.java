@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Test;
-import com.mitchellbosecke.pebble.utils.StringUtils;
 
-public class EmptyTest implements Test{
-	
+public class EmptyTest implements Test {
+
 	@Override
 	public List<String> getArgumentNames() {
 		return null;
@@ -19,7 +18,8 @@ public class EmptyTest implements Test{
 		boolean isEmpty = input == null;
 
 		if (!isEmpty && input instanceof String) {
-			isEmpty = StringUtils.isBlank(((String) input));
+			String value = (String) input;
+			isEmpty = "".equals(value.trim());
 		}
 
 		if (!isEmpty && input instanceof Collection) {

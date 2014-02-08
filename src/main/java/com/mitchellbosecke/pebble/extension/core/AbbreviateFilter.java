@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.utils.StringUtils;
 
 public class AbbreviateFilter implements Filter{
 
@@ -21,10 +20,19 @@ public class AbbreviateFilter implements Filter{
 		if (input == null) {
 			return null;
 		}
-		String str = (String) input;
+		String value = (String) input;
 		int maxWidth = (Integer) args.get("length");
 
-		return StringUtils.abbreviate(str, maxWidth);
+		String ellipsis = "...";
+		int length = value.length();
+
+		if (length < maxWidth) {
+			return value;
+		}
+		if (length <= 3) {
+			return value;
+		}
+		return value.substring(0, maxWidth - 3) + ellipsis;
 	}
 
 }
