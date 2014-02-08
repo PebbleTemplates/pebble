@@ -9,7 +9,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.ClassAttributeCacheEntry;
-import com.mitchellbosecke.pebble.template.Context;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
@@ -21,7 +21,7 @@ import com.mitchellbosecke.pebble.template.Context;
  */
 public class ReflectionUtils {
 
-	public static Object getAttribute(Context context, Object object, String attributeName) throws PebbleException {
+	public static Object getAttribute(EvaluationContext context, Object object, String attributeName) throws PebbleException {
 		if (object == null) {
 			throw new NullPointerException(String.format("Can not get attribute [%s] of null object.", attributeName));
 		}

@@ -15,7 +15,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.template.Context;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class NodeRoot extends AbstractNode {
@@ -71,7 +71,7 @@ public class NodeRoot extends AbstractNode {
 
 		compiler.write(String.format("package %s;", PebbleTemplateImpl.COMPILED_PACKAGE_NAME)).newline(2)
 				.write("import java.util.Map;").newline().write("import java.util.HashMap;").newline().write("import ")
-				.raw(Context.class.getName()).raw(";").newline(2)
+				.raw(EvaluationContext.class.getName()).raw(";").newline(2)
 				.write(String.format("public class %s extends %s {", className, parentClass)).indent();
 	}
 
@@ -86,8 +86,8 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileBuildContentFunction(Compiler compiler) {
-		compiler.write(
-				"public void buildContent(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
+		compiler.write("public void buildContent(java.io.Writer writer, ").raw(EvaluationContext.class.getName())
+				.raw(" context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.newline().indent();
 		if (this.parentFileName != null) {
 			compiler.write("context.pushInheritanceChain(this);").newline();

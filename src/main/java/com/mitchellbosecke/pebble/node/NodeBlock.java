@@ -10,7 +10,9 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.Block;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class NodeBlock extends AbstractNode {
 
@@ -45,9 +47,9 @@ public class NodeBlock extends AbstractNode {
 	}
 
 	public void compileEvaluateMethod(Compiler compiler) {
-		compiler.write(
-				"public void evaluate(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
-				.newline().indent();
+		compiler.write("public void evaluate(java.io.Writer writer, ").raw(EvaluationContext.class.getName())
+				.raw(" context) throws ").raw(PebbleException.class.getName()).raw(", java.io.IOException {").newline()
+				.indent();
 		compiler.subcompile(body);
 		compiler.outdent().newline().write("}").newline();
 	}

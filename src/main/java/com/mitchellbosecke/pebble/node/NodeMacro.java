@@ -17,6 +17,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.template.AbstractMacro;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class NodeMacro extends AbstractNode {
 
@@ -65,8 +66,8 @@ public class NodeMacro extends AbstractNode {
 	}
 
 	public void compileEvaluate(Compiler compiler) {
-		compiler.write(
-				"public void evaluate(java.io.Writer writer, Context context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
+		compiler.write("public void evaluate(java.io.Writer writer, ").raw(EvaluationContext.class.getName())
+				.raw(" context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.indent();
 		compiler.subcompile(body);
 		compiler.outdent().newline().write("}").newline();

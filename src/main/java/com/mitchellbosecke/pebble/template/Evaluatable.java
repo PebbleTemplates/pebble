@@ -16,6 +16,6 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 
 public interface Evaluatable {
 
-	public void evaluate(Writer write, Context context) throws PebbleException, IOException;
+	public void evaluate(Writer write, EvaluationContext context) throws PebbleException, IOException;
 	
 }

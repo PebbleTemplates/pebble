@@ -18,5 +18,5 @@ public interface Block {
 
 	public String getName();
 
-	public void evaluate(Writer writer, Context context) throws PebbleException, IOException;
+	public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException;
 }

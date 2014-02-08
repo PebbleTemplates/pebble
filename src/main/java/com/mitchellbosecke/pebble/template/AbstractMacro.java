@@ -18,7 +18,7 @@ public abstract class AbstractMacro implements Macro {
 	 * user-provided writer.
 	 */
 	@Override
-	public String call(Context context, Map<String, Object> namedArguments) throws PebbleException {
+	public String call(EvaluationContext context, Map<String, Object> namedArguments) throws PebbleException {
 		StringWriter writer = new StringWriter();
 
 		context.pushLocalScope();
@@ -32,6 +32,6 @@ public abstract class AbstractMacro implements Macro {
 		return writer.toString();
 	}
 
-	public abstract void evaluate(Writer writer, Context context) throws PebbleException, IOException;
+	public abstract void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException;
 
 }

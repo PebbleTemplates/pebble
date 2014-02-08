@@ -37,16 +37,38 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	public final static String COMPILED_PACKAGE_NAME = "com.mitchellbosecke.pebble.template.compiled";
 
+	/**
+	 * Store a reference to this to help with debugging.
+	 */
 	private final String generatedJavaCode;
 
+	/**
+	 * A template has to store a reference to the main engine so that it can
+	 * compile other templates when using the "import" or "include" tags. It's
+	 * important that the only method of the PebbleEngine that a template
+	 * invokes during evaluation is the compile method because this is the only
+	 * one that I'm sure is thread-safe.
+	 */
 	protected final PebbleEngine engine;
 
+	/**
+	 * The parent template which will be used to look up blocks and macros.
+	 */
 	private final PebbleTemplateImpl parent;
 
+	/**
+	 * The imported templates are used to look up macros.
+	 */
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
+	/**
+	 * Blocks defined inside this template.
+	 */
 	private final Map<String, Block> blocks = new HashMap<>();
 
+	/**
+	 * Macros defined inside this template.
+	 */
 	private final Map<String, Macro> macros = new HashMap<>();
 
 	public PebbleTemplateImpl(String generatedJavaCode, PebbleEngine engine, PebbleTemplateImpl parent) {
@@ -55,31 +77,43 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		this.parent = parent;
 	}
 
-	public abstract void buildContent(Writer writer, Context context) throws IOException, PebbleException;
+	public abstract void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException;
 
 	public void evaluate(Writer writer) throws PebbleException, IOException {
-		Context context = initContext(engine.getDefaultLocale());
+		EvaluationContext context = initContext(engine.getDefaultLocale());
 		evaluate(writer, context);
 	}
 
 	public void evaluate(Writer writer, Locale locale) throws PebbleException, IOException {
-		Context context = initContext(locale);
+		EvaluationContext context = initContext(locale);
 		evaluate(writer, context);
 	}
 
 	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
-		Context context = initContext(engine.getDefaultLocale());
+		EvaluationContext context = initContext(engine.getDefaultLocale());
 		context.putAll(map);
 		evaluate(writer, context);
 	}
 
 	public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
-		Context context = initContext(locale);
+		EvaluationContext context = initContext(locale);
 		context.putAll(map);
 		evaluate(writer, context);
 	}
 
-	public void evaluate(Writer writer, Context context) throws PebbleException, IOException {
+	/**
+	 * This is the authoritative evaluate method. It should not be invoked by
+	 * the end user and is therefore not included in the PebbleTemplate
+	 * interface. I can't, however, make it "private" due to the fact that
+	 * NodeInclude will call this method on a template other than itself.
+	 * 
+	 * 
+	 * @param writer
+	 * @param context
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
 		if (engine.getExecutorService() != null) {
 			writer = new FutureWriter(writer, engine.getExecutorService());
 		}
@@ -87,8 +121,12 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		writer.flush();
 	}
 
-	protected void evaluateInParallel(Writer writer, final Context context, final Evaluatable parallelEvaluation)
-			throws PebbleException, IOException {
+	/**
+	 * The parallel tag will utilize this method to evaluate a section of the
+	 * template in a new thread.
+	 */
+	protected void evaluateInParallel(Writer writer, final EvaluationContext context,
+			final Evaluatable parallelEvaluation) throws PebbleException, IOException {
 		ExecutorService es = engine.getExecutorService();
 
 		if (es == null) {
@@ -107,18 +145,53 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		((FutureWriter) writer).enqueue(future);
 	}
 
-	private Context initContext(Locale locale) {
-		Context context = new Context(engine.isStrictVariables());
+	/**
+	 * Initializes the evaluation context.
+	 * 
+	 * TODO: I'm concerned that this method is not thread safe due to the
+	 * invocations of PebbleEngine methods which themselves might not be thread
+	 * safe. What if another thread is modifying the engine settings while this
+	 * template is retrieving those settings??
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	private EvaluationContext initContext(Locale locale) {
+		EvaluationContext context = new EvaluationContext(engine.isStrictVariables());
 		context.putAll(engine.getGlobalVariables());
 		context.setLocale(locale);
 		return context;
 	}
 
-	protected Object getAttribute(Context context, Object object, String attribute) throws PebbleException {
+	/**
+	 * Gets an attribute of a variable. Implementation is found in
+	 * Reflectionutils.
+	 * 
+	 * @param context
+	 * @param object
+	 * @param attribute
+	 * @return
+	 * @throws PebbleException
+	 */
+	protected Object getAttribute(EvaluationContext context, Object object, String attribute) throws PebbleException {
 		return ReflectionUtils.getAttribute(context, object, attribute);
 	}
 
-	public void registerMacro(Macro macro) {
+	/**
+	 * Imports a template.
+	 * 
+	 * @param template
+	 */
+	protected void addImportedTemplate(PebbleTemplate template) {
+		this.importedTemplates.add((PebbleTemplateImpl) template);
+	}
+
+	/**
+	 * Registers a macro.
+	 * 
+	 * @param macro
+	 */
+	protected void registerMacro(Macro macro) {
 		macros.put(macro.getName(), macro);
 	}
 
@@ -126,7 +199,12 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return macros.containsKey(macroName);
 	}
 
-	public void registerBlock(Block block) {
+	/**
+	 * Registers a block.
+	 * 
+	 * @param block
+	 */
+	protected void registerBlock(Block block) {
 		blocks.put(block.getName(), block);
 	}
 
@@ -134,13 +212,38 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return blocks.containsKey(blockName);
 	}
 
-	public String block(String blockName, Context context, boolean ignoreOverriden) throws PebbleException, IOException {
+	/**
+	 * Evaluates a block using a local writer and returning a string. This is
+	 * only invoked using the block function. It returns a string because it's
+	 * output might be further modified (ex. with the use of filters) before
+	 * it's supposed to be written to the regular user-provided writer.
+	 * 
+	 * @param blockName
+	 * @param context
+	 * @param ignoreOverriden
+	 * @return
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	public String block(String blockName, EvaluationContext context, boolean ignoreOverriden) throws PebbleException,
+			IOException {
 		StringWriter writer = new StringWriter();
 		block(blockName, context, ignoreOverriden, writer);
 		return writer.toString();
 	}
 
-	public void block(String blockName, Context context, boolean ignoreOverriden, Writer writer)
+	/**
+	 * A typical block declaration will use this method which evaluates the
+	 * block using the regular user-provided writer.
+	 * 
+	 * @param blockName
+	 * @param context
+	 * @param ignoreOverriden
+	 * @param writer
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	public void block(String blockName, EvaluationContext context, boolean ignoreOverriden, Writer writer)
 			throws PebbleException, IOException {
 
 		PebbleTemplateImpl childTemplate = context.getChildTemplate();
@@ -167,7 +270,17 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	}
 
-	protected Object applyFunctionOrMacro(String functionName, Context context, ArgumentMap args)
+	/**
+	 * At runtime we do not know if a user is invoking a function or a macro
+	 * because the syntax is exactly the same.
+	 * 
+	 * @param functionName
+	 * @param context
+	 * @param args
+	 * @return
+	 * @throws PebbleException
+	 */
+	protected Object applyFunctionOrMacro(String functionName, EvaluationContext context, ArgumentMap args)
 			throws PebbleException {
 		Map<String, Function> functions = engine.getFunctions();
 		if (functions.containsKey(functionName)) {
@@ -176,7 +289,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return macro(functionName, context, args);
 	}
 
-	private Object applyFunction(Function function, Context context, ArgumentMap args) throws PebbleException {
+	private Object applyFunction(Function function, EvaluationContext context, ArgumentMap args) throws PebbleException {
 		List<Object> arguments = new ArrayList<>();
 
 		Collections.addAll(arguments, args);
@@ -189,7 +302,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return function.execute(namedArguments);
 	}
 
-	public String macro(String macroName, Context context, ArgumentMap args) throws PebbleException {
+	public String macro(String macroName, EvaluationContext context, ArgumentMap args) throws PebbleException {
 		String result = null;
 		boolean found = false;
 
@@ -235,7 +348,17 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return result;
 	}
 
-	protected Object applyFilter(String filterName, Context context, Object input, ArgumentMap args)
+	/**
+	 * Applies a filter.
+	 * 
+	 * @param filterName
+	 * @param context
+	 * @param input
+	 * @param args
+	 * @return
+	 * @throws PebbleException
+	 */
+	protected Object applyFilter(String filterName, EvaluationContext context, Object input, ArgumentMap args)
 			throws PebbleException {
 
 		Map<String, Filter> filters = engine.getFilters();
@@ -254,6 +377,15 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return filter.apply(input, namedArguments);
 	}
 
+	/**
+	 * Applies a test.
+	 * 
+	 * @param testName
+	 * @param input
+	 * @param args
+	 * @return
+	 * @throws PebbleException
+	 */
 	protected boolean applyTest(String testName, Object input, ArgumentMap args) throws PebbleException {
 		Map<String, Test> tests = engine.getTests();
 		Test test = tests.get(testName);
@@ -262,6 +394,16 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return test.apply(input, namedArguments);
 	}
 
+	/**
+	 * Using hints from the filter/function/test/macro it will convert an
+	 * ArgumentMap (which holds both positional and named arguments) into a
+	 * regular Map that the filter/function/test/macro is expecting.
+	 * 
+	 * @param invokableWithNamedArguments
+	 * @param arguments
+	 * @return
+	 * @throws PebbleException
+	 */
 	private Map<String, Object> getNamedArguments(NamedArguments invokableWithNamedArguments, ArgumentMap arguments)
 			throws PebbleException {
 		Map<String, Object> namedArguments = new HashMap<>();
@@ -297,6 +439,12 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return namedArguments;
 	}
 
+	/**
+	 * Prints a variable.
+	 * 
+	 * @param var
+	 * @return
+	 */
 	protected String printVariable(Object var) {
 		if (var == null) {
 			return "";
@@ -311,10 +459,6 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	public PebbleTemplateImpl getParent() {
 		return parent;
-	}
-
-	protected void addImportedTemplate(PebbleTemplate template) {
-		this.importedTemplates.add((PebbleTemplateImpl) template);
 	}
 
 	public abstract void initBlocks();

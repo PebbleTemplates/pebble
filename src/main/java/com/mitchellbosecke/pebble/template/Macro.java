@@ -18,5 +18,5 @@ public interface Macro extends NamedArguments {
 
 	public String getName();
 
-	public String call(Context context, Map<String, Object> args) throws PebbleException;
+	public String call(EvaluationContext context, Map<String, Object> args) throws PebbleException;
 }

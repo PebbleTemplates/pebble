@@ -8,14 +8,14 @@ import java.util.Stack;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 
 /**
- * A context stores all of the variables that a template uses during evaluation
- * as well as any other stateful information. Passing the entire state around in
- * this class will assist with thread safety.
+ * An evaluation context will store all stateful data that is necessary for the
+ * evaluation of a template. Passing the entire state around will assist with
+ * thread safety.
  * 
  * @author Mitchell
  * 
  */
-public class Context {
+public class EvaluationContext {
 
 	private final boolean strictVariables;
 
@@ -47,7 +47,7 @@ public class Context {
 	 */
 	private Locale locale;
 
-	public Context(boolean strictVariables) {
+	public EvaluationContext(boolean strictVariables) {
 		this.strictVariables = strictVariables;
 
 		this.inheritanceChain = new Stack<>();
