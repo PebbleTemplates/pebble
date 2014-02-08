@@ -78,7 +78,6 @@ public class PebbleEngine {
 	 * User Editable Settings
 	 */
 	private boolean strictVariables = false;
-	private String charset = "UTF-8";
 	private Locale defaultLocale = Locale.getDefault();
 	private ExecutorService executorService;
 
@@ -456,14 +455,6 @@ public class PebbleEngine {
 	 */
 	public void setStrictVariables(boolean strictVariables) {
 		this.strictVariables = strictVariables;
-	}
-
-	public String getCharset() {
-		return charset;
-	}
-
-	public void setCharset(String charset) {
-		this.charset = charset;
 	}
 
 	public Locale getDefaultLocale() {
