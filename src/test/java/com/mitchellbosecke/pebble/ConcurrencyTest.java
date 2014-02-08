@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import com.google.common.cache.Cache;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -104,7 +105,7 @@ public class ConcurrencyTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void testConcurrentCompilationOfMultipleTemplates() throws InterruptedException, PebbleException {
+	public void testThreadSafeCompilationOfMultipleTemplates() throws InterruptedException, PebbleException {
 		final PebbleEngine engine = new PebbleEngine();
 		final ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();
@@ -112,7 +113,8 @@ public class ConcurrencyTest extends AbstractTest {
 		int numOfConcurrentThreads = 100;
 		final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
 
-		for (int i = 0; i < 10000; i++) {
+		Cache<String,PebbleTemplate> cache = engine.getTemplateCache();
+		for (int i = 0; i < 1000; i++) {
 			semaphore.acquire(2);
 			es.submit(new Runnable() {
 				@Override
@@ -180,6 +182,7 @@ public class ConcurrencyTest extends AbstractTest {
 					}
 				}
 			});
+			cache.invalidateAll();
 			if (totalFailed.intValue() > 0) {
 				break;
 			}

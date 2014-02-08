@@ -20,11 +20,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
 
-import com.mitchellbosecke.pebble.cache.DefaultTemplateLoadingCache;
-import com.mitchellbosecke.pebble.cache.TemplateLoadingCache;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.error.LoaderException;
@@ -84,7 +85,7 @@ public class PebbleEngine {
 	/**
 	 * Template cache
 	 */
-	private TemplateLoadingCache loadingTemplateCache;
+	private Cache<String, PebbleTemplate> templateCache;
 
 	/*
 	 * Extensions
@@ -129,11 +130,13 @@ public class PebbleEngine {
 			loader = new DelegatingLoader(defaultLoadingStrategies);
 		}
 
+		// set up a default cache
+		templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
+
 		this.loader = loader;
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
 		compiler = new CompilerImpl(this);
-		loadingTemplateCache = new DefaultTemplateLoadingCache();
 
 		// register default extensions
 		this.addExtension(new CoreExtension());
@@ -158,51 +161,87 @@ public class PebbleEngine {
 		}
 
 		final String className = this.getTemplateClassName(templateName);
-
 		final PebbleEngine self = this;
+		PebbleTemplate result = null;
 
-		return loadingTemplateCache.get(className, new Callable<PebbleTemplate>() {
+		try {
 
-			public PebbleTemplateImpl call() throws InterruptedException, PebbleException {
-				compilationMutex.acquire();
-				PebbleTemplateImpl instance = null;
-				Reader templateReader = loader.getReader(templateName);
+			result = templateCache.get(className, new Callable<PebbleTemplate>() {
 
-				/*
-				 * load template into a String.
-				 * 
-				 * TODO: Pass the reader to the Lexer and just let the lexer
-				 * iterate through the characters without having to use an
-				 * intermediary string.
-				 */
-				String templateSource = null;
-				try {
-					templateSource = IOUtils.toString(templateReader);
-				} catch (IOException e) {
-					throw new LoaderException(e, "Could not load template");
+				public PebbleTemplateImpl call() throws PebbleException, ExecutionException, InterruptedException {
+
+					compilationMutex.acquire();
+
+					PebbleTemplateImpl instance = null;
+					String parentFileName = null;
+					String javaSource = null;
+
+					try {
+
+						Reader templateReader = loader.getReader(templateName);
+
+						/*
+						 * load template into a String.
+						 * 
+						 * TODO: Pass the reader to the Lexer and just let the
+						 * lexer iterate through the characters without having
+						 * to use an intermediary string.
+						 */
+						String templateSource = null;
+						try {
+							templateSource = IOUtils.toString(templateReader);
+						} catch (IOException e) {
+							throw new LoaderException(e, "Could not load template");
+						}
+
+						TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
+						NodeRoot root = getParser().parse(tokenStream);
+						javaSource = getCompiler().compile(root).getSource();
+
+						parentFileName = root.hasParent() ? root.getParentFileName() : null;
+					} catch (Exception e) {
+
+						// avoid unnecessary exception wrapping
+						if (e instanceof PebbleException) {
+							throw e;
+						} else {
+							throw new PebbleException(e, String.format("An error occurred while compiling %s",
+									templateName));
+						}
+					} finally {
+						compilationMutex.release();
+					}
+
+					// compile the parent template if it exists
+					PebbleTemplateImpl parent = null;
+					if (parentFileName != null) {
+						parent = (PebbleTemplateImpl) self.compile(parentFileName);
+					}
+					instance = getCompiler().instantiateTemplate(javaSource, className, parent);
+
+					return instance;
 				}
-
-				TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
-				NodeRoot root = getParser().parse(tokenStream);
-				String javaSource = getCompiler().compile(root).getSource();
-
-				// we are now done with the non-thread-safe objects, so release
-				// the compilation mutex
-				compilationMutex.release();
-
-				PebbleTemplateImpl parent = null;
-				if (root.hasParent()) {
-					parent = (PebbleTemplateImpl) self.compile(root.getParentFileName());
-				}
-				instance = getCompiler().instantiateTemplate(javaSource, className, parent);
-
-				// init blocks and macros
-				instance.initBlocks();
-				instance.initMacros();
-
-				return instance;
+			});
+		} catch (ExecutionException e) {
+			/*
+			 * The execution exception is probably caused by a PebbleException
+			 * being thrown in the above Callable. We will unravel it and throw
+			 * the original PebbleException which is more helpful to the end
+			 * user.
+			 */
+			if (e.getCause() != null && e.getCause() instanceof PebbleException) {
+				throw (PebbleException) e.getCause();
+			} else {
+				throw new PebbleException(e, "Error occurred while retrieving template from cache. ");
 			}
-		});
+		}
+
+		// init blocks and macros
+		PebbleTemplateImpl initializedTemplate = (PebbleTemplateImpl) result;
+		initializedTemplate.initBlocks();
+		initializedTemplate.initMacros();
+
+		return initializedTemplate;
 	}
 
 	public void setLoader(Loader loader) {
@@ -389,8 +428,8 @@ public class PebbleEngine {
 		return "PebbleTemplate" + classNameHash;
 	}
 
-	public TemplateLoadingCache getTemplateCache() {
-		return loadingTemplateCache;
+	public Cache<String, PebbleTemplate> getTemplateCache() {
+		return templateCache;
 	}
 
 	/**
@@ -399,8 +438,8 @@ public class PebbleEngine {
 	 * @param cache
 	 *            The cache to be used
 	 */
-	public void setTemplateCache(TemplateLoadingCache cache) {
-		this.loadingTemplateCache = cache;
+	public void setTemplateCache(Cache<String, PebbleTemplate> cache) {
+		this.templateCache = cache;
 	}
 
 	public boolean isStrictVariables() {
