@@ -7,6 +7,8 @@
 - Fixed parsing issues if variable names were prefixed with operator names.
 - Fixed issue where included templates didn't have access to context.
 - Fixed issue where `if` tag could not be used directly on a boolean variable.
+- Removed the `format` filter.
+- Fixed misc other smaller bugs.
 
 ## v0.1.5-beta (2014-01-27)
 - Fixed major bug from v0.1.4 that prevented macros from being invoked more than once
