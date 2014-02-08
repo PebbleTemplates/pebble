@@ -239,7 +239,7 @@ public class LexerImpl implements Lexer {
 		// check if we are at the execute closing delimiter
 		if (brackets.isEmpty() && matcher.lookingAt()) {
 			String token = source.substring(cursor, cursor + matcher.end());
-			pushToken(Token.Type.EXECUTE_END);
+			pushToken(Token.Type.EXECUTE_END, delimiterExecuteClose);
 			moveCursor(token);
 			popState();
 		} else {
@@ -258,7 +258,7 @@ public class LexerImpl implements Lexer {
 		// check if we are at the print closing delimiter
 		if (brackets.isEmpty() && matcher.lookingAt()) {
 			String token = source.substring(cursor, cursor + matcher.end());
-			pushToken(Token.Type.PRINT_END);
+			pushToken(Token.Type.PRINT_END, delimiterPrintClose);
 			moveCursor(token);
 			popState();
 		} else {
@@ -389,7 +389,7 @@ public class LexerImpl implements Lexer {
 		}
 
 		// we should have found something and returned by this point
-		throw new ParserException(null, String.format("Unexpected character \"%s\"", source.charAt(cursor)),
+		throw new ParserException(null, String.format("Unexpected character [%s]", source.charAt(cursor)),
 				lineNumber, filename);
 
 	}

@@ -196,7 +196,7 @@ public class ParserImpl implements Parser {
 					nodes.add(new NodePrint(expression, token.getLineNumber()));
 
 					// we expect to see a print closing delimiter
-					stream.expect(Token.Type.PRINT_END);
+					stream.expect(Token.Type.PRINT_END, engine.getLexer().getPrintCloseDelimiter());
 
 					break;
 

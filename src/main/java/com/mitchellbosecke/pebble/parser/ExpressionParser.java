@@ -114,7 +114,7 @@ public class ExpressionParser {
 
 			stream.next();
 			expression = parseExpression();
-			stream.expect(Token.Type.PUNCTUATION, ")", "An opened parenthesis is not properly closed");
+			stream.expect(Token.Type.PUNCTUATION, ")");
 			expression = parsePostfixExpression(expression);
 
 		} else {

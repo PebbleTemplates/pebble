@@ -50,63 +50,46 @@ public class TokenStream {
 
 	/**
 	 * Checks the current token to see if it matches the provided type. If it
-	 * doesn't match this will throw a SyntaxException. This will consume
-	 * a token.
+	 * doesn't match this will throw a SyntaxException. This will consume a
+	 * token.
 	 * 
 	 * @param type
 	 *            The type of token that we expect
 	 * @return The current token
-	 * @throws ParserException 
+	 * @throws ParserException
 	 */
 	public Token expect(Token.Type type) throws ParserException {
-		return expect(type, null, null);
+		return expect(type, null);
 	}
-	
+
 	/**
 	 * Checks the current token to see if it matches the provided type. If it
-	 * doesn't match this will throw a SyntaxException. This will consume
-	 * a token.
+	 * doesn't match this will throw a SyntaxException. This will consume a
+	 * token.
 	 * 
 	 * @param type
 	 *            The type of token that we expect
 	 * @return The current token
-	 * @throws ParserException 
+	 * @throws ParserException
 	 */
 	public Token expect(Token.Type type, String value) throws ParserException {
-		return expect(type, value, null);
-	}
-
-
-	/**
-	 * Checks the current token to see if it matches the provided type and
-	 * value. If it doesn't match this will throw a SyntaxException with the
-	 * provided message. This will consume a token.
-	 * 
-	 * @param type
-	 *            The type of token that we expect
-	 * @param value
-	 *            The value of the token that we expect, or null if we only care
-	 *            about the type
-	 * @param message
-	 *            The message of the exception if the expectation fails
-	 * @return The current token
-	 * @throws ParserException 
-	 */
-	public Token expect(Token.Type type, String value, String message) throws ParserException {
-		// TODO: message isn't used
 		Token token = tokens.get(current);
+
+		boolean success = true;
+		String message = null;
 		if (value == null) {
-			if (!token.test(type)) {
-				throw new ParserException(null, "Unexpected token of value ["
-						+ token.getValue() + "] expected token of type " + type
-						+ " ", token.getLineNumber(), filename);
+			success = token.test(type);
+			if (!success && message == null) {
+				message = "Unexpected token of value [" + token.getValue() + "] expected token of type " + type;
 			}
 		} else {
-			if (!token.test(type, value)) {
-				throw new ParserException(null, "Unexpected token of value ["
-						+ token.getValue() + "] expected [" + value 
-						+ "] ", token.getLineNumber(), filename);
+			success = token.test(type, value);
+			if (!success && message == null) {
+				message = "Unexpected token of value [" + token.getValue() + "] expected [" + value + "] ";
 			}
+		}
+		if (!success) {
+			throw new ParserException(null, message, token.getLineNumber(), filename);
 		}
 		this.next();
 		return token;
