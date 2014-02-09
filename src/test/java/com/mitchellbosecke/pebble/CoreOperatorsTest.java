@@ -267,4 +267,30 @@ public class CoreOperatorsTest extends AbstractTest {
 		public boolean truthy = true;
 		public Boolean falsy = false;
 	}
+	
+	@Test()
+	public void testIsOperatorPrecedence() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if 1 + 2 is odd %} true {% else %} false {% endif %}";
+		PebbleTemplate template = pebble.compile(source);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals(" true ", writer.toString());
+	}
+	
+	@Test()
+	public void testIsOperatorPrecedenceWithAnd() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if 3 is odd and 5 is odd %} true {% else %} false {% endif %}";
+		PebbleTemplate template = pebble.compile(source);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals(" true ", writer.toString());
+	}
 }

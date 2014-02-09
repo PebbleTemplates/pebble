@@ -92,30 +92,21 @@ public class CoreExtension extends AbstractExtension {
 		ArrayList<BinaryOperator> operators = new ArrayList<>();
 		operators.add(new BinaryOperatorImpl("or", 10, NodeExpressionBinaryOr.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("and", 15, NodeExpressionBinaryAnd.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("==", 20, NodeExpressionBinaryEqual.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("equals", 20, NodeExpressionBinaryEqual.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("!=", 20, NodeExpressionBinaryNotEqual.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl(">", 20, NodeExpressionBinaryGreaterThan.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("<", 20, NodeExpressionBinaryLessThan.class, Associativity.LEFT));
-		operators
-				.add(new BinaryOperatorImpl(">=", 20, NodeExpressionBinaryGreaterThanEquals.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("<=", 20, NodeExpressionBinaryLessThanEquals.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("+", 30, NodeExpressionBinaryAdd.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("-", 30, NodeExpressionBinarySubtract.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("is", 20, NodeExpressionBinaryTestPositive.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("is not", 20, NodeExpressionBinaryTestNegative.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("==", 30, NodeExpressionBinaryEqual.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("equals", 30, NodeExpressionBinaryEqual.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("!=", 30, NodeExpressionBinaryNotEqual.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl(">", 30, NodeExpressionBinaryGreaterThan.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("<", 30, NodeExpressionBinaryLessThan.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl(">=", 30, NodeExpressionBinaryGreaterThanEquals.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("<=", 30, NodeExpressionBinaryLessThanEquals.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("+", 40, NodeExpressionBinaryAdd.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("-", 40, NodeExpressionBinarySubtract.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("*", 60, NodeExpressionBinaryMultiply.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("/", 60, NodeExpressionBinaryDivide.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("%", 60, NodeExpressionBinaryModulus.class, Associativity.LEFT));
-
-		/*
-		 * The precedence of the "is", "is not", and "|" operators is completely
-		 * irrelevant here. These operators are uniquely handled by the
-		 * ExpressionParser and will ALWAYS have a higher precedence than all
-		 * other operators.
-		 */
-		operators.add(new BinaryOperatorImpl("is", 100, NodeExpressionBinaryTestPositive.class, Associativity.LEFT));
-		operators
-				.add(new BinaryOperatorImpl("is not", 100, NodeExpressionBinaryTestNegative.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("|", 110, NodeExpressionBinaryFilter.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("|", 100, NodeExpressionBinaryFilter.class, Associativity.LEFT));
 
 		return operators;
 	}
