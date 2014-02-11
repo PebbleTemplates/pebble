@@ -77,13 +77,6 @@ public class ParserImpl implements Parser {
 	private Stack<String> blockStack;
 
 	/**
-	 * Parser stack storing the stateful data. This is so that one Parser
-	 * instance can be used to parse multiple different templates by storing and
-	 * resuming it's state
-	 */
-	private Stack<ParserImpl> parserStack = new Stack<>();
-
-	/**
 	 * Constructor
 	 * 
 	 * @param engine
@@ -91,18 +84,6 @@ public class ParserImpl implements Parser {
 	 */
 	public ParserImpl(PebbleEngine engine) {
 		this.engine = engine;
-	}
-
-	/**
-	 * Private constructor that takes in all stateful data
-	 */
-	private ParserImpl(PebbleEngine engine, TokenStream stream, NodeExpression parentTemplateExpression,
-			Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros) {
-		this.engine = engine;
-		this.stream = stream;
-		this.parentTemplateExpression = parentTemplateExpression;
-		this.setBlocks(blocks);
-		this.setMacros(macros);
 	}
 
 	@Override
@@ -113,13 +94,6 @@ public class ParserImpl implements Parser {
 
 		// expression parser
 		this.expressionParser = new ExpressionParser(this);
-
-		/*
-		 * Store the state of this current parser just in case this parser
-		 * instance was already being used to parse a template and this
-		 * particular occurrence is a "sub template"
-		 */
-		parserStack.push(new ParserImpl(engine, stream, parentTemplateExpression, getBlocks(), getMacros()));
 
 		this.stream = stream;
 
@@ -133,16 +107,6 @@ public class ParserImpl implements Parser {
 		NodeBody body = subparse();
 
 		NodeRoot root = new NodeRoot(body, parentTemplateExpression, getBlocks(), getMacros(), stream.getFilename());
-
-		/*
-		 * Resume the parser state
-		 */
-		Parser oldState = parserStack.pop();
-		this.stream = oldState.getStream();
-		this.parentTemplateExpression = oldState.getParentTemplateExpression();
-		this.setBlocks(oldState.getBlocks());
-		this.setMacros(oldState.getMacros());
-
 		return root;
 	}
 
