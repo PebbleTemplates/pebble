@@ -56,10 +56,11 @@ public class ExpressionParser {
 	 * @param parser
 	 *            A reference to the main parser
 	 */
-	public ExpressionParser(Parser parser) {
+	public ExpressionParser(Parser parser, Map<String, BinaryOperator> binaryOperators,
+			Map<String, UnaryOperator> unaryOperators) {
 		this.parser = parser;
-		this.binaryOperators = parser.getEngine().getBinaryOperators();
-		this.unaryOperators = parser.getEngine().getUnaryOperators();
+		this.binaryOperators = binaryOperators;
+		this.unaryOperators = unaryOperators;
 	}
 
 	/**

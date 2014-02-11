@@ -9,9 +9,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
-import java.util.Map;
-
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeBlock;
@@ -48,24 +45,16 @@ public interface Parser {
 
 	public ExpressionParser getExpressionParser();
 
-	public void setBlock(String name, NodeBlock block);
-
 	public void pushBlockStack(String name);
 
 	public void popBlockStack();
 
 	public String peekBlockStack();
 
-	public PebbleEngine getEngine();
-
 	NodeExpression getParentTemplateExpression();
 
-	Map<String, NodeBlock> getBlocks();
+	public void addMacro(String name, NodeMacro macro) throws ParserException;
 
-	void setBlocks(Map<String, NodeBlock> blocks);
-
-	Map<String, NodeMacro> getMacros();
-
-	public void addMacro(String name, NodeMacro macro);
+	public void addBlock(String name, NodeBlock block);
 
 }

@@ -51,8 +51,6 @@ import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
-import com.mitchellbosecke.pebble.tokenParser.TokenParserBrokerImpl;
 import com.mitchellbosecke.pebble.utils.IOUtils;
 
 /**
@@ -94,7 +92,7 @@ public class PebbleEngine {
 	/*
 	 * Elements retrieved from extensions
 	 */
-	private TokenParserBroker tokenParserBroker;
+	private Map<String, TokenParser> tokenParsers;
 	private Map<String, UnaryOperator> unaryOperators;
 	private Map<String, BinaryOperator> binaryOperators;
 	private Map<String, Filter> filters;
@@ -248,7 +246,7 @@ public class PebbleEngine {
 			return;
 		}
 		this.extensionsInitialized = true;
-		this.tokenParserBroker = new TokenParserBrokerImpl();
+		this.tokenParsers = new HashMap<>();
 		this.unaryOperators = new HashMap<>();
 		this.binaryOperators = new HashMap<>();
 		this.filters = new HashMap<>();
@@ -275,7 +273,7 @@ public class PebbleEngine {
 		// token parsers
 		if (extension.getTokenParsers() != null) {
 			for (TokenParser tokenParser : extension.getTokenParsers()) {
-				this.tokenParserBroker.addTokenParser(tokenParser);
+				this.tokenParsers.put(tokenParser.getTag(), tokenParser);
 			}
 		}
 
@@ -319,11 +317,11 @@ public class PebbleEngine {
 
 	}
 
-	public TokenParserBroker getTokenParserBroker() {
+	public Map<String, TokenParser> getTokenParsers() {
 		if (!extensionsInitialized) {
 			initExtensions();
 		}
-		return this.tokenParserBroker;
+		return this.tokenParsers;
 	}
 
 	public Map<String, BinaryOperator> getBinaryOperators() {

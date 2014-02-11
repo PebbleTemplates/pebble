@@ -36,7 +36,7 @@ public class BlockTokenParser extends AbstractTokenParser {
 
 		NodeBlock block = new NodeBlock(lineNumber, name);
 
-		this.parser.setBlock(name, block);
+		this.parser.addBlock(name, block);
 		this.parser.pushBlockStack(name);
 
 		stream.expect(Token.Type.EXECUTE_END);

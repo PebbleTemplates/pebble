@@ -28,7 +28,6 @@ import com.mitchellbosecke.pebble.node.NodePrint;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 import com.mitchellbosecke.pebble.node.NodeText;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-import com.mitchellbosecke.pebble.tokenParser.TokenParserBroker;
 
 public class ParserImpl implements Parser {
 
@@ -36,12 +35,6 @@ public class ParserImpl implements Parser {
 	 * A reference to the main engine.
 	 */
 	private final PebbleEngine engine;
-
-	/**
-	 * TokenParserBroker filled with token parsers that were originally provided
-	 * by the extensions
-	 */
-	private TokenParserBroker tokenParserBroker;
 
 	/**
 	 * An expression parser.
@@ -77,6 +70,11 @@ public class ParserImpl implements Parser {
 	private Stack<String> blockStack;
 
 	/**
+	 * TokenParser objects provided by the extensions.
+	 */
+	private Map<String, TokenParser> tokenParsers;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param engine
@@ -90,10 +88,10 @@ public class ParserImpl implements Parser {
 	public NodeRoot parse(TokenStream stream) throws ParserException {
 
 		// token parsers which have come from the extensions
-		this.tokenParserBroker = engine.getTokenParserBroker();
+		this.tokenParsers = engine.getTokenParsers();
 
 		// expression parser
-		this.expressionParser = new ExpressionParser(this);
+		this.expressionParser = new ExpressionParser(this, engine.getBinaryOperators(), engine.getUnaryOperators());
 
 		this.stream = stream;
 
@@ -101,12 +99,11 @@ public class ParserImpl implements Parser {
 
 		this.blocks = new HashMap<>();
 		this.blockStack = new Stack<>();
-
-		this.setMacros(new HashMap<String, NodeMacro>());
+		this.macros = new HashMap<String, NodeMacro>();
 
 		NodeBody body = subparse();
 
-		NodeRoot root = new NodeRoot(body, parentTemplateExpression, getBlocks(), getMacros(), stream.getFilename());
+		NodeRoot root = new NodeRoot(body, parentTemplateExpression, blocks, macros, stream.getFilename());
 		return root;
 	}
 
@@ -195,7 +192,7 @@ public class ParserImpl implements Parser {
 					}
 
 					// find an appropriate parser for this name
-					TokenParser subparser = tokenParserBroker.getTokenParser(token.getValue());
+					TokenParser subparser = tokenParsers.get(token.getValue());
 
 					if (subparser == null) {
 						throw new ParserException(null, String.format("Unexpected tag name \"%s\"", token.getValue()),
@@ -242,8 +239,8 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public void setBlock(String name, NodeBlock block) {
-		getBlocks().put(name, block);
+	public void addBlock(String name, NodeBlock block) {
+		blocks.put(name, block);
 	}
 
 	@Override
@@ -266,32 +263,12 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public PebbleEngine getEngine() {
-		return engine;
-	}
-
-	@Override
-	public Map<String, NodeBlock> getBlocks() {
-		return blocks;
-	}
-
-	@Override
-	public void setBlocks(Map<String, NodeBlock> blocks) {
-		this.blocks = blocks;
-	}
-
-	@Override
-	public Map<String, NodeMacro> getMacros() {
-		return macros;
-	}
-
-	@Override
-	public void addMacro(String name, NodeMacro macro) {
+	public void addMacro(String name, NodeMacro macro) throws ParserException {
+		if (macros.containsKey(name)) {
+			throw new ParserException(null, "Can not have more than one macro with the same name. [" + name + "]",
+					stream.current().getLineNumber(), stream.getFilename());
+		}
 		macros.put(name, macro);
-	}
-
-	public void setMacros(Map<String, NodeMacro> macros) {
-		this.macros = macros;
 	}
 
 }
