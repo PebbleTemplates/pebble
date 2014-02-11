@@ -152,6 +152,14 @@ public class PebbleEngine {
 	 */
 	public PebbleTemplate compile(final String templateName) throws PebbleException {
 
+		/*
+		 * template name will be null if user uses the extends tag with an
+		 * expression that evaluates to null
+		 */
+		if (templateName == null) {
+			return null;
+		}
+
 		if (this.loader == null) {
 			throw new LoaderException(null, "Loader has not yet been specified.");
 		}

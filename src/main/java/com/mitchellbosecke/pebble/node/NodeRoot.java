@@ -129,12 +129,18 @@ public class NodeRoot extends AbstractNode {
 				compiler.write("setParent(engine.compile(").subcompile(parentTemplateExpression).raw("));").newline();
 			}
 
+			// parent can still be null if "extends" expression evaluated to
+			// null
+			compiler.write("if (getParent() != null ) {").newline().indent();
 			body.compile(compiler, true);
-			
 			compiler.write("context.pushInheritanceChain(this);").newline();
-			compiler.write("getParent().buildContent(writer, context);").newline();
+			compiler.write("getParent().buildContent(writer, context);").newline().outdent();
+			compiler.write("} else {").newline();
+			compiler.subcompile(body).newline();
+			compiler.write("}").newline();
+			
 		} else {
-			body.compile(compiler);
+			compiler.subcompile(body);
 		}
 
 		compiler.outdent().write("}").newline(2);

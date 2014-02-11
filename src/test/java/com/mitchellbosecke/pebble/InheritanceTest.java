@@ -17,6 +17,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class InheritanceTest extends AbstractTest {
@@ -57,6 +59,18 @@ public class InheritanceTest extends AbstractTest {
 		context.put("extendNumberOne", false);
 		template.evaluate(writer2, context);
 		assertEquals("TWO", writer2.toString());
+	}
+	
+	@Test
+	public void testNullParent() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleTemplate template = pebble
+				.compile("{% extends null %}success");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("success", writer.toString());
 	}
 
 }
