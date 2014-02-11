@@ -77,11 +77,12 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileConstructor(Compiler compiler, String className) {
 		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, ")
-				.raw(PebbleEngine.class.getName()).raw(" engine, ").raw(PebbleTemplateImpl.class.getName())
-				.raw(" parent) {").newline();
+				.raw(PebbleEngine.class.getName()).raw(" engine) { ").newline();
 
-		compiler.indent().write("super(javaCode, engine, parent);").newline();
+		compiler.indent().write("super(javaCode, engine);").newline();
 
+		compiler.write("initBlocks();").newline();
+		compiler.write("initMacros();").newline();
 		compiler.outdent().write("}").newline(2);
 	}
 
@@ -100,7 +101,7 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileBlocks(Compiler compiler) {
-		compiler.write("public void initBlocks() {").newline().indent();
+		compiler.write("private void initBlocks() {").newline().indent();
 		for (NodeBlock block : blocks.values()) {
 			compiler.subcompile(block).newline();
 		}
@@ -108,7 +109,7 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	private void compileMacros(Compiler compiler) {
-		compiler.write("public void initMacros() {").newline().indent();
+		compiler.write("private void initMacros() {").newline().indent();
 		for (NodeMacro macro : macros.values()) {
 			compiler.subcompile(macro).newline();
 		}

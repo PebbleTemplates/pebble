@@ -138,8 +138,7 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public PebbleTemplateImpl instantiateTemplate(String javaSource, String className, PebbleTemplateImpl parent)
-			throws CompilationException {
+	public PebbleTemplateImpl instantiateTemplate(String javaSource, String className) throws CompilationException {
 
 		String fullClassName = PebbleTemplateImpl.COMPILED_PACKAGE_NAME + "." + className;
 
@@ -171,7 +170,8 @@ public class CompilerImpl implements Compiler {
 		StringBuilder sb = new StringBuilder();
 
 		try {
-			URL urlLocationOfPebbleTemplate = PebbleTemplateImpl.class.getProtectionDomain().getCodeSource().getLocation();
+			URL urlLocationOfPebbleTemplate = PebbleTemplateImpl.class.getProtectionDomain().getCodeSource()
+					.getLocation();
 
 			// replace spaces
 			String locationOfPebbleTemplate = urlLocationOfPebbleTemplate.toString().replace(" ", "%20");
@@ -217,10 +217,10 @@ public class CompilerImpl implements Compiler {
 
 			ClassLoader cl = fileManager.getClassLoader(null);
 			Constructor<?> constructor = cl.loadClass(fullClassName).getDeclaredConstructor(String.class,
-					PebbleEngine.class, PebbleTemplateImpl.class);
+					PebbleEngine.class);
 
 			constructor.setAccessible(true);
-			template = (PebbleTemplateImpl) constructor.newInstance(javaSource, engine, parent);
+			template = (PebbleTemplateImpl) constructor.newInstance(javaSource, engine);
 
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | InstantiationException
 				| InvocationTargetException | IllegalArgumentException e) {

@@ -67,15 +67,14 @@ public interface Compiler {
 	 * @return this
 	 */
 	public Compiler outdent();
-	
+
 	/**
 	 * Adds a new line
 	 * 
 	 * @return this
 	 */
 	public Compiler newline();
-	
-	
+
 	/**
 	 * Adds multiple new lines
 	 * 
@@ -140,7 +139,6 @@ public interface Compiler {
 	 * @return The final PebbleTemplate instance
 	 * @throws PebbleException
 	 */
-	PebbleTemplateImpl instantiateTemplate(String javaSource, String className, PebbleTemplateImpl parent)
-			throws CompilationException;
+	PebbleTemplateImpl instantiateTemplate(String javaSource, String className) throws CompilationException;
 
 }

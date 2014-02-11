@@ -211,12 +211,14 @@ public class PebbleEngine {
 						compilationMutex.release();
 					}
 
-					// compile the parent template if it exists
+					instance = getCompiler().instantiateTemplate(javaSource, className);
+
+					// compile the parent template if it is known at compile time
 					PebbleTemplateImpl parent = null;
 					if (parentFileName != null) {
 						parent = (PebbleTemplateImpl) self.compile(parentFileName);
 					}
-					instance = getCompiler().instantiateTemplate(javaSource, className, parent);
+					instance.setParent(parent);
 
 					return instance;
 				}
@@ -237,8 +239,6 @@ public class PebbleEngine {
 
 		// init blocks and macros
 		PebbleTemplateImpl initializedTemplate = (PebbleTemplateImpl) result;
-		initializedTemplate.initBlocks();
-		initializedTemplate.initMacros();
 
 		return initializedTemplate;
 	}

@@ -53,8 +53,11 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 
 	/**
 	 * The parent template which will be used to look up blocks and macros.
+	 * 
+	 * It will be set at compile time if it declared using a string literal
+	 * otherwise if it's an expression it will be resolved at runtime.
 	 */
-	private final PebbleTemplateImpl parent;
+	private PebbleTemplateImpl parent;
 
 	/**
 	 * The imported templates are used to look up macros.
@@ -71,10 +74,9 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	private final Map<String, Macro> macros = new HashMap<>();
 
-	public PebbleTemplateImpl(String generatedJavaCode, PebbleEngine engine, PebbleTemplateImpl parent) {
+	public PebbleTemplateImpl(String generatedJavaCode, PebbleEngine engine) {
 		this.generatedJavaCode = generatedJavaCode;
 		this.engine = engine;
-		this.parent = parent;
 	}
 
 	public abstract void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException;
@@ -461,7 +463,8 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return parent;
 	}
 
-	public abstract void initBlocks();
+	public void setParent(PebbleTemplateImpl parent) {
+		this.parent = parent;
+	}
 
-	public abstract void initMacros();
 }
