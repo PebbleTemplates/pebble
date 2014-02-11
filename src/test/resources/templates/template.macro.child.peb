@@ -1,0 +1,7 @@
+{# used by CoreTagsTest.testImportInChildTemplateOutsideOfBlock #}
+
+{% extends "template.macro.parent.peb" %}
+
+{% import "template.macro1.peb" %}
+
+{% block content %}{{ input("company", "forcorp", "text") }}{% endblock %}

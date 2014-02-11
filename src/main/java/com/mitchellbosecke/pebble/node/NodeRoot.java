@@ -129,6 +129,8 @@ public class NodeRoot extends AbstractNode {
 				compiler.write("setParent(engine.compile(").subcompile(parentTemplateExpression).raw("));").newline();
 			}
 
+			body.compile(compiler, true);
+			
 			compiler.write("context.pushInheritanceChain(this);").newline();
 			compiler.write("getParent().buildContent(writer, context);").newline();
 		} else {

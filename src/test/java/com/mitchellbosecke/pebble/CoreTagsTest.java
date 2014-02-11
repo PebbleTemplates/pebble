@@ -255,12 +255,31 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testMacroFromAnotherFile() throws PebbleException, IOException {
+	public void testImportFile() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.macro2.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", writer.toString());
+	}
+
+	@Test
+	public void testImportInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.macro.child.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", writer.toString());
+	}
+
+	@Test(expected = PebbleException.class)
+	public void testNonExistingMacroOrFunction() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleTemplate template = pebble.compile("{{ nonExisting('test') }}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
 	}
 
 	@Test
@@ -317,6 +336,15 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("alex", writer.toString());
+	}
+	
+	@Test
+	public void testSetInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.set.child.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("SUCCESS", writer.toString());
 	}
 
 	@Test(timeout = 3000)

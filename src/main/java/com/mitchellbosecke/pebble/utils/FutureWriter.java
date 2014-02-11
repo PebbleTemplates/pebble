@@ -43,9 +43,9 @@ public class FutureWriter extends Writer {
 	public void write(final char[] cbuf, final int off, final int len) throws IOException {
 
 		/*
-		 * We need to make a copy of the character buffer because the Writer
-		 * class will continue to reuse it in other threads which might
-		 * overwrite the contents.
+		 * We need to make a defensive copy of the character buffer because this
+		 * class will continue to reuse the same buffer with future invocations
+		 * of this write method.
 		 */
 		final char[] finalCharacterBuffer = Arrays.copyOf(cbuf, len);
 

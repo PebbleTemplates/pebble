@@ -1,0 +1,2 @@
+{# used by CoreTagsTest.testImportInChildTemplateOutsideOfBlock #}
+{% block content %}{% endblock %}

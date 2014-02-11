@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
@@ -24,9 +25,34 @@ public class NodeBody extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
+		compile(compiler, false);
+	}
+
+	/**
+	 * When compiling a template that extends another template the NodeRoot will
+	 * compile it's NodeBody with only a select list of Node types.
+	 * 
+	 * @param compiler
+	 * @param whitelistNodes
+	 */
+	public void compile(Compiler compiler, boolean whitelistNodes) {
 		for (Node child : children) {
+			if (whitelistNodes) {
+				if (!nodesAllowedInChildOutsideOfBlocks.contains(child.getClass())) {
+					continue;
+				}
+			}
 			child.compile(compiler);
 		}
+	}
+
+	private static List<Class<? extends Node>> nodesAllowedInChildOutsideOfBlocks = new ArrayList<>();
+
+	static {
+		nodesAllowedInChildOutsideOfBlocks.add(NodeSet.class);
+		nodesAllowedInChildOutsideOfBlocks.add(NodeImport.class);
+		nodesAllowedInChildOutsideOfBlocks.add(NodeMacro.class);
+		nodesAllowedInChildOutsideOfBlocks.add(NodeBlock.class);
 	}
 
 }

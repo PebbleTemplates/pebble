@@ -202,8 +202,7 @@ public class ParserImpl implements Parser {
 					subparser.setParser(this);
 					Node node = subparser.parse(token);
 
-					// node might be null (ex. token is "extend" and the parser
-					// simply sets the parent node)
+					// node might be null (ex. "extend" token parser)
 					if (node != null) {
 						nodes.add(node);
 					}
