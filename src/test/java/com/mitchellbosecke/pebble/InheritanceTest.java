@@ -11,6 +11,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -39,6 +41,22 @@ public class InheritanceTest extends AbstractTest {
 		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tCHILD HEAD\n"
 				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
 				+ "GRANDFATHER TEXT BELOW FOOT", writer.toString());
+	}
+	
+	@Test
+	public void testDynamicInheritance() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.dynamicChild.peb");
+		Map<String, Object> context = new HashMap<>();
+		context.put("extendNumberOne", true);
+
+		Writer writer1 = new StringWriter();
+		template.evaluate(writer1, context);
+		assertEquals("ONE", writer1.toString());
+		
+		Writer writer2 = new StringWriter();
+		context.put("extendNumberOne", false);
+		template.evaluate(writer2, context);
+		assertEquals("TWO", writer2.toString());
 	}
 
 }

@@ -74,7 +74,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	private final Map<String, Macro> macros = new HashMap<>();
 
-	public PebbleTemplateImpl(String generatedJavaCode, PebbleEngine engine) {
+	public PebbleTemplateImpl(String generatedJavaCode, PebbleEngine engine) throws PebbleException {
 		this.generatedJavaCode = generatedJavaCode;
 		this.engine = engine;
 	}
@@ -463,8 +463,8 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 		return parent;
 	}
 
-	public void setParent(PebbleTemplateImpl parent) {
-		this.parent = parent;
+	public void setParent(PebbleTemplate parent) {
+		this.parent = (PebbleTemplateImpl) parent;
 	}
 
 }

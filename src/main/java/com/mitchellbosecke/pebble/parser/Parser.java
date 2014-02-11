@@ -16,6 +16,7 @@ import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeMacro;
 import com.mitchellbosecke.pebble.node.NodeRoot;
 
@@ -43,7 +44,7 @@ public interface Parser {
 	 */
 	public NodeBody subparse(StoppingCondition stopCondition) throws ParserException;
 
-	public void setParentFileName(String parentFileName);
+	public void setParentTemplateExpression(NodeExpression parentTemplateExpression);
 
 	public ExpressionParser getExpressionParser();
 
@@ -57,7 +58,7 @@ public interface Parser {
 
 	public PebbleEngine getEngine();
 
-	String getParentFileName();
+	NodeExpression getParentTemplateExpression();
 
 	Map<String, NodeBlock> getBlocks();
 

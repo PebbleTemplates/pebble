@@ -54,10 +54,9 @@ public class ParserImpl implements Parser {
 	private TokenStream stream;
 
 	/**
-	 * The parent template file name which must be known for a proper
-	 * compilation.
+	 * The parent template expression.
 	 */
-	private String parentFileName;
+	private NodeExpression parentTemplateExpression;
 
 	/**
 	 * Blocks to be compiled.
@@ -97,11 +96,11 @@ public class ParserImpl implements Parser {
 	/**
 	 * Private constructor that takes in all stateful data
 	 */
-	private ParserImpl(PebbleEngine engine, TokenStream stream, String parentFileName, Map<String, NodeBlock> blocks,
-			Map<String, NodeMacro> macros) {
+	private ParserImpl(PebbleEngine engine, TokenStream stream, NodeExpression parentTemplateExpression,
+			Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros) {
 		this.engine = engine;
 		this.stream = stream;
-		this.parentFileName = parentFileName;
+		this.parentTemplateExpression = parentTemplateExpression;
 		this.setBlocks(blocks);
 		this.setMacros(macros);
 	}
@@ -120,11 +119,11 @@ public class ParserImpl implements Parser {
 		 * instance was already being used to parse a template and this
 		 * particular occurrence is a "sub template"
 		 */
-		parserStack.push(new ParserImpl(engine, stream, parentFileName, getBlocks(), getMacros()));
+		parserStack.push(new ParserImpl(engine, stream, parentTemplateExpression, getBlocks(), getMacros()));
 
 		this.stream = stream;
 
-		this.parentFileName = null;
+		this.parentTemplateExpression = null;
 
 		this.blocks = new HashMap<>();
 		this.blockStack = new Stack<>();
@@ -133,14 +132,14 @@ public class ParserImpl implements Parser {
 
 		NodeBody body = subparse();
 
-		NodeRoot root = new NodeRoot(body, parentFileName, getBlocks(), getMacros(), stream.getFilename());
+		NodeRoot root = new NodeRoot(body, parentTemplateExpression, getBlocks(), getMacros(), stream.getFilename());
 
 		/*
 		 * Resume the parser state
 		 */
 		Parser oldState = parserStack.pop();
 		this.stream = oldState.getStream();
-		this.parentFileName = oldState.getParentFileName();
+		this.parentTemplateExpression = oldState.getParentTemplateExpression();
 		this.setBlocks(oldState.getBlocks());
 		this.setMacros(oldState.getMacros());
 
@@ -270,12 +269,12 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public String getParentFileName() {
-		return this.parentFileName;
+	public NodeExpression getParentTemplateExpression() {
+		return this.parentTemplateExpression;
 	}
 
-	public void setParentFileName(String parent) {
-		this.parentFileName = parent;
+	public void setParentTemplateExpression(NodeExpression parentTemplateExpression) {
+		this.parentTemplateExpression = parentTemplateExpression;
 	}
 
 	@Override

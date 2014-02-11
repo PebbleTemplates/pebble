@@ -15,6 +15,8 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -24,17 +26,17 @@ public class NodeRoot extends AbstractNode {
 
 	private final NodeBody body;
 
-	private final String parentFileName;
+	private final NodeExpression parentTemplateExpression;
 
 	private final Map<String, NodeBlock> blocks;
 
 	private final Map<String, NodeMacro> macros;
 
-	public NodeRoot(NodeBody body, String parentFileName, Map<String, NodeBlock> blocks, Map<String, NodeMacro> macros,
-			String filename) {
+	public NodeRoot(NodeBody body, NodeExpression parentTemplateExpression, Map<String, NodeBlock> blocks,
+			Map<String, NodeMacro> macros, String filename) {
 		super(0);
 		this.body = body;
-		this.parentFileName = parentFileName;
+		this.parentTemplateExpression = parentTemplateExpression;
 		this.blocks = blocks;
 		this.macros = macros;
 		this.filename = filename;
@@ -60,7 +62,6 @@ public class NodeRoot extends AbstractNode {
 	private void compileMetaInformationInComments(Compiler compiler) {
 		compiler.write("/*").newline();
 		compiler.write(" * Filename: ").raw(filename).newline();
-		compiler.write(" * Parent filename: ").raw(parentFileName).newline();
 		compiler.write(" * Compiled on: ").raw(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()))
 				.newline();
 		compiler.write(" */").newline();
@@ -75,22 +76,59 @@ public class NodeRoot extends AbstractNode {
 				.write(String.format("public class %s extends %s {", className, parentClass)).indent();
 	}
 
+	/**
+	 * Builds the template constructor.
+	 * 
+	 * @param compiler
+	 * @param className
+	 */
 	private void compileConstructor(Compiler compiler, String className) {
 		compiler.newline(2).write("public ").raw(className).raw(" (String javaCode, ")
-				.raw(PebbleEngine.class.getName()).raw(" engine) { ").newline();
+				.raw(PebbleEngine.class.getName()).raw(" engine) throws ").raw(PebbleException.class.getName())
+				.raw("{ ").newline();
 
 		compiler.indent().write("super(javaCode, engine);").newline();
 
+		/*
+		 * If parent expression was just a literal string we can compile it in
+		 * the constructor which ensures that the parent template is compiled at
+		 * the same time the child template is compiled. If it's not a string
+		 * literal it will be compiled in the buildContent() method which occurs
+		 * at runtime.
+		 */
+		if (parentTemplateExpression != null && parentTemplateExpression instanceof NodeExpressionString) {
+			compiler.write("setParent(engine.compile(").subcompile(parentTemplateExpression).raw("));").newline();
+		}
+
+		// private method that registers all the blocks
 		compiler.write("initBlocks();").newline();
+
+		// private method that registers all the macros
 		compiler.write("initMacros();").newline();
 		compiler.outdent().write("}").newline(2);
 	}
 
+	/**
+	 * Creates the buildContent() method which is responsible for the entire
+	 * evaluation of the template.
+	 * 
+	 * @param compiler
+	 */
 	private void compileBuildContentFunction(Compiler compiler) {
 		compiler.write("public void buildContent(java.io.Writer writer, ").raw(EvaluationContext.class.getName())
 				.raw(" context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.newline().indent();
-		if (this.parentFileName != null) {
+
+		if (this.parentTemplateExpression != null) {
+
+			/*
+			 * if parent expression was a string literal, the parent is compiled
+			 * in the constructor, otherwise it's compiled here at runtime.
+			 */
+			if (!(this.parentTemplateExpression instanceof NodeExpressionString)) {
+				compiler.write("setParent(engine.compile(").subcompile(parentTemplateExpression).raw("));").newline();
+			}
+
 			compiler.write("context.pushInheritanceChain(this);").newline();
 			compiler.write("getParent().buildContent(writer, context);").newline();
 		} else {
@@ -121,10 +159,10 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	public boolean hasParent() {
-		return parentFileName != null;
+		return parentTemplateExpression != null;
 	}
 
-	public String getParentFileName() {
-		return parentFileName;
+	public NodeExpression getParentTemplateExpression() {
+		return parentTemplateExpression;
 	}
 }

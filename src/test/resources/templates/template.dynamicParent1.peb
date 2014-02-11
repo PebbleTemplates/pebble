@@ -1,0 +1,5 @@
+{# 
+	used by: 
+		- InheritanceTest.testDynamicInheritance 
+#}
+{% block head %}ONE{% endblock head %}

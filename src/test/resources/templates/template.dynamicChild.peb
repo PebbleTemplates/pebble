@@ -1,0 +1,5 @@
+{# 
+	used by: 
+		- InheritanceTest.testDynamicInheritance 
+#}
+{% extends extendNumberOne? "template.dynamicParent1.peb" : "template.dynamicParent2.peb" %}

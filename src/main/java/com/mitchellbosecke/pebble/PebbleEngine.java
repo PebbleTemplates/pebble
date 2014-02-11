@@ -9,7 +9,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -160,19 +159,17 @@ public class PebbleEngine {
 		}
 
 		final String className = this.getTemplateClassName(templateName);
-		final PebbleEngine self = this;
 		PebbleTemplate result = null;
 
 		try {
 
 			result = templateCache.get(className, new Callable<PebbleTemplate>() {
 
-				public PebbleTemplateImpl call() throws PebbleException, ExecutionException, InterruptedException {
+				public PebbleTemplateImpl call() throws Exception {
 
 					compilationMutex.acquire();
 
 					PebbleTemplateImpl instance = null;
-					String parentFileName = null;
 					String javaSource = null;
 
 					try {
@@ -180,46 +177,21 @@ public class PebbleEngine {
 						Reader templateReader = loader.getReader(templateName);
 
 						/*
-						 * load template into a String.
-						 * 
 						 * TODO: Pass the reader to the Lexer and just let the
 						 * lexer iterate through the characters without having
 						 * to use an intermediary string.
 						 */
-						String templateSource = null;
-						try {
-							templateSource = IOUtils.toString(templateReader);
-						} catch (IOException e) {
-							throw new LoaderException(e, "Could not load template");
-						}
+						String templateSource = IOUtils.toString(templateReader);
 
 						TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
 						NodeRoot root = getParser().parse(tokenStream);
 						javaSource = getCompiler().compile(root).getSource();
 
-						parentFileName = root.hasParent() ? root.getParentFileName() : null;
-					} catch (Exception e) {
-
-						// avoid unnecessary exception wrapping
-						if (e instanceof PebbleException) {
-							throw e;
-						} else {
-							throw new PebbleException(e, String.format("An error occurred while compiling %s",
-									templateName));
-						}
 					} finally {
 						compilationMutex.release();
 					}
 
 					instance = getCompiler().instantiateTemplate(javaSource, className);
-
-					// compile the parent template if it is known at compile time
-					PebbleTemplateImpl parent = null;
-					if (parentFileName != null) {
-						parent = (PebbleTemplateImpl) self.compile(parentFileName);
-					}
-					instance.setParent(parent);
-
 					return instance;
 				}
 			});
@@ -233,7 +205,7 @@ public class PebbleEngine {
 			if (e.getCause() != null && e.getCause() instanceof PebbleException) {
 				throw (PebbleException) e.getCause();
 			} else {
-				throw new PebbleException(e, "Error occurred while retrieving template from cache. ");
+				throw new PebbleException(e, String.format("An error occurred while compiling %s", templateName));
 			}
 		}
 

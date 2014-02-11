@@ -13,6 +13,7 @@ import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class ExtendsTokenParser extends AbstractTokenParser {
 
@@ -20,22 +21,18 @@ public class ExtendsTokenParser extends AbstractTokenParser {
 	public Node parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
-		
+
 		// skip the 'extends' token
 		stream.next();
-		
-		if (this.parser.getParentFileName() != null) {
-			throw new ParserException(null, "Multiple extend tags are not allowed.",
-					lineNumber, parser.getStream().getFilename());
+
+		if (this.parser.getParentTemplateExpression() != null) {
+			throw new ParserException(null, "Multiple extend tags are not allowed.", lineNumber, parser.getStream()
+					.getFilename());
 		}
-		
-		
-		String templateName = stream.current().getValue();
-		this.parser.setParentFileName(templateName);
-		
-		// consume the parent name
-		stream.next();
-		
+
+		NodeExpression parentTemplateExpression = parser.getExpressionParser().parseExpression();
+		this.parser.setParentTemplateExpression(parentTemplateExpression);
+
 		stream.expect(Token.Type.EXECUTE_END);
 		return null;
 	}
