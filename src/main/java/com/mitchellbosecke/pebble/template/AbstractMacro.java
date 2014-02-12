@@ -20,17 +20,27 @@ public abstract class AbstractMacro implements Macro {
 	@Override
 	public String call(EvaluationContext context, Map<String, Object> namedArguments) throws PebbleException {
 		StringWriter writer = new StringWriter();
-
+		
+		// first add a scope containing default argument values
 		context.pushLocalScope();
+		context.putAll(getDefaultArgumentValues());
+		
+		// then add a scope with all the user provided argument values
+		context.pushScope();
 		context.putAll(namedArguments);
+		
 		try {
 			evaluate(writer, context);
 		} catch (IOException e) {
 			throw new PebbleException(e, "Error occurred while calling macro");
 		}
+		
+		context.popScope();
 		context.popScope();
 		return writer.toString();
 	}
+	
+	protected abstract Map<String,Object> getDefaultArgumentValues();
 
 	public abstract void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException;
 

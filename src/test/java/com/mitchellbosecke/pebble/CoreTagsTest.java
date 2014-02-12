@@ -202,6 +202,18 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
 	}
 
+	@Test
+	public void testMacroWithDefaultArgument() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleTemplate template = pebble
+				.compile("{{ input(name='country') }}{% macro input(type='text', name) %}{{ type }} {{ name }}{% endmacro %}");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("text country", writer.toString());
+	}
+
 	/**
 	 * There was an issue where the second invokation of a macro did not have
 	 * access to the original arguments any more.
@@ -253,7 +265,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("HELLO\n", writer.toString());
 	}
-	
+
 	@Test
 	public void testImportWithinBlock() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.importWithinBlock.peb");
@@ -299,7 +311,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", writer.toString());
 	}
-	
+
 	@Test
 	public void testIncludeWithinBlock() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.includeWithinBlock.peb");
@@ -355,7 +367,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("alex", writer.toString());
 	}
-	
+
 	@Test
 	public void testSetInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
 		PebbleTemplate template = pebble.compile("template.set.child.peb");

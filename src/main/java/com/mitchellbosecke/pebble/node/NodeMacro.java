@@ -10,7 +10,9 @@
 package com.mitchellbosecke.pebble.node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
@@ -41,6 +43,7 @@ public class NodeMacro extends AbstractNode {
 		compileGetNameMethod(compiler);
 		compileGetArgumentNamesMethod(compiler);
 		compileEvaluate(compiler);
+		compileGetDefaultArgumentValuesMethod(compiler);
 		compiler.outdent().write("});");
 
 	}
@@ -50,14 +53,61 @@ public class NodeMacro extends AbstractNode {
 	}
 
 	public void compileGetArgumentNamesMethod(Compiler compiler) {
-		compiler.write("public ").raw(List.class.getName()).raw("<String> getArgumentNames(){").indent().newline();
 
+		// @formatter:off
+		/*
+		 * GENERATES:
+		 * 
+		 * public List<String> getArgumentNames(){
+		 * 		List<String> result = new Arraylist<>();
+		 * 		result.add("argName1");
+		 * 		result.add("argName2");
+		 * 		...
+		 * 		return result;
+		 * }
+		 */
+		// @formatter:on
+		compiler.write("public ").raw(List.class.getName()).raw("<String> getArgumentNames(){").indent().newline();
 		compiler.write(List.class.getName()).raw("<String> result = new ").raw(ArrayList.class.getName()).raw("<>();")
 				.newline();
 
 		for (NodeExpressionNamedArgument arg : args.getArgs()) {
 			NodeExpressionNewVariableName variableName = arg.getName();
 			compiler.write("result.add(").string(variableName.getName()).raw(");").newline();
+
+		}
+
+		compiler.write("return result;").newline();
+		compiler.outdent().write("}").newline();
+
+	}
+
+	public void compileGetDefaultArgumentValuesMethod(Compiler compiler) {
+
+		// @formatter:off
+		/*
+		 * GENERATES:
+		 * 
+		 * protected Map<String, Object> getDefaultArgumentValues(){
+		 * 		Map<String,Object> result = new HashMap<>();
+		 * 		result.put("argName1", argValue1);
+		 * 		result.put("argName2", argValue2);
+		 * 		...
+		 * 		return result;
+		 * }
+		 */
+		// @formatter:on
+		compiler.write("protected ").raw(Map.class.getName()).raw("<String, Object> getDefaultArgumentValues(){")
+				.indent().newline();
+		compiler.write(Map.class.getName()).raw("<String, Object> result = new ").raw(HashMap.class.getName())
+				.raw("<>();").newline();
+
+		for (NodeExpressionNamedArgument arg : args.getArgs()) {
+			if (arg.getValue() != null) {
+				NodeExpressionNewVariableName variableName = arg.getName();
+				compiler.write("result.put(").string(variableName.getName()).raw(",").subcompile(arg.getValue())
+						.raw(");").newline();
+			}
 		}
 
 		compiler.write("return result;").newline();
