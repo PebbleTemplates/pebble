@@ -1,0 +1,5 @@
+{# used by CoreTagsTest.testImportWithinBlock #}
+{% block content %}
+{% import "template.macro1.peb" %}
+{{ input("company", "forcorp", "text") }}
+{% endblock %}

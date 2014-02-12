@@ -253,6 +253,15 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("HELLO\n", writer.toString());
 	}
+	
+	@Test
+	public void testImportWithinBlock() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.importWithinBlock.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("\t<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", writer.toString());
+	}
 
 	@Test
 	public void testImportFile() throws PebbleException, IOException {
@@ -289,6 +298,15 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", writer.toString());
+	}
+	
+	@Test
+	public void testIncludeWithinBlock() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.compile("template.includeWithinBlock.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("TEMPLATE2\nTEMPLATE1\n", writer.toString());
 	}
 
 	/**
