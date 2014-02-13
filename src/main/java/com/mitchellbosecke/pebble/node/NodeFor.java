@@ -9,6 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.utils.ObjectUtils;
@@ -36,8 +39,8 @@ public class NodeFor extends AbstractNode {
 	public void compile(Compiler compiler) {
 
 		if (elseBody != null) {
-			compiler.newline().write("if (").subcompile(iterable).write(" != null && ((Iterable)(").subcompile(iterable)
-					.raw(")).iterator().hasNext()){").newline().indent();
+			compiler.newline().write("if (").subcompile(iterable).write(" != null && ((Iterable)(")
+					.subcompile(iterable).raw(")).iterator().hasNext()){").newline().indent();
 
 			compileForLoop(compiler);
 
@@ -66,8 +69,8 @@ public class NodeFor extends AbstractNode {
 				.raw(".getIteratorSize((Iterable)").subcompile(iterable).raw("));").newline();
 
 		// start the for loop
-		compiler.write("for( Object ").subcompile(iterationVariable).raw(" : (Iterable)(").subcompile(iterable).raw(")){")
-				.newline().indent();
+		compiler.write("for( Object ").subcompile(iterationVariable).raw(" : (Iterable)(").subcompile(iterable)
+				.raw(")){").newline().indent();
 
 		compiler.write("context.put(").string(iterationVariable.getName()).raw(",").raw(iterationVariable.getName())
 				.raw(");").newline().subcompile(body).newline();
@@ -81,5 +84,15 @@ public class NodeFor extends AbstractNode {
 
 		// remove context variables that are specific to this for loop
 		compiler.write("context.popScope();").newline();
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		children.add(iterationVariable);
+		children.add(iterable);
+		children.add(body);
+		children.add(elseBody);
+		return children;
 	}
 }

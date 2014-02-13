@@ -9,10 +9,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 
 public interface Node {
 	
 	public void compile(Compiler compiler);
+	
+	public List<Node> getChildren();
 
 }

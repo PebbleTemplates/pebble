@@ -9,9 +9,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 
-public class NodeText extends AbstractNode implements DisplayableNode {
+public class NodeText extends AbstractNode {
 
 	private final String data;
 
@@ -22,11 +25,13 @@ public class NodeText extends AbstractNode implements DisplayableNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.write("writer.write(").string(getData()).raw(");").newline();
+		compiler.write("writer.write(").string(data).raw(");").newline();
 	}
 
-	public String getData() {
-		return data;
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		return children;
 	}
 
 }

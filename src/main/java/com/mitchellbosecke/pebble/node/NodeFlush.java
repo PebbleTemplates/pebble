@@ -9,6 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 
 public class NodeFlush extends AbstractNode {
@@ -20,6 +23,12 @@ public class NodeFlush extends AbstractNode {
 	@Override
 	public void compile(Compiler compiler) {
 		compiler.newline().write("writer.flush();").newline();
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		return children;
 	}
 
 }

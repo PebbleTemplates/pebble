@@ -10,7 +10,9 @@
 package com.mitchellbosecke.pebble.node;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -138,7 +140,7 @@ public class NodeRoot extends AbstractNode {
 			compiler.write("} else {").newline();
 			compiler.subcompile(body).newline();
 			compiler.write("}").newline();
-			
+
 		} else {
 			compiler.subcompile(body);
 		}
@@ -172,5 +174,15 @@ public class NodeRoot extends AbstractNode {
 
 	public NodeExpression getParentTemplateExpression() {
 		return parentTemplateExpression;
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		children.add(body);
+		children.add(parentTemplateExpression);
+		children.addAll(blocks.values());
+		children.addAll(macros.values());
+		return children;
 	}
 }

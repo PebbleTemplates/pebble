@@ -122,4 +122,12 @@ public class NodeMacro extends AbstractNode {
 		compiler.subcompile(body);
 		compiler.outdent().newline().write("}").newline();
 	}
+	
+	@Override
+	public List<Node> getChildren(){
+		List<Node> children = new ArrayList<>();
+		children.add(body);
+		children.add(args);
+		return children;
+	}
 }

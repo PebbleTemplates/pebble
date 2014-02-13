@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
@@ -40,8 +41,8 @@ public class NodeIf extends AbstractNode {
 				compiler.newline().write("if (");
 			}
 
-			compiler.raw("(Boolean) ").subcompile(ifStatement.getLeft()).raw(") {").
-			        newline().indent().subcompile(ifStatement.getRight());
+			compiler.raw("(Boolean) ").subcompile(ifStatement.getLeft()).raw(") {").newline().indent()
+					.subcompile(ifStatement.getRight());
 
 		}
 
@@ -50,6 +51,17 @@ public class NodeIf extends AbstractNode {
 		}
 
 		compiler.newline().outdent().write("}").newline();
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		for (Pair<NodeExpression, NodeBody> conditionalNodes : conditionsWithBodies) {
+			children.add(conditionalNodes.getLeft());
+			children.add(conditionalNodes.getRight());
+		}
+		children.add(elseBody);
+		return children;
 	}
 
 }

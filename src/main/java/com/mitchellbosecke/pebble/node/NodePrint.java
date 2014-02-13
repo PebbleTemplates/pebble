@@ -9,9 +9,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 
-public class NodePrint extends AbstractNode implements DisplayableNode {
+public class NodePrint extends AbstractNode {
 
 	private final NodeExpression expression;
 
@@ -24,6 +27,13 @@ public class NodePrint extends AbstractNode implements DisplayableNode {
 	public void compile(Compiler compiler) {
 
 		compiler.write("writer.write(printVariable(").subcompile(expression).raw("));").newline();
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		children.add(expression);
+		return children;
 	}
 
 }

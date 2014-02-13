@@ -46,6 +46,13 @@ public class NodeBody extends AbstractNode {
 		}
 	}
 
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		children.addAll(this.children);
+		return children;
+	}
+
 	private static List<Class<? extends Node>> nodesAllowedInChildOutsideOfBlocks = new ArrayList<>();
 
 	static {

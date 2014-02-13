@@ -9,6 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.Block;
@@ -52,6 +55,13 @@ public class NodeBlock extends AbstractNode {
 				.indent();
 		compiler.subcompile(body);
 		compiler.outdent().newline().write("}").newline();
+	}
+	
+	@Override
+	public List<Node> getChildren(){
+		List<Node> children = new ArrayList<>();
+		children.add(body);
+		return children;
 	}
 
 }

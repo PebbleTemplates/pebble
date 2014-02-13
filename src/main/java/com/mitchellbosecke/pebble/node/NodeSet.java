@@ -9,6 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 
@@ -27,6 +30,14 @@ public class NodeSet extends AbstractNode {
 	@Override
 	public void compile(Compiler compiler) {
 		compiler.newline().write("context.put(").string(name.getName()).raw(",").subcompile(value).raw(");").newline();
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		children.add(name);
+		children.add(value);
+		return children;
 	}
 
 }

@@ -9,6 +9,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionBinary extends NodeExpression {
@@ -30,6 +34,14 @@ public abstract class NodeExpressionBinary extends NodeExpression {
 	
 	public NodeExpressionBinary(){
 		
+	}
+	
+	@Override
+	public List<Node> getChildren(){
+		List<Node> children = new ArrayList<>();
+		children.add(leftExpression);
+		children.add(rightExpression);
+		return children;
 	}
 
 }

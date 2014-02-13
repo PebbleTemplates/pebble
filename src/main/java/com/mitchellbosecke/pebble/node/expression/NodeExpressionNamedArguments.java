@@ -9,9 +9,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.template.ArgumentMap;
 
@@ -44,6 +46,13 @@ public class NodeExpressionNamedArguments extends NodeExpression {
 				compiler.raw(",").subcompile(arg.getValue()).raw(")");
 			}
 		}
+	}
+	
+	@Override
+	public List<Node> getChildren(){
+		List<Node> children = new ArrayList<>();
+		children.addAll(args);
+		return children;
 	}
 
 	/**

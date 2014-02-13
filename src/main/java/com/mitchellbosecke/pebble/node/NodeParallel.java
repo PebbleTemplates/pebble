@@ -9,6 +9,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
@@ -37,6 +40,13 @@ public class NodeParallel extends AbstractNode {
 		compiler.outdent().write("}").newline();
 
 		compiler.outdent().write("});").newline();
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		List<Node> children = new ArrayList<>();
+		children.add(body);
+		return children;
 	}
 
 }
