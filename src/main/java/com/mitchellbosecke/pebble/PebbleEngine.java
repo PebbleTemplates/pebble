@@ -27,6 +27,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
+import com.mitchellbosecke.pebble.compiler.JavaCompiler;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -164,6 +165,7 @@ public class PebbleEngine {
 			throw new LoaderException(null, "Loader has not yet been specified.");
 		}
 
+		final PebbleEngine self = this;
 		final String className = this.getTemplateClassName(templateName);
 		PebbleTemplate result = null;
 
@@ -197,7 +199,7 @@ public class PebbleEngine {
 						compilationMutex.release();
 					}
 
-					instance = getCompiler().instantiateTemplate(javaSource, className);
+					instance = JavaCompiler.compile(self, javaSource, className);
 					return instance;
 				}
 			});

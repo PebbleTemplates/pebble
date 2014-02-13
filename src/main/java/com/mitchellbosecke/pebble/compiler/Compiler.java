@@ -10,10 +10,7 @@
 package com.mitchellbosecke.pebble.compiler;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.CompilationException;
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public interface Compiler {
 
@@ -126,19 +123,5 @@ public interface Compiler {
 	 * @return The main PebbleEngine.
 	 */
 	public PebbleEngine getEngine();
-
-	/**
-	 * This method should only called from the main PebbleEngine class. While
-	 * the rest of the compiler converts Nodes into a StringBuilder, this method
-	 * will convert that StringBuilder into an actual Java class instance.
-	 * 
-	 * @param javaSource
-	 *            Java source code
-	 * @param className
-	 *            The name of the generated class name
-	 * @return The final PebbleTemplate instance
-	 * @throws PebbleException
-	 */
-	PebbleTemplateImpl instantiateTemplate(String javaSource, String className) throws CompilationException;
 
 }
