@@ -10,14 +10,16 @@
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 
 /**
  * The right hand side to the filter expression.
  * 
  * @author Mitchell
- *
+ * 
  */
-public class NodeExpressionFilterInvocation extends NodeExpressionBinary {
+public class NodeExpressionFilterInvocation extends NodeExpression {
 
 	private final NodeExpressionConstant filterName;
 
@@ -36,6 +38,11 @@ public class NodeExpressionFilterInvocation extends NodeExpressionBinary {
 		 * The NodeExpressionBinaryFilter.class will handle compilation
 		 */
 		throw new RuntimeException("Compile method on FilterInvokation node is not supported");
+	}
+
+	@Override
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 	public NodeExpressionNamedArguments getArgs() {

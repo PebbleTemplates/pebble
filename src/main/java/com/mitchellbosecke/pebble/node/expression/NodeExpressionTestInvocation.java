@@ -10,6 +10,8 @@
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
+import com.mitchellbosecke.pebble.node.NodeExpression;
 
 /**
  * The right hand side to the test expression.
@@ -17,13 +19,14 @@ import com.mitchellbosecke.pebble.compiler.Compiler;
  * @author Mitchell
  * 
  */
-public class NodeExpressionTestInvocation extends NodeExpressionBinary {
+public class NodeExpressionTestInvocation extends NodeExpression {
 
 	private final NodeExpressionConstant testName;
 
 	private final NodeExpressionNamedArguments args;
 
-	public NodeExpressionTestInvocation(int lineNumber, NodeExpressionConstant testName, NodeExpressionNamedArguments args) {
+	public NodeExpressionTestInvocation(int lineNumber, NodeExpressionConstant testName,
+			NodeExpressionNamedArguments args) {
 		super(lineNumber);
 		this.testName = testName;
 		this.args = args;
@@ -35,6 +38,11 @@ public class NodeExpressionTestInvocation extends NodeExpressionBinary {
 		 * The NodeExpressionBinaryTestPositive.class will handle compilation
 		 */
 		throw new RuntimeException("Compile method on TestInvokation node is not supported");
+	}
+
+	@Override
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 	public NodeExpressionNamedArguments getArgs() {

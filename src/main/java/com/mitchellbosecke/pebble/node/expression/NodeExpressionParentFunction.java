@@ -9,11 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionParentFunction extends NodeExpression {
@@ -31,9 +28,8 @@ public class NodeExpressionParentFunction extends NodeExpression {
 	}
 
 	@Override
-	public List<Node> getChildren() {
-		List<Node> children = new ArrayList<>();
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

@@ -9,11 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 /**
@@ -40,13 +37,10 @@ public class NodeExpressionGetAttribute extends NodeExpression {
 	public void compile(Compiler compiler) {
 		compiler.raw("getAttribute(context, ").subcompile(node).raw(",\"").subcompile(attributeOrMethod).raw("\")");
 	}
-	
+
 	@Override
-	public List<Node> getChildren(){
-		List<Node> children = new ArrayList<>();
-		children.add(node);
-		children.add(attributeOrMethod);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

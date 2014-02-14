@@ -9,10 +9,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class NodeIf extends AbstractNode {
@@ -54,14 +54,8 @@ public class NodeIf extends AbstractNode {
 	}
 
 	@Override
-	public List<Node> getChildren() {
-		List<Node> children = new ArrayList<>();
-		for (Pair<NodeExpression, NodeBody> conditionalNodes : conditionsWithBodies) {
-			children.add(conditionalNodes.getLeft());
-			children.add(conditionalNodes.getRight());
-		}
-		children.add(elseBody);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

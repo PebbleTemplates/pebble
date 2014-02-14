@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
@@ -122,12 +123,9 @@ public class NodeMacro extends AbstractNode {
 		compiler.subcompile(body);
 		compiler.outdent().newline().write("}").newline();
 	}
-	
+
 	@Override
-	public List<Node> getChildren(){
-		List<Node> children = new ArrayList<>();
-		children.add(body);
-		children.add(args);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 }

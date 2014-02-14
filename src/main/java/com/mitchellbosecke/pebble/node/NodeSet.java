@@ -9,10 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 
 public class NodeSet extends AbstractNode {
@@ -33,11 +31,8 @@ public class NodeSet extends AbstractNode {
 	}
 
 	@Override
-	public List<Node> getChildren() {
-		List<Node> children = new ArrayList<>();
-		children.add(name);
-		children.add(value);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

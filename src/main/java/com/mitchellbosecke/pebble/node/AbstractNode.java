@@ -10,6 +10,7 @@
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 
 public abstract class AbstractNode implements Node {
 
@@ -17,6 +18,9 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public abstract void compile(Compiler compiler);
+	
+	@Override
+	public abstract void accept(NodeVisitor visitor);
 	
 	public AbstractNode(){
 	}

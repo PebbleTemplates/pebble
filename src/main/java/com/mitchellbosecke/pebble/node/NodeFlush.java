@@ -9,10 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 
 public class NodeFlush extends AbstractNode {
 
@@ -26,9 +24,8 @@ public class NodeFlush extends AbstractNode {
 	}
 
 	@Override
-	public List<Node> getChildren() {
-		List<Node> children = new ArrayList<>();
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

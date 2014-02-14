@@ -1,10 +1,7 @@
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionNamedArgument extends NodeExpression {
@@ -22,13 +19,10 @@ public class NodeExpressionNamedArgument extends NodeExpression {
 	public void compile(Compiler compiler) {
 		compiler.subcompile(value);
 	}
-	
+
 	@Override
-	public List<Node> getChildren(){
-		List<Node> children = new ArrayList<>();
-		children.add(name);
-		children.add(value);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 	public NodeExpression getValue() {

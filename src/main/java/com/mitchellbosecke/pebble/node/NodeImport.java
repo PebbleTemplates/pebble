@@ -9,10 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 
 public class NodeImport extends AbstractNode {
 
@@ -27,12 +25,10 @@ public class NodeImport extends AbstractNode {
 	public void compile(Compiler compiler) {
 		compiler.raw("addImportedTemplate(engine.compile(").subcompile(importExpression).raw("));").newline();
 	}
-	
+
 	@Override
-	public List<Node> getChildren(){
-		List<Node> children = new ArrayList<>();
-		children.add(importExpression);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

@@ -28,6 +28,9 @@ public class CompilerImpl implements Compiler {
 		this.indentation = 0;
 
 		node.compile(this);
+		
+		PrettyPrinterNodeVisitor visitor = new PrettyPrinterNodeVisitor();
+		node.accept(visitor);
 		return this;
 	}
 

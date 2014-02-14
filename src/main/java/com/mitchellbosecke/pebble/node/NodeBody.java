@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 
 public class NodeBody extends AbstractNode {
 
@@ -47,10 +48,8 @@ public class NodeBody extends AbstractNode {
 	}
 
 	@Override
-	public List<Node> getChildren() {
-		List<Node> children = new ArrayList<>();
-		children.addAll(this.children);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 	private static List<Class<? extends Node>> nodesAllowedInChildOutsideOfBlocks = new ArrayList<>();

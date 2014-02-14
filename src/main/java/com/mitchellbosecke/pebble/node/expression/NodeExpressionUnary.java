@@ -9,25 +9,20 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionUnary extends NodeExpression {
 
 	protected NodeExpression childExpression;
-	
-	public void setNode(NodeExpression node){
+
+	public void setNode(NodeExpression node) {
 		this.childExpression = node;
 	}
-	
+
 	@Override
-	public List<Node> getChildren(){
-		List<Node> children = new ArrayList<>();
-		children.add(childExpression);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

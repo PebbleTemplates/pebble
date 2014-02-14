@@ -9,39 +9,33 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionBinary extends NodeExpression {
 
 	protected NodeExpression leftExpression;
 	protected NodeExpression rightExpression;
-	
-	public void setLeft(NodeExpression left){
+
+	public void setLeft(NodeExpression left) {
 		this.leftExpression = left;
 	}
-	
-	public void setRight(NodeExpression right){
+
+	public void setRight(NodeExpression right) {
 		this.rightExpression = right;
 	}
-	
-	public NodeExpressionBinary(int lineNumber){
+
+	public NodeExpressionBinary(int lineNumber) {
 		super(lineNumber);
 	}
-	
-	public NodeExpressionBinary(){
-		
+
+	public NodeExpressionBinary() {
+
 	}
-	
+
 	@Override
-	public List<Node> getChildren(){
-		List<Node> children = new ArrayList<>();
-		children.add(leftExpression);
-		children.add(rightExpression);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

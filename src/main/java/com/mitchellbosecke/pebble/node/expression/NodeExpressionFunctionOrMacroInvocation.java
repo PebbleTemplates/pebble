@@ -9,11 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionFunctionOrMacroInvocation extends NodeExpression {
@@ -34,13 +31,10 @@ public class NodeExpressionFunctionOrMacroInvocation extends NodeExpression {
 		compiler.raw("applyFunctionOrMacro(").string(String.valueOf(functionName.getValue())).raw(", context")
 				.raw(", ").subcompile(args).raw(")");
 	}
-	
+
 	@Override
-	public List<Node> getChildren(){
-		List<Node> children = new ArrayList<>();
-		children.add(functionName);
-		children.add(args);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 
 	public NodeExpressionConstant getFunctionName() {

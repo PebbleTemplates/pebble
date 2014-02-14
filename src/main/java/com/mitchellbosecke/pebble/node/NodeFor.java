@@ -9,10 +9,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.compiler.Compiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
 import com.mitchellbosecke.pebble.utils.ObjectUtils;
 
@@ -87,12 +85,7 @@ public class NodeFor extends AbstractNode {
 	}
 
 	@Override
-	public List<Node> getChildren() {
-		List<Node> children = new ArrayList<>();
-		children.add(iterationVariable);
-		children.add(iterable);
-		children.add(body);
-		children.add(elseBody);
-		return children;
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
 	}
 }
