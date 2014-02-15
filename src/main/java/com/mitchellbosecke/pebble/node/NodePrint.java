@@ -24,12 +24,16 @@ public class NodePrint extends AbstractNode {
 	@Override
 	public void compile(Compiler compiler) {
 
-		compiler.write("writer.write(printVariable(").subcompile(expression).raw("));").newline();
+		compiler.write("writer.write(printVariable(").subcompile(getExpression()).raw("));").newline();
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpression getExpression() {
+		return expression;
 	}
 
 }

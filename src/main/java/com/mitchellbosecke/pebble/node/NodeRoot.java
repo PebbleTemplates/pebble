@@ -97,8 +97,8 @@ public class NodeRoot extends AbstractNode {
 		 * literal it will be compiled in the buildContent() method which occurs
 		 * at runtime.
 		 */
-		if (parentTemplateExpression != null && parentTemplateExpression instanceof NodeExpressionString) {
-			compiler.write("setParent(engine.compile(").subcompile(parentTemplateExpression).raw("));").newline();
+		if (getParentTemplateExpression() != null && getParentTemplateExpression() instanceof NodeExpressionString) {
+			compiler.write("setParent(engine.compile(").subcompile(getParentTemplateExpression()).raw("));").newline();
 		}
 
 		// private method that registers all the blocks
@@ -120,28 +120,28 @@ public class NodeRoot extends AbstractNode {
 				.raw(" context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.newline().indent();
 
-		if (this.parentTemplateExpression != null) {
+		if (this.getParentTemplateExpression() != null) {
 
 			/*
 			 * if parent expression was a string literal, the parent is compiled
 			 * in the constructor, otherwise it's compiled here at runtime.
 			 */
-			if (!(this.parentTemplateExpression instanceof NodeExpressionString)) {
-				compiler.write("setParent(engine.compile(").subcompile(parentTemplateExpression).raw("));").newline();
+			if (!(this.getParentTemplateExpression() instanceof NodeExpressionString)) {
+				compiler.write("setParent(engine.compile(").subcompile(getParentTemplateExpression()).raw("));").newline();
 			}
 
 			// parent can still be null if "extends" expression evaluated to
 			// null
 			compiler.write("if (getParent() != null ) {").newline().indent();
-			body.compile(compiler, true);
+			getBody().compile(compiler, true);
 			compiler.write("context.pushInheritanceChain(this);").newline();
 			compiler.write("getParent().buildContent(writer, context);").newline().outdent();
 			compiler.write("} else {").newline();
-			compiler.subcompile(body).newline();
+			compiler.subcompile(getBody()).newline();
 			compiler.write("}").newline();
 
 		} else {
-			compiler.subcompile(body);
+			compiler.subcompile(getBody());
 		}
 
 		compiler.outdent().write("}").newline(2);
@@ -149,7 +149,7 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileBlocks(Compiler compiler) {
 		compiler.write("private void initBlocks() {").newline().indent();
-		for (NodeBlock block : blocks.values()) {
+		for (NodeBlock block : getBlocks().values()) {
 			compiler.subcompile(block).newline();
 		}
 		compiler.outdent().newline().write("}").newline(2);
@@ -157,7 +157,7 @@ public class NodeRoot extends AbstractNode {
 
 	private void compileMacros(Compiler compiler) {
 		compiler.write("private void initMacros() {").newline().indent();
-		for (NodeMacro macro : macros.values()) {
+		for (NodeMacro macro : getMacros().values()) {
 			compiler.subcompile(macro).newline();
 		}
 		compiler.outdent().newline().write("}").newline(2);
@@ -168,7 +168,7 @@ public class NodeRoot extends AbstractNode {
 	}
 
 	public boolean hasParent() {
-		return parentTemplateExpression != null;
+		return getParentTemplateExpression() != null;
 	}
 
 	public NodeExpression getParentTemplateExpression() {
@@ -178,5 +178,17 @@ public class NodeRoot extends AbstractNode {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeBody getBody() {
+		return body;
+	}
+
+	public Map<String, NodeBlock> getBlocks() {
+		return blocks;
+	}
+
+	public Map<String, NodeMacro> getMacros() {
+		return macros;
 	}
 }

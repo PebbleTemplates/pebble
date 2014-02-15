@@ -28,7 +28,7 @@ public class NodeExpressionBlockReferenceAndFunction extends NodeExpression {
 
 	public NodeExpressionBlockReferenceAndFunction(int lineNumber, NodeExpressionNamedArguments args) {
 		super(lineNumber);
-		this.args = args;
+		this.setArgs(args);
 		this.isExpression = true;
 	}
 
@@ -40,8 +40,8 @@ public class NodeExpressionBlockReferenceAndFunction extends NodeExpression {
 
 	@Override
 	public void compile(Compiler compiler) {
-		if (this.isExpression) {
-			compiler.raw("block(").subcompile(args.getArgs().get(0).getValue()).raw(", context, false)");
+		if (this.isExpression()) {
+			compiler.raw("block(").subcompile(getArgs().getArgs().get(0).getValue()).raw(", context, false)");
 		} else {
 			compiler.newline().write("block(").string(blockName).raw(", context, false, writer);").newline();
 		}
@@ -50,6 +50,18 @@ public class NodeExpressionBlockReferenceAndFunction extends NodeExpression {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpressionNamedArguments getArgs() {
+		return args;
+	}
+
+	public void setArgs(NodeExpressionNamedArguments args) {
+		this.args = args;
+	}
+
+	public boolean isExpression() {
+		return isExpression;
 	}
 
 }

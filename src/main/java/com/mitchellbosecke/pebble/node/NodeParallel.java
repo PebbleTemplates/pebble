@@ -17,7 +17,7 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class NodeParallel extends AbstractNode {
 
-	private NodeBody body;
+	private final NodeBody body;
 
 	public NodeParallel(int lineNumber, NodeBody body) {
 		super(lineNumber);
@@ -33,7 +33,7 @@ public class NodeParallel extends AbstractNode {
 				.raw(" context) throws ").raw(PebbleException.class.getName()).raw(", java.io.IOException {").newline()
 				.indent();
 
-		body.compile(compiler);
+		getBody().compile(compiler);
 
 		compiler.outdent().write("}").newline();
 
@@ -43,5 +43,9 @@ public class NodeParallel extends AbstractNode {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeBody getBody() {
+		return body;
 	}
 }

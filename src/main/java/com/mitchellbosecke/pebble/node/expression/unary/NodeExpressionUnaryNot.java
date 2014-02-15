@@ -16,7 +16,7 @@ public class NodeExpressionUnaryNot extends NodeExpressionUnary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("((Boolean)").subcompile(childExpression).raw(" == false)");
+		compiler.raw("((Boolean)").subcompile(getChildExpression()).raw(" == false)");
 	}
 
 }

@@ -37,7 +37,7 @@ public class NodeBody extends AbstractNode {
 	 * @param whitelistNodes
 	 */
 	public void compile(Compiler compiler, boolean whitelistNodes) {
-		for (Node child : children) {
+		for (Node child : getChildren()) {
 			if (whitelistNodes) {
 				if (!nodesAllowedInChildOutsideOfBlocks.contains(child.getClass())) {
 					continue;
@@ -50,6 +50,10 @@ public class NodeBody extends AbstractNode {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public List<Node> getChildren() {
+		return children;
 	}
 
 	private static List<Class<? extends Node>> nodesAllowedInChildOutsideOfBlocks = new ArrayList<>();

@@ -59,5 +59,9 @@ public class NodeBlock extends AbstractNode {
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	public NodeBody getBody(){
+		return body;
+	}
 
 }

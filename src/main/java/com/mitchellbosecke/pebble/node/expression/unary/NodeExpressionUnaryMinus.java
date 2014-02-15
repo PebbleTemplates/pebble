@@ -17,7 +17,7 @@ public class NodeExpressionUnaryMinus extends NodeExpressionUnary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(OperatorUtils.class.getName()).raw(".unaryMinus(").subcompile(childExpression, false).raw(")");
+		compiler.raw(OperatorUtils.class.getName()).raw(".unaryMinus(").subcompile(getChildExpression(), false).raw(")");
 	}
 
 }

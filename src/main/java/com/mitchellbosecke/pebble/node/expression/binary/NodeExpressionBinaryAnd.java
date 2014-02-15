@@ -16,7 +16,7 @@ public class NodeExpressionBinaryAnd extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("((").subcompile(leftExpression).raw(" == true) && (").subcompile(rightExpression)
+		compiler.raw("((").subcompile(getLeftExpression()).raw(" == true) && (").subcompile(getRightExpression())
 				.raw(" == true))");
 	}
 

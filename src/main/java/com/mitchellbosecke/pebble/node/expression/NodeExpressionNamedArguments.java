@@ -22,7 +22,7 @@ public class NodeExpressionNamedArguments extends NodeExpression {
 	 * An invokation of a function or macro can contain full fledged expressions
 	 * in the arguments
 	 */
-	private List<NodeExpressionNamedArgument> args;
+	private final List<NodeExpressionNamedArgument> args;
 
 	public NodeExpressionNamedArguments(int lineNumber, List<NodeExpressionNamedArgument> args) {
 		super(lineNumber);
@@ -34,8 +34,8 @@ public class NodeExpressionNamedArguments extends NodeExpression {
 
 		compiler.raw(ArgumentMap.class.getName()).raw(".create()");
 
-		if (args != null) {
-			for (NodeExpressionNamedArgument arg : args) {
+		if (getArgs() != null) {
+			for (NodeExpressionNamedArgument arg : getArgs()) {
 				compiler.raw(".add(");
 				if (arg.getName() == null) {
 					compiler.raw("null");
@@ -52,11 +52,6 @@ public class NodeExpressionNamedArguments extends NodeExpression {
 		visitor.visit(this);
 	}
 
-	/**
-	 * Should only be used by NodeMacro when defining a new macro
-	 * 
-	 * @return
-	 */
 	public List<NodeExpressionNamedArgument> getArgs() {
 		return args;
 	}

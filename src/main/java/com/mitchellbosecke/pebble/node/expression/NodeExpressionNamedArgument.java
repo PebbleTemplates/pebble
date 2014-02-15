@@ -6,13 +6,13 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public class NodeExpressionNamedArgument extends NodeExpression {
 
-	private NodeExpressionNewVariableName name;
+	private final NodeExpressionNewVariableName name;
 
-	private NodeExpression value;
+	private final NodeExpression value;
 
 	public NodeExpressionNamedArgument(NodeExpressionNewVariableName name, NodeExpression value) {
-		this.setName(name);
-		this.setValue(value);
+		this.name = name;
+		this.value = value;
 	}
 
 	@Override
@@ -29,16 +29,8 @@ public class NodeExpressionNamedArgument extends NodeExpression {
 		return value;
 	}
 
-	public void setValue(NodeExpression value) {
-		this.value = value;
-	}
-
 	public NodeExpressionNewVariableName getName() {
 		return name;
-	}
-
-	public void setName(NodeExpressionNewVariableName name) {
-		this.name = name;
 	}
 
 }

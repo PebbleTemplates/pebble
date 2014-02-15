@@ -28,6 +28,8 @@ import com.google.common.cache.CacheBuilder;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.compiler.JavaCompiler;
+import com.mitchellbosecke.pebble.compiler.NodeVisitor;
+import com.mitchellbosecke.pebble.compiler.PrettyPrinterNodeVisitor;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -133,7 +135,11 @@ public class PebbleEngine {
 		this.loader = loader;
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
-		compiler = new CompilerImpl(this);
+		
+		// node visitors
+		List<NodeVisitor> visitors = new ArrayList<>();
+		//visitors.add(new PrettyPrinterNodeVisitor());
+		compiler = new CompilerImpl(this, visitors);
 
 		// register default extensions
 		this.addExtension(new CoreExtension());

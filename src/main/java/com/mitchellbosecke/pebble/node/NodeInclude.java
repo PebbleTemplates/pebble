@@ -27,7 +27,7 @@ public class NodeInclude extends AbstractNode {
 
 		compiler.newline();
 		compiler.write("((").raw(PebbleTemplateImpl.class.getName()).raw(")engine.compile(")
-				.subcompile(includeExpression).raw(")).evaluate(writer, context);");
+				.subcompile(getIncludeExpression()).raw(")).evaluate(writer, context);");
 
 		compiler.newline();
 	}
@@ -35,6 +35,10 @@ public class NodeInclude extends AbstractNode {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpression getIncludeExpression() {
+		return includeExpression;
 	}
 
 }

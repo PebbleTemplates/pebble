@@ -17,7 +17,7 @@ public class NodeExpressionBinaryDivide extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(OperatorUtils.class.getName()).raw(".divide(").subcompile(leftExpression, false).raw(",")
-		.subcompile(rightExpression, false).raw(")");
+		compiler.raw(OperatorUtils.class.getName()).raw(".divide(").subcompile(getLeftExpression(), false).raw(",")
+		.subcompile(getRightExpression(), false).raw(")");
 	}
 }

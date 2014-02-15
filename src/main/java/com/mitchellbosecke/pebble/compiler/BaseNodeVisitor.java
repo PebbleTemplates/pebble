@@ -30,8 +30,16 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvocation;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
+import com.mitchellbosecke.pebble.utils.Pair;
 
-public class BaseNodeVisitor implements NodeVisitor {
+/**
+ * A base node visitor that can be extended for the sake of using it's
+ * navigational abilities.
+ * 
+ * @author Mitchell
+ * 
+ */
+public abstract class BaseNodeVisitor implements NodeVisitor {
 
 	/**
 	 * Default method used for unknown nodes such as nodes from a user provided
@@ -43,169 +51,182 @@ public class BaseNodeVisitor implements NodeVisitor {
 
 	@Override
 	public void visit(NodeBody node) {
+		for (Node child : node.getChildren()) {
+			child.accept(this);
+		}
 	}
 
 	@Override
 	public void visit(NodeIf node) {
+		for (Pair<NodeExpression, NodeBody> pairs : node.getConditionsWithBodies()) {
+			pairs.getLeft().accept(this);
+			pairs.getRight().accept(this);
+		}
+		if (node.getElseBody() != null) {
+			node.getElseBody().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(NodeFor node) {
+		node.getIterationVariable().accept(this);
+		node.getIterable().accept(this);
+		node.getBody().accept(this);
+		if (node.getElseBody() != null) {
+			node.getElseBody().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(NodeExpressionBinary node) {
-		// TODO Auto-generated method stub
-
+		node.getLeftExpression().accept(this);
+		node.getRightExpression().accept(this);
 	}
 
 	@Override
 	public void visit(NodeExpressionUnary node) {
-		// TODO Auto-generated method stub
-
+		node.getChildExpression().accept(this);
 	}
 
 	@Override
 	public void visit(NodeExpressionBlockReferenceAndFunction node) {
-		// TODO Auto-generated method stub
-
+		if (node.getArgs() != null) {
+			node.getArgs().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(NodeExpressionConstant node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(NodeExpressionContextVariable node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(NodeExpressionFilterInvocation node) {
-		// TODO Auto-generated method stub
-
+		node.getFilterName().accept(this);
+		node.getArgs().accept(this);
 	}
 
 	@Override
 	public void visit(NodeExpressionFunctionOrMacroInvocation node) {
-		// TODO Auto-generated method stub
-
+		node.getFunctionName().accept(this);
+		node.getArguments().accept(this);
 	}
 
 	@Override
 	public void visit(NodeExpressionGetAttribute node) {
-		// TODO Auto-generated method stub
-
+		node.getNode().accept(this);
+		node.getAttributeOrMethod().accept(this);
 	}
 
 	@Override
 	public void visit(NodeExpressionNamedArgument node) {
-		// TODO Auto-generated method stub
-
+		if (node.getName() != null) {
+			node.getName().accept(this);
+		}
+		if (node.getValue() != null) {
+			node.getValue().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(NodeExpressionNamedArguments node) {
-		// TODO Auto-generated method stub
-
+		if (node.getArgs() != null) {
+			for (Node arg : node.getArgs()) {
+				arg.accept(this);
+			}
+		}
 	}
 
 	@Override
 	public void visit(NodeExpressionNewVariableName node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(NodeExpressionParentFunction node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(NodeExpressionString node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(NodeExpressionTernary node) {
-		// TODO Auto-generated method stub
-
+		node.getExpression1().accept(this);
+		node.getExpression2().accept(this);
+		node.getExpression3().accept(this);
 	}
 
 	@Override
 	public void visit(NodeExpressionTestInvocation node) {
-		// TODO Auto-generated method stub
-
+		node.getTestName().accept(this);
+		node.getArgs().accept(this);
 	}
 
 	@Override
 	public void visit(NodeBlock node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(NodeExpression node) {
-		// TODO Auto-generated method stub
-
+		node.getBody().accept(this);
 	}
 
 	@Override
 	public void visit(NodeFlush node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(NodeImport node) {
-		// TODO Auto-generated method stub
-
+		node.getImportExpression().accept(this);
 	}
 
 	@Override
 	public void visit(NodeInclude node) {
-		// TODO Auto-generated method stub
-
+		node.getIncludeExpression().accept(this);
 	}
 
 	@Override
 	public void visit(NodeMacro node) {
-		// TODO Auto-generated method stub
-
+		node.getArgs().accept(this);
 	}
 
 	@Override
 	public void visit(NodeParallel node) {
-		// TODO Auto-generated method stub
-
+		node.getBody().accept(this);
 	}
 
 	@Override
 	public void visit(NodePrint node) {
-		// TODO Auto-generated method stub
-
+		node.getExpression().accept(this);
 	}
 
 	@Override
 	public void visit(NodeRoot node) {
-		// TODO Auto-generated method stub
-
+		for (Node block : node.getBlocks().values()) {
+			block.accept(this);
+		}
+		for (Node macro : node.getMacros().values()) {
+			macro.accept(this);
+		}
+		node.getBody().accept(this);
+		if (node.getParentTemplateExpression() != null) {
+			node.getParentTemplateExpression().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(NodeSet node) {
-		// TODO Auto-generated method stub
-
+		node.getName().accept(this);
+		node.getValue().accept(this);
 	}
 
 	@Override
 	public void visit(NodeText node) {
-		// TODO Auto-generated method stub
 
 	}
 

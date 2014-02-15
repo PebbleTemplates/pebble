@@ -14,8 +14,8 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionBinary extends NodeExpression {
 
-	protected NodeExpression leftExpression;
-	protected NodeExpression rightExpression;
+	private NodeExpression leftExpression;
+	private NodeExpression rightExpression;
 
 	public void setLeft(NodeExpression left) {
 		this.leftExpression = left;
@@ -36,6 +36,14 @@ public abstract class NodeExpressionBinary extends NodeExpression {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpression getLeftExpression() {
+		return leftExpression;
+	}
+
+	public NodeExpression getRightExpression() {
+		return rightExpression;
 	}
 
 }

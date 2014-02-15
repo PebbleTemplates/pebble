@@ -27,12 +27,20 @@ public class NodeSet extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.newline().write("context.put(").string(name.getName()).raw(",").subcompile(value).raw(");").newline();
+		compiler.newline().write("context.put(").string(getName().getName()).raw(",").subcompile(getValue()).raw(");").newline();
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpression getValue() {
+		return value;
+	}
+
+	public NodeExpressionNewVariableName getName() {
+		return name;
 	}
 
 }

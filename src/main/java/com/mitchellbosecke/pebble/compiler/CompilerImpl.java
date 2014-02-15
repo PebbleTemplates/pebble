@@ -9,17 +9,28 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.compiler;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.node.Node;
 
 public class CompilerImpl implements Compiler {
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(CompilerImpl.class);
+
 	private final PebbleEngine engine;
+	private final List<NodeVisitor> visitors;
+
 	private StringBuilder builder;
 	private int indentation;
 
-	public CompilerImpl(PebbleEngine engine) {
+	public CompilerImpl(PebbleEngine engine, List<NodeVisitor> visitors) {
 		this.engine = engine;
+		this.visitors = visitors;
 	}
 
 	@Override
@@ -28,9 +39,10 @@ public class CompilerImpl implements Compiler {
 		this.indentation = 0;
 
 		node.compile(this);
-		
-		PrettyPrinterNodeVisitor visitor = new PrettyPrinterNodeVisitor();
-		node.accept(visitor);
+
+		for (NodeVisitor visitor : visitors) {
+			node.accept(visitor);
+		}
 		return this;
 	}
 

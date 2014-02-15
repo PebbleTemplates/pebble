@@ -14,15 +14,23 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 
 public abstract class NodeExpressionUnary extends NodeExpression {
 
-	protected NodeExpression childExpression;
+	private NodeExpression childExpression;
 
 	public void setNode(NodeExpression node) {
-		this.childExpression = node;
+		this.setChildExpression(node);
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpression getChildExpression() {
+		return childExpression;
+	}
+
+	public void setChildExpression(NodeExpression childExpression) {
+		this.childExpression = childExpression;
 	}
 
 }

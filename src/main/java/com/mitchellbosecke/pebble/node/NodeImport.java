@@ -23,12 +23,16 @@ public class NodeImport extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("addImportedTemplate(engine.compile(").subcompile(importExpression).raw("));").newline();
+		compiler.raw("addImportedTemplate(engine.compile(").subcompile(getImportExpression()).raw("));").newline();
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpression getImportExpression() {
+		return importExpression;
 	}
 
 }

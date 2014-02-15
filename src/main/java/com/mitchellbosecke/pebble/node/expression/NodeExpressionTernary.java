@@ -38,4 +38,16 @@ public class NodeExpressionTernary extends NodeExpression {
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	public NodeExpression getExpression1() {
+		return expression1;
+	}
+
+	public NodeExpression getExpression2() {
+		return expression2;
+	}
+
+	public NodeExpression getExpression3() {
+		return expression3;
+	}
 }

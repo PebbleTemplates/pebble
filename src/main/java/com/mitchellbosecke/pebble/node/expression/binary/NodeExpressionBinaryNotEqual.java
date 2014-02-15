@@ -17,8 +17,8 @@ public class NodeExpressionBinaryNotEqual extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("(").raw(OperatorUtils.class.getName()).raw(".equals(").subcompile(leftExpression).raw(",")
-				.subcompile(rightExpression).raw(") == false)");
+		compiler.raw("(").raw(OperatorUtils.class.getName()).raw(".equals(").subcompile(getLeftExpression()).raw(",")
+				.subcompile(getRightExpression()).raw(") == false)");
 	}
 
 }

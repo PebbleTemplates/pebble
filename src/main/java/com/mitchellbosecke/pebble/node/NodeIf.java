@@ -19,7 +19,7 @@ public class NodeIf extends AbstractNode {
 
 	private final List<Pair<NodeExpression, NodeBody>> conditionsWithBodies;
 
-	private NodeBody elseBody;
+	private final NodeBody elseBody;
 
 	public NodeIf(int lineNumber, List<Pair<NodeExpression, NodeBody>> conditionsWithBodies) {
 		this(lineNumber, conditionsWithBodies, null);
@@ -34,7 +34,7 @@ public class NodeIf extends AbstractNode {
 	@Override
 	public void compile(Compiler compiler) {
 		boolean isFirst = true;
-		for (Pair<NodeExpression, NodeBody> ifStatement : conditionsWithBodies) {
+		for (Pair<NodeExpression, NodeBody> ifStatement : getConditionsWithBodies()) {
 			if (!isFirst) {
 				compiler.newline().outdent().write("} else if (");
 			} else {
@@ -46,8 +46,8 @@ public class NodeIf extends AbstractNode {
 
 		}
 
-		if (elseBody != null) {
-			compiler.newline().outdent().write("} else {").newline().indent().subcompile(elseBody);
+		if (getElseBody() != null) {
+			compiler.newline().outdent().write("} else {").newline().indent().subcompile(getElseBody());
 		}
 
 		compiler.newline().outdent().write("}").newline();
@@ -56,6 +56,14 @@ public class NodeIf extends AbstractNode {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public List<Pair<NodeExpression, NodeBody>> getConditionsWithBodies() {
+		return conditionsWithBodies;
+	}
+
+	public NodeBody getElseBody() {
+		return elseBody;
 	}
 
 }

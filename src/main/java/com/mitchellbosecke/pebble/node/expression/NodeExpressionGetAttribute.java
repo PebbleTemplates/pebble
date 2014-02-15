@@ -35,12 +35,20 @@ public class NodeExpressionGetAttribute extends NodeExpression {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("getAttribute(context, ").subcompile(node).raw(",\"").subcompile(attributeOrMethod).raw("\")");
+		compiler.raw("getAttribute(context, ").subcompile(getNode()).raw(",\"").subcompile(getAttributeOrMethod()).raw("\")");
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpression getNode() {
+		return node;
+	}
+
+	public NodeExpressionConstant getAttributeOrMethod() {
+		return attributeOrMethod;
 	}
 
 }

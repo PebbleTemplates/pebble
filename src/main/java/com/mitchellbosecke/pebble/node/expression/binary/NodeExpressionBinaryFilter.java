@@ -19,11 +19,11 @@ public class NodeExpressionBinaryFilter extends NodeExpressionBinary {
 	@Override
 	public void compile(Compiler compiler) {
 
-		NodeExpressionFilterInvocation filterInvokation = (NodeExpressionFilterInvocation) rightExpression;
+		NodeExpressionFilterInvocation filterInvokation = (NodeExpressionFilterInvocation) getRightExpression();
 		NodeExpressionNamedArguments args = filterInvokation.getArgs();
 
 		compiler.raw("applyFilter(").string(String.valueOf(filterInvokation.getFilterName().getValue()))
-				.raw(", context").raw(",").subcompile(leftExpression).raw(", ").subcompile(args);
+				.raw(", context").raw(",").subcompile(getLeftExpression()).raw(", ").subcompile(args);
 
 		compiler.raw(")");
 	}

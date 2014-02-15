@@ -3,7 +3,6 @@ package com.mitchellbosecke.pebble.compiler;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodeFlush;
 import com.mitchellbosecke.pebble.node.NodeFor;
 import com.mitchellbosecke.pebble.node.NodeIf;
@@ -78,8 +77,6 @@ public interface NodeVisitor {
 	public abstract void visit(NodeExpressionTestInvocation node);
 	
 	public abstract void visit(NodeBlock node);
-	
-	public abstract void visit(NodeExpression node);
 	
 	public abstract void visit(NodeFlush node);
 	

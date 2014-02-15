@@ -72,7 +72,7 @@ public class NodeMacro extends AbstractNode {
 		compiler.write(List.class.getName()).raw("<String> result = new ").raw(ArrayList.class.getName()).raw("<>();")
 				.newline();
 
-		for (NodeExpressionNamedArgument arg : args.getArgs()) {
+		for (NodeExpressionNamedArgument arg : getArgs().getArgs()) {
 			NodeExpressionNewVariableName variableName = arg.getName();
 			compiler.write("result.add(").string(variableName.getName()).raw(");").newline();
 
@@ -103,7 +103,7 @@ public class NodeMacro extends AbstractNode {
 		compiler.write(Map.class.getName()).raw("<String, Object> result = new ").raw(HashMap.class.getName())
 				.raw("<>();").newline();
 
-		for (NodeExpressionNamedArgument arg : args.getArgs()) {
+		for (NodeExpressionNamedArgument arg : getArgs().getArgs()) {
 			if (arg.getValue() != null) {
 				NodeExpressionNewVariableName variableName = arg.getName();
 				compiler.write("result.put(").string(variableName.getName()).raw(",").subcompile(arg.getValue())
@@ -127,5 +127,9 @@ public class NodeMacro extends AbstractNode {
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public NodeExpressionNamedArguments getArgs() {
+		return args;
 	}
 }

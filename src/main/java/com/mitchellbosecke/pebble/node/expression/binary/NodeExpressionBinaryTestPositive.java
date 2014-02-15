@@ -17,11 +17,11 @@ public class NodeExpressionBinaryTestPositive extends NodeExpressionBinary {
 
 	@Override
 	public void compile(Compiler compiler) {
-		NodeExpressionTestInvocation testInvokation = (NodeExpressionTestInvocation) rightExpression;
+		NodeExpressionTestInvocation testInvokation = (NodeExpressionTestInvocation) getRightExpression();
 
 		compiler.raw("applyTest(").string(String.valueOf(testInvokation.getTestName().getValue()));
 
-		compiler.raw(",").subcompile(leftExpression).raw(",").subcompile(testInvokation.getArgs());
+		compiler.raw(",").subcompile(getLeftExpression()).raw(",").subcompile(testInvokation.getArgs());
 
 		compiler.raw(")");
 	}

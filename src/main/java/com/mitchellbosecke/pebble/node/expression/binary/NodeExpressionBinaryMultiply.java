@@ -17,8 +17,8 @@ public class NodeExpressionBinaryMultiply extends NodeExpressionBinary{
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw(OperatorUtils.class.getName()).raw(".multiply(").subcompile(leftExpression, false).raw(",")
-		.subcompile(rightExpression, false).raw(")");
+		compiler.raw(OperatorUtils.class.getName()).raw(".multiply(").subcompile(getLeftExpression(), false).raw(",")
+		.subcompile(getRightExpression(), false).raw(")");
 	}
 
 }
