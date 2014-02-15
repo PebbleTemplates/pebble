@@ -249,6 +249,11 @@ public class PebbleEngine {
 		this.extensions.put(extension.getClass(), extension);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends Extension> T getExtension(Class<T> clazz) {
+		return (T) this.extensions.get(clazz);
+	}
+
 	/**
 	 * Retrieves all of the information/tools from the provided extensions. This
 	 * includes unary operators, binary operations, token parsers, etc
@@ -383,9 +388,9 @@ public class PebbleEngine {
 		}
 		return this.globalVariables;
 	}
-	
-	public List<NodeVisitor> getNodeVisitors(){
-		if(!this.extensionsInitialized){
+
+	public List<NodeVisitor> getNodeVisitors() {
+		if (!this.extensionsInitialized) {
 			initExtensions();
 		}
 		return this.nodeVisitors;

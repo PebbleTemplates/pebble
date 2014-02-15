@@ -17,6 +17,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.escaper.EscaperExtension;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -81,6 +82,20 @@ public class EscaperExtensionTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("&lt;br &#x2F;&gt;", writer.toString());
+	}
+
+	@Test
+	public void testDisableAutoEscaping() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		EscaperExtension escaper = pebble.getExtension(EscaperExtension.class);
+		escaper.setAutoEscaping(false);
+		PebbleTemplate template = pebble.compile("{{ text }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("text", "<br />");
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("<br />", writer.toString());
 	}
 
 	@Test

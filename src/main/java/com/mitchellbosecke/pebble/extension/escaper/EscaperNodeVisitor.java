@@ -21,6 +21,8 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 
 	private final Stack<String> strategies = new Stack<>();
 
+	private final Stack<Boolean> active = new Stack<>();
+
 	private final List<String> safeFilters = new ArrayList<>();
 
 	public EscaperNodeVisitor() {
@@ -84,6 +86,12 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 	}
 
 	private boolean isSafe(NodeExpression expression) {
+
+		// check whether the autoescaper is even active
+		if (!active.isEmpty() && active.peek() == false) {
+			return true;
+		}
+
 		boolean safe = false;
 
 		// string literals are safe
@@ -111,6 +119,10 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 
 	public void addSafeFilter(String filter) {
 		this.safeFilters.add(filter);
+	}
+	
+	public void pushAutoEscapeState(boolean auto){
+		active.push(auto);
 	}
 
 }
