@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.compiler;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.node.NodeRoot;
 
 public interface Compiler {
 
@@ -89,7 +90,7 @@ public interface Compiler {
 	 * 
 	 * @return this
 	 */
-	public Compiler compile(Node node);
+	public Compiler compile(NodeRoot node);
 
 	/**
 	 * Compiles an individual node. It is the responsibility of the node to

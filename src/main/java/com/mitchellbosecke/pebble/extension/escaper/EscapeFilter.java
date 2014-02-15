@@ -8,6 +8,8 @@ import com.mitchellbosecke.pebble.extension.Filter;
 
 public class EscapeFilter implements Filter {
 
+	private String defaultStrategy = "html";
+
 	public List<String> getArgumentNames() {
 		List<String> names = new ArrayList<>();
 		names.add("strategy");
@@ -15,9 +17,12 @@ public class EscapeFilter implements Filter {
 	}
 
 	public Object apply(Object inputObject, Map<String, Object> args) {
+		if (!(inputObject instanceof String)) {
+			return inputObject;
+		}
 		String input = (String) inputObject;
 
-		String strategy = "html";
+		String strategy = defaultStrategy;
 
 		if (args.get("strategy") != null) {
 			strategy = (String) args.get("strategy");
@@ -68,6 +73,14 @@ public class EscapeFilter implements Filter {
 			}
 		}
 		return result.toString();
+	}
+
+	public String getDefaultStrategy() {
+		return defaultStrategy;
+	}
+
+	public void setDefaultStrategy(String defaultStrategy) {
+		this.defaultStrategy = defaultStrategy;
 	}
 
 }

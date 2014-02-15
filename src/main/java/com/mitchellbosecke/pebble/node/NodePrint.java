@@ -14,11 +14,11 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 
 public class NodePrint extends AbstractNode {
 
-	private final NodeExpression expression;
+	private NodeExpression expression;
 
 	public NodePrint(NodeExpression expression, int lineNumber) {
 		super(lineNumber);
-		this.expression = expression;
+		this.setExpression(expression);
 	}
 
 	@Override
@@ -34,6 +34,10 @@ public class NodePrint extends AbstractNode {
 
 	public NodeExpression getExpression() {
 		return expression;
+	}
+
+	public void setExpression(NodeExpression expression) {
+		this.expression = expression;
 	}
 
 }

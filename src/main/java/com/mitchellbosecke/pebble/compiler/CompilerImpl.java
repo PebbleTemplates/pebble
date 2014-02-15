@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.node.NodeRoot;
 
 public class CompilerImpl implements Compiler {
 
@@ -31,15 +32,15 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public Compiler compile(Node node) {
+	public Compiler compile(NodeRoot node) {
 		this.builder = new StringBuilder();
 		this.indentation = 0;
-
-		node.compile(this);
-
+		
 		for (NodeVisitor visitor : engine.getNodeVisitors()) {
 			node.accept(visitor);
 		}
+
+		node.compile(this);		
 		return this;
 	}
 

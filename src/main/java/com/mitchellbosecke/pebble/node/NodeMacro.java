@@ -50,7 +50,7 @@ public class NodeMacro extends AbstractNode {
 	}
 
 	public void compileGetNameMethod(Compiler compiler) {
-		compiler.write("public String getName() { return ").string(name).raw("; }").newline();
+		compiler.write("public String getName() { return ").string(getName()).raw("; }").newline();
 	}
 
 	public void compileGetArgumentNamesMethod(Compiler compiler) {
@@ -131,5 +131,9 @@ public class NodeMacro extends AbstractNode {
 
 	public NodeExpressionNamedArguments getArgs() {
 		return args;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

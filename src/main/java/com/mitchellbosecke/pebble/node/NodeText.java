@@ -31,4 +31,8 @@ public class NodeText extends AbstractNode {
 		visitor.visit(this);
 	}
 
+	public String getData() {
+		return data;
+	}
+
 }

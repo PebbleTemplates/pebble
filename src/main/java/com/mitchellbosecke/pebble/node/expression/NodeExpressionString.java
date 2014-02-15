@@ -32,7 +32,7 @@ public class NodeExpressionString extends NodeExpression {
 		visitor.visit(this);
 	}
 
-	public Object getValue() {
+	public String getValue() {
 		return value;
 	}
 

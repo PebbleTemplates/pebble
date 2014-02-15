@@ -41,7 +41,7 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 		for (int i = 0; i < level - 1; i++) {
 			output.append("| ");
 		}
-		if(level > 0){
+		if (level > 0) {
 			output.append("|-");
 		}
 		output.append(message.toUpperCase()).append("\n");
@@ -117,7 +117,7 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 
 	@Override
 	public void visit(NodeExpressionConstant node) {
-		write("constant");
+		write(String.format("constant [%s]", node.getValue() == null ? null : node.getValue().toString()));
 		level++;
 		super.visit(node);
 		level--;
@@ -125,7 +125,7 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 
 	@Override
 	public void visit(NodeExpressionContextVariable node) {
-		write("context variable");
+		write(String.format("context variable [%s]", node.getName()));
 		level++;
 		super.visit(node);
 		level--;
@@ -173,7 +173,7 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 
 	@Override
 	public void visit(NodeExpressionNewVariableName node) {
-		write("new variable name");
+		write(String.format("new variable name [%s]", node.getName()));
 		level++;
 		super.visit(node);
 		level--;
@@ -189,7 +189,7 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 
 	@Override
 	public void visit(NodeExpressionString node) {
-		write("string");
+		write(String.format("string [%s]", node.getValue()));
 		level++;
 		super.visit(node);
 		level--;
@@ -213,7 +213,7 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 
 	@Override
 	public void visit(NodeBlock node) {
-		write("block");
+		write(String.format("block [%s]", node.getName()));
 		level++;
 		super.visit(node);
 		level--;
@@ -245,7 +245,7 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 
 	@Override
 	public void visit(NodeMacro node) {
-		write("macro");
+		write(String.format("macro [%s]", node.getName()));
 		level++;
 		super.visit(node);
 		level--;
@@ -285,7 +285,8 @@ public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
 
 	@Override
 	public void visit(NodeText node) {
-		write("text");
+		String preview = node.getData().length() > 10 ? node.getData().substring(0, 10) + "..." : node.getData();
+		write(String.format("text [%s]", preview));
 		level++;
 		super.visit(node);
 		level--;

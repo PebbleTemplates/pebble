@@ -9,14 +9,26 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.escaper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
 
 public class EscaperExtension extends AbstractExtension {
+
+	private final EscapeFilter filter;
+
+	private final EscaperNodeVisitor visitor;
+
+	public EscaperExtension() {
+		this.filter = new EscapeFilter();
+		this.visitor = new EscaperNodeVisitor();
+	}
 
 	@Override
 	public void initRuntime(PebbleEngine engine) {
@@ -25,8 +37,24 @@ public class EscaperExtension extends AbstractExtension {
 	@Override
 	public Map<String, Filter> getFilters() {
 		Map<String, Filter> filters = new HashMap<>();
-		filters.put("escape", new EscapeFilter());
+		filters.put("escape", filter);
+		filters.put("raw", new RawFilter());
 		return filters;
+	}
+
+	@Override
+	public List<NodeVisitor> getNodeVisitors() {
+		List<NodeVisitor> visitors = new ArrayList<>();
+		visitors.add(visitor);
+		return visitors;
+	}
+
+	public void setDefaultStrategy(String strategy) {
+		filter.setDefaultStrategy(strategy);
+	}
+
+	public void addSafeFilter(String filter) {
+		visitor.addSafeFilter(filter);
 	}
 
 }

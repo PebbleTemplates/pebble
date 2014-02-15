@@ -16,22 +16,22 @@ import com.mitchellbosecke.pebble.node.NodeExpression;
 public class NodeExpressionTernary extends NodeExpression {
 
 	private final NodeExpression expression1;
-	private final NodeExpression expression2;
-	private final NodeExpression expression3;
+	private NodeExpression expression2;
+	private NodeExpression expression3;
 
 	public NodeExpressionTernary(int lineNumber, NodeExpression expression1, NodeExpression expression2,
 			NodeExpression expression3) {
 
 		super(lineNumber);
 		this.expression1 = expression1;
-		this.expression2 = expression2;
-		this.expression3 = expression3;
+		this.setExpression2(expression2);
+		this.setExpression3(expression3);
 	}
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("(((Boolean)").subcompile(expression1).raw(")?").subcompile(expression2).raw(":")
-				.subcompile(expression3).raw(")");
+		compiler.raw("(((Boolean)").subcompile(expression1).raw(")?").subcompile(getExpression2()).raw(":")
+				.subcompile(getExpression3()).raw(")");
 	}
 
 	@Override
@@ -49,5 +49,13 @@ public class NodeExpressionTernary extends NodeExpression {
 
 	public NodeExpression getExpression3() {
 		return expression3;
+	}
+
+	public void setExpression3(NodeExpression expression3) {
+		this.expression3 = expression3;
+	}
+
+	public void setExpression2(NodeExpression expression2) {
+		this.expression2 = expression2;
 	}
 }
