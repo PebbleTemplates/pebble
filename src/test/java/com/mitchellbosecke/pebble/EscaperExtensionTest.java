@@ -29,11 +29,11 @@ public class EscaperExtensionTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ '&<>\"\\'/' | escape }}");
+		PebbleTemplate template = pebble.compile("{{ '&<>\"\\'' | escape }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
-		assertEquals("&amp;&lt;&gt;&quot;&#x27;&#x2F;", writer.toString());
+		assertEquals("&amp;&lt;&gt;&quot;&#39;", writer.toString());
 	}
 
 	@Test
@@ -44,10 +44,10 @@ public class EscaperExtensionTest extends AbstractTest {
 		PebbleTemplate template = pebble.compile("{{ text | escape(strategy='html') }}");
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("text", "&<>\"\'/");
+		context.put("text", "&<>\"\'");
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
-		assertEquals("&amp;&lt;&gt;&quot;&#x27;&#x2F;", writer.toString());
+		assertEquals("&amp;&lt;&gt;&quot;&#39;", writer.toString());
 	}
 
 	@Test
@@ -55,11 +55,11 @@ public class EscaperExtensionTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ '&<>\"\\'/' | escape(strategy='html') }}");
+		PebbleTemplate template = pebble.compile("{{ '&<>\"\\'' | escape(strategy='html') }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
-		assertEquals("&amp;&lt;&gt;&quot;&#x27;&#x2F;", writer.toString());
+		assertEquals("&amp;&lt;&gt;&quot;&#39;", writer.toString());
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class EscaperExtensionTest extends AbstractTest {
 		context.put("text", "<br />");
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
-		assertEquals("&lt;br &#x2F;&gt;", writer.toString());
+		assertEquals("&lt;br /&gt;", writer.toString());
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class EscaperExtensionTest extends AbstractTest {
 		context.put("text", "<br />");
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
-		assertEquals("&lt;BR &#x2F;&gt;", writer.toString());
+		assertEquals("&lt;BR /&gt;", writer.toString());
 	}
 
 	@Test
@@ -131,6 +131,6 @@ public class EscaperExtensionTest extends AbstractTest {
 		context.put("text", "<br />");
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
-		assertEquals("&lt;br &#x2F;&gt;", writer.toString());
+		assertEquals("&lt;br /&gt;", writer.toString());
 	}
 }

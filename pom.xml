@@ -1,25 +1,26 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<parent>
-    	<groupId>org.sonatype.oss</groupId>
-    	<artifactId>oss-parent</artifactId>
-    	<version>7</version>
-  	</parent>
-	
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mitchellbosecke</groupId>
 	<artifactId>pebble</artifactId>
 	<version>0.2.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
+
 	<name>Pebble</name>
 	<description>Templating engine for Java.</description>
 	<url>http://www.mitchellbosecke.com/pebble</url>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<licenses>
 		<license>
 			<name>BSD 3-Clause License</name>
@@ -27,14 +28,14 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<name>Mitchell Bösecke</name>
 			<email>mitchellbosecke@gmail.com</email>
 		</developer>
 	</developers>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -67,78 +68,78 @@
 				<version>2.2.1</version>
 				<executions>
 					<execution>
-				    	<id>attach-sources</id>
-				    	<goals>
-				     		<goal>jar</goal>
-				    	</goals>
-				    </execution>
-			  </executions>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
-			  	<groupId>org.apache.maven.plugins</groupId>
-			  	<artifactId>maven-javadoc-plugin</artifactId>
-			  	<version>2.9.1</version>
-			  	<configuration>
-			  		<outputDirectory>${project.build.directory}/javadoc</outputDirectory>
-			        <reportOutputDirectory>${project.reporting.outputDirectory}/javadoc</reportOutputDirectory>
-			        <excludes>
-			            <exclude>**/*.txt</exclude>
-			        </excludes>
-			        <header>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}/javadoc</outputDirectory>
+					<reportOutputDirectory>${project.reporting.outputDirectory}/javadoc</reportOutputDirectory>
+					<excludes>
+						<exclude>**/*.txt</exclude>
+					</excludes>
+					<header>
 			            <![CDATA[
 			                <a href="http://www.mitchellbosecke.com/pebble" target="_blank">Home</a>
 			            ]]>
-			        </header>
-			  	</configuration>
-			  	<executions>
-			    	<execution>
-				      	<id>attach-javadocs</id>
-				      	<goals>
-				        	<goal>jar</goal>
-				      	</goals>
-			    	</execution>
-			    	<execution>
-			            <id>aggregate</id>
-			            <goals>
-			                <goal>aggregate</goal>
-			            </goals>
-			            <phase>site</phase>
-			        </execution>
-			  	</executions>
+					</header>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>aggregate</id>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
-			    <groupId>com.github.github</groupId>
-			    <artifactId>site-maven-plugin</artifactId>
-			    <version>0.9</version>
-			    <configuration>
-			    	<!-- <dryRun>true</dryRun> -->
-			        <path>${project.version}</path>
-			        <message>Creating site for ${project.version}</message>
-			        <!-- sets the ~/.m2/setting.xml profile -->
-			        <server>github</server>
-			        <outputDirectory>${project.build.directory}/site/javadoc</outputDirectory>
-			        <repositoryName>pebble</repositoryName>
-			        <repositoryOwner>mbosecke</repositoryOwner>
-			    </configuration>
-			    <executions>
-			        <execution>
-			            <goals>
-			                <goal>site</goal>
-			            </goals>
-			            <phase>site</phase>
-			        </execution>
-			    </executions>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.9</version>
+				<configuration>
+					<!-- <dryRun>true</dryRun> -->
+					<path>${project.version}</path>
+					<message>Creating site for ${project.version}</message>
+					<!-- sets the ~/.m2/setting.xml profile -->
+					<server>github</server>
+					<outputDirectory>${project.build.directory}/site/javadoc</outputDirectory>
+					<repositoryName>pebble</repositoryName>
+					<repositoryOwner>mbosecke</repositoryOwner>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
-        		<groupId>org.apache.maven.plugins</groupId>
-        		<artifactId>maven-release-plugin</artifactId>
-        		<configuration>
-          			<tagNameFormat>v@{project.version}-beta</tagNameFormat>
-        		</configuration>
-      		</plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<tagNameFormat>v@{project.version}-beta</tagNameFormat>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>release-sign-artifacts</id>
@@ -168,12 +169,17 @@
 			</build>
 		</profile>
 	</profiles>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>16.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.coverity.security</groupId>
+			<artifactId>coverity-escapers</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -214,11 +220,11 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<scm>
 		<connection>scm:git:git://github.com/mbosecke/pebble.git</connection>
 		<developerConnection>scm:git:git@github.com:mbosecke/pebble.git</developerConnection>
 		<url>http://github.com/mbosecke/pebble.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 </project>
