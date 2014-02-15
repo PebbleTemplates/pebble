@@ -18,6 +18,8 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.tokenParser.AutoEscapeTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 public class EscaperExtension extends AbstractExtension {
 
@@ -40,6 +42,13 @@ public class EscaperExtension extends AbstractExtension {
 		filters.put("escape", filter);
 		filters.put("raw", new RawFilter());
 		return filters;
+	}
+
+	@Override
+	public List<TokenParser> getTokenParsers() {
+		List<TokenParser> parsers = new ArrayList<>();
+		parsers.add(new AutoEscapeTokenParser());
+		return parsers;
 	}
 
 	@Override

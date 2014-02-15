@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 import com.mitchellbosecke.pebble.compiler.BaseNodeVisitor;
+import com.mitchellbosecke.pebble.node.NodeAutoEscape;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodePrint;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
@@ -51,6 +52,17 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 		}
 	}
 
+	@Override
+	public void visit(NodeAutoEscape node) {
+		active.push(node.isActive());
+		strategies.push(node.getStrategy());
+		
+		node.getBody().accept(this);
+		
+		active.pop();
+		strategies.pop();
+	}
+
 	private NodeExpression escape(NodeExpression expression) {
 
 		int lineNumber = expression.getLineNumber();
@@ -60,7 +72,7 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 		 * include the strategy being used.
 		 */
 		List<NodeExpressionNamedArgument> namedArgs = new ArrayList<>();
-		if (!strategies.isEmpty()) {
+		if (!strategies.isEmpty() && strategies.peek() != null) {
 			String strategy = strategies.peek();
 			NodeExpressionNewVariableName name = new NodeExpressionNewVariableName(lineNumber, "strategy");
 			NodeExpression value = new NodeExpressionString(lineNumber, strategy);
@@ -120,8 +132,8 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 	public void addSafeFilter(String filter) {
 		this.safeFilters.add(filter);
 	}
-	
-	public void pushAutoEscapeState(boolean auto){
+
+	public void pushAutoEscapeState(boolean auto) {
 		active.push(auto);
 	}
 

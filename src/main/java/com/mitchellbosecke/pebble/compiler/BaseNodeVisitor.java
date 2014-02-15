@@ -2,6 +2,7 @@ package com.mitchellbosecke.pebble.compiler;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.node.NodeAutoEscape;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeExpression;
@@ -173,6 +174,11 @@ public abstract class BaseNodeVisitor implements NodeVisitor {
 
 	@Override
 	public void visit(NodeBlock node) {
+		node.getBody().accept(this);
+	}
+	
+	@Override
+	public void visit(NodeAutoEscape node){
 		node.getBody().accept(this);
 	}
 

@@ -1,6 +1,7 @@
 package com.mitchellbosecke.pebble.extension;
 
 import com.mitchellbosecke.pebble.node.Node;
+import com.mitchellbosecke.pebble.node.NodeAutoEscape;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
 import com.mitchellbosecke.pebble.node.NodeFlush;
@@ -45,55 +46,57 @@ public interface NodeVisitor {
 	public abstract void visit(NodeIf node);
 
 	public abstract void visit(NodeFor node);
-	
+
 	public abstract void visit(NodeExpressionBinary node);
-	
+
 	public abstract void visit(NodeExpressionUnary node);
-	
+
 	public abstract void visit(NodeExpressionBlockReferenceAndFunction node);
-	
+
 	public abstract void visit(NodeExpressionConstant node);
-	
+
 	public abstract void visit(NodeExpressionContextVariable node);
-	
+
 	public abstract void visit(NodeExpressionFilterInvocation node);
-	
+
 	public abstract void visit(NodeExpressionFunctionOrMacroInvocation node);
-	
+
 	public abstract void visit(NodeExpressionGetAttribute node);
-	
+
 	public abstract void visit(NodeExpressionNamedArgument node);
-	
+
 	public abstract void visit(NodeExpressionNamedArguments node);
-	
+
 	public abstract void visit(NodeExpressionNewVariableName node);
-	
+
 	public abstract void visit(NodeExpressionParentFunction node);
-	
+
 	public abstract void visit(NodeExpressionString node);
-	
+
 	public abstract void visit(NodeExpressionTernary node);
-	
+
 	public abstract void visit(NodeExpressionTestInvocation node);
-	
+
+	public abstract void visit(NodeAutoEscape node);
+
 	public abstract void visit(NodeBlock node);
-	
+
 	public abstract void visit(NodeFlush node);
-	
+
 	public abstract void visit(NodeImport node);
-	
+
 	public abstract void visit(NodeInclude node);
-	
+
 	public abstract void visit(NodeMacro node);
-	
+
 	public abstract void visit(NodeParallel node);
-	
+
 	public abstract void visit(NodePrint node);
-	
+
 	public abstract void visit(NodeRoot node);
-	
+
 	public abstract void visit(NodeSet node);
-	
+
 	public abstract void visit(NodeText node);
 
 }

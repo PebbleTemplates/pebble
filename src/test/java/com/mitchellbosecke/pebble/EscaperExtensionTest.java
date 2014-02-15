@@ -133,4 +133,34 @@ public class EscaperExtensionTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("&lt;br /&gt;", writer.toString());
 	}
+
+	@Test
+	public void testAutoescapeToken() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		EscaperExtension escaper = pebble.getExtension(EscaperExtension.class);
+		escaper.setAutoEscaping(false);
+		PebbleTemplate template = pebble.compile("{% autoescape 'html' %}{{ text }}{% endautoescape %}"
+				+ "{% autoescape %}{{ text }}{% endautoescape %}"
+				+ "{% autoescape false %}{{ text }}{% endautoescape %}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("text", "<br />");
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("&lt;br /&gt;&lt;br /&gt;<br />", writer.toString());
+	}
+
+	@Test
+	public void testRawFilterWithinAutoescapeToken() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		EscaperExtension escaper = pebble.getExtension(EscaperExtension.class);
+		escaper.setAutoEscaping(false);
+		PebbleTemplate template = pebble.compile("{% autoescape 'html' %}{{ text|raw }}{% endautoescape %}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("text", "<br />");
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("<br />", writer.toString());
+	}
 }
