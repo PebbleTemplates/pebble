@@ -12,7 +12,7 @@ package com.mitchellbosecke.pebble.node.expression;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.compiler.NodeVisitor;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.template.ArgumentMap;
 

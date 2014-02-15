@@ -12,7 +12,7 @@ package com.mitchellbosecke.pebble.node;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.compiler.NodeVisitor;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class NodeIf extends AbstractNode {

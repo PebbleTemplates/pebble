@@ -1,4 +1,4 @@
-package com.mitchellbosecke.pebble.compiler;
+package com.mitchellbosecke.pebble.extension;
 
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBlock;

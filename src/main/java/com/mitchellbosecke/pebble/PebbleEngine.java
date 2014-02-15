@@ -28,13 +28,12 @@ import com.google.common.cache.CacheBuilder;
 import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.compiler.CompilerImpl;
 import com.mitchellbosecke.pebble.compiler.JavaCompiler;
-import com.mitchellbosecke.pebble.compiler.NodeVisitor;
-import com.mitchellbosecke.pebble.compiler.PrettyPrinterNodeVisitor;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.extension.core.CoreExtension;
 import com.mitchellbosecke.pebble.extension.escaper.EscaperExtension;
@@ -102,6 +101,7 @@ public class PebbleEngine {
 	private Map<String, Test> tests;
 	private Map<String, Object> globalVariables;
 	private Map<String, Function> functions;
+	private List<NodeVisitor> nodeVisitors;
 
 	/**
 	 * compilationMutex ensures that only one template is being compiled at a
@@ -135,11 +135,7 @@ public class PebbleEngine {
 		this.loader = loader;
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
-		
-		// node visitors
-		List<NodeVisitor> visitors = new ArrayList<>();
-		//visitors.add(new PrettyPrinterNodeVisitor());
-		compiler = new CompilerImpl(this, visitors);
+		compiler = new CompilerImpl(this);
 
 		// register default extensions
 		this.addExtension(new CoreExtension());
@@ -269,6 +265,7 @@ public class PebbleEngine {
 		this.tests = new HashMap<>();
 		this.functions = new HashMap<>();
 		this.globalVariables = new HashMap<>();
+		this.nodeVisitors = new ArrayList<>();
 
 		for (Extension extension : this.extensions.values()) {
 			initExtension(extension);
@@ -331,6 +328,11 @@ public class PebbleEngine {
 			this.globalVariables.putAll(extension.getGlobalVariables());
 		}
 
+		// node visitors
+		if (extension.getNodeVisitors() != null) {
+			this.nodeVisitors.addAll(extension.getNodeVisitors());
+		}
+
 	}
 
 	public Map<String, TokenParser> getTokenParsers() {
@@ -380,6 +382,13 @@ public class PebbleEngine {
 			initExtensions();
 		}
 		return this.globalVariables;
+	}
+	
+	public List<NodeVisitor> getNodeVisitors(){
+		if(!this.extensionsInitialized){
+			initExtensions();
+		}
+		return this.nodeVisitors;
 	}
 
 	/**

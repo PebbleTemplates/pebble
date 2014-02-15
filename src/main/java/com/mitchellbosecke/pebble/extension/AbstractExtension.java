@@ -58,4 +58,9 @@ public abstract class AbstractExtension implements Extension {
 	public Map<String,Object> getGlobalVariables(){
 		return null;
 	}
+	
+	@Override
+	public List<NodeVisitor> getNodeVisitors(){
+		return null;
+	}
 }

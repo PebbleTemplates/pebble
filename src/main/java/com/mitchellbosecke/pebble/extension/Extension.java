@@ -34,7 +34,7 @@ public interface Extension {
 	 * @return A list of tests. It is okay to return null.
 	 */
 	public Map<String, Test> getTests();
-	
+
 	/**
 	 * Use this method to provide custom functions.
 	 * 
@@ -65,11 +65,18 @@ public interface Extension {
 	 * @return A list of Operators. It is okay to return null;
 	 */
 	public List<UnaryOperator> getUnaryOperators();
-	
+
 	/**
 	 * Use this method to provide variables available to all templates
 	 * 
 	 * @return Map<String,Object> global variables available to all templates
 	 */
-	public Map<String,Object> getGlobalVariables();
+	public Map<String, Object> getGlobalVariables();
+
+	/**
+	 * Node visitors will travel the AST tree during the compilation phase.
+	 * 
+	 * @return
+	 */
+	public List<NodeVisitor> getNodeVisitors();
 }

@@ -36,18 +36,21 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testIf() throws PebbleException, IOException {
+		System.out.println("Test");
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setStrictVariables(false);
 
 		String source = "{% if false or steve == true  %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.compile(source);
+
 		Map<String, Object> context = new HashMap<>();
 		context.put("yes", true);
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("no", writer.toString());
+		System.out.println("Test");
 	}
 
 	@Test
