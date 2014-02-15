@@ -26,7 +26,7 @@ public class NodeInclude extends AbstractNode {
 	public void compile(Compiler compiler) {
 
 		compiler.newline();
-		compiler.write("((").raw(PebbleTemplateImpl.class.getName()).raw(")engine.compile(")
+		compiler.write("((").raw(PebbleTemplateImpl.class.getName()).raw(")engine.getTemplate(")
 				.subcompile(getIncludeExpression()).raw(")).evaluate(writer, context);");
 
 		compiler.newline();

@@ -32,8 +32,8 @@ public class CacheTest extends AbstractTest {
 	public void templatesWithSameNameOverridingCache() throws PebbleException, IOException {
 		PebbleEngine engine = new PebbleEngine();
 
-		PebbleTemplate cache1 = engine.compile("templates/cache/cache1/template.cache.peb");
-		PebbleTemplate cache2 = engine.compile("templates/cache/cache2/template.cache.peb");
+		PebbleTemplate cache1 = engine.getTemplate("templates/cache/cache1/template.cache.peb");
+		PebbleTemplate cache2 = engine.getTemplate("templates/cache/cache2/template.cache.peb");
 
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();
@@ -59,8 +59,8 @@ public class CacheTest extends AbstractTest {
 	public void ensureChildTemplateNotCached() throws PebbleException, IOException {
 		PebbleEngine engine = new PebbleEngine();
 
-		PebbleTemplate cache1 = engine.compile("templates/cache/template.cacheChild.peb");
-		PebbleTemplate cache2 = engine.compile("templates/cache/template.cacheParent.peb");
+		PebbleTemplate cache1 = engine.getTemplate("templates/cache/template.cacheChild.peb");
+		PebbleTemplate cache2 = engine.getTemplate("templates/cache/template.cacheParent.peb");
 
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();
@@ -88,8 +88,8 @@ public class CacheTest extends AbstractTest {
 	 */
 	@Test
 	public void templateCachedButBytecodeCleared() throws PebbleException, IOException {
-		PebbleTemplate template1 = pebble.compile("template.parent.peb");
-		PebbleTemplate template2 = pebble.compile("template.parent2.peb");
+		PebbleTemplate template1 = pebble.getTemplate("template.parent.peb");
+		PebbleTemplate template2 = pebble.getTemplate("template.parent2.peb");
 
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();
@@ -108,6 +108,7 @@ public class CacheTest extends AbstractTest {
 	@Test
 	public void testConcurrentCacheHitting() throws InterruptedException, PebbleException {
 		final PebbleEngine engine = new PebbleEngine();
+		
 		final ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();
 
@@ -120,7 +121,7 @@ public class CacheTest extends AbstractTest {
 				@Override
 				public void run() {
 					try {
-						PebbleTemplate template = engine.compile("templates/template.concurrent1.peb");
+						PebbleTemplate template = engine.getTemplate("templates/template.concurrent1.peb");
 
 						int a = r.nextInt();
 						int b = r.nextInt();

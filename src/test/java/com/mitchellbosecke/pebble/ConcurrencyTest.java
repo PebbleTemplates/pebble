@@ -41,7 +41,7 @@ public class ConcurrencyTest extends AbstractTest {
 
 		String templateSource = "{{ test.a }}:{{ test.b }}:{{ test.c }}";
 		PebbleEngine engine = new PebbleEngine(new StringLoader());
-		final PebbleTemplate template = engine.compile(templateSource);
+		final PebbleTemplate template = engine.getTemplate(templateSource);
 
 		ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();
@@ -120,7 +120,7 @@ public class ConcurrencyTest extends AbstractTest {
 				@Override
 				public void run() {
 					try {
-						PebbleTemplate template = engine.compile("templates/template.concurrent1.peb");
+						PebbleTemplate template = engine.getTemplate("templates/template.concurrent1.peb");
 
 						int a = r.nextInt();
 						int b = r.nextInt();
@@ -153,7 +153,7 @@ public class ConcurrencyTest extends AbstractTest {
 				@Override
 				public void run() {
 					try {
-						PebbleTemplate template = engine.compile("templates/template.concurrent2.peb");
+						PebbleTemplate template = engine.getTemplate("templates/template.concurrent2.peb");
 
 						int a = r.nextInt();
 						int b = r.nextInt();

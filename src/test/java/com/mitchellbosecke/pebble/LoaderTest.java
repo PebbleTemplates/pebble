@@ -22,7 +22,7 @@ public class LoaderTest extends AbstractTest {
 		Loader loader = new ClasspathLoader();
 		loader.setPrefix("templates");
 		PebbleEngine engine = new PebbleEngine(loader);
-		PebbleTemplate template1 = engine.compile("template.loaderTest.peb");
+		PebbleTemplate template1 = engine.getTemplate("template.loaderTest.peb");
 		Writer writer1 = new StringWriter();
 		template1.evaluate(writer1);
 		assertEquals("SUCCESS", writer1.toString());
@@ -34,7 +34,7 @@ public class LoaderTest extends AbstractTest {
 		Loader loader = new ClasspathLoader();
 		loader.setPrefix("templates");
 		PebbleEngine engine = new PebbleEngine(loader);
-		PebbleTemplate template1 = engine.compile("loader/template.loaderTest.peb");
+		PebbleTemplate template1 = engine.getTemplate("loader/template.loaderTest.peb");
 		Writer writer1 = new StringWriter();
 		template1.evaluate(writer1);
 		assertEquals("SUCCESS", writer1.toString());
@@ -46,7 +46,7 @@ public class LoaderTest extends AbstractTest {
 		Loader loader = new FileLoader();
 		PebbleEngine engine = new PebbleEngine(loader);
 		URL url = getClass().getResource("/templates/template.loaderTest.peb");
-		PebbleTemplate template1 = engine.compile(url.getPath());
+		PebbleTemplate template1 = engine.getTemplate(url.getPath());
 		Writer writer1 = new StringWriter();
 		template1.evaluate(writer1);
 		assertEquals("SUCCESS", writer1.toString());

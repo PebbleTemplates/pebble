@@ -36,8 +36,8 @@ public class WritingTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template1 = pebble.compile("first");
-		PebbleTemplate template2 = pebble.compile("second");
+		PebbleTemplate template1 = pebble.getTemplate("first");
+		PebbleTemplate template2 = pebble.getTemplate("second");
 
 		Writer writer = new UncloseableWriter();
 		template1.evaluate(writer);
@@ -67,7 +67,7 @@ public class WritingTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setExecutorService(Executors.newCachedThreadPool());
 		String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end {% parallel %}{{ slowObject.third }}{% endparallel %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		for (int i = 0; i < 2; i++) {
 			Writer writer = new StringWriter();
 			Map<String, Object> context = new HashMap<>();

@@ -23,7 +23,7 @@ public class NodeImport extends AbstractNode {
 
 	@Override
 	public void compile(Compiler compiler) {
-		compiler.raw("addImportedTemplate(engine.compile(").subcompile(getImportExpression()).raw("));").newline();
+		compiler.raw("addImportedTemplate(engine.getTemplate(").subcompile(getImportExpression()).raw("));").newline();
 	}
 
 	@Override

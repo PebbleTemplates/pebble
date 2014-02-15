@@ -98,7 +98,7 @@ public class NodeRoot extends AbstractNode {
 		 * at runtime.
 		 */
 		if (getParentTemplateExpression() != null && getParentTemplateExpression() instanceof NodeExpressionString) {
-			compiler.write("setParent(engine.compile(").subcompile(getParentTemplateExpression()).raw("));").newline();
+			compiler.write("setParent(engine.getTemplate(").subcompile(getParentTemplateExpression()).raw("));").newline();
 		}
 
 		// private method that registers all the blocks
@@ -127,7 +127,7 @@ public class NodeRoot extends AbstractNode {
 			 * in the constructor, otherwise it's compiled here at runtime.
 			 */
 			if (!(this.getParentTemplateExpression() instanceof NodeExpressionString)) {
-				compiler.write("setParent(engine.compile(").subcompile(getParentTemplateExpression()).raw("));").newline();
+				compiler.write("setParent(engine.getTemplate(").subcompile(getParentTemplateExpression()).raw("));").newline();
 			}
 
 			// parent can still be null if "extends" expression evaluated to

@@ -25,7 +25,7 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testSimpleInheritance() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.parent.peb");
+		PebbleTemplate template = pebble.getTemplate("template.parent.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -36,7 +36,7 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testMultiLevelInheritance() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.child.peb");
+		PebbleTemplate template = pebble.getTemplate("template.child.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -47,7 +47,7 @@ public class InheritanceTest extends AbstractTest {
 	
 	@Test
 	public void testDynamicInheritance() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.dynamicChild.peb");
+		PebbleTemplate template = pebble.getTemplate("template.dynamicChild.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("extendNumberOne", true);
 
@@ -66,7 +66,7 @@ public class InheritanceTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		PebbleTemplate template = pebble
-				.compile("{% extends null %}success");
+				.getTemplate("{% extends null %}success");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);

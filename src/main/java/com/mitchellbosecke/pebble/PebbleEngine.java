@@ -153,7 +153,7 @@ public class PebbleEngine {
 	 * @return PebbleTemplate
 	 * @throws PebbleException
 	 */
-	public PebbleTemplate compile(final String templateName) throws PebbleException {
+	public PebbleTemplate getTemplate(final String templateName) throws PebbleException {
 
 		/*
 		 * template name will be null if user uses the extends tag with an
@@ -438,7 +438,11 @@ public class PebbleEngine {
 	 *            The cache to be used
 	 */
 	public void setTemplateCache(Cache<String, PebbleTemplate> cache) {
-		this.templateCache = cache;
+		if (cache == null) {
+			templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
+		} else {
+			templateCache = cache;
+		}
 	}
 
 	public boolean isStrictVariables() {

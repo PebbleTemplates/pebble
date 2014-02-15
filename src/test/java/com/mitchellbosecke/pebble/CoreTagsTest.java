@@ -29,7 +29,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testBlock() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.grandfather.peb");
+		PebbleTemplate template = pebble.getTemplate("template.grandfather.peb");
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 	}
@@ -41,7 +41,7 @@ public class CoreTagsTest extends AbstractTest {
 		pebble.setStrictVariables(false);
 
 		String source = "{% if false or steve == true  %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 
 		Map<String, Object> context = new HashMap<>();
 		context.put("yes", true);
@@ -58,7 +58,7 @@ public class CoreTagsTest extends AbstractTest {
 		pebble.setStrictVariables(false);
 
 		String source = "{% if variable %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("variable", true);
 
@@ -73,7 +73,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "start{% flush %}end";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 
 		FlushAwareWriter writer = new FlushAwareWriter();
 		template.evaluate(writer);
@@ -89,7 +89,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% for user in users %}{% if loop.index == 0 %}[{{ loop.length }}]{% endif %}{{ loop.index }}{{ user.username }}{% endfor %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
@@ -113,7 +113,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% for user in classroom.users %}{{ user.username }}{% endfor %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
@@ -133,7 +133,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% for user in users %}{{ loop.index }}{% endfor %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 
 		Map<String, Object> context = new HashMap<>();
 		context.put("users", null);
@@ -155,7 +155,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "" + "{% for user in users %}{% endfor %}" + "{% for user in users %}{% endfor %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		users.add(new User("Alex"));
@@ -172,7 +172,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% for user in users %}{{ user.username }}{% else %}yes{% endfor %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		List<User> users = new ArrayList<>();
 		context.put("users", users);
@@ -184,7 +184,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testMacro() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.macro1.peb");
+		PebbleTemplate template = pebble.getTemplate("template.macro1.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -196,7 +196,7 @@ public class CoreTagsTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		PebbleTemplate template = pebble
-				.compile("{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}");
+				.getTemplate("{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -208,7 +208,7 @@ public class CoreTagsTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		PebbleTemplate template = pebble
-				.compile("{{ input(name='country') }}{% macro input(type='text', name) %}{{ type }} {{ name }}{% endmacro %}");
+				.getTemplate("{{ input(name='country') }}{% macro input(type='text', name) %}{{ type }} {{ name }}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -224,7 +224,7 @@ public class CoreTagsTest extends AbstractTest {
 	 */
 	@Test
 	public void testMacroInvokedTwice() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.macroDouble.peb");
+		PebbleTemplate template = pebble.getTemplate("template.macroDouble.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -236,7 +236,7 @@ public class CoreTagsTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		PebbleTemplate template = pebble
-				.compile("{{ test('1') }}{% macro test(one,two) %}{{ one }}{{ two }}{% endmacro %}");
+				.getTemplate("{{ test('1') }}{% macro test(one,two) %}{{ one }}{{ two }}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -245,7 +245,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test(expected = PebbleException.class)
 	public void testDuplicateMacro() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.macroDuplicate.peb");
+		PebbleTemplate template = pebble.getTemplate("template.macroDuplicate.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -260,7 +260,7 @@ public class CoreTagsTest extends AbstractTest {
 	 */
 	@Test
 	public void testMacroBeingFiltered() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.macro3.peb");
+		PebbleTemplate template = pebble.getTemplate("template.macro3.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -269,7 +269,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testImportWithinBlock() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.importWithinBlock.peb");
+		PebbleTemplate template = pebble.getTemplate("template.importWithinBlock.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -278,7 +278,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testImportFile() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.macro2.peb");
+		PebbleTemplate template = pebble.getTemplate("template.macro2.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -287,7 +287,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testImportInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.macro.child.peb");
+		PebbleTemplate template = pebble.getTemplate("template.macro.child.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -298,7 +298,7 @@ public class CoreTagsTest extends AbstractTest {
 	public void testNonExistingMacroOrFunction() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		PebbleTemplate template = pebble.compile("{{ nonExisting('test') }}");
+		PebbleTemplate template = pebble.getTemplate("{{ nonExisting('test') }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -306,7 +306,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testInclude() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.include1.peb");
+		PebbleTemplate template = pebble.getTemplate("template.include1.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -315,7 +315,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testIncludeWithinBlock() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.includeWithinBlock.peb");
+		PebbleTemplate template = pebble.getTemplate("template.includeWithinBlock.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -330,7 +330,7 @@ public class CoreTagsTest extends AbstractTest {
 	 */
 	@Test
 	public void testIncludePropagatesContext() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.includePropagatesContext.peb");
+		PebbleTemplate template = pebble.getTemplate("template.includePropagatesContext.peb");
 		Writer writer = new StringWriter();
 		Map<String, Object> context = new HashMap<>();
 		context.put("name", "Mitchell");
@@ -347,7 +347,7 @@ public class CoreTagsTest extends AbstractTest {
 	 */
 	@Test
 	public void testIncludeOverridesBlocks() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.includeOverrideBlock.peb");
+		PebbleTemplate template = pebble.getTemplate("template.includeOverrideBlock.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -360,7 +360,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{% set name = 'alex'  %}{{ name }}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("name", "steve");
 
@@ -371,7 +371,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	@Test
 	public void testSetInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("template.set.child.peb");
+		PebbleTemplate template = pebble.getTemplate("template.set.child.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -384,7 +384,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.setExecutorService(Executors.newCachedThreadPool());
 		String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end {% parallel %}{{ slowObject.third }}{% endparallel %}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 
 		Writer writer = new StringWriter();
 		Map<String, Object> context = new HashMap<>();

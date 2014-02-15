@@ -34,7 +34,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+		PebbleTemplate template = pebble.getTemplate("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -48,7 +48,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
 		String source = "{{ stringDate | date('yyyy/MMMM/d', existingFormat='yyyy-MMMM-d') }}";
 
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
 		Date realDate = format.parse("2012-July-01");
@@ -66,7 +66,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
 		String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
 		Date realDate = format.parse("2012-July-01");
@@ -82,7 +82,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
+		PebbleTemplate template = pebble.getTemplate("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("organization", "organization");
 		context.put("nothing", "nothing");
@@ -99,7 +99,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ foo.org }}");
+		PebbleTemplate template = pebble.getTemplate("{{ foo.org }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("foo", new Foo("success"));
 		Writer writer = new StringWriter();
@@ -120,7 +120,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
+		PebbleTemplate template = pebble.getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -132,7 +132,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{ 'test\ntest' }}");
+		PebbleTemplate template = pebble.getTemplate("{{ 'test\ntest' }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -144,7 +144,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{'test\"}}");
+		PebbleTemplate template = pebble.getTemplate("{{'test\"}}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -156,18 +156,18 @@ public class ParsingOdditiesTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.compile("{{\"te'st\"}}");
+		PebbleTemplate template = pebble.getTemplate("{{\"te'st\"}}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("te'st", writer.toString());
 
-		template = pebble.compile("{{\"te\\'st\"}}");
+		template = pebble.getTemplate("{{\"te\\'st\"}}");
 		writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("te\\'st", writer.toString());
 
-		template = pebble.compile("{{'te\\'st'}}");
+		template = pebble.getTemplate("{{'te\\'st'}}");
 		writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("te'st", writer.toString());

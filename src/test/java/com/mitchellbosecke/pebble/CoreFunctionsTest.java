@@ -25,7 +25,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
 	@Test
 	public void testBlockFunction() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("function/template.block.peb");
+		PebbleTemplate template = pebble.getTemplate("function/template.block.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -34,7 +34,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
 	@Test
 	public void testParentFunction() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("function/template.child.peb");
+		PebbleTemplate template = pebble.getTemplate("function/template.child.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -49,7 +49,7 @@ public class CoreFunctionsTest extends AbstractTest {
 	 */
 	@Test
 	public void testParentBlockHasAccessToContext() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("function/template.childWithContext.peb");
+		PebbleTemplate template = pebble.getTemplate("function/template.childWithContext.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -58,7 +58,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
 	@Test
 	public void testParentThenMacro() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.compile("function/template.childThenParentThenMacro.peb");
+		PebbleTemplate template = pebble.getTemplate("function/template.childThenParentThenMacro.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -71,7 +71,7 @@ public class CoreFunctionsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{{ min(8.0, 1, 4, 5, object.large) }}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 
 		Map<String, Object> context = new HashMap<>();
 		context.put("object", new SimpleObject());
@@ -87,7 +87,7 @@ public class CoreFunctionsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 
 		String source = "{{ max(8.0, 1, 4, 5, object.large) }}";
-		PebbleTemplate template = pebble.compile(source);
+		PebbleTemplate template = pebble.getTemplate(source);
 
 		Map<String, Object> context = new HashMap<>();
 		context.put("object", new SimpleObject());
