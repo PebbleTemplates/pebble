@@ -8,12 +8,14 @@ import com.mitchellbosecke.pebble.compiler.BaseNodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeAutoEscape;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodePrint;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReferenceAndFunction;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvocation;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroInvocation;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
+import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentFunction;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryFilter;
@@ -56,9 +58,9 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 	public void visit(NodeAutoEscape node) {
 		active.push(node.isActive());
 		strategies.push(node.getStrategy());
-		
+
 		node.getBody().accept(this);
-		
+
 		active.pop();
 		strategies.pop();
 	}
@@ -111,7 +113,9 @@ public class EscaperNodeVisitor extends BaseNodeVisitor {
 			safe = true;
 		}
 		// function and macro calls are considered safe
-		else if (expression instanceof NodeExpressionFunctionOrMacroInvocation) {
+		else if (expression instanceof NodeExpressionFunctionOrMacroInvocation
+				|| expression instanceof NodeExpressionParentFunction
+				|| expression instanceof NodeExpressionBlockReferenceAndFunction) {
 			safe = true;
 		} else if (expression instanceof NodeExpressionBinaryFilter) {
 

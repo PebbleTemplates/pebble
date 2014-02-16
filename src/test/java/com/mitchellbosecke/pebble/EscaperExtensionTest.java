@@ -184,4 +184,26 @@ public class EscaperExtensionTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("<br />", writer.toString());
 	}
+	
+	@Test
+	public void testAutoEscapingParentFunction() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.getTemplate("template.autoescapeParent1.peb");
+		Map<String, Object> context = new HashMap<>();
+		context.put("text", "<br>");
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("<&lt;br&gt;>", writer.toString());
+	}
+	
+	@Test
+	public void testAutoEscapingBlockFunction() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleTemplate template = pebble.getTemplate("{% block header %}<{{ text }}>{% endblock %}{{ block('header') }}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("text", "<br>");
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("<&lt;br&gt;><&lt;br&gt;>", writer.toString());
+	}
 }

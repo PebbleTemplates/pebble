@@ -1,0 +1,6 @@
+{# 
+	used by:
+		EscaperExtensionTest.testAutoEscapingInclude
+#}
+{% extends 'template.autoescapeParent2.peb' %}
+{% block nav %}{{ parent() }}{% endblock %}
