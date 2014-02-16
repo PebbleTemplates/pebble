@@ -200,6 +200,7 @@ public abstract class BaseNodeVisitor implements NodeVisitor {
 	@Override
 	public void visit(NodeMacro node) {
 		node.getArgs().accept(this);
+		node.getBody().accept(this);
 	}
 
 	@Override

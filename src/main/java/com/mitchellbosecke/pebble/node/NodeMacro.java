@@ -120,7 +120,7 @@ public class NodeMacro extends AbstractNode {
 		compiler.write("public void evaluate(java.io.Writer writer, ").raw(EvaluationContext.class.getName())
 				.raw(" context) throws com.mitchellbosecke.pebble.error.PebbleException, java.io.IOException {")
 				.indent();
-		compiler.subcompile(body);
+		compiler.subcompile(getBody());
 		compiler.outdent().newline().write("}").newline();
 	}
 
@@ -135,5 +135,9 @@ public class NodeMacro extends AbstractNode {
 
 	public String getName() {
 		return name;
+	}
+
+	public NodeBody getBody() {
+		return body;
 	}
 }
