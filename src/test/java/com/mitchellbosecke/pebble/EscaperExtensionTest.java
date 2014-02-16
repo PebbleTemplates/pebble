@@ -17,7 +17,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.debug.DebugExtension;
 import com.mitchellbosecke.pebble.extension.escaper.EscaperExtension;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -155,18 +154,22 @@ public class EscaperExtensionTest extends AbstractTest {
 	@Test
 	public void testAutoEscapingMacroOutput() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
-		DebugExtension debug = new DebugExtension();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.addExtension(debug);
-		PebbleTemplate template = pebble.getTemplate("{{ test(text) }}{% macro test(input) %}<{{ input }}>{% endmacro %}");
-		System.out.println(debug.toString());
+		PebbleTemplate template = pebble.getTemplate("{{ test('<br>') }}{% macro test(input) %}<{{ input }}>{% endmacro %}");
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("<&lt;br&gt;>", writer.toString());
+	}
+	
+	@Test
+	public void testAutoEscapingInclude() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.getTemplate("template.autoescapeInclude1.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("text", "<br>");
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("<&lt;br&gt;>", writer.toString());
 	}
-
 
 	@Test
 	public void testRawFilterWithinAutoescapeToken() throws PebbleException, IOException {
