@@ -46,8 +46,8 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	 * A template has to store a reference to the main engine so that it can
 	 * compile other templates when using the "import" or "include" tags. It's
 	 * important that the only method of the PebbleEngine that a template
-	 * invokes during evaluation is the compile method because this is the only
-	 * one that I'm sure is thread-safe.
+	 * invokes during evaluation is the "getTemplate" method because this is the
+	 * only one that I'm sure is thread-safe.
 	 */
 	protected final PebbleEngine engine;
 
@@ -82,7 +82,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	public abstract void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException;
 
 	public void evaluate(Writer writer) throws PebbleException, IOException {
-		EvaluationContext context = initContext(engine.getDefaultLocale());
+		EvaluationContext context = initContext(null);
 		evaluate(writer, context);
 	}
 
@@ -92,7 +92,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	}
 
 	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
-		EvaluationContext context = initContext(engine.getDefaultLocale());
+		EvaluationContext context = initContext(null);
 		context.putAll(map);
 		evaluate(writer, context);
 	}
@@ -116,8 +116,8 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	 * @throws IOException
 	 */
 	public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
-		if (engine.getExecutorService() != null) {
-			writer = new FutureWriter(writer, engine.getExecutorService());
+		if (context.getExecutorService() != null) {
+			writer = new FutureWriter(writer, context.getExecutorService());
 		}
 		buildContent(writer, context);
 		writer.flush();
@@ -129,7 +129,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	protected void evaluateInParallel(Writer writer, final EvaluationContext context,
 			final Evaluatable parallelEvaluation) throws PebbleException, IOException {
-		ExecutorService es = engine.getExecutorService();
+		ExecutorService es = context.getExecutorService();
 
 		if (es == null) {
 			throw new PebbleException(null,
@@ -148,20 +148,16 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	}
 
 	/**
-	 * Initializes the evaluation context.
-	 * 
-	 * TODO: I'm concerned that this method is not thread safe due to the
-	 * invocations of PebbleEngine methods which themselves might not be thread
-	 * safe. What if another thread is modifying the engine settings while this
-	 * template is retrieving those settings??
+	 * Initializes the evaluation context with settings from the engine.
 	 * 
 	 * @param locale
 	 * @return
 	 */
 	private EvaluationContext initContext(Locale locale) {
-		EvaluationContext context = new EvaluationContext(engine.isStrictVariables());
+		locale = locale == null ? engine.getDefaultLocale() : locale;
+		EvaluationContext context = new EvaluationContext(engine.isStrictVariables(), locale, engine.getFilters(),
+				engine.getTests(), engine.getFunctions(), engine.getExecutorService());
 		context.putAll(engine.getGlobalVariables());
-		context.setLocale(locale);
 		return context;
 	}
 
@@ -284,7 +280,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	protected Object applyFunctionOrMacro(String functionName, EvaluationContext context, ArgumentMap args)
 			throws PebbleException {
-		Map<String, Function> functions = engine.getFunctions();
+		Map<String, Function> functions = context.getFunctions();
 		if (functions.containsKey(functionName)) {
 			return applyFunction(functions.get(functionName), context, args);
 		}
@@ -363,7 +359,7 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	protected Object applyFilter(String filterName, EvaluationContext context, Object input, ArgumentMap args)
 			throws PebbleException {
 
-		Map<String, Filter> filters = engine.getFilters();
+		Map<String, Filter> filters = context.getFilters();
 		Filter filter = filters.get(filterName);
 
 		if (filter == null) {
@@ -388,8 +384,9 @@ public abstract class PebbleTemplateImpl implements PebbleTemplate {
 	 * @return
 	 * @throws PebbleException
 	 */
-	protected boolean applyTest(String testName, Object input, ArgumentMap args) throws PebbleException {
-		Map<String, Test> tests = engine.getTests();
+	protected boolean applyTest(String testName, Object input, EvaluationContext context, ArgumentMap args)
+			throws PebbleException {
+		Map<String, Test> tests = context.getTests();
 		Test test = tests.get(testName);
 
 		Map<String, Object> namedArguments = getNamedArguments((NamedArguments) test, args);

@@ -12,15 +12,10 @@ package com.mitchellbosecke.pebble.extension.i18n;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
 
 public class I18nExtension extends AbstractExtension {
-
-	@Override
-	public void initRuntime(PebbleEngine engine) {
-	}
 
 	@Override
 	public Map<String, Function> getFunctions() {

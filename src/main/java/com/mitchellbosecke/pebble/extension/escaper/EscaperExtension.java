@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -30,10 +29,6 @@ public class EscaperExtension extends AbstractExtension {
 	public EscaperExtension() {
 		this.filter = new EscapeFilter();
 		this.visitor = new EscaperNodeVisitor();
-	}
-
-	@Override
-	public void initRuntime(PebbleEngine engine) {
 	}
 
 	@Override

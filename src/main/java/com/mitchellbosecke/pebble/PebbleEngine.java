@@ -89,25 +89,24 @@ public class PebbleEngine {
 	 * Extensions
 	 */
 	private HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
-	private boolean extensionsInitialized = false;
 
 	/*
 	 * Elements retrieved from extensions
 	 */
-	private Map<String, TokenParser> tokenParsers;
-	private Map<String, UnaryOperator> unaryOperators;
-	private Map<String, BinaryOperator> binaryOperators;
-	private Map<String, Filter> filters;
-	private Map<String, Test> tests;
-	private Map<String, Object> globalVariables;
-	private Map<String, Function> functions;
-	private List<NodeVisitor> nodeVisitors;
+	private Map<String, TokenParser> tokenParsers = new HashMap<>();
+	private Map<String, UnaryOperator> unaryOperators = new HashMap<>();
+	private Map<String, BinaryOperator> binaryOperators = new HashMap<>();
+	private Map<String, Filter> filters = new HashMap<>();
+	private Map<String, Test> tests = new HashMap<>();
+	private Map<String, Object> globalVariables = new HashMap<>();
+	private Map<String, Function> functions = new HashMap<>();
+	private List<NodeVisitor> nodeVisitors = new ArrayList<>();
 
 	/**
 	 * compilationMutex ensures that only one template is being compiled at a
 	 * time. Only concurrent evaluation is supported at this time.
 	 */
-	private final Semaphore compilationMutex = new Semaphore(1);
+	private final Semaphore compilationMutex = new Semaphore(1, true);
 
 	public PebbleEngine() {
 		this(null);
@@ -247,46 +246,6 @@ public class PebbleEngine {
 
 	public void addExtension(Extension extension) {
 		this.extensions.put(extension.getClass(), extension);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T extends Extension> T getExtension(Class<T> clazz) {
-		return (T) this.extensions.get(clazz);
-	}
-
-	/**
-	 * Retrieves all of the information/tools from the provided extensions. This
-	 * includes unary operators, binary operations, token parsers, etc
-	 */
-	private void initExtensions() {
-		if (extensionsInitialized) {
-			return;
-		}
-		this.extensionsInitialized = true;
-		this.tokenParsers = new HashMap<>();
-		this.unaryOperators = new HashMap<>();
-		this.binaryOperators = new HashMap<>();
-		this.filters = new HashMap<>();
-		this.tests = new HashMap<>();
-		this.functions = new HashMap<>();
-		this.globalVariables = new HashMap<>();
-		this.nodeVisitors = new ArrayList<>();
-
-		for (Extension extension : this.extensions.values()) {
-			initExtension(extension);
-		}
-	}
-
-	/**
-	 * Initializes a particular extension and retrieves all valuable information
-	 * from it.
-	 * 
-	 * @param extension
-	 *            The extension to initialize
-	 */
-	private void initExtension(Extension extension) {
-
-		extension.initRuntime(this);
 
 		// token parsers
 		if (extension.getTokenParsers() != null) {
@@ -340,59 +299,40 @@ public class PebbleEngine {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends Extension> T getExtension(Class<T> clazz) {
+		return (T) this.extensions.get(clazz);
+	}
+
 	public Map<String, TokenParser> getTokenParsers() {
-		if (!extensionsInitialized) {
-			initExtensions();
-		}
 		return this.tokenParsers;
 	}
 
 	public Map<String, BinaryOperator> getBinaryOperators() {
-		if (!this.extensionsInitialized) {
-			initExtensions();
-		}
 		return this.binaryOperators;
 	}
 
 	public Map<String, UnaryOperator> getUnaryOperators() {
-		if (!this.extensionsInitialized) {
-			initExtensions();
-		}
 		return this.unaryOperators;
 	}
 
 	public Map<String, Filter> getFilters() {
-		if (!this.extensionsInitialized) {
-			initExtensions();
-		}
 		return this.filters;
 	}
 
 	public Map<String, Test> getTests() {
-		if (!this.extensionsInitialized) {
-			initExtensions();
-		}
 		return this.tests;
 	}
 
 	public Map<String, Function> getFunctions() {
-		if (!this.extensionsInitialized) {
-			initExtensions();
-		}
 		return this.functions;
 	}
 
 	public Map<String, Object> getGlobalVariables() {
-		if (!this.extensionsInitialized) {
-			initExtensions();
-		}
 		return this.globalVariables;
 	}
 
 	public List<NodeVisitor> getNodeVisitors() {
-		if (!this.extensionsInitialized) {
-			initExtensions();
-		}
 		return this.nodeVisitors;
 	}
 

@@ -113,7 +113,7 @@ public class ConcurrencyTest extends AbstractTest {
 		int numOfConcurrentThreads = 100;
 		final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
 
-		Cache<String,PebbleTemplate> cache = engine.getTemplateCache();
+		Cache<String, PebbleTemplate> cache = engine.getTemplateCache();
 		for (int i = 0; i < 1000; i++) {
 			semaphore.acquire(2);
 			es.submit(new Runnable() {

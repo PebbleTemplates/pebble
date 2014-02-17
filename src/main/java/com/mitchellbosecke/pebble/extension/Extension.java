@@ -12,14 +12,11 @@ package com.mitchellbosecke.pebble.extension;
 import java.util.List;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 public interface Extension {
-
-	public void initRuntime(PebbleEngine engine);
 
 	/**
 	 * Use this method to provide custom filters.

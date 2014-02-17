@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
@@ -58,11 +57,6 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 public class CoreExtension extends AbstractExtension {
 
 	@Override
-	public void initRuntime(PebbleEngine engine) {
-
-	}
-
-	@Override
 	public List<TokenParser> getTokenParsers() {
 		ArrayList<TokenParser> parsers = new ArrayList<>();
 		parsers.add(new BlockTokenParser());
@@ -99,7 +93,8 @@ public class CoreExtension extends AbstractExtension {
 		operators.add(new BinaryOperatorImpl("!=", 30, NodeExpressionBinaryNotEqual.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl(">", 30, NodeExpressionBinaryGreaterThan.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("<", 30, NodeExpressionBinaryLessThan.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl(">=", 30, NodeExpressionBinaryGreaterThanEquals.class, Associativity.LEFT));
+		operators
+				.add(new BinaryOperatorImpl(">=", 30, NodeExpressionBinaryGreaterThanEquals.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("<=", 30, NodeExpressionBinaryLessThanEquals.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("+", 40, NodeExpressionBinaryAdd.class, Associativity.LEFT));
 		operators.add(new BinaryOperatorImpl("-", 40, NodeExpressionBinarySubtract.class, Associativity.LEFT));

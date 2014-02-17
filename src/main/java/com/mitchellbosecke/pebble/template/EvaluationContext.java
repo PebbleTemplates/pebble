@@ -4,8 +4,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.extension.Test;
 
 /**
  * An evaluation context will store all stateful data that is necessary for the
@@ -45,10 +49,24 @@ public class EvaluationContext {
 	 * The locale of this template. Will be used by LocaleAware filters,
 	 * functions, etc.
 	 */
-	private Locale locale;
+	private final Locale locale;
 
-	public EvaluationContext(boolean strictVariables) {
+	private final Map<String, Filter> filters;
+
+	private final Map<String, Test> tests;
+
+	private final Map<String, Function> functions;
+	
+	private final ExecutorService executorService;
+
+	public EvaluationContext(boolean strictVariables, Locale locale, Map<String, Filter> filters, Map<String, Test> tests,
+			Map<String, Function> functions, ExecutorService executorService) {
 		this.strictVariables = strictVariables;
+		this.locale = locale;
+		this.filters = filters;
+		this.tests = tests;
+		this.functions = functions;
+		this.executorService = executorService;
 
 		this.inheritanceChain = new Stack<>();
 		this.scopes = new Stack<>();
@@ -137,12 +155,24 @@ public class EvaluationContext {
 		return locale;
 	}
 
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
-
 	public Map<Class<?>, ClassAttributeCacheEntry> getAttributeCache() {
 		return attributeCache;
+	}
+
+	public Map<String, Test> getTests() {
+		return tests;
+	}
+
+	public Map<String, Filter> getFilters() {
+		return filters;
+	}
+
+	public Map<String, Function> getFunctions() {
+		return functions;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
 	}
 
 }
