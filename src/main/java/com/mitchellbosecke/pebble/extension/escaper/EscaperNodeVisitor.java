@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import com.mitchellbosecke.pebble.compiler.BaseNodeVisitor;
+import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.NodeAutoEscape;
 import com.mitchellbosecke.pebble.node.NodeExpression;
 import com.mitchellbosecke.pebble.node.NodePrint;
@@ -20,7 +20,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryFilter;
 
-public class EscaperNodeVisitor extends BaseNodeVisitor {
+public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
 	private final Stack<String> strategies = new Stack<>();
 

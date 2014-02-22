@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.Function;
 
-public class MessageFunction implements Function, LocaleAware {
+public class i18nFunction implements Function, LocaleAware {
 
 	private Locale locale;
 

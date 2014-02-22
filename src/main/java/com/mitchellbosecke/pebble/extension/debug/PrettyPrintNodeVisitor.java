@@ -1,6 +1,6 @@
 package com.mitchellbosecke.pebble.extension.debug;
 
-import com.mitchellbosecke.pebble.compiler.BaseNodeVisitor;
+import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeBlock;
 import com.mitchellbosecke.pebble.node.NodeBody;
@@ -31,7 +31,7 @@ import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvocation;
 import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
 
-public class PrettyPrintNodeVisitor extends BaseNodeVisitor {
+public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 
 	private StringBuilder output = new StringBuilder();
 

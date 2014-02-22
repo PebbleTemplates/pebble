@@ -1,6 +1,5 @@
-package com.mitchellbosecke.pebble.compiler;
+package com.mitchellbosecke.pebble.extension;
 
-import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.NodeAutoEscape;
 import com.mitchellbosecke.pebble.node.NodeBlock;
@@ -41,7 +40,7 @@ import com.mitchellbosecke.pebble.utils.Pair;
  * @author Mitchell
  * 
  */
-public abstract class BaseNodeVisitor implements NodeVisitor {
+public abstract class AbstractNodeVisitor implements NodeVisitor {
 
 	/**
 	 * Default method used for unknown nodes such as nodes from a user provided

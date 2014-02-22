@@ -29,7 +29,7 @@ public class I18nExtensionTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.addExtension(new I18nExtension());
 
-		PebbleTemplate template = pebble.getTemplate("{{ message('testMessages','greeting') }}");
+		PebbleTemplate template = pebble.getTemplate("{{ i18n('testMessages','greeting') }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -42,7 +42,7 @@ public class I18nExtensionTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.addExtension(new I18nExtension());
 
-		PebbleTemplate template = pebble.getTemplate("{{ message(bundle='testMessages',key='greeting') }}");
+		PebbleTemplate template = pebble.getTemplate("{{ i18n(bundle='testMessages',key='greeting') }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -55,7 +55,7 @@ public class I18nExtensionTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		pebble.addExtension(new I18nExtension());
 
-		PebbleTemplate template = pebble.getTemplate("{{ message('testMessages','greeting') }}");
+		PebbleTemplate template = pebble.getTemplate("{{ i18n('testMessages','greeting') }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer, new Locale("es_US"));
