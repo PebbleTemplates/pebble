@@ -17,10 +17,17 @@ import java.net.URI;
 
 import javax.tools.SimpleJavaFileObject;
 
+/**
+ * Are used for the output of freshly compiled pebble templates before they are
+ * instantiated.
+ * 
+ * @author Mitchell
+ * 
+ */
 public class ByteArrayJavaFileObject extends SimpleJavaFileObject {
-	
-	protected final ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
-	
+
+	protected final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
 	private String binaryName;
 
 	public ByteArrayJavaFileObject(String name, Kind kind) {
@@ -32,8 +39,9 @@ public class ByteArrayJavaFileObject extends SimpleJavaFileObject {
 	public OutputStream openOutputStream() throws IOException {
 		return bos;
 	}
-	
-	public InputStream openInputStream() throws IOException{
+
+	@Override
+	public InputStream openInputStream() throws IOException {
 		return new ByteArrayInputStream(bos.toByteArray());
 	}
 
@@ -46,8 +54,8 @@ public class ByteArrayJavaFileObject extends SimpleJavaFileObject {
 	public byte[] getBytes() {
 		return bos.toByteArray();
 	}
-	
-	public String getBinaryName(){
+
+	public String getBinaryName() {
 		return binaryName;
 	}
 }

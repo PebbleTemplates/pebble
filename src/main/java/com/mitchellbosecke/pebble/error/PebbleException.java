@@ -22,7 +22,7 @@ public class PebbleException extends Exception {
 	}
 
 	public PebbleException(Throwable cause, String message, Integer lineNumber, String filename) {
-		super(String.format("%s(%s:%d)", message, filename, lineNumber), cause);
+		super(String.format("%s (%s:%d)", message, filename, lineNumber), cause);
 		this.message = message;
 		this.lineNumber = lineNumber;
 		this.filename = filename;

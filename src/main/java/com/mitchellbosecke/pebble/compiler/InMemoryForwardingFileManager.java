@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.security.SecureClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,21 +12,29 @@ import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
 	private static final Logger logger = LoggerFactory.getLogger(InMemoryForwardingFileManager.class);
 
+	/**
+	 * In memory java file objects
+	 */
 	private final Map<String, ByteArrayJavaFileObject> javaFileObjects = new HashMap<>();
 
-	public InMemoryForwardingFileManager() {
-		super(ToolProvider.getSystemJavaCompiler().getStandardFileManager(null, Locale.getDefault(), null));
+	/**
+	 * Used to find other pebble classes during compilation
+	 */
+	private final PebbleInternalsFinder finder = new PebbleInternalsFinder();
+
+	public InMemoryForwardingFileManager(ClassLoader classLoader, StandardJavaFileManager standardFileManager) {
+		super(standardFileManager);
 	}
 
 	@Override
@@ -40,14 +47,19 @@ public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<Sta
 				logger.debug(String.format("Finding class: %s", name));
 
 				ByteArrayJavaFileObject fileObject = javaFileObjects.get(name);
-				
-				// the fileobject is no longer required
+
+				/*
+				 * Because pebble only compiles one template at a time, we can
+				 * remove this java file object from memory as it will no longer
+				 * be needed.
+				 */
 				javaFileObjects.remove(name);
-				
+
 				Class<?> clazz;
 				if (fileObject != null) {
 					byte[] bytes = fileObject.getBytes();
 					clazz = defineClass(name, bytes, 0, bytes.length);
+					resolveClass(clazz);
 				} else {
 					throw new ClassNotFoundException(name);
 				}
@@ -70,27 +82,46 @@ public class InMemoryForwardingFileManager extends ForwardingJavaFileManager<Sta
 		}
 	}
 
+	/**
+	 * The compiler will call this method to find dependencies (classes required
+	 * during compilation).
+	 */
 	@Override
 	public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds,
 			boolean recurse) throws IOException {
 
-		ArrayList<JavaFileObject> out = new ArrayList<>();
+		ArrayList<JavaFileObject> result = new ArrayList<>();
+		Iterable<JavaFileObject> parentResults = super.list(location, packageName, kinds, recurse);
 
-		if (packageName.startsWith(PebbleTemplateImpl.COMPILED_PACKAGE_NAME)) {
-			out.addAll(new ArrayList<>(javaFileObjects.values()));
+		/*
+		 * add classes stored in this file manager (probably not necessary now
+		 * that we are only compiling one template at a time)
+		 */
+		if (PebbleTemplateImpl.COMPILED_PACKAGE_NAME.equals(packageName)) {
+			result.addAll(new ArrayList<>(javaFileObjects.values()));
 		}
 
-		for (JavaFileObject obj : super.list(location, packageName, kinds, recurse)) {
-			out.add(obj);
+		// use the PebbleInternalsFinder to find pebble internal classes
+		if (packageName.startsWith(PebbleEngine.class.getPackage().getName())) {
+			result.addAll(finder.find(packageName));
 		}
 
-		return out;
+		// combine parent results
+		for (JavaFileObject obj : parentResults) {
+			result.add(obj);
+		}
+
+		return result;
 	}
 
 	@Override
 	public String inferBinaryName(Location location, JavaFileObject file) {
 		if (file instanceof ByteArrayJavaFileObject) {
 			return ((ByteArrayJavaFileObject) file).getBinaryName();
+		} else if (file instanceof UriJavaFileObject) {
+			return ((UriJavaFileObject) file).getBinaryName();
+		} else if (file instanceof VirtualFileJavaFileObject) {
+			return ((VirtualFileJavaFileObject) file).getBinaryName();
 		} else {
 			return super.inferBinaryName(location, file);
 		}

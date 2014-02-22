@@ -1,6 +1,5 @@
 package com.mitchellbosecke.pebble.compiler;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -10,11 +9,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import org.slf4j.Logger;
@@ -45,37 +46,26 @@ public class JavaCompiler {
 		 * we reduce the overhead of scanning through file system and jar files
 		 * each time
 		 */
-		InMemoryForwardingFileManager fileManager = new InMemoryForwardingFileManager();
+		StandardJavaFileManager standardFileManager = ToolProvider.getSystemJavaCompiler().getStandardFileManager(null,
+				Locale.getDefault(), null);
+		InMemoryForwardingFileManager fileManager = new InMemoryForwardingFileManager(
+				JavaCompiler.class.getClassLoader(), standardFileManager);
 
 		/*
 		 * Prepare a list of compilation units (java source code file objects)
 		 * to input to compilation task
 		 */
 		List<JavaFileObject> compilationUnits = new ArrayList<>();
-		compilationUnits.add(new StringSourceFileObject(fullClassName, javaSource));
+		compilationUnits.add(new StringSourceJavaFileObject(fullClassName, javaSource));
 
 		// prepare compilation options
 		List<String> compilationOptions = new ArrayList<>();
 
 		// build classpath
-		StringBuilder sb = new StringBuilder();
-
-		try {
-			URL urlLocationOfPebbleTemplate = PebbleTemplateImpl.class.getProtectionDomain().getCodeSource()
-					.getLocation();
-
-			// replace spaces
-			String locationOfPebbleTemplate = urlLocationOfPebbleTemplate.toString().replace(" ", "%20");
-
-			sb.append(System.getProperty("java.class.path")).append(File.pathSeparator)
-					.append(new URI(locationOfPebbleTemplate).getPath());
-		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		String classpath = sb.toString();
-		compilationOptions.addAll(Arrays.asList("-classpath", classpath));
+		StringBuilder classPathBuilder = new StringBuilder();
+		classPathBuilder.append(System.getProperty("java.class.path"));
+		classPathBuilder.append(System.getProperty("path.separator")).append(getPebbleJarLocation());
+		compilationOptions.addAll(Arrays.asList("-classpath", classPathBuilder.toString()));
 
 		/* Create a diagnostic controller, which holds the compilation problems */
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -122,6 +112,30 @@ public class JavaCompiler {
 		}
 
 		return template;
+	}
+
+	private static String getPebbleJarLocation() throws CompilationException {
+
+		String location = null;
+		try {
+			URL url = PebbleTemplateImpl.class.getProtectionDomain().getCodeSource().getLocation();
+			URI uri = urlToUri(url);
+
+			location = uri.getPath();
+
+		} catch (URISyntaxException e) {
+			throw new CompilationException(e, "A compilation error occurred");
+		}
+		return location;
+	}
+
+	/**
+	 * Handles spaces and weird characters properly
+	 * 
+	 * @throws URISyntaxException
+	 */
+	private static URI urlToUri(URL u) throws URISyntaxException {
+		return new URI(u.getProtocol(), u.getAuthority(), null, -1, u.getPath(), u.getQuery(), u.getRef());
 	}
 
 }
