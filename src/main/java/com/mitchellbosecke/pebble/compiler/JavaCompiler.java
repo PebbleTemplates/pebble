@@ -61,7 +61,13 @@ public class JavaCompiler {
 		// prepare compilation options
 		List<String> compilationOptions = new ArrayList<>();
 
-		// build classpath
+		/*
+		 * The following code that builds the classpath including the pebble jar
+		 * can be safely removed. The compiler will then consult with the
+		 * InMemoryForwardingFileManager for any dependencies it requires. I
+		 * think it would be good to remove this code for the sake of simplicity
+		 * but I want to ensure it doesn't come with a large performance hit...
+		 */
 		StringBuilder classPathBuilder = new StringBuilder();
 		classPathBuilder.append(System.getProperty("java.class.path"));
 		classPathBuilder.append(System.getProperty("path.separator")).append(getPebbleJarLocation());
