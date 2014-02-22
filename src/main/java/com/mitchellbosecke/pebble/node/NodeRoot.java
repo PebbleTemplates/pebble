@@ -136,8 +136,9 @@ public class NodeRoot extends AbstractNode {
 			getBody().compile(compiler, true);
 			compiler.write("context.pushInheritanceChain(this);").newline();
 			compiler.write("getParent().buildContent(writer, context);").newline().outdent();
-			compiler.write("} else {").newline();
-			compiler.subcompile(getBody()).newline();
+			compiler.write("context.popInheritanceChain();").newline();
+			compiler.write("} else {").newline().indent();
+			compiler.subcompile(getBody()).newline().outdent();
 			compiler.write("}").newline();
 
 		} else {
