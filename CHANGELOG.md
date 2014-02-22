@@ -3,6 +3,7 @@
 - Extensions can now provide node visitors to traverse the AST.
 - Macros can have default argument values.
 - Implemented dynamic inheritance.
+- Renamed 'message' function to 'i18n'
 - Fixed issue where compilation failed in JBoss.
 - Code cleanup and misc small bugs
 
