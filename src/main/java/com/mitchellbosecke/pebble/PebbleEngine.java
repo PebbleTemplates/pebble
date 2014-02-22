@@ -218,10 +218,7 @@ public class PebbleEngine {
 			}
 		}
 
-		// init blocks and macros
-		PebbleTemplateImpl initializedTemplate = (PebbleTemplateImpl) result;
-
-		return initializedTemplate;
+		return result;
 	}
 
 	public void setLoader(Loader loader) {
