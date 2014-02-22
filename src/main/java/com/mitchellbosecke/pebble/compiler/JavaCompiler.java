@@ -3,11 +3,7 @@ package com.mitchellbosecke.pebble.compiler;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -58,21 +54,6 @@ public class JavaCompiler {
 		List<JavaFileObject> compilationUnits = new ArrayList<>();
 		compilationUnits.add(new StringSourceJavaFileObject(fullClassName, javaSource));
 
-		// prepare compilation options
-		List<String> compilationOptions = new ArrayList<>();
-
-		/*
-		 * The following code that builds the classpath including the pebble jar
-		 * can be safely removed. The compiler will then consult with the
-		 * InMemoryForwardingFileManager for any dependencies it requires. I
-		 * think it would be good to remove this code for the sake of simplicity
-		 * but I want to ensure it doesn't come with a large performance hit...
-		 */
-		StringBuilder classPathBuilder = new StringBuilder();
-		classPathBuilder.append(System.getProperty("java.class.path"));
-		classPathBuilder.append(System.getProperty("path.separator")).append(getPebbleJarLocation());
-		compilationOptions.addAll(Arrays.asList("-classpath", classPathBuilder.toString()));
-
 		/* Create a diagnostic controller, which holds the compilation problems */
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 
@@ -80,8 +61,7 @@ public class JavaCompiler {
 		 * Create a compilation task from compiler by passing in the required
 		 * input objects prepared above
 		 */
-		CompilationTask compilerTask = compiler.getTask(null, fileManager, diagnostics, compilationOptions, null,
-				compilationUnits);
+		CompilationTask compilerTask = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
 
 		boolean status = compilerTask.call();
 
@@ -119,29 +99,4 @@ public class JavaCompiler {
 
 		return template;
 	}
-
-	private static String getPebbleJarLocation() throws CompilationException {
-
-		String location = null;
-		try {
-			URL url = PebbleTemplateImpl.class.getProtectionDomain().getCodeSource().getLocation();
-			URI uri = urlToUri(url);
-
-			location = uri.getPath();
-
-		} catch (URISyntaxException e) {
-			throw new CompilationException(e, "A compilation error occurred");
-		}
-		return location;
-	}
-
-	/**
-	 * Handles spaces and weird characters properly
-	 * 
-	 * @throws URISyntaxException
-	 */
-	private static URI urlToUri(URL u) throws URISyntaxException {
-		return new URI(u.getProtocol(), u.getAuthority(), null, -1, u.getPath(), u.getQuery(), u.getRef());
-	}
-
 }
