@@ -75,7 +75,7 @@ public class CoreExtension extends AbstractExtension {
 	@Override
 	public List<UnaryOperator> getUnaryOperators() {
 		ArrayList<UnaryOperator> operators = new ArrayList<>();
-		operators.add(new UnaryOperatorImpl("not", 50, NodeExpressionUnaryNot.class));
+		operators.add(new UnaryOperatorImpl("not", 5, NodeExpressionUnaryNot.class));
 		operators.add(new UnaryOperatorImpl("+", 500, NodeExpressionUnaryPlus.class));
 		operators.add(new UnaryOperatorImpl("-", 500, NodeExpressionUnaryMinus.class));
 		return operators;

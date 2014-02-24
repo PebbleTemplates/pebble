@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class CoreTestsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("yesyes", writer.toString());
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullEven() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -61,7 +62,7 @@ public class CoreTestsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("yesyes", writer.toString());
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullOdd() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -118,7 +119,7 @@ public class CoreTestsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("yesyesyes", writer.toString());
-	} 
+	}
 
 	@Test
 	public void testIsnt() throws PebbleException, IOException {
@@ -132,4 +133,54 @@ public class CoreTestsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("yesyes", writer.toString());
 	}
+
+	/**
+	 * Using the unary "not" operator before a test.
+	 * 
+	 * Issue #27
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testNegativeTest() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if not 2 is odd %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("yes", writer.toString());
+	}
+
+	/**
+	 * Similar to the testNegativeTest() except with an attribute of an object
+	 * in the context.
+	 * 
+	 * Issue #27
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testNegativeTestOnAttribute() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if not classroom.students is empty %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		context.put("classroom", new Classroom());
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("no", writer.toString());
+	}
+
+	private static class Classroom {
+		@SuppressWarnings("unused")
+		public static List<Object> students = new ArrayList<>();
+	}
+
 }
