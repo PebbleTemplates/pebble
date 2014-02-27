@@ -12,29 +12,24 @@ package com.mitchellbosecke.pebble.tokenParser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeExpression;
+import com.mitchellbosecke.pebble.node.ExtendsNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.node.expression.Expression;
 
 public class ExtendsTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 
 		// skip the 'extends' token
 		stream.next();
 
-		if (this.parser.getParentTemplateExpression() != null) {
-			throw new ParserException(null, "Multiple extend tags are not allowed.", lineNumber, parser.getStream()
-					.getFilename());
-		}
-
-		NodeExpression parentTemplateExpression = parser.getExpressionParser().parseExpression();
-		this.parser.setParentTemplateExpression(parentTemplateExpression);
+		Expression<?> parentTemplateExpression = parser.getExpressionParser().parseExpression();
 
 		stream.expect(Token.Type.EXECUTE_END);
-		return null;
+		return new ExtendsNode(lineNumber, parentTemplateExpression);
 	}
 
 	@Override

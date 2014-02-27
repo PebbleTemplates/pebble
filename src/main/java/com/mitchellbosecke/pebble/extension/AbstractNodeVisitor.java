@@ -1,36 +1,33 @@
 package com.mitchellbosecke.pebble.extension;
 
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.AutoEscapeNode;
+import com.mitchellbosecke.pebble.node.BlockNode;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.FlushNode;
+import com.mitchellbosecke.pebble.node.ForNode;
+import com.mitchellbosecke.pebble.node.IfNode;
+import com.mitchellbosecke.pebble.node.ImportNode;
+import com.mitchellbosecke.pebble.node.IncludeNode;
+import com.mitchellbosecke.pebble.node.MacroNode;
+import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeAutoEscape;
-import com.mitchellbosecke.pebble.node.NodeBlock;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodeFlush;
-import com.mitchellbosecke.pebble.node.NodeFor;
-import com.mitchellbosecke.pebble.node.NodeIf;
-import com.mitchellbosecke.pebble.node.NodeImport;
-import com.mitchellbosecke.pebble.node.NodeInclude;
-import com.mitchellbosecke.pebble.node.NodeMacro;
-import com.mitchellbosecke.pebble.node.NodeParallel;
-import com.mitchellbosecke.pebble.node.NodePrint;
-import com.mitchellbosecke.pebble.node.NodeRoot;
-import com.mitchellbosecke.pebble.node.NodeSet;
-import com.mitchellbosecke.pebble.node.NodeText;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReferenceAndFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
+import com.mitchellbosecke.pebble.node.ParallelNode;
+import com.mitchellbosecke.pebble.node.PrintNode;
+import com.mitchellbosecke.pebble.node.RootNode;
+import com.mitchellbosecke.pebble.node.SetNode;
+import com.mitchellbosecke.pebble.node.TernaryExpression;
+import com.mitchellbosecke.pebble.node.TestInvocationExpression;
+import com.mitchellbosecke.pebble.node.TextNode;
+import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
+import com.mitchellbosecke.pebble.node.expression.ContextVariableExpression;
+import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
+import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 /**
@@ -51,15 +48,15 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeBody node) {
+	public void visit(BodyNode node) {
 		for (Node child : node.getChildren()) {
 			child.accept(this);
 		}
 	}
 
 	@Override
-	public void visit(NodeIf node) {
-		for (Pair<NodeExpression, NodeBody> pairs : node.getConditionsWithBodies()) {
+	public void visit(IfNode node) {
+		for (Pair<Expression<?>, BodyNode> pairs : node.getConditionsWithBodies()) {
 			pairs.getLeft().accept(this);
 			pairs.getRight().accept(this);
 		}
@@ -69,8 +66,7 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeFor node) {
-		node.getIterationVariable().accept(this);
+	public void visit(ForNode node) {
 		node.getIterable().accept(this);
 		node.getBody().accept(this);
 		if (node.getElseBody() != null) {
@@ -79,161 +75,132 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionBinary node) {
+	public void visit(BinaryExpression<?> node) {
 		node.getLeftExpression().accept(this);
 		node.getRightExpression().accept(this);
 	}
 
 	@Override
-	public void visit(NodeExpressionUnary node) {
+	public void visit(UnaryExpression node) {
 		node.getChildExpression().accept(this);
 	}
 
 	@Override
-	public void visit(NodeExpressionBlockReferenceAndFunction node) {
-		if (node.getArgs() != null) {
-			node.getArgs().accept(this);
-		}
-	}
-
-	@Override
-	public void visit(NodeExpressionConstant node) {
+	public void visit(ContextVariableExpression node) {
 
 	}
 
 	@Override
-	public void visit(NodeExpressionContextVariable node) {
-
-	}
-
-	@Override
-	public void visit(NodeExpressionFilterInvocation node) {
-		node.getFilterName().accept(this);
+	public void visit(FilterInvocationExpression node) {
 		node.getArgs().accept(this);
 	}
 
 	@Override
-	public void visit(NodeExpressionFunctionOrMacroInvocation node) {
-		node.getFunctionName().accept(this);
+	public void visit(FunctionOrMacroInvocationExpression node) {
 		node.getArguments().accept(this);
 	}
 
 	@Override
-	public void visit(NodeExpressionGetAttribute node) {
+	public void visit(GetAttributeExpression node) {
 		node.getNode().accept(this);
-		node.getAttributeOrMethod().accept(this);
 	}
 
 	@Override
-	public void visit(NodeExpressionNamedArgument node) {
-		if (node.getName() != null) {
-			node.getName().accept(this);
-		}
-		if (node.getValue() != null) {
-			node.getValue().accept(this);
+	public void visit(NamedArgumentNode node) {
+		if (node.getValueExpression() != null) {
+			node.getValueExpression().accept(this);
 		}
 	}
 
 	@Override
-	public void visit(NodeExpressionNamedArguments node) {
-		if (node.getArgs() != null) {
-			for (Node arg : node.getArgs()) {
+	public void visit(ArgumentsNode node) {
+		if (node.getNamedArgs() != null) {
+			for (Node arg : node.getNamedArgs()) {
+				arg.accept(this);
+			}
+		}
+		if (node.getPositionalArgs() != null) {
+			for (Node arg : node.getPositionalArgs()) {
 				arg.accept(this);
 			}
 		}
 	}
 
 	@Override
-	public void visit(NodeExpressionNewVariableName node) {
+	public void visit(ParentFunctionExpression node) {
 
 	}
 
 	@Override
-	public void visit(NodeExpressionParentFunction node) {
+	public void visit(LiteralStringExpression node) {
 
 	}
 
 	@Override
-	public void visit(NodeExpressionString node) {
-
-	}
-
-	@Override
-	public void visit(NodeExpressionTernary node) {
+	public void visit(TernaryExpression node) {
 		node.getExpression1().accept(this);
 		node.getExpression2().accept(this);
 		node.getExpression3().accept(this);
 	}
 
 	@Override
-	public void visit(NodeExpressionTestInvocation node) {
-		node.getTestName().accept(this);
+	public void visit(TestInvocationExpression node) {
 		node.getArgs().accept(this);
 	}
 
 	@Override
-	public void visit(NodeBlock node) {
-		node.getBody().accept(this);
-	}
-	
-	@Override
-	public void visit(NodeAutoEscape node){
+	public void visit(BlockNode node) {
 		node.getBody().accept(this);
 	}
 
 	@Override
-	public void visit(NodeFlush node) {
+	public void visit(AutoEscapeNode node) {
+		node.getBody().accept(this);
+	}
+
+	@Override
+	public void visit(FlushNode node) {
 
 	}
 
 	@Override
-	public void visit(NodeImport node) {
+	public void visit(ImportNode node) {
 		node.getImportExpression().accept(this);
 	}
 
 	@Override
-	public void visit(NodeInclude node) {
+	public void visit(IncludeNode node) {
 		node.getIncludeExpression().accept(this);
 	}
 
 	@Override
-	public void visit(NodeMacro node) {
+	public void visit(MacroNode node) {
 		node.getArgs().accept(this);
 		node.getBody().accept(this);
 	}
 
 	@Override
-	public void visit(NodeParallel node) {
+	public void visit(ParallelNode node) {
 		node.getBody().accept(this);
 	}
 
 	@Override
-	public void visit(NodePrint node) {
+	public void visit(PrintNode node) {
 		node.getExpression().accept(this);
 	}
 
 	@Override
-	public void visit(NodeRoot node) {
-		for (Node block : node.getBlocks().values()) {
-			block.accept(this);
-		}
-		for (Node macro : node.getMacros().values()) {
-			macro.accept(this);
-		}
+	public void visit(RootNode node) {
 		node.getBody().accept(this);
-		if (node.getParentTemplateExpression() != null) {
-			node.getParentTemplateExpression().accept(this);
-		}
 	}
 
 	@Override
-	public void visit(NodeSet node) {
-		node.getName().accept(this);
+	public void visit(SetNode node) {
 		node.getValue().accept(this);
 	}
 
 	@Override
-	public void visit(NodeText node) {
+	public void visit(TextNode node) {
 
 	}
 

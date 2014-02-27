@@ -11,17 +11,14 @@ package com.mitchellbosecke.pebble.parser;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.NodeBlock;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodeMacro;
-import com.mitchellbosecke.pebble.node.NodeRoot;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.RootNode;
 
 public interface Parser {
 
-	public NodeRoot parse(TokenStream stream) throws ParserException;
+	public RootNode parse(TokenStream stream) throws ParserException;
 
-	public NodeBody subparse() throws ParserException;
+	public BodyNode subparse() throws ParserException;
 
 	/**
 	 * Provides the stream of tokens which ultimately need to be "parsed" into
@@ -39,22 +36,14 @@ public interface Parser {
 	 * @return
 	 * @throws ParserException
 	 */
-	public NodeBody subparse(StoppingCondition stopCondition) throws ParserException;
-
-	public void setParentTemplateExpression(NodeExpression parentTemplateExpression);
+	public BodyNode subparse(StoppingCondition stopCondition) throws ParserException;
 
 	public ExpressionParser getExpressionParser();
 
-	public void pushBlockStack(String name);
-
-	public void popBlockStack();
-
 	public String peekBlockStack();
 
-	NodeExpression getParentTemplateExpression();
+	public String popBlockStack();
 
-	public void addMacro(String name, NodeMacro macro) throws ParserException;
-
-	public void addBlock(String name, NodeBlock block);
+	public void pushBlockStack(String blockName);
 
 }

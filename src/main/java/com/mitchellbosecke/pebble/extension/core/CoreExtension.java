@@ -18,25 +18,25 @@ import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.Test;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAdd;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryAnd;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryDivide;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryEqual;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryFilter;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThan;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryGreaterThanEquals;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryLessThan;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryLessThanEquals;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryModulus;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryMultiply;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryNotEqual;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryOr;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinarySubtract;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestNegative;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestPositive;
-import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryMinus;
-import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryNot;
-import com.mitchellbosecke.pebble.node.expression.unary.NodeExpressionUnaryPlus;
+import com.mitchellbosecke.pebble.node.expression.AddExpression;
+import com.mitchellbosecke.pebble.node.expression.AndExpression;
+import com.mitchellbosecke.pebble.node.expression.DivideExpression;
+import com.mitchellbosecke.pebble.node.expression.EqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.FilterExpression;
+import com.mitchellbosecke.pebble.node.expression.GreaterThanEqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.GreaterThanExpression;
+import com.mitchellbosecke.pebble.node.expression.LessThanEqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.LessThanExpression;
+import com.mitchellbosecke.pebble.node.expression.ModulusExpression;
+import com.mitchellbosecke.pebble.node.expression.MultiplyExpression;
+import com.mitchellbosecke.pebble.node.expression.NegativeTestExpression;
+import com.mitchellbosecke.pebble.node.expression.NotEqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.OrExpression;
+import com.mitchellbosecke.pebble.node.expression.PositiveTestExpression;
+import com.mitchellbosecke.pebble.node.expression.SubtractExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryMinusExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryNotExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryPlusExpression;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.BinaryOperatorImpl;
@@ -75,33 +75,32 @@ public class CoreExtension extends AbstractExtension {
 	@Override
 	public List<UnaryOperator> getUnaryOperators() {
 		ArrayList<UnaryOperator> operators = new ArrayList<>();
-		operators.add(new UnaryOperatorImpl("not", 5, NodeExpressionUnaryNot.class));
-		operators.add(new UnaryOperatorImpl("+", 500, NodeExpressionUnaryPlus.class));
-		operators.add(new UnaryOperatorImpl("-", 500, NodeExpressionUnaryMinus.class));
+		operators.add(new UnaryOperatorImpl("not", 5, UnaryNotExpression.class));
+		operators.add(new UnaryOperatorImpl("+", 500, UnaryPlusExpression.class));
+		operators.add(new UnaryOperatorImpl("-", 500, UnaryMinusExpression.class));
 		return operators;
 	}
 
 	@Override
 	public List<BinaryOperator> getBinaryOperators() {
 		ArrayList<BinaryOperator> operators = new ArrayList<>();
-		operators.add(new BinaryOperatorImpl("or", 10, NodeExpressionBinaryOr.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("and", 15, NodeExpressionBinaryAnd.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("is", 20, NodeExpressionBinaryTestPositive.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("is not", 20, NodeExpressionBinaryTestNegative.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("==", 30, NodeExpressionBinaryEqual.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("equals", 30, NodeExpressionBinaryEqual.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("!=", 30, NodeExpressionBinaryNotEqual.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl(">", 30, NodeExpressionBinaryGreaterThan.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("<", 30, NodeExpressionBinaryLessThan.class, Associativity.LEFT));
-		operators
-				.add(new BinaryOperatorImpl(">=", 30, NodeExpressionBinaryGreaterThanEquals.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("<=", 30, NodeExpressionBinaryLessThanEquals.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("+", 40, NodeExpressionBinaryAdd.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("-", 40, NodeExpressionBinarySubtract.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("*", 60, NodeExpressionBinaryMultiply.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("/", 60, NodeExpressionBinaryDivide.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("%", 60, NodeExpressionBinaryModulus.class, Associativity.LEFT));
-		operators.add(new BinaryOperatorImpl("|", 100, NodeExpressionBinaryFilter.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("or", 10, OrExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("and", 15, AndExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("is", 20, PositiveTestExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("is not", 20, NegativeTestExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("==", 30, EqualsExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("equals", 30, EqualsExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("!=", 30, NotEqualsExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl(">", 30, GreaterThanExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("<", 30, LessThanExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl(">=", 30, GreaterThanEqualsExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("<=", 30, LessThanEqualsExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("+", 40, AddExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("-", 40, SubtractExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("*", 60, MultiplyExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("/", 60, DivideExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("%", 60, ModulusExpression.class, Associativity.LEFT));
+		operators.add(new BinaryOperatorImpl("|", 100, FilterExpression.class, Associativity.LEFT));
 
 		return operators;
 	}

@@ -18,7 +18,7 @@ public class EvenTest implements Test {
 			throw new IllegalArgumentException("Can not pass null value to \"even\" test.");
 		}
 
-		Integer obj = (Integer) input;
+		Long obj = (Long) input;
 		return (obj % 2 == 0);
 	}
 }

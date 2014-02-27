@@ -12,17 +12,16 @@ package com.mitchellbosecke.pebble.tokenParser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodeFor;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.ForNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class ForTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 
@@ -30,18 +29,18 @@ public class ForTokenParser extends AbstractTokenParser {
 		stream.next();
 
 		// get the iteration variable
-		NodeExpressionNewVariableName iterationVariable = this.parser.getExpressionParser().parseNewVariableName();
+		String iterationVariable = this.parser.getExpressionParser().parseNewVariableName();
 
 		stream.expect(Token.Type.NAME, "in");
 
 		// get the iterable variable
-		NodeExpression iterable = this.parser.getExpressionParser().parseExpression();
+		Expression<?> iterable = this.parser.getExpressionParser().parseExpression();
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		NodeBody body = this.parser.subparse(decideForFork);
+		BodyNode body = this.parser.subparse(decideForFork);
 
-		NodeBody elseBody = null;
+		BodyNode elseBody = null;
 
 		if (stream.current().test(Token.Type.NAME, "else")) {
 			// skip the 'else' token
@@ -55,7 +54,7 @@ public class ForTokenParser extends AbstractTokenParser {
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		return new NodeFor(lineNumber, iterationVariable, (NodeExpression) iterable, body, elseBody);
+		return new ForNode(lineNumber, iterationVariable, iterable, body, elseBody);
 	}
 
 	private StoppingCondition decideForFork = new StoppingCondition() {

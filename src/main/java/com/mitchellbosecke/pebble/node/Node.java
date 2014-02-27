@@ -9,13 +9,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 
 public interface Node {
-	
-	public void compile(Compiler compiler);
-	
+
 	public void accept(NodeVisitor visitor);
 
 }

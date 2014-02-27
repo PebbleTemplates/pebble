@@ -56,11 +56,11 @@ public class EvaluationContext {
 	private final Map<String, Test> tests;
 
 	private final Map<String, Function> functions;
-	
+
 	private final ExecutorService executorService;
 
-	public EvaluationContext(boolean strictVariables, Locale locale, Map<String, Filter> filters, Map<String, Test> tests,
-			Map<String, Function> functions, ExecutorService executorService) {
+	public EvaluationContext(boolean strictVariables, Locale locale, Map<String, Filter> filters,
+			Map<String, Test> tests, Map<String, Function> functions, ExecutorService executorService) {
 		this.strictVariables = strictVariables;
 		this.locale = locale;
 		this.filters = filters;

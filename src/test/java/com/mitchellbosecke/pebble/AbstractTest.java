@@ -6,7 +6,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.compiler.Compiler;
 import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.parser.Parser;
@@ -17,7 +16,6 @@ public abstract class AbstractTest {
 	protected final Lexer lexer;
 	protected final Loader loader;
 	protected final Parser parser;
-	protected final Compiler compiler;
 
 	public AbstractTest() {
 
@@ -28,7 +26,6 @@ public abstract class AbstractTest {
 		loader = pebble.getLoader();
 		lexer = pebble.getLexer();
 		parser = pebble.getParser();
-		compiler = pebble.getCompiler();
 	}
 
 }

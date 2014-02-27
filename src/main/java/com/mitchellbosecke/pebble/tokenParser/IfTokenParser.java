@@ -15,34 +15,34 @@ import java.util.List;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodeIf;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.IfNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class IfTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 
 		// skip the 'if' token
 		stream.next();
 
-		List<Pair<NodeExpression, NodeBody>> conditionsWithBodies = new ArrayList<>();
+		List<Pair<Expression<?>, BodyNode>> conditionsWithBodies = new ArrayList<>();
 
-		NodeExpression expression = this.parser.getExpressionParser().parseExpression();
+		Expression<?> expression = this.parser.getExpressionParser().parseExpression();
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		NodeBody body = this.parser.subparse(decideIfFork);
+		BodyNode body = this.parser.subparse(decideIfFork);
 
-		conditionsWithBodies.add(new Pair<NodeExpression, NodeBody>(expression, body));
+		conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
 
-		NodeBody elseBody = null;
+		BodyNode elseBody = null;
 		boolean end = false;
 		while (!end) {
 			switch (stream.current().getValue()) {
@@ -57,7 +57,7 @@ public class IfTokenParser extends AbstractTokenParser {
 					expression = this.parser.getExpressionParser().parseExpression();
 					stream.expect(Token.Type.EXECUTE_END);
 					body = this.parser.subparse(decideIfFork);
-					conditionsWithBodies.add(new Pair<NodeExpression, NodeBody>(expression, body));
+					conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
 					break;
 
 				case "endif":
@@ -73,7 +73,7 @@ public class IfTokenParser extends AbstractTokenParser {
 		}
 
 		stream.expect(Token.Type.EXECUTE_END);
-		return new NodeIf(lineNumber, conditionsWithBodies, elseBody);
+		return new IfNode(lineNumber, conditionsWithBodies, elseBody);
 	}
 
 	private StoppingCondition decideIfFork = new StoppingCondition() {

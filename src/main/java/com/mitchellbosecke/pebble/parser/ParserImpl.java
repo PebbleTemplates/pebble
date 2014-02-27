@@ -10,7 +10,6 @@
 package com.mitchellbosecke.pebble.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -19,14 +18,12 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeBlock;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodeMacro;
-import com.mitchellbosecke.pebble.node.NodePrint;
-import com.mitchellbosecke.pebble.node.NodeRoot;
-import com.mitchellbosecke.pebble.node.NodeText;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.PrintNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.node.RootNode;
+import com.mitchellbosecke.pebble.node.TextNode;
+import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 public class ParserImpl implements Parser {
@@ -47,32 +44,15 @@ public class ParserImpl implements Parser {
 	private TokenStream stream;
 
 	/**
-	 * The parent template expression.
-	 */
-	private NodeExpression parentTemplateExpression;
-
-	/**
-	 * Blocks to be compiled.
-	 */
-	private Map<String, NodeBlock> blocks;
-
-	/**
-	 * Macros to be compiled. Macros can be overloaded by name which explains
-	 * why it's a Map of Lists.
-	 */
-	private Map<String, NodeMacro> macros;
-
-	/**
-	 * blockStack stores the names of the nested blocks to ensure that we always
-	 * have access to the name of the block that we are currently in. This can
-	 * be useful when implementing functions such as parent().
-	 */
-	private Stack<String> blockStack;
-
-	/**
 	 * TokenParser objects provided by the extensions.
 	 */
 	private Map<String, TokenParser> tokenParsers;
+
+	/**
+	 * used to keep track of the name of the block that we are currently inside
+	 * of. This is purely just for the parent() function.
+	 */
+	private Stack<String> blockStack = new Stack<>();
 
 	/**
 	 * Constructor
@@ -85,7 +65,7 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public NodeRoot parse(TokenStream stream) throws ParserException {
+	public RootNode parse(TokenStream stream) throws ParserException {
 
 		// token parsers which have come from the extensions
 		this.tokenParsers = engine.getTokenParsers();
@@ -95,20 +75,14 @@ public class ParserImpl implements Parser {
 
 		this.stream = stream;
 
-		this.parentTemplateExpression = null;
+		BodyNode body = subparse();
 
-		this.blocks = new HashMap<>();
-		this.blockStack = new Stack<>();
-		this.macros = new HashMap<String, NodeMacro>();
-
-		NodeBody body = subparse();
-
-		NodeRoot root = new NodeRoot(body, parentTemplateExpression, blocks, macros, stream.getFilename());
+		RootNode root = new RootNode(body);
 		return root;
 	}
 
 	@Override
-	public NodeBody subparse() throws ParserException {
+	public BodyNode subparse() throws ParserException {
 		return subparse(null);
 	}
 
@@ -120,10 +94,10 @@ public class ParserImpl implements Parser {
 	 * @param stopCondition	A stopping condition provided by a token parser
 	 * @return Node		The root node of the generated Abstract Syntax Tree
 	 */
-	public NodeBody subparse(StoppingCondition stopCondition) throws ParserException {
+	public BodyNode subparse(StoppingCondition stopCondition) throws ParserException {
 
 		// these nodes will be the children of the root node
-		List<Node> nodes = new ArrayList<>();
+		List<RenderableNode> nodes = new ArrayList<>();
 
 		Token token;
 		while (!stream.isEOF()) {
@@ -136,7 +110,7 @@ public class ParserImpl implements Parser {
 					 * other than convert it to a text Node.
 					 */
 					token = stream.current();
-					nodes.add(new NodeText(token.getValue(), token.getLineNumber()));
+					nodes.add(new TextNode(token.getValue(), token.getLineNumber()));
 					stream.next();
 					break;
 
@@ -152,8 +126,8 @@ public class ParserImpl implements Parser {
 					// opening delimiter
 					token = stream.next();
 
-					NodeExpression expression = this.expressionParser.parseExpression();
-					nodes.add(new NodePrint(expression, token.getLineNumber()));
+					Expression<?> expression = this.expressionParser.parseExpression();
+					nodes.add(new PrintNode(expression, token.getLineNumber()));
 
 					// we expect to see a print closing delimiter
 					stream.expect(Token.Type.PRINT_END, engine.getLexer().getPrintCloseDelimiter());
@@ -188,19 +162,19 @@ public class ParserImpl implements Parser {
 					// for the 'endif' token) let's check for that condition
 					// now.
 					if (stopCondition != null && stopCondition.evaluate(token)) {
-						return new NodeBody(token.getLineNumber(), nodes);
+						return new BodyNode(token.getLineNumber(), nodes);
 					}
 
 					// find an appropriate parser for this name
-					TokenParser subparser = tokenParsers.get(token.getValue());
+					TokenParser tokenParser = tokenParsers.get(token.getValue());
 
-					if (subparser == null) {
+					if (tokenParser == null) {
 						throw new ParserException(null, String.format("Unexpected tag name \"%s\"", token.getValue()),
 								token.getLineNumber(), stream.getFilename());
 					}
 
-					subparser.setParser(this);
-					Node node = subparser.parse(token);
+					tokenParser.setParser(this);
+					RenderableNode node = tokenParser.parse(token);
 
 					// node might be null (ex. "extend" token parser)
 					if (node != null) {
@@ -216,7 +190,7 @@ public class ParserImpl implements Parser {
 		}
 
 		// create the root node with the children that we have found
-		return new NodeBody(stream.current().getLineNumber(), nodes);
+		return new BodyNode(stream.current().getLineNumber(), nodes);
 	}
 
 	@Override
@@ -229,45 +203,23 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public NodeExpression getParentTemplateExpression() {
-		return this.parentTemplateExpression;
-	}
-
-	public void setParentTemplateExpression(NodeExpression parentTemplateExpression) {
-		this.parentTemplateExpression = parentTemplateExpression;
-	}
-
-	@Override
-	public void addBlock(String name, NodeBlock block) {
-		blocks.put(name, block);
-	}
-
-	@Override
-	public void pushBlockStack(String name) {
-		blockStack.push(name);
-	}
-
-	@Override
-	public void popBlockStack() {
-		blockStack.pop();
-	}
-
-	public String peekBlockStack() {
-		return blockStack.lastElement();
-	}
-
-	@Override
 	public ExpressionParser getExpressionParser() {
 		return this.expressionParser;
 	}
 
 	@Override
-	public void addMacro(String name, NodeMacro macro) throws ParserException {
-		if (macros.containsKey(name)) {
-			throw new ParserException(null, "Can not have more than one macro with the same name. [" + name + "]",
-					stream.current().getLineNumber(), stream.getFilename());
-		}
-		macros.put(name, macro);
+	public String peekBlockStack() {
+		return blockStack.peek();
+	}
+
+	@Override
+	public String popBlockStack() {
+		return blockStack.pop();
+	}
+
+	@Override
+	public void pushBlockStack(String blockName) {
+		blockStack.push(blockName);
 	}
 
 }

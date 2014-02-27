@@ -12,16 +12,16 @@ package com.mitchellbosecke.pebble.tokenParser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeMacro;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.MacroNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class MacroTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
@@ -31,20 +31,19 @@ public class MacroTokenParser extends AbstractTokenParser {
 
 		String macroName = stream.expect(Token.Type.NAME).getValue();
 
-		NodeExpressionNamedArguments args = this.parser.getExpressionParser().parseNamedArguments(true);
+		ArgumentsNode args = this.parser.getExpressionParser().parseArguments(true);
 
 		stream.expect(Token.Type.EXECUTE_END);
 
 		// parse the body
-		NodeBody body = this.parser.subparse(decideMacroEnd);
+		BodyNode body = this.parser.subparse(decideMacroEnd);
 
 		// skip the 'endmacro' token
 		stream.next();
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		this.parser.addMacro(macroName, new NodeMacro(lineNumber, macroName, args, body));
-		return null;
+		return new MacroNode(lineNumber, macroName, args, body);
 	}
 
 	private StoppingCondition decideMacroEnd = new StoppingCondition() {

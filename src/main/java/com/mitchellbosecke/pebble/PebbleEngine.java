@@ -10,9 +10,6 @@
 package com.mitchellbosecke.pebble;
 
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +22,6 @@ import java.util.concurrent.Semaphore;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mitchellbosecke.pebble.compiler.Compiler;
-import com.mitchellbosecke.pebble.compiler.CompilerImpl;
-import com.mitchellbosecke.pebble.compiler.JavaCompiler;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -45,7 +39,7 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.node.NodeRoot;
+import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.parser.Parser;
@@ -71,7 +65,6 @@ public class PebbleEngine {
 	private Loader loader;
 	private final Parser parser;
 	private final Lexer lexer;
-	private final Compiler compiler;
 
 	/*
 	 * User Editable Settings
@@ -134,7 +127,6 @@ public class PebbleEngine {
 		this.loader = loader;
 		lexer = new LexerImpl(this);
 		parser = new ParserImpl(this);
-		compiler = new CompilerImpl(this);
 
 		// register default extensions
 		this.addExtension(new CoreExtension());
@@ -167,19 +159,18 @@ public class PebbleEngine {
 		}
 
 		final PebbleEngine self = this;
-		final String className = this.getTemplateClassName(templateName);
 		PebbleTemplate result = null;
 
 		try {
 
-			result = templateCache.get(className, new Callable<PebbleTemplate>() {
+			result = templateCache.get(templateName, new Callable<PebbleTemplate>() {
 
 				public PebbleTemplateImpl call() throws Exception {
 
 					compilationMutex.acquire();
 
 					PebbleTemplateImpl instance = null;
-					String javaSource = null;
+					RootNode root = null;
 
 					try {
 
@@ -193,14 +184,13 @@ public class PebbleEngine {
 						String templateSource = IOUtils.toString(templateReader);
 
 						TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
-						NodeRoot root = getParser().parse(tokenStream);
-						javaSource = getCompiler().compile(root).getSource();
+						root = getParser().parse(tokenStream);
 
 					} finally {
 						compilationMutex.release();
 					}
 
-					instance = JavaCompiler.compile(self, javaSource, className);
+					instance = new PebbleTemplateImpl(self, root);
 					return instance;
 				}
 			});
@@ -235,10 +225,6 @@ public class PebbleEngine {
 
 	public Lexer getLexer() {
 		return lexer;
-	}
-
-	public Compiler getCompiler() {
-		return compiler;
 	}
 
 	public void addExtension(Extension extension) {
@@ -331,37 +317,6 @@ public class PebbleEngine {
 
 	public List<NodeVisitor> getNodeVisitors() {
 		return this.nodeVisitors;
-	}
-
-	/**
-	 * Gets the name that will be used for the final compiled Java class.
-	 * 
-	 * @param templateName
-	 *            The template that we need a name for
-	 * @return The final name that would be used for creating a Java class
-	 */
-	public String getTemplateClassName(String templateName) {
-
-		String classNameHash = "";
-		byte[] bytesOfName;
-		MessageDigest md;
-		try {
-			bytesOfName = templateName.getBytes("UTF-8");
-			md = MessageDigest.getInstance("MD5");
-			md.update(bytesOfName);
-			byte[] hash = md.digest();
-
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < hash.length; i++) {
-				sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16).substring(1));
-			}
-
-			classNameHash = sb.toString();
-		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-			// should not be here
-			e.printStackTrace();
-		}
-		return "PebbleTemplate" + classNameHash;
 	}
 
 	public Cache<String, PebbleTemplate> getTemplateCache() {

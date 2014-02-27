@@ -1,0 +1,64 @@
+/*******************************************************************************
+ * This file is part of Pebble.
+ * 
+ * Original work Copyright (c) 2009-2013 by the Twig Team
+ * Modified work Copyright (c) 2013 by Mitchell Bösecke
+ * 
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ ******************************************************************************/
+package com.mitchellbosecke.pebble.node;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+public class TernaryExpression implements Expression<Object> {
+
+	private final Expression<Boolean> expression1;
+	private Expression<?> expression2;
+	private Expression<?> expression3;
+
+	public TernaryExpression(Expression<Boolean> expression1, Expression<?> expression2, Expression<?> expression3) {
+		this.expression1 = expression1;
+		this.expression2 = expression2;
+		this.expression3 = expression3;
+	}
+
+	@Override
+	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+		if (expression1.evaluate(self, context)) {
+			return expression2.evaluate(self, context);
+		} else {
+			return expression3.evaluate(self, context);
+		}
+	}
+
+	@Override
+	public void accept(NodeVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	public Expression<Boolean> getExpression1() {
+		return expression1;
+	}
+
+	public Expression<?> getExpression2() {
+		return expression2;
+	}
+
+	public Expression<?> getExpression3() {
+		return expression3;
+	}
+
+	public void setExpression3(Expression<?> expression3) {
+		this.expression3 = expression3;
+	}
+
+	public void setExpression2(Expression<?> expression2) {
+		this.expression2 = expression2;
+	}
+
+}

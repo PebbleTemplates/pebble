@@ -12,15 +12,15 @@ package com.mitchellbosecke.pebble.tokenParser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeParallel;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.ParallelNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class ParallelTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 
@@ -29,13 +29,13 @@ public class ParallelTokenParser extends AbstractTokenParser {
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		NodeBody body = this.parser.subparse(decideParallelEnd);
+		BodyNode body = this.parser.subparse(decideParallelEnd);
 
 		// skip the 'endparallel' token
 		stream.next();
 
 		stream.expect(Token.Type.EXECUTE_END);
-		return new NodeParallel(lineNumber, body);
+		return new ParallelNode(lineNumber, body);
 	}
 
 	private StoppingCondition decideParallelEnd = new StoppingCondition() {

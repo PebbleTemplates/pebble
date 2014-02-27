@@ -17,25 +17,29 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReferenceAndFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryFilter;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestNegative;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryTestPositive;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.FunctionOrMacroNameNode;
+import com.mitchellbosecke.pebble.node.NamedArgumentNode;
+import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
+import com.mitchellbosecke.pebble.node.TernaryExpression;
+import com.mitchellbosecke.pebble.node.TestInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
+import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.ContextVariableExpression;
+import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.node.expression.FilterExpression;
+import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralBooleanExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralDoubleExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralLongExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralNullExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
+import com.mitchellbosecke.pebble.node.expression.NegativeTestExpression;
+import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.PositiveTestExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -69,7 +73,7 @@ public class ExpressionParser {
 	 * @return NodeExpression the expression that has been parsed.
 	 * @throws ParserException
 	 */
-	public NodeExpression parseExpression() throws ParserException {
+	public Expression<?> parseExpression() throws ParserException {
 		return parseExpression(0);
 	}
 
@@ -83,11 +87,11 @@ public class ExpressionParser {
 	 * @return The NodeExpression representing the parsed expression.
 	 * @throws ParserException
 	 */
-	private NodeExpression parseExpression(int minPrecedence) throws ParserException {
+	private Expression<?> parseExpression(int minPrecedence) throws ParserException {
 
 		this.stream = parser.getStream();
 		Token token = stream.current();
-		NodeExpression expression = null;
+		Expression<?> expression = null;
 
 		/*
 		 * The first check is to see if the expression begins with a unary
@@ -98,16 +102,15 @@ public class ExpressionParser {
 			stream.next();
 			expression = parseExpression(operator.getPrecedence());
 
-			NodeExpressionUnary unaryExpression = null;
-			Class<? extends NodeExpressionUnary> operatorNodeClass = operator.getNodeClass();
+			UnaryExpression unaryExpression = null;
+			Class<? extends UnaryExpression> operatorNodeClass = operator.getNodeClass();
 			try {
 				unaryExpression = operatorNodeClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			unaryExpression.setLineNumber(stream.current().getLineNumber());
-			unaryExpression.setNode(expression);
+			unaryExpression.setChildExpression(expression);
 
 			expression = unaryExpression;
 
@@ -139,17 +142,17 @@ public class ExpressionParser {
 			BinaryOperator operator = binaryOperators.get(token.getValue());
 			stream.next();
 
-			NodeExpression expressionRight = null;
+			Expression<?> expressionRight = null;
 
 			// the right hand expression of the FILTER operator is handled in a
 			// unique way
-			if (NodeExpressionBinaryFilter.class.equals(operator.getNodeClass())) {
+			if (FilterExpression.class.equals(operator.getNodeClass())) {
 				expressionRight = parseFilterInvocationExpression();
 			}
 			// the right hand expression of TEST operators is handled in a
 			// unique way
-			else if (NodeExpressionBinaryTestPositive.class.equals(operator.getNodeClass())
-					|| NodeExpressionBinaryTestNegative.class.equals(operator.getNodeClass())) {
+			else if (PositiveTestExpression.class.equals(operator.getNodeClass())
+					|| NegativeTestExpression.class.equals(operator.getNodeClass())) {
 				expressionRight = parseTestInvocationExpression();
 			} else {
 				/*
@@ -162,11 +165,11 @@ public class ExpressionParser {
 
 			/*
 			 * we have to wrap the left and right side expressions into one
-			 * final expression. The operator provides us with the type of node
-			 * we are creating (and an instance of that node type)
+			 * final expression. The operator provides us with the type of
+			 * expression we are creating.
 			 */
-			NodeExpressionBinary finalExpression = null;
-			Class<? extends NodeExpressionBinary> operatorNodeClass = operator.getNodeClass();
+			BinaryExpression<?> finalExpression = null;
+			Class<? extends BinaryExpression<?>> operatorNodeClass = operator.getNodeClass();
 			try {
 				finalExpression = operatorNodeClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -174,7 +177,6 @@ public class ExpressionParser {
 				throw new ParserException(e, "Error instantiating operator node [" + operatorNodeClass.getName() + "]");
 			}
 
-			finalExpression.setLineNumber(stream.current().getLineNumber());
 			finalExpression.setLeft(expression);
 			finalExpression.setRight(expressionRight);
 
@@ -220,9 +222,9 @@ public class ExpressionParser {
 	 * @return NodeExpression The expression that it found.
 	 * @throws ParserException
 	 */
-	private NodeExpression subparseExpression() throws ParserException {
-		Token token = stream.current();
-		NodeExpression node = null;
+	private Expression<?> subparseExpression() throws ParserException {
+		final Token token = stream.current();
+		Expression<?> node = null;
 
 		switch (token.getType()) {
 
@@ -232,40 +234,46 @@ public class ExpressionParser {
 				// a constant?
 					case "true":
 					case "TRUE":
-						node = new NodeExpressionConstant(token.getLineNumber(), true);
+						node = new LiteralBooleanExpression(true);
 						break;
 					case "false":
 					case "FALSE":
-						node = new NodeExpressionConstant(token.getLineNumber(), false);
+						node = new LiteralBooleanExpression(false);
 						break;
 					case "none":
 					case "NONE":
 					case "null":
 					case "NULL":
-						node = new NodeExpressionConstant(token.getLineNumber(), null);
+						node = new LiteralNullExpression();
 						break;
 
 					default:
 
 						// name of a function?
 						if (stream.peek().test(Token.Type.PUNCTUATION, "(")) {
-							node = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
+							node = new FunctionOrMacroNameNode(token.getValue());
 						}
 
 						// variable name
 						else {
-							node = new NodeExpressionContextVariable(token.getLineNumber(), token.getValue());
+							node = new ContextVariableExpression(token.getValue());
 						}
 						break;
 				}
 				break;
 
 			case NUMBER:
-				node = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
+				final String numberValue = token.getValue();
+				if (numberValue.contains(".")) {
+					node = new LiteralDoubleExpression(Double.valueOf(numberValue));
+				} else {
+					node = new LiteralLongExpression(Long.valueOf(numberValue));
+				}
+
 				break;
 
 			case STRING:
-				node = new NodeExpressionString(token.getLineNumber(), (String) token.getValue());
+				node = new LiteralStringExpression(token.getValue());
 				break;
 
 			// not found, syntax error
@@ -279,15 +287,14 @@ public class ExpressionParser {
 		return parsePostfixExpression(node);
 	}
 
-	private NodeExpression parseTernaryExpression(NodeExpression expression) throws ParserException {
+	@SuppressWarnings("unchecked")
+	private Expression<?> parseTernaryExpression(Expression<?> expression) throws ParserException {
 		while (this.stream.current().test(Token.Type.PUNCTUATION, "?")) {
-
-			int lineNumber = stream.current().getLineNumber();
 
 			stream.next();
 
-			NodeExpression expression2 = null;
-			NodeExpression expression3 = null;
+			Expression<?> expression2 = null;
+			Expression<?> expression3 = null;
 
 			if (!stream.current().test(Token.Type.PUNCTUATION, ":")) {
 				expression2 = parseExpression();
@@ -302,7 +309,7 @@ public class ExpressionParser {
 				expression3 = parseExpression();
 			}
 
-			expression = new NodeExpressionTernary(lineNumber, expression, expression2, expression3);
+			expression = new TernaryExpression((Expression<Boolean>) expression, expression2, expression3);
 		}
 
 		return expression;
@@ -319,7 +326,7 @@ public class ExpressionParser {
 	 *         modified version of it, depending on what was discovered.
 	 * @throws ParserException
 	 */
-	private NodeExpression parsePostfixExpression(NodeExpression node) throws ParserException {
+	private Expression<?> parsePostfixExpression(Expression<?> node) throws ParserException {
 		Token current;
 		while (true) {
 			current = stream.current();
@@ -342,62 +349,52 @@ public class ExpressionParser {
 		return node;
 	}
 
-	private NodeExpression parseFunctionOrMacroInvocation(NodeExpression node) throws ParserException {
-		TokenStream stream = parser.getStream();
-		int lineNumber = stream.current().getLineNumber();
-
-		NodeExpressionConstant functionName = (NodeExpressionConstant) node;
-		NodeExpressionNamedArguments args = parseNamedArguments();
+	private Expression<?> parseFunctionOrMacroInvocation(Expression<?> node) throws ParserException {
+		String functionName = ((FunctionOrMacroNameNode) node).getName();
+		ArgumentsNode args = parseArguments();
 
 		/*
-		 * The following core functions have their own Nodes and are compiled in
+		 * The following core functions have their own Nodes and are rendered in
 		 * unique ways for the sake of performance.
 		 */
-		switch ((String) functionName.getValue()) {
+		switch (functionName) {
 			case "parent":
-				return new NodeExpressionParentFunction(node.getLineNumber(), parser.peekBlockStack());
+				return new ParentFunctionExpression(parser.peekBlockStack());
 			case "block":
-				return new NodeExpressionBlockReferenceAndFunction(node.getLineNumber(), args);
+				return new BlockFunctionExpression(args);
 		}
 
-		return new NodeExpressionFunctionOrMacroInvocation(lineNumber, functionName, args);
+		return new FunctionOrMacroInvocationExpression(functionName, args);
 	}
 
-	private NodeExpression parseFilterInvocationExpression() throws ParserException {
+	private Expression<?> parseFilterInvocationExpression() throws ParserException {
 		TokenStream stream = parser.getStream();
-		int lineNumber = stream.current().getLineNumber();
-
 		Token filterToken = stream.expect(Token.Type.NAME);
 
-		NodeExpressionConstant filterName = new NodeExpressionConstant(filterToken.getLineNumber(),
-				filterToken.getValue());
-
-		NodeExpressionNamedArguments args = null;
+		ArgumentsNode args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
-			args = this.parseNamedArguments();
+			args = this.parseArguments();
 		} else {
-			args = new NodeExpressionNamedArguments(lineNumber, null);
+			args = new ArgumentsNode(null, null);
 		}
 
-		return new NodeExpressionFilterInvocation(lineNumber, filterName, args);
+		return new FilterInvocationExpression(filterToken.getValue(), args);
 	}
 
-	private NodeExpression parseTestInvocationExpression() throws ParserException {
+	private Expression<?> parseTestInvocationExpression() throws ParserException {
 		TokenStream stream = parser.getStream();
 		int lineNumber = stream.current().getLineNumber();
 
 		Token testToken = stream.expect(Token.Type.NAME);
 
-		NodeExpressionConstant testName = new NodeExpressionConstant(testToken.getLineNumber(), testToken.getValue());
-
-		NodeExpressionNamedArguments args = null;
+		ArgumentsNode args = null;
 		if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
-			args = this.parseNamedArguments();
+			args = this.parseArguments();
 		} else {
-			args = new NodeExpressionNamedArguments(lineNumber, null);
+			args = new ArgumentsNode(null, null);
 		}
 
-		return new NodeExpressionTestInvocation(lineNumber, testName, args);
+		return new TestInvocationExpression(lineNumber, testToken.getValue(), args);
 	}
 
 	/**
@@ -409,9 +406,8 @@ public class ExpressionParser {
 	 * @return NodeExpression The parsed subscript expression
 	 * @throws ParserException
 	 */
-	private NodeExpression parseSubscriptExpression(NodeExpression node) throws ParserException {
+	private Expression<?> parseSubscriptExpression(Expression<?> node) throws ParserException {
 		TokenStream stream = parser.getStream();
-		int lineNumber = stream.current().getLineNumber();
 
 		if (stream.current().test(Token.Type.PUNCTUATION, ".")) {
 
@@ -420,39 +416,37 @@ public class ExpressionParser {
 
 			Token token = stream.expect(Token.Type.NAME);
 
-			NodeExpressionConstant constant = new NodeExpressionConstant(token.getLineNumber(), token.getValue());
-
-			node = new NodeExpressionGetAttribute(lineNumber, node, constant);
+			node = new GetAttributeExpression(node, token.getValue());
 
 		}
 		return node;
 	}
 
-	public NodeExpressionNamedArguments parseNamedArguments() throws ParserException {
-		return parseNamedArguments(false);
+	public ArgumentsNode parseArguments() throws ParserException {
+		return parseArguments(false);
 	}
 
-	public NodeExpressionNamedArguments parseNamedArguments(boolean isMacroDefinition) throws ParserException {
-		List<NodeExpressionNamedArgument> vars = new ArrayList<>();
-		this.stream = this.parser.getStream();
+	public ArgumentsNode parseArguments(boolean isMacroDefinition) throws ParserException {
 
-		int lineNumber = stream.current().getLineNumber();
+		List<PositionalArgumentNode> positionalArgs = new ArrayList<>();
+		List<NamedArgumentNode> namedArgs = new ArrayList<>();
+		this.stream = this.parser.getStream();
 
 		stream.expect(Token.Type.PUNCTUATION, "(");
 
 		while (!stream.current().test(Token.Type.PUNCTUATION, ")")) {
 
-			NodeExpressionNewVariableName argumentName = null;
-			NodeExpression argumentValue = null;
+			String argumentName = null;
+			Expression<?> argumentValue = null;
 
-			if (!vars.isEmpty()) {
+			if (!namedArgs.isEmpty()) {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
 
 			/*
 			 * Most arguments consist of VALUES with optional NAMES but in the
 			 * case of a macro definition the user is specifying NAMES with
-			 * optional default VALUES. Therefore the logic changes slightly.
+			 * optional VALUES. Therefore the logic changes slightly.
 			 */
 			if (isMacroDefinition) {
 				argumentName = parseNewVariableName();
@@ -468,13 +462,17 @@ public class ExpressionParser {
 				argumentValue = parseExpression();
 			}
 
-			NodeExpressionNamedArgument namedArgument = new NodeExpressionNamedArgument(argumentName, argumentValue);
-			vars.add(namedArgument);
+			if (argumentName == null) {
+				positionalArgs.add(new PositionalArgumentNode(argumentValue));
+			} else {
+				namedArgs.add(new NamedArgumentNode(argumentName, argumentValue));
+			}
+
 		}
 
 		stream.expect(Token.Type.PUNCTUATION, ")");
 
-		return new NodeExpressionNamedArguments(lineNumber, vars);
+		return new ArgumentsNode(positionalArgs, namedArgs);
 	}
 
 	/**
@@ -485,7 +483,7 @@ public class ExpressionParser {
 	 * @return
 	 * @throws ParserException
 	 */
-	public NodeExpressionNewVariableName parseNewVariableName() throws ParserException {
+	public String parseNewVariableName() throws ParserException {
 
 		// set the stream because this function may be called externally (for
 		// and set token parsers)
@@ -500,6 +498,6 @@ public class ExpressionParser {
 		}
 
 		stream.next();
-		return new NodeExpressionNewVariableName(token.getLineNumber(), token.getValue());
+		return token.getValue();
 	}
 }

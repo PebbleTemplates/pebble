@@ -12,30 +12,29 @@ package com.mitchellbosecke.pebble.tokenParser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodeSet;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
+import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.node.SetNode;
+import com.mitchellbosecke.pebble.node.expression.Expression;
 
 public class SetTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 		
 		// skip the 'set' token
 		stream.next();
 
-		NodeExpressionNewVariableName name = this.parser.getExpressionParser().parseNewVariableName();
+		String name = this.parser.getExpressionParser().parseNewVariableName();
 
 		stream.expect(Token.Type.PUNCTUATION, "=");
 		
-		NodeExpression value = this.parser.getExpressionParser().parseExpression();
+		Expression<?> value = this.parser.getExpressionParser().parseExpression();
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		return new NodeSet(lineNumber, name, value);
+		return new SetNode(lineNumber, name, value);
 	}
 
 	@Override

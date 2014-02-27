@@ -12,16 +12,15 @@ package com.mitchellbosecke.pebble.tokenParser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeBlock;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReferenceAndFunction;
+import com.mitchellbosecke.pebble.node.BlockNode;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class BlockTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
 
@@ -34,20 +33,17 @@ public class BlockTokenParser extends AbstractTokenParser {
 		// get the name of the new block
 		String name = blockName.getValue();
 
-		NodeBlock block = new NodeBlock(lineNumber, name);
-
-		this.parser.addBlock(name, block);
-		this.parser.pushBlockStack(name);
-
 		stream.expect(Token.Type.EXECUTE_END);
 
+		this.parser.pushBlockStack(name);
 		// now we parse the block body
-		NodeBody blockBody = this.parser.subparse(new StoppingCondition() {
+		BodyNode blockBody = this.parser.subparse(new StoppingCondition() {
 			@Override
 			public boolean evaluate(Token token) {
 				return token.test(Token.Type.NAME, "endblock");
 			}
 		});
+		this.parser.popBlockStack();
 
 		// skip the 'endblock' token
 		stream.next();
@@ -58,12 +54,8 @@ public class BlockTokenParser extends AbstractTokenParser {
 			stream.next();
 		}
 
-		block.setBody(blockBody);
-		this.parser.popBlockStack();
-
 		stream.expect(Token.Type.EXECUTE_END);
-
-		return new NodeExpressionBlockReferenceAndFunction(stream.current().getLineNumber(), name);
+		return new BlockNode(lineNumber, name, blockBody);
 	}
 
 	@Override

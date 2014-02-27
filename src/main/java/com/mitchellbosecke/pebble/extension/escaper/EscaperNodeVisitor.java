@@ -5,20 +5,18 @@ import java.util.List;
 import java.util.Stack;
 
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
-import com.mitchellbosecke.pebble.node.NodeAutoEscape;
-import com.mitchellbosecke.pebble.node.NodeExpression;
-import com.mitchellbosecke.pebble.node.NodePrint;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReferenceAndFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
-import com.mitchellbosecke.pebble.node.expression.binary.NodeExpressionBinaryFilter;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.AutoEscapeNode;
+import com.mitchellbosecke.pebble.node.NamedArgumentNode;
+import com.mitchellbosecke.pebble.node.PrintNode;
+import com.mitchellbosecke.pebble.node.TernaryExpression;
+import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.node.expression.FilterExpression;
+import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
+import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
@@ -35,17 +33,17 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodePrint node) {
-		NodeExpression expression = node.getExpression();
+	public void visit(PrintNode node) {
+		Expression<?> expression = node.getExpression();
 		if (!isSafe(expression)) {
 			node.setExpression(escape(expression));
 		}
 	}
 
 	@Override
-	public void visit(NodeExpressionTernary node) {
-		NodeExpression left = node.getExpression2();
-		NodeExpression right = node.getExpression3();
+	public void visit(TernaryExpression node) {
+		Expression<?> left = node.getExpression2();
+		Expression<?> right = node.getExpression3();
 		if (!isSafe(left)) {
 			node.setExpression2(escape(left));
 		}
@@ -55,7 +53,7 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeAutoEscape node) {
+	public void visit(AutoEscapeNode node) {
 		active.push(node.isActive());
 		strategies.push(node.getStrategy());
 
@@ -65,41 +63,35 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 		strategies.pop();
 	}
 
-	private NodeExpression escape(NodeExpression expression) {
-
-		int lineNumber = expression.getLineNumber();
+	private Expression<?> escape(Expression<?> expression) {
 
 		/*
 		 * Build the arguments to the escape filter. The arguments will just
 		 * include the strategy being used.
 		 */
-		List<NodeExpressionNamedArgument> namedArgs = new ArrayList<>();
+		List<NamedArgumentNode> namedArgs = new ArrayList<>();
 		if (!strategies.isEmpty() && strategies.peek() != null) {
 			String strategy = strategies.peek();
-			NodeExpressionNewVariableName name = new NodeExpressionNewVariableName(lineNumber, "strategy");
-			NodeExpression value = new NodeExpressionString(lineNumber, strategy);
-			namedArgs.add(new NodeExpressionNamedArgument(name, value));
+			namedArgs.add(new NamedArgumentNode("strategy", new LiteralStringExpression(strategy)));
 		}
-		NodeExpressionNamedArguments args = new NodeExpressionNamedArguments(lineNumber, namedArgs);
+		ArgumentsNode args = new ArgumentsNode(null, namedArgs);
 
 		/*
 		 * Create the filter invocation with the newly created named arguments.
 		 */
-		NodeExpressionConstant filterName = new NodeExpressionConstant(lineNumber, "escape");
-		NodeExpressionFilterInvocation filter = new NodeExpressionFilterInvocation(expression.getLineNumber(),
-				filterName, args);
+		FilterInvocationExpression filter = new FilterInvocationExpression("escape", args);
 
 		/*
 		 * The given expression and the filter invocation now become a binary
 		 * expression which is what is returned.
 		 */
-		NodeExpressionBinaryFilter binary = new NodeExpressionBinaryFilter();
+		FilterExpression binary = new FilterExpression();
 		binary.setLeft(expression);
 		binary.setRight(filter);
 		return binary;
 	}
 
-	private boolean isSafe(NodeExpression expression) {
+	private boolean isSafe(Expression<?> expression) {
 
 		// check whether the autoescaper is even active
 		if (!active.isEmpty() && active.peek() == false) {
@@ -109,21 +101,19 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 		boolean safe = false;
 
 		// string literals are safe
-		if (expression instanceof NodeExpressionString) {
+		if (expression instanceof LiteralStringExpression) {
 			safe = true;
 		}
 		// function and macro calls are considered safe
-		else if (expression instanceof NodeExpressionFunctionOrMacroInvocation
-				|| expression instanceof NodeExpressionParentFunction
-				|| expression instanceof NodeExpressionBlockReferenceAndFunction) {
+		else if (expression instanceof FunctionOrMacroInvocationExpression
+				|| expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
 			safe = true;
-		} else if (expression instanceof NodeExpressionBinaryFilter) {
+		} else if (expression instanceof FilterExpression) {
 
 			// certain filters do not need to be escaped
-			NodeExpressionBinaryFilter binary = (NodeExpressionBinaryFilter) expression;
-			NodeExpressionFilterInvocation filterInvocation = (NodeExpressionFilterInvocation) binary
-					.getRightExpression();
-			String filterName = (String) filterInvocation.getFilterName().getValue();
+			FilterExpression binary = (FilterExpression) expression;
+			FilterInvocationExpression filterInvocation = (FilterInvocationExpression) binary.getRightExpression();
+			String filterName = filterInvocation.getFilterName();
 
 			if (safeFilters.contains(filterName)) {
 				safe = true;

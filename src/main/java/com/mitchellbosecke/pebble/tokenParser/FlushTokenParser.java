@@ -12,13 +12,13 @@ package com.mitchellbosecke.pebble.tokenParser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeFlush;
+import com.mitchellbosecke.pebble.node.FlushNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
 
 public class FlushTokenParser extends AbstractTokenParser {
 
 	@Override
-	public Node parse(Token token) throws ParserException {
+	public RenderableNode parse(Token token) throws ParserException {
 
 		TokenStream stream = this.parser.getStream();
 		int lineNumber = token.getLineNumber();
@@ -28,7 +28,7 @@ public class FlushTokenParser extends AbstractTokenParser {
 
 		stream.expect(Token.Type.EXECUTE_END);
 
-		return new NodeFlush(lineNumber);
+		return new FlushNode(lineNumber);
 	}
 
 	@Override

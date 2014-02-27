@@ -1,35 +1,31 @@
 package com.mitchellbosecke.pebble.extension.debug;
 
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.BlockNode;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.FlushNode;
+import com.mitchellbosecke.pebble.node.ForNode;
+import com.mitchellbosecke.pebble.node.IfNode;
+import com.mitchellbosecke.pebble.node.ImportNode;
+import com.mitchellbosecke.pebble.node.IncludeNode;
+import com.mitchellbosecke.pebble.node.MacroNode;
+import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.Node;
-import com.mitchellbosecke.pebble.node.NodeBlock;
-import com.mitchellbosecke.pebble.node.NodeBody;
-import com.mitchellbosecke.pebble.node.NodeFlush;
-import com.mitchellbosecke.pebble.node.NodeFor;
-import com.mitchellbosecke.pebble.node.NodeIf;
-import com.mitchellbosecke.pebble.node.NodeImport;
-import com.mitchellbosecke.pebble.node.NodeInclude;
-import com.mitchellbosecke.pebble.node.NodeMacro;
-import com.mitchellbosecke.pebble.node.NodeParallel;
-import com.mitchellbosecke.pebble.node.NodePrint;
-import com.mitchellbosecke.pebble.node.NodeRoot;
-import com.mitchellbosecke.pebble.node.NodeSet;
-import com.mitchellbosecke.pebble.node.NodeText;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBlockReferenceAndFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionConstant;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionContextVariable;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFilterInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionFunctionOrMacroInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionGetAttribute;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArgument;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNamedArguments;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionNewVariableName;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionParentFunction;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionString;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTernary;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionTestInvocation;
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
+import com.mitchellbosecke.pebble.node.ParallelNode;
+import com.mitchellbosecke.pebble.node.PrintNode;
+import com.mitchellbosecke.pebble.node.RootNode;
+import com.mitchellbosecke.pebble.node.SetNode;
+import com.mitchellbosecke.pebble.node.TernaryExpression;
+import com.mitchellbosecke.pebble.node.TestInvocationExpression;
+import com.mitchellbosecke.pebble.node.TextNode;
+import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
+import com.mitchellbosecke.pebble.node.expression.ContextVariableExpression;
+import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
+import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 
 public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 
@@ -64,7 +60,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeBody node) {
+	public void visit(BodyNode node) {
 		write("body");
 		level++;
 		super.visit(node);
@@ -72,7 +68,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeIf node) {
+	public void visit(IfNode node) {
 		write("if");
 		level++;
 		super.visit(node);
@@ -80,7 +76,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeFor node) {
+	public void visit(ForNode node) {
 		write("for");
 		level++;
 		super.visit(node);
@@ -88,7 +84,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionBinary node) {
+	public void visit(BinaryExpression<?> node) {
 		write("binary");
 		level++;
 		super.visit(node);
@@ -96,7 +92,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionUnary node) {
+	public void visit(UnaryExpression node) {
 		write("unary");
 		level++;
 		super.visit(node);
@@ -104,27 +100,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionBlockReferenceAndFunction node) {
-		if (node.isExpression()) {
-			write("block function");
-		} else {
-			write("block reference");
-		}
-		level++;
-		super.visit(node);
-		level--;
-	}
-
-	@Override
-	public void visit(NodeExpressionConstant node) {
-		write(String.format("constant [%s]", node.getValue() == null ? null : node.getValue().toString()));
-		level++;
-		super.visit(node);
-		level--;
-	}
-
-	@Override
-	public void visit(NodeExpressionContextVariable node) {
+	public void visit(ContextVariableExpression node) {
 		write(String.format("context variable [%s]", node.getName()));
 		level++;
 		super.visit(node);
@@ -132,7 +108,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionFilterInvocation node) {
+	public void visit(FilterInvocationExpression node) {
 		write("filter");
 		level++;
 		super.visit(node);
@@ -140,7 +116,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionFunctionOrMacroInvocation node) {
+	public void visit(FunctionOrMacroInvocationExpression node) {
 		write("function or macro");
 		level++;
 		super.visit(node);
@@ -148,7 +124,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionGetAttribute node) {
+	public void visit(GetAttributeExpression node) {
 		write("get attribute");
 		level++;
 		super.visit(node);
@@ -156,7 +132,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionNamedArgument node) {
+	public void visit(NamedArgumentNode node) {
 		write("named argument");
 		level++;
 		super.visit(node);
@@ -164,7 +140,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionNamedArguments node) {
+	public void visit(ArgumentsNode node) {
 		write("named arguments");
 		level++;
 		super.visit(node);
@@ -172,15 +148,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionNewVariableName node) {
-		write(String.format("new variable name [%s]", node.getName()));
-		level++;
-		super.visit(node);
-		level--;
-	}
-
-	@Override
-	public void visit(NodeExpressionParentFunction node) {
+	public void visit(ParentFunctionExpression node) {
 		write("parent function");
 		level++;
 		super.visit(node);
@@ -188,15 +156,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionString node) {
-		write(String.format("string [%s]", node.getValue()));
-		level++;
-		super.visit(node);
-		level--;
-	}
-
-	@Override
-	public void visit(NodeExpressionTernary node) {
+	public void visit(TernaryExpression node) {
 		write("ternary");
 		level++;
 		super.visit(node);
@@ -204,7 +164,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeExpressionTestInvocation node) {
+	public void visit(TestInvocationExpression node) {
 		write("test");
 		level++;
 		super.visit(node);
@@ -212,7 +172,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeBlock node) {
+	public void visit(BlockNode node) {
 		write(String.format("block [%s]", node.getName()));
 		level++;
 		super.visit(node);
@@ -220,7 +180,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeFlush node) {
+	public void visit(FlushNode node) {
 		write("flush");
 		level++;
 		super.visit(node);
@@ -228,7 +188,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeImport node) {
+	public void visit(ImportNode node) {
 		write("import");
 		level++;
 		super.visit(node);
@@ -236,7 +196,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeInclude node) {
+	public void visit(IncludeNode node) {
 		write("include");
 		level++;
 		super.visit(node);
@@ -244,7 +204,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeMacro node) {
+	public void visit(MacroNode node) {
 		write(String.format("macro [%s]", node.getName()));
 		level++;
 		super.visit(node);
@@ -252,7 +212,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeParallel node) {
+	public void visit(ParallelNode node) {
 		write("parallel");
 		level++;
 		super.visit(node);
@@ -260,7 +220,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodePrint node) {
+	public void visit(PrintNode node) {
 		write("print");
 		level++;
 		super.visit(node);
@@ -268,7 +228,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeRoot node) {
+	public void visit(RootNode node) {
 		write("root");
 		level++;
 		super.visit(node);
@@ -276,7 +236,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeSet node) {
+	public void visit(SetNode node) {
 		write("set");
 		level++;
 		super.visit(node);
@@ -284,7 +244,7 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	}
 
 	@Override
-	public void visit(NodeText node) {
+	public void visit(TextNode node) {
 		String preview = node.getData().length() > 10 ? node.getData().substring(0, 10) + "..." : node.getData();
 		write(String.format("text [%s]", preview));
 		level++;

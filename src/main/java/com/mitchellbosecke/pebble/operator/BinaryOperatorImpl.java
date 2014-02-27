@@ -9,16 +9,16 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.operator;
 
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionBinary;
+import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
 
 public class BinaryOperatorImpl implements BinaryOperator {
 
 	private final int precedence;
 	private final String symbol;
-	private final Class<? extends NodeExpressionBinary> nodeClass;
+	private final Class<? extends BinaryExpression<?>> nodeClass;
 	private final Associativity associativity;
 
-	public BinaryOperatorImpl(String symbol, int precedence, Class<? extends NodeExpressionBinary> nodeClass,
+	public BinaryOperatorImpl(String symbol, int precedence, Class<? extends BinaryExpression<?>> nodeClass,
 			Associativity associativity) {
 		this.symbol = symbol;
 		this.precedence = precedence;
@@ -37,7 +37,7 @@ public class BinaryOperatorImpl implements BinaryOperator {
 	}
 
 	@Override
-	public Class<? extends NodeExpressionBinary> getNodeClass() {
+	public Class<? extends BinaryExpression<?>> getNodeClass() {
 		return nodeClass;
 	}
 

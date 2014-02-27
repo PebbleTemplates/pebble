@@ -9,15 +9,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.operator;
 
-import com.mitchellbosecke.pebble.node.expression.NodeExpressionUnary;
+import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 
 public class UnaryOperatorImpl implements UnaryOperator {
 
 	private final int precedence;
 	private final String symbol;
-	private final Class<? extends NodeExpressionUnary> nodeClass;
+	private final Class<? extends UnaryExpression> nodeClass;
 
-	public UnaryOperatorImpl(String symbol, int precedence, Class<? extends NodeExpressionUnary> nodeClass) {
+	public UnaryOperatorImpl(String symbol, int precedence, Class<? extends UnaryExpression> nodeClass) {
 		this.symbol = symbol;
 		this.precedence = precedence;
 		this.nodeClass = nodeClass;
@@ -34,7 +34,7 @@ public class UnaryOperatorImpl implements UnaryOperator {
 	}
 
 	@Override
-	public Class<? extends NodeExpressionUnary> getNodeClass() {
+	public Class<? extends UnaryExpression> getNodeClass() {
 		return nodeClass;
 	}
 }
