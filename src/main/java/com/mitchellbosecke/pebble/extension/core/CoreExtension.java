@@ -17,6 +17,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.expression.AddExpression;
 import com.mitchellbosecke.pebble.node.expression.AndExpression;
@@ -151,6 +152,12 @@ public class CoreExtension extends AbstractExtension {
 	public Map<String, Object> getGlobalVariables() {
 
 		return null;
+	}
+
+	public List<NodeVisitor> getNodeVisitors() {
+		List<NodeVisitor> visitors = new ArrayList<>();
+		visitors.add(new MacroNodeVisitor());
+		return visitors;
 	}
 
 }

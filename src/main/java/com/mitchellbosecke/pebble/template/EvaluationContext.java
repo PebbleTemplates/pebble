@@ -98,7 +98,7 @@ public class EvaluationContext {
 		boolean found = false;
 
 		Scope scope = scopes.peek();
-		while (scope != null) {
+		while (scope != null && !found) {
 			if (scope.containsKey(key)) {
 				found = true;
 				result = scope.get(key);

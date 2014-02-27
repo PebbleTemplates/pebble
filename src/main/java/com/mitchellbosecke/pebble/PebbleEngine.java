@@ -185,6 +185,10 @@ public class PebbleEngine {
 
 						TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
 						root = getParser().parse(tokenStream);
+						
+						for(NodeVisitor visitor: nodeVisitors){
+							visitor.visit(root);
+						}
 
 					} finally {
 						compilationMutex.release();

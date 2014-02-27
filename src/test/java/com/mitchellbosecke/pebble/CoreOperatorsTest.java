@@ -125,8 +125,8 @@ public class CoreOperatorsTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		String source = "{% if item.truthy and item.falsey %}yes{% else %}no{% endif %}"
-				+ "{% if item.truthy or item.falsey %}yes{% else %}no{% endif %}";
+		String source = "{% if item.truthy and item.falsy %}yes{% else %}no{% endif %}"
+				+ "{% if item.truthy or item.falsy %}yes{% else %}no{% endif %}";
 		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
 		context.put("item", new Item());

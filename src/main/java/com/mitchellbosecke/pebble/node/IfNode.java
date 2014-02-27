@@ -50,7 +50,7 @@ public class IfNode extends AbstractRenderableNode {
 			}
 		}
 
-		if (!satisfied) {
+		if (!satisfied && elseBody != null) {
 			elseBody.render(self, writer, context);
 		}
 	}

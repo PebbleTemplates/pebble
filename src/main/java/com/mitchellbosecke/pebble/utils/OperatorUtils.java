@@ -16,7 +16,7 @@ package com.mitchellbosecke.pebble.utils;
 public class OperatorUtils {
 
 	private enum Operation {
-		ADD, SUBTRACT, MULTIPLICATION, DIVISION, MODULUS, GREATER_THAN, GREATER_THAN_EQUALS, LESS_THAN, LESS_THAN_EQUALS
+		ADD, SUBTRACT, MULTIPLICATION, DIVISION, MODULUS, GREATER_THAN, GREATER_THAN_EQUALS, LESS_THAN, LESS_THAN_EQUALS, EQUALS
 	};
 
 	public static Object add(Object op1, Object op2) {
@@ -42,8 +42,12 @@ public class OperatorUtils {
 		return wideningConversionBinaryOperation(op1, op2, Operation.MODULUS);
 	}
 
-	public static boolean equals(Object a, Object b) {
-		return ((a == b) || ((a != null) && a.equals(b)));
+	public static boolean equals(Object op1, Object op2) {
+		if (op1 != null && op1 instanceof Number && op2 != null && op2 instanceof Number) {
+			return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.EQUALS);
+		} else {
+			return ((op1 == op2) || ((op1 != null) && op1.equals(op2)));
+		}
 	}
 
 	public static boolean gt(Object op1, Object op2) {
@@ -115,6 +119,8 @@ public class OperatorUtils {
 				return op1 < op2;
 			case LESS_THAN_EQUALS:
 				return op1 <= op2;
+			case EQUALS:
+				return op1 == op2;
 			default:
 				return null;
 		}
@@ -140,6 +146,8 @@ public class OperatorUtils {
 				return op1 < op2;
 			case LESS_THAN_EQUALS:
 				return op1 <= op2;
+			case EQUALS:
+				return op1 == op2;
 			default:
 				return null;
 		}
@@ -165,6 +173,8 @@ public class OperatorUtils {
 				return op1 < op2;
 			case LESS_THAN_EQUALS:
 				return op1 <= op2;
+			case EQUALS:
+				return op1 == op2;
 			default:
 				return null;
 		}
@@ -190,6 +200,8 @@ public class OperatorUtils {
 				return op1 < op2;
 			case LESS_THAN_EQUALS:
 				return op1 <= op2;
+			case EQUALS:
+				return op1 == op2;
 			default:
 				return null;
 		}

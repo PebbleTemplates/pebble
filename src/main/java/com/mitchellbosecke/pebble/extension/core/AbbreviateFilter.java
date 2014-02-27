@@ -21,7 +21,7 @@ public class AbbreviateFilter implements Filter{
 			return null;
 		}
 		String value = (String) input;
-		int maxWidth = (Integer) args.get("length");
+		int maxWidth = ((Long) args.get("length")).intValue();
 
 		String ellipsis = "...";
 		int length = value.length();

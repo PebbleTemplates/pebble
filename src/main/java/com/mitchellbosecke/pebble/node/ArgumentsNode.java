@@ -73,16 +73,20 @@ public class ArgumentsNode implements Node {
 		} else {
 			Iterator<String> nameIterator = argumentNames.iterator();
 
-			for (PositionalArgumentNode arg : positionalArgs) {
-				result.put(nameIterator.next(), arg.getValueExpression().evaluate(self, context));
+			if (positionalArgs != null) {
+				for (PositionalArgumentNode arg : positionalArgs) {
+					result.put(nameIterator.next(), arg.getValueExpression().evaluate(self, context));
+				}
 			}
 
-			for (NamedArgumentNode arg : namedArgs) {
-				// check if user used an incorrect name
-				if (!argumentNames.contains(arg.getName())) {
-					throw new PebbleException(null, "The following named argument does not exist: " + arg.getName());
+			if (namedArgs != null) {
+				for (NamedArgumentNode arg : namedArgs) {
+					// check if user used an incorrect name
+					if (!argumentNames.contains(arg.getName())) {
+						throw new PebbleException(null, "The following named argument does not exist: " + arg.getName());
+					}
+					result.put(arg.getName(), arg.getValueExpression().evaluate(self, context));
 				}
-				result.put(arg.getName(), arg.getValueExpression().evaluate(self, context));
 			}
 		}
 

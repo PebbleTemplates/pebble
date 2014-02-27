@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.Macro;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -60,10 +61,19 @@ public class MacroNode extends AbstractRenderableNode {
 			@Override
 			public String call(EvaluationContext context, Map<String, Object> macroArgs) throws PebbleException {
 				Writer writer = new StringWriter();
+
+				// scope for default arguments
 				context.pushLocalScope();
 				for (NamedArgumentNode arg : args.getNamedArgs()) {
-					context.put(arg.getName(), arg.getValueExpression().evaluate(self, context));
+					Expression<?> valueExpression = arg.getValueExpression();
+					if (valueExpression == null) {
+						context.put(arg.getName(), null);
+					} else {
+						context.put(arg.getName(), arg.getValueExpression().evaluate(self, context));
+					}
 				}
+
+				// scope for user provided arguments
 				context.pushScope();
 				for (Entry<String, Object> arg : macroArgs.entrySet()) {
 					context.put(arg.getKey(), arg.getValue());

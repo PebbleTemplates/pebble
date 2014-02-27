@@ -232,7 +232,7 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testMacroInvokationWithoutAllArguments() throws PebbleException, IOException {
+	public void testMacroInvocationWithoutAllArguments() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 		PebbleTemplate template = pebble

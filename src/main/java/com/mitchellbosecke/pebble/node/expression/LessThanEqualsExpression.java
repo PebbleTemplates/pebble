@@ -18,7 +18,7 @@ public class LessThanEqualsExpression extends BinaryExpression<Boolean> {
 
 	@Override
 	public Boolean evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		return OperatorUtils.lt(getLeftExpression().evaluate(self, context),
+		return OperatorUtils.lte(getLeftExpression().evaluate(self, context),
 				getRightExpression().evaluate(self, context));
 	}
 }

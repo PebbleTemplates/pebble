@@ -439,7 +439,7 @@ public class ExpressionParser {
 			String argumentName = null;
 			Expression<?> argumentValue = null;
 
-			if (!namedArgs.isEmpty()) {
+			if (!namedArgs.isEmpty() || !positionalArgs.isEmpty()) {
 				stream.expect(Token.Type.PUNCTUATION, ",");
 			}
 
