@@ -30,7 +30,7 @@ public class ParentFunctionExpression implements Expression<String> {
 	public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
 		Writer writer = new StringWriter();
 		try {
-			self.getParent().block(blockName, context, true, writer);
+			context.getParent().block(blockName, context, true, writer);
 		} catch (IOException e) {
 			throw new PebbleException(e, "Could not render block [" + blockName + "]");
 		}

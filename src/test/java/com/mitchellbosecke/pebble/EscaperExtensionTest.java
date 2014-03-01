@@ -155,9 +155,11 @@ public class EscaperExtensionTest extends AbstractTest {
 	public void testAutoEscapingMacroOutput() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
-		PebbleTemplate template = pebble.getTemplate("{{ test('<br>') }}{% macro test(input) %}<{{ input }}>{% endmacro %}");
+		PebbleTemplate template = pebble.getTemplate("{{ test(danger) }}{% macro test(input) %}<{{ input }}>{% endmacro %}");
 		Writer writer = new StringWriter();
-		template.evaluate(writer);
+		Map<String, Object> context = new HashMap<>();
+		context.put("danger", "<br>");
+		template.evaluate(writer,context);
 		assertEquals("<&lt;br&gt;>", writer.toString());
 	}
 	

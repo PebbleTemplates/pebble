@@ -28,7 +28,7 @@ public class ImportNode extends AbstractRenderableNode {
 
 	@Override
 	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
-		self.importTemplate((String) importExpression.evaluate(self, context));
+		self.importTemplate(context, (String) importExpression.evaluate(self, context));
 	}
 
 	@Override

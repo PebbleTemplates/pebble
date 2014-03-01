@@ -36,27 +36,28 @@ public class BlockNode extends AbstractRenderableNode {
 	@Override
 	public void render(final PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
 			IOException {
-
-		Block block = new Block() {
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
-				body.render(self, writer, context);
-
-			}
-		};
-
-		self.registerBlock(block);
 		self.block(name, context, false, writer);
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public Block getBlock() {
+		return new Block() {
+			@Override
+			public String getName() {
+				return name;
+			}
+
+			@Override
+			public void evaluate(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
+					throws PebbleException, IOException {
+				body.render(self, writer, context);
+
+			}
+		};
 	}
 
 	public BodyNode getBody() {

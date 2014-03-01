@@ -85,7 +85,8 @@ public class ArgumentsNode implements Node {
 					if (!argumentNames.contains(arg.getName())) {
 						throw new PebbleException(null, "The following named argument does not exist: " + arg.getName());
 					}
-					result.put(arg.getName(), arg.getValueExpression().evaluate(self, context));
+					Object value = arg.getValueExpression() == null? null : arg.getValueExpression().evaluate(self, context);
+					result.put(arg.getName(), value);
 				}
 			}
 		}

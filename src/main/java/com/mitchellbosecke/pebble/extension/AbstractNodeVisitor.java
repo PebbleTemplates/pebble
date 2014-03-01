@@ -9,6 +9,7 @@ import com.mitchellbosecke.pebble.node.ForNode;
 import com.mitchellbosecke.pebble.node.IfNode;
 import com.mitchellbosecke.pebble.node.ImportNode;
 import com.mitchellbosecke.pebble.node.IncludeNode;
+import com.mitchellbosecke.pebble.node.MacroNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.ParallelNode;
@@ -27,6 +28,7 @@ import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 /**
@@ -37,6 +39,12 @@ import com.mitchellbosecke.pebble.utils.Pair;
  * 
  */
 public abstract class AbstractNodeVisitor implements NodeVisitor {
+
+	protected PebbleTemplateImpl template;
+
+	public void setTemplate(PebbleTemplateImpl template) {
+		this.template = template;
+	}
 
 	/**
 	 * Default method used for unknown nodes such as nodes from a user provided
@@ -150,6 +158,12 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	@Override
 	public void visit(BlockNode node) {
 		node.getBody().accept(this);
+	}
+
+	@Override
+	public void visit(MacroNode node) {
+		node.getBody().accept(this);
+		node.getArgs().accept(this);
 	}
 
 	@Override

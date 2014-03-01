@@ -1,4 +1,3 @@
 {# used by CoreTagsTest.testSetInChildTemplateOutsideOfBlock #}
-
 {% extends "template.set.parent.peb" %}
 {% set childDefinedVariable = 'SUCCESS' %}

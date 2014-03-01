@@ -9,13 +9,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
-import java.util.Set;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.RootNode;
-import com.mitchellbosecke.pebble.template.Macro;
 
 public interface Parser {
 
@@ -48,9 +45,5 @@ public interface Parser {
 	public String popBlockStack();
 
 	public void pushBlockStack(String blockName);
-
-	public void addMacro(Macro macro);
-	
-	public Set<Macro> getMacros();
 
 }

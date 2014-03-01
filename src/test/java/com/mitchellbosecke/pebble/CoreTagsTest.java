@@ -190,7 +190,7 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
 	}
 
-	@Test(expected = PebbleException.class)
+	@Test(expected = RuntimeException.class)
 	public void testMacrosWithSameName() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);

@@ -30,7 +30,7 @@ public class ExtendsNode extends AbstractRenderableNode {
 	@Override
 	public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
 			throws IOException, PebbleException {
-		self.setParent((String) parentExpression.evaluate(self, context));
+		self.setParent(context, (String) parentExpression.evaluate(self, context));
 	}
 
 	@Override

@@ -154,7 +154,9 @@ public class CoreExtension extends AbstractExtension {
 	}
 
 	public List<NodeVisitor> getNodeVisitors() {
-		return null;
+		List<NodeVisitor> visitors = new ArrayList<>();
+		visitors.add(new MacroAndBlockRegistrantNodeVisitor());
+		return visitors;
 	}
 
 }

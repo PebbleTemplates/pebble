@@ -9,6 +9,7 @@ import com.mitchellbosecke.pebble.node.ForNode;
 import com.mitchellbosecke.pebble.node.IfNode;
 import com.mitchellbosecke.pebble.node.ImportNode;
 import com.mitchellbosecke.pebble.node.IncludeNode;
+import com.mitchellbosecke.pebble.node.MacroNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.ParallelNode;
@@ -26,8 +27,11 @@ import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public interface NodeVisitor {
+
+	public abstract void setTemplate(PebbleTemplateImpl template);
 
 	/**
 	 * Default method invoked with unknown nodes such as nodes provided by user
@@ -68,6 +72,8 @@ public interface NodeVisitor {
 	public abstract void visit(TestInvocationExpression node);
 
 	public abstract void visit(AutoEscapeNode node);
+
+	public abstract void visit(MacroNode node);
 
 	public abstract void visit(BlockNode node);
 

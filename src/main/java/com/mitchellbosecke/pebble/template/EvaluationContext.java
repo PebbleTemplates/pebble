@@ -1,6 +1,8 @@
 package com.mitchellbosecke.pebble.template;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
@@ -58,6 +60,13 @@ public class EvaluationContext {
 	private final Map<String, Function> functions;
 
 	private final ExecutorService executorService;
+
+	/**
+	 * The imported templates are used to look up macros.
+	 */
+	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
+
+	private PebbleTemplateImpl parent;
 
 	public EvaluationContext(boolean strictVariables, Locale locale, Map<String, Filter> filters,
 			Map<String, Test> tests, Map<String, Function> functions, ExecutorService executorService) {
@@ -175,4 +184,19 @@ public class EvaluationContext {
 		return executorService;
 	}
 
+	public void addImportedTemplate(PebbleTemplateImpl template) {
+		this.importedTemplates.add(template);
+	}
+
+	public List<PebbleTemplateImpl> getImportedTemplates() {
+		return this.importedTemplates;
+	}
+
+	public void setParent(PebbleTemplateImpl parent) {
+		this.parent = parent;
+	}
+
+	public PebbleTemplateImpl getParent() {
+		return this.parent;
+	}
 }
