@@ -51,12 +51,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 	public void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException {
 		rootNode.render(this, writer, context);
-		if (context.getParent() != null) {
-			context.pushInheritanceChain(this);
-			PebbleTemplateImpl parent = context.getParent();
-			context.setParent(null);
+		if (context.getParentTemplate() != null) {
+			PebbleTemplateImpl parent = context.getParentTemplate();
+			context.ascendInheritanceChain();
 			parent.buildContent(writer, context);
-			context.popInheritanceChain();
 		}
 	}
 
@@ -110,8 +108,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	private EvaluationContext initContext(Locale locale) {
 		locale = locale == null ? engine.getDefaultLocale() : locale;
-		EvaluationContext context = new EvaluationContext(engine.isStrictVariables(), locale, engine.getFilters(),
-				engine.getTests(), engine.getFunctions(), engine.getExecutorService());
+		EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
+				engine.getFilters(), engine.getTests(), engine.getFunctions(), engine.getExecutorService());
 		context.putAll(engine.getGlobalVariables());
 		return context;
 	}
@@ -150,7 +148,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	}
 
 	public void registerMacro(Macro macro) throws PebbleException {
-		if(macros.containsKey(macro.getName())){
+		if (macros.containsKey(macro.getName())) {
 			throw new PebbleException(null, "More than one macro can not share the same name: " + macro.getName());
 		}
 		this.macros.put(macro.getName(), macro);
@@ -174,9 +172,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 		// check child
 		if (!ignoreOverriden && childTemplate != null && childTemplate.hasBlock(blockName)) {
-			context.popInheritanceChain();
+			context.descendInheritanceChain();
 			childTemplate.block(blockName, context, false, writer);
-			context.pushInheritanceChain(childTemplate);
+			context.ascendInheritanceChain();
 
 			// check this template
 		} else if (blocks.containsKey(blockName)) {
@@ -185,10 +183,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 			// delegate to parent
 		} else {
-			if (context.getParent() != null) {
-				context.pushInheritanceChain(this);
-				context.getParent().block(blockName, context, true, writer);
-				context.popInheritanceChain();
+			if (context.getParentTemplate() != null) {
+				context.ascendInheritanceChain();
+				context.getParentTemplate().block(blockName, context, true, writer);
+				context.descendInheritanceChain();
 			}
 		}
 
@@ -203,9 +201,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 		// check child template first
 		if (childTemplate != null && childTemplate.hasMacro(macroName)) {
 			found = true;
-			context.popInheritanceChain();
+			context.descendInheritanceChain();
 			result = childTemplate.macro(macroName, context, args);
-			context.pushInheritanceChain(childTemplate);
+			context.ascendInheritanceChain();
 
 			// check current template
 		} else if (hasMacro(macroName)) {
@@ -228,10 +226,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 		// delegate to parent template
 		if (!found) {
-			if (context.getParent() != null) {
-				context.pushInheritanceChain(this);
-				result = context.getParent().macro(macroName, context, args);
-				context.popInheritanceChain();
+			if (context.getParentTemplate() != null) {
+				context.ascendInheritanceChain();
+				result = context.getParentTemplate().macro(macroName, context, args);
+				context.descendInheritanceChain();
 			} else {
 				throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));
 			}

@@ -30,7 +30,7 @@ public class EvaluationContext {
 	 * and other features; this inheritance chain will help the template keep
 	 * track of where in the inheritance chain it currently is.
 	 */
-	private final Stack<PebbleTemplateImpl> inheritanceChain;
+	private final InheritanceChain inheritanceChain;
 
 	/**
 	 * A scope is a set of visible variables. A trivial template will only have
@@ -66,10 +66,9 @@ public class EvaluationContext {
 	 */
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
-	private PebbleTemplateImpl parent;
-
-	public EvaluationContext(boolean strictVariables, Locale locale, Map<String, Filter> filters,
-			Map<String, Test> tests, Map<String, Function> functions, ExecutorService executorService) {
+	public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
+			Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
+			ExecutorService executorService) {
 		this.strictVariables = strictVariables;
 		this.locale = locale;
 		this.filters = filters;
@@ -77,7 +76,7 @@ public class EvaluationContext {
 		this.functions = functions;
 		this.executorService = executorService;
 
-		this.inheritanceChain = new Stack<>();
+		this.inheritanceChain = new InheritanceChain(self);
 		this.scopes = new Stack<>();
 		this.attributeCache = new HashMap<>();
 
@@ -122,19 +121,21 @@ public class EvaluationContext {
 		return result;
 	}
 
-	public void pushInheritanceChain(PebbleTemplateImpl template) {
-		this.inheritanceChain.push(template);
+	public void ascendInheritanceChain() {
+		//inheritanceChain.pushAncestor(template);
+		inheritanceChain.ascend();
 	}
 
-	public void popInheritanceChain() {
-		this.inheritanceChain.pop();
+	public void descendInheritanceChain() {
+		inheritanceChain.descend();
+	}
+	
+	public PebbleTemplateImpl getParentTemplate() {
+		return inheritanceChain.getParent();
 	}
 
 	public PebbleTemplateImpl getChildTemplate() {
-		if (inheritanceChain.isEmpty()) {
-			return null;
-		}
-		return inheritanceChain.peek();
+		return inheritanceChain.getChild();
 	}
 
 	/**
@@ -193,10 +194,6 @@ public class EvaluationContext {
 	}
 
 	public void setParent(PebbleTemplateImpl parent) {
-		this.parent = parent;
-	}
-
-	public PebbleTemplateImpl getParent() {
-		return this.parent;
+		inheritanceChain.pushAncestor(parent);
 	}
 }

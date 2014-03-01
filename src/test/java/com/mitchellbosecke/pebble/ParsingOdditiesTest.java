@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.error.CompilationException;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
@@ -59,7 +58,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 		assertEquals("2012/July/1", writer.toString());
 	}
 	
-	@Test(expected = CompilationException.class)
+	@Test(expected = PebbleException.class)
 	public void testPositionalArgumentAfterNamedArguments() throws PebbleException, IOException, ParseException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);

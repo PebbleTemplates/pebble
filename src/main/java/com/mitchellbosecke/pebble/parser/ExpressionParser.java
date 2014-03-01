@@ -463,6 +463,9 @@ public class ExpressionParser {
 			}
 
 			if (argumentName == null) {
+				if(!namedArgs.isEmpty()){
+					throw new ParserException(null, "Positional arguments must be declared before any named arguments.");
+				}
 				positionalArgs.add(new PositionalArgumentNode(argumentValue));
 			} else {
 				namedArgs.add(new NamedArgumentNode(argumentName, argumentValue));
