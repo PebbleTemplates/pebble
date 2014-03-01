@@ -9,7 +9,6 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.AutoEscapeNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.PrintNode;
-import com.mitchellbosecke.pebble.node.TernaryExpression;
 import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.node.expression.FilterExpression;
@@ -17,6 +16,7 @@ import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
@@ -35,20 +35,21 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 	@Override
 	public void visit(PrintNode node) {
 		Expression<?> expression = node.getExpression();
-		if (!isSafe(expression)) {
-			node.setExpression(escape(expression));
-		}
-	}
 
-	@Override
-	public void visit(TernaryExpression node) {
-		Expression<?> left = node.getExpression2();
-		Expression<?> right = node.getExpression3();
-		if (!isSafe(left)) {
-			node.setExpression2(escape(left));
-		}
-		if (!isSafe(right)) {
-			node.setExpression3(escape(right));
+		if (expression instanceof TernaryExpression) {
+			TernaryExpression ternary = (TernaryExpression) expression;
+			Expression<?> left = ternary.getExpression2();
+			Expression<?> right = ternary.getExpression3();
+			if (!isSafe(left)) {
+				ternary.setExpression2(escape(left));
+			}
+			if (!isSafe(right)) {
+				ternary.setExpression3(escape(right));
+			}
+		} else {
+			if (!isSafe(expression)) {
+				node.setExpression(escape(expression));
+			}
 		}
 	}
 

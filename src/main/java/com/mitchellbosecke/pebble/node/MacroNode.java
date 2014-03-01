@@ -99,4 +99,8 @@ public class MacroNode extends AbstractRenderableNode {
 		return args;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 }

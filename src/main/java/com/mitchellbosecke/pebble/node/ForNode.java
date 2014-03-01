@@ -20,7 +20,6 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-import com.mitchellbosecke.pebble.utils.ObjectUtils;
 
 public class ForNode extends AbstractRenderableNode {
 
@@ -45,15 +44,15 @@ public class ForNode extends AbstractRenderableNode {
 	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
 			IOException {
 		Iterable<?> iterable = (Iterable<?>) iterableExpression.evaluate(self, context);
-		
-		if(iterable == null){
+
+		if (iterable == null) {
 			return;
 		}
 		Iterator<?> iterator = iterable.iterator();
 
 		context.pushScope();
 		Map<String, Object> loop = new HashMap<>();
-		int length = ObjectUtils.getIteratorSize(iterable);
+		int length = getIteratorSize(iterable);
 		int index = 0;
 		loop.put("index", index);
 		loop.put("length", length);
@@ -73,6 +72,19 @@ public class ForNode extends AbstractRenderableNode {
 
 		context.popScope();
 
+	}
+
+	private int getIteratorSize(Iterable<?> iterable) {
+		if (iterable == null) {
+			return 0;
+		}
+		Iterator<?> it = iterable.iterator();
+		int size = 0;
+		while (it.hasNext()) {
+			size++;
+			it.next();
+		}
+		return size;
 	}
 
 	@Override

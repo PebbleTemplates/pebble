@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.AutoEscapeNode;
 import com.mitchellbosecke.pebble.node.BlockNode;
 import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.ExtendsNode;
 import com.mitchellbosecke.pebble.node.FlushNode;
 import com.mitchellbosecke.pebble.node.ForNode;
 import com.mitchellbosecke.pebble.node.IfNode;
@@ -13,21 +14,12 @@ import com.mitchellbosecke.pebble.node.MacroNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.ParallelNode;
+import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.node.PrintNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.node.SetNode;
-import com.mitchellbosecke.pebble.node.TernaryExpression;
-import com.mitchellbosecke.pebble.node.TestInvocationExpression;
 import com.mitchellbosecke.pebble.node.TextNode;
-import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
-import com.mitchellbosecke.pebble.node.expression.ContextVariableExpression;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
-import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
-import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
-import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
-import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
-import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.Pair;
 
@@ -38,7 +30,7 @@ import com.mitchellbosecke.pebble.utils.Pair;
  * @author Mitchell
  * 
  */
-public abstract class AbstractNodeVisitor implements NodeVisitor {
+public class AbstractNodeVisitor implements NodeVisitor {
 
 	protected PebbleTemplateImpl template;
 
@@ -54,71 +46,9 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	public void visit(Node node) {
 	}
 
-	@Override
-	public void visit(BodyNode node) {
-		for (Node child : node.getChildren()) {
-			child.accept(this);
-		}
-	}
-
-	@Override
-	public void visit(IfNode node) {
-		for (Pair<Expression<?>, BodyNode> pairs : node.getConditionsWithBodies()) {
-			pairs.getLeft().accept(this);
-			pairs.getRight().accept(this);
-		}
-		if (node.getElseBody() != null) {
-			node.getElseBody().accept(this);
-		}
-	}
-
-	@Override
-	public void visit(ForNode node) {
-		node.getIterable().accept(this);
-		node.getBody().accept(this);
-		if (node.getElseBody() != null) {
-			node.getElseBody().accept(this);
-		}
-	}
-
-	@Override
-	public void visit(BinaryExpression<?> node) {
-		node.getLeftExpression().accept(this);
-		node.getRightExpression().accept(this);
-	}
-
-	@Override
-	public void visit(UnaryExpression node) {
-		node.getChildExpression().accept(this);
-	}
-
-	@Override
-	public void visit(ContextVariableExpression node) {
-
-	}
-
-	@Override
-	public void visit(FilterInvocationExpression node) {
-		node.getArgs().accept(this);
-	}
-
-	@Override
-	public void visit(FunctionOrMacroInvocationExpression node) {
-		node.getArguments().accept(this);
-	}
-
-	@Override
-	public void visit(GetAttributeExpression node) {
-		node.getNode().accept(this);
-	}
-
-	@Override
-	public void visit(NamedArgumentNode node) {
-		if (node.getValueExpression() != null) {
-			node.getValueExpression().accept(this);
-		}
-	}
-
+	/*
+	 * OVERLOADED NODES (keep alphabetized)
+	 */
 	@Override
 	public void visit(ArgumentsNode node) {
 		if (node.getNamedArgs() != null) {
@@ -134,25 +64,8 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	}
 
 	@Override
-	public void visit(ParentFunctionExpression node) {
-
-	}
-
-	@Override
-	public void visit(LiteralStringExpression node) {
-
-	}
-
-	@Override
-	public void visit(TernaryExpression node) {
-		node.getExpression1().accept(this);
-		node.getExpression2().accept(this);
-		node.getExpression3().accept(this);
-	}
-
-	@Override
-	public void visit(TestInvocationExpression node) {
-		node.getArgs().accept(this);
+	public void visit(AutoEscapeNode node) {
+		node.getBody().accept(this);
 	}
 
 	@Override
@@ -161,19 +74,40 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	}
 
 	@Override
-	public void visit(MacroNode node) {
-		node.getBody().accept(this);
-		node.getArgs().accept(this);
+	public void visit(BodyNode node) {
+		for (Node child : node.getChildren()) {
+			child.accept(this);
+		}
 	}
 
 	@Override
-	public void visit(AutoEscapeNode node) {
-		node.getBody().accept(this);
+	public void visit(ExtendsNode node) {
+		node.getParentExpression().accept(this);
 	}
 
 	@Override
 	public void visit(FlushNode node) {
 
+	}
+
+	@Override
+	public void visit(ForNode node) {
+		node.getIterable().accept(this);
+		node.getBody().accept(this);
+		if (node.getElseBody() != null) {
+			node.getElseBody().accept(this);
+		}
+	}
+
+	@Override
+	public void visit(IfNode node) {
+		for (Pair<Expression<?>, BodyNode> pairs : node.getConditionsWithBodies()) {
+			pairs.getLeft().accept(this);
+			pairs.getRight().accept(this);
+		}
+		if (node.getElseBody() != null) {
+			node.getElseBody().accept(this);
+		}
 	}
 
 	@Override
@@ -187,8 +121,26 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	}
 
 	@Override
+	public void visit(MacroNode node) {
+		node.getBody().accept(this);
+		node.getArgs().accept(this);
+	}
+
+	@Override
+	public void visit(NamedArgumentNode node) {
+		if (node.getValueExpression() != null) {
+			node.getValueExpression().accept(this);
+		}
+	}
+
+	@Override
 	public void visit(ParallelNode node) {
 		node.getBody().accept(this);
+	}
+
+	@Override
+	public void visit(PositionalArgumentNode node) {
+		node.getValueExpression().accept(this);
 	}
 
 	@Override

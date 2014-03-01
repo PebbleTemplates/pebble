@@ -37,6 +37,29 @@ public class CoreTestsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("yesyes", writer.toString());
 	}
+	
+	/**
+	 * Pebble parses numbers as longs so we want to make sure our
+	 * numerical tests will work even if we force it to take an int
+	 * as an input.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testEvenWithInteger() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if num is even %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("num", new Integer(2));
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullEven() throws PebbleException, IOException {
@@ -61,6 +84,29 @@ public class CoreTestsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("yesyes", writer.toString());
+	}
+	
+	/**
+	 * Pebble parses numbers as longs so we want to make sure our
+	 * numerical tests will work even if we force it to take an int
+	 * as an input.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testOddWithInteger() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if num is odd %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("num", new Integer(3));
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

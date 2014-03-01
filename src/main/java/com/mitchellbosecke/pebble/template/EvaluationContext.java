@@ -122,7 +122,6 @@ public class EvaluationContext {
 	}
 
 	public void ascendInheritanceChain() {
-		//inheritanceChain.pushAncestor(template);
 		inheritanceChain.ascend();
 	}
 

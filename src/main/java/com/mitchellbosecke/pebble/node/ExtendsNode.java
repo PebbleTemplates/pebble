@@ -37,4 +37,8 @@ public class ExtendsNode extends AbstractRenderableNode {
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	public Expression<?> getParentExpression(){
+		return parentExpression;
+	}
 }

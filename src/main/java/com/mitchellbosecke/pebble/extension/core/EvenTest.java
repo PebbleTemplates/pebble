@@ -17,8 +17,12 @@ public class EvenTest implements Test {
 		if (input == null) {
 			throw new IllegalArgumentException("Can not pass null value to \"even\" test.");
 		}
-
-		Long obj = (Long) input;
-		return (obj % 2 == 0);
+		Long num = null;
+		if(input instanceof Integer){
+			num = Long.valueOf((Integer)input);
+		}else{
+			num = (Long) input;
+		}
+		return (num % 2 == 0);
 	}
 }

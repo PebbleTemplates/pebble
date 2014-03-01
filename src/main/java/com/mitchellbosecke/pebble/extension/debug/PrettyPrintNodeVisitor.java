@@ -15,7 +15,6 @@ import com.mitchellbosecke.pebble.node.ParallelNode;
 import com.mitchellbosecke.pebble.node.PrintNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.node.SetNode;
-import com.mitchellbosecke.pebble.node.TernaryExpression;
 import com.mitchellbosecke.pebble.node.TestInvocationExpression;
 import com.mitchellbosecke.pebble.node.TextNode;
 import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
@@ -24,6 +23,7 @@ import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 
 public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
@@ -82,7 +82,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(BinaryExpression<?> node) {
 		write("binary");
 		level++;
@@ -90,7 +89,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(UnaryExpression node) {
 		write("unary");
 		level++;
@@ -98,7 +96,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(ContextVariableExpression node) {
 		write(String.format("context variable [%s]", node.getName()));
 		level++;
@@ -106,7 +103,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(FilterInvocationExpression node) {
 		write("filter");
 		level++;
@@ -114,7 +110,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(FunctionOrMacroInvocationExpression node) {
 		write("function or macro");
 		level++;
@@ -122,7 +117,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(GetAttributeExpression node) {
 		write("get attribute");
 		level++;
@@ -146,7 +140,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(ParentFunctionExpression node) {
 		write("parent function");
 		level++;
@@ -154,7 +147,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(TernaryExpression node) {
 		write("ternary");
 		level++;
@@ -162,7 +154,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 		level--;
 	}
 
-	@Override
 	public void visit(TestInvocationExpression node) {
 		write("test");
 		level++;
