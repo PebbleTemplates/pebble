@@ -9,7 +9,6 @@ import com.mitchellbosecke.pebble.node.ForNode;
 import com.mitchellbosecke.pebble.node.IfNode;
 import com.mitchellbosecke.pebble.node.ImportNode;
 import com.mitchellbosecke.pebble.node.IncludeNode;
-import com.mitchellbosecke.pebble.node.MacroNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.ParallelNode;
@@ -77,8 +76,6 @@ public interface NodeVisitor {
 	public abstract void visit(ImportNode node);
 
 	public abstract void visit(IncludeNode node);
-
-	public abstract void visit(MacroNode node);
 
 	public abstract void visit(ParallelNode node);
 

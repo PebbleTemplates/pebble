@@ -150,14 +150,11 @@ public class CoreExtension extends AbstractExtension {
 
 	@Override
 	public Map<String, Object> getGlobalVariables() {
-
 		return null;
 	}
 
 	public List<NodeVisitor> getNodeVisitors() {
-		List<NodeVisitor> visitors = new ArrayList<>();
-		visitors.add(new MacroNodeVisitor());
-		return visitors;
+		return null;
 	}
 
 }

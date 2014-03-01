@@ -10,8 +10,10 @@
 package com.mitchellbosecke.pebble.parser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -24,6 +26,7 @@ import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.node.TextNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.template.Macro;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 public class ParserImpl implements Parser {
@@ -52,7 +55,15 @@ public class ParserImpl implements Parser {
 	 * used to keep track of the name of the block that we are currently inside
 	 * of. This is purely just for the parent() function.
 	 */
-	private Stack<String> blockStack = new Stack<>();
+	private Stack<String> blockStack;
+
+	/**
+	 * Parser maintains all the macros found because it's important that a
+	 * template knows what templates it contains BEFORE it is evaluated for the
+	 * first time (because another template might import it and use it's
+	 * macros).
+	 */
+	private Set<Macro> macros;
 
 	/**
 	 * Constructor
@@ -74,6 +85,10 @@ public class ParserImpl implements Parser {
 		this.expressionParser = new ExpressionParser(this, engine.getBinaryOperators(), engine.getUnaryOperators());
 
 		this.stream = stream;
+
+		this.blockStack = new Stack<>();
+
+		this.macros = new HashSet<>();
 
 		BodyNode body = subparse();
 
@@ -220,6 +235,16 @@ public class ParserImpl implements Parser {
 	@Override
 	public void pushBlockStack(String blockName) {
 		blockStack.push(blockName);
+	}
+
+	@Override
+	public void addMacro(Macro macro) {
+		macros.add(macro);
+	}
+
+	@Override
+	public Set<Macro> getMacros() {
+		return macros;
 	}
 
 }

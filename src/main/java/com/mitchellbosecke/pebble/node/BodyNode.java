@@ -55,7 +55,6 @@ public class BodyNode extends AbstractRenderableNode {
 	static {
 		nodesAllowedInChildOutsideOfBlocks.add(SetNode.class);
 		nodesAllowedInChildOutsideOfBlocks.add(ImportNode.class);
-		nodesAllowedInChildOutsideOfBlocks.add(MacroNode.class);
 		nodesAllowedInChildOutsideOfBlocks.add(BlockNode.class);
 	}
 

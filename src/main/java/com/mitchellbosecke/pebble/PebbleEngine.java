@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -44,6 +45,7 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
+import com.mitchellbosecke.pebble.template.Macro;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
@@ -171,6 +173,7 @@ public class PebbleEngine {
 
 					PebbleTemplateImpl instance = null;
 					RootNode root = null;
+					Set<Macro> macros = null;
 
 					try {
 
@@ -183,10 +186,12 @@ public class PebbleEngine {
 						 */
 						String templateSource = IOUtils.toString(templateReader);
 
-						TokenStream tokenStream = getLexer().tokenize(templateSource, templateName);
-						root = getParser().parse(tokenStream);
-						
-						for(NodeVisitor visitor: nodeVisitors){
+						TokenStream tokenStream = lexer.tokenize(templateSource, templateName);
+						root = parser.parse(tokenStream);
+
+						macros = parser.getMacros();
+
+						for (NodeVisitor visitor : nodeVisitors) {
 							visitor.visit(root);
 						}
 
@@ -194,7 +199,7 @@ public class PebbleEngine {
 						compilationMutex.release();
 					}
 
-					instance = new PebbleTemplateImpl(self, root);
+					instance = new PebbleTemplateImpl(self, root, macros);
 					return instance;
 				}
 			});

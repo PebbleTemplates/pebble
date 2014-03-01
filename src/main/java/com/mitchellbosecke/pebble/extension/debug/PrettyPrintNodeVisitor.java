@@ -9,7 +9,6 @@ import com.mitchellbosecke.pebble.node.ForNode;
 import com.mitchellbosecke.pebble.node.IfNode;
 import com.mitchellbosecke.pebble.node.ImportNode;
 import com.mitchellbosecke.pebble.node.IncludeNode;
-import com.mitchellbosecke.pebble.node.MacroNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.Node;
 import com.mitchellbosecke.pebble.node.ParallelNode;
@@ -198,14 +197,6 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 	@Override
 	public void visit(IncludeNode node) {
 		write("include");
-		level++;
-		super.visit(node);
-		level--;
-	}
-
-	@Override
-	public void visit(MacroNode node) {
-		write(String.format("macro [%s]", node.getName()));
 		level++;
 		super.visit(node);
 		level--;

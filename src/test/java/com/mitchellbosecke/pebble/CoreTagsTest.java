@@ -19,7 +19,6 @@ import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -191,7 +190,7 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
 	}
 
-	@Test(expected = ParserException.class)
+	@Test(expected = PebbleException.class)
 	public void testMacrosWithSameName() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
@@ -237,15 +236,6 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleEngine pebble = new PebbleEngine(loader);
 		PebbleTemplate template = pebble
 				.getTemplate("{{ test('1') }}{% macro test(one,two) %}{{ one }}{{ two }}{% endmacro %}");
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("1", writer.toString());
-	}
-
-	@Test(expected = PebbleException.class)
-	public void testDuplicateMacro() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("template.macroDuplicate.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);

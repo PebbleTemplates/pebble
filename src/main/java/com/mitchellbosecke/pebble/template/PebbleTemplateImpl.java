@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -59,9 +60,17 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 	private final RootNode rootNode;
 
-	public PebbleTemplateImpl(PebbleEngine engine, RootNode rootNode) throws PebbleException {
+	public PebbleTemplateImpl(PebbleEngine engine, RootNode rootNode, Set<Macro> macros) throws PebbleException {
 		this.engine = engine;
 		this.rootNode = rootNode;
+
+		for (Macro macro : macros) {
+			if (this.macros.containsKey(macro.getName())) {
+				throw new PebbleException(null, "A template can not have more than one macro with the same name ["
+						+ macro.getName() + "]");
+			}
+			this.macros.put(macro.getName(), macro);
+		}
 	}
 
 	public void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException {
@@ -140,15 +149,6 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 		template.evaluate(writer, context);
 	}
 
-	/**
-	 * Registers a macro.
-	 * 
-	 * @param macro
-	 */
-	public void registerMacro(Macro macro) {
-		macros.put(macro.getName(), macro);
-	}
-
 	public boolean hasMacro(String macroName) {
 		return macros.containsKey(macroName);
 	}
@@ -223,7 +223,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 			Macro macro = macros.get(macroName);
 
 			Map<String, Object> namedArguments = args.getArgumentMap(this, context, macro);
-			result = macro.call(context, namedArguments);
+			result = macro.call(this, context, namedArguments);
 		}
 
 		// check imported templates

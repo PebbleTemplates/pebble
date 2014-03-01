@@ -45,6 +45,10 @@ public class ForNode extends AbstractRenderableNode {
 	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
 			IOException {
 		Iterable<?> iterable = (Iterable<?>) iterableExpression.evaluate(self, context);
+		
+		if(iterable == null){
+			return;
+		}
 		Iterator<?> iterator = iterable.iterator();
 
 		context.pushScope();
@@ -60,7 +64,7 @@ public class ForNode extends AbstractRenderableNode {
 			while (iterator.hasNext()) {
 				context.put(variableName, iterator.next());
 				body.render(self, writer, context);
-				context.put("index", ++index);
+				loop.put("index", ++index);
 			}
 
 		} else if (elseBody != null) {
