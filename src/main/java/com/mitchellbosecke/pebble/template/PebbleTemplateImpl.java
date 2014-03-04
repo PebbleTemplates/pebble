@@ -136,7 +136,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	public void includeTemplate(Writer writer, EvaluationContext context, String name) throws PebbleException,
 			IOException {
 		PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(name);
-		template.evaluate(writer, context);
+		EvaluationContext newContext = context.copyWithoutInheritanceChain(template);
+		template.evaluate(writer, newContext);
 	}
 
 	public boolean hasMacro(String macroName) {

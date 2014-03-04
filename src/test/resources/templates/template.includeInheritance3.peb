@@ -1,0 +1,5 @@
+{# 
+	used by 
+		- CoreTagsTest.includeInheritance
+#}
+{% block content %}fail{% endblock %}

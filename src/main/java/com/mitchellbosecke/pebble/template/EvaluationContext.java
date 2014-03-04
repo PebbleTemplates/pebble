@@ -40,12 +40,12 @@ public class EvaluationContext {
 	 * evaluation to look up the scope chain for variables. A macro is an
 	 * exception to this as it only has access to it's local variables.
 	 */
-	private final Stack<Scope> scopes;
+	private Stack<Scope> scopes;
 
 	/**
 	 * We cache the attributes of objects for performance purposes.
 	 */
-	private final Map<Class<?>, ClassAttributeCacheEntry> attributeCache;
+	private Map<Class<?>, ClassAttributeCacheEntry> attributeCache;
 
 	/**
 	 * The locale of this template. Will be used by LocaleAware filters,
@@ -66,6 +66,7 @@ public class EvaluationContext {
 	 */
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
+
 	public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
 			Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
 			ExecutorService executorService) {
@@ -75,13 +76,26 @@ public class EvaluationContext {
 		this.tests = tests;
 		this.functions = functions;
 		this.executorService = executorService;
-
 		this.inheritanceChain = new InheritanceChain(self);
 		this.scopes = new Stack<>();
 		this.attributeCache = new HashMap<>();
 
 		// add an initial scope
 		this.scopes.add(new Scope(null));
+	}
+
+	/**
+	 * Makes an exact copy of the evaluation context EXCEPT for the inheritance
+	 * chain. This is necessary for the "include" tag.
+	 * 
+	 * @return
+	 */
+	public EvaluationContext copyWithoutInheritanceChain(PebbleTemplateImpl self) {
+		EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
+				executorService);
+		result.setAttributeCache(attributeCache);
+		result.setScopes(scopes);
+		return result;
 	}
 
 	public void putAll(Map<String, Object> objects) {
@@ -128,7 +142,7 @@ public class EvaluationContext {
 	public void descendInheritanceChain() {
 		inheritanceChain.descend();
 	}
-	
+
 	public PebbleTemplateImpl getParentTemplate() {
 		return inheritanceChain.getParent();
 	}
@@ -194,5 +208,17 @@ public class EvaluationContext {
 
 	public void setParent(PebbleTemplateImpl parent) {
 		inheritanceChain.pushAncestor(parent);
+	}
+
+	public Stack<Scope> getScopes() {
+		return scopes;
+	}
+
+	public void setAttributeCache(Map<Class<?>, ClassAttributeCacheEntry> attributeCache) {
+		this.attributeCache = attributeCache;
+	}
+
+	public void setScopes(Stack<Scope> scopes) {
+		this.scopes = scopes;
 	}
 }

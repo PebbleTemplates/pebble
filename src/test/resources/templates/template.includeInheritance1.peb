@@ -1,0 +1,5 @@
+{# 
+	used by 
+		- CoreTagsTest.includeInheritance
+#}
+{% include 'template.includeInheritance2.peb' %}

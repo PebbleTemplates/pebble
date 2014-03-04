@@ -332,6 +332,21 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", writer.toString());
 	}
+	
+	/**
+	 * There was an issue when including a template that had it's own inheritance
+	 * chain.
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testIncludeInheritance() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.getTemplate("template.includeInheritance1.peb");
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("success", writer.toString());
+	}
 
 	@Test
 	public void testIncludeWithinBlock() throws PebbleException, IOException {
