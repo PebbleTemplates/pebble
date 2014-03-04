@@ -1,0 +1,5 @@
+{# 
+	used by 
+		- CoreTagsTest.skipGenerationMacro
+#}
+{% extends 'template.skipGenerationMacro3.peb' %}

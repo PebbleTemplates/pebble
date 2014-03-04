@@ -1,0 +1,6 @@
+{# 
+	used by 
+		- CoreTagsTest.skipGenerationMacro
+#}
+{% extends 'template.skipGenerationMacro2.peb' %}
+{% macro content() %}success{% endmacro %}

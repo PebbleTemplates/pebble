@@ -1,0 +1,5 @@
+{# 
+	used by 
+		- CoreTagsTest.skipGenerationBlock
+#}
+{% extends 'template.skipGenerationBlock3.peb' %}

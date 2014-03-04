@@ -33,6 +33,21 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 	}
 
+	/**
+	 * This ensures that block inheritance works properly even if it skips a
+	 * generation.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void skipGenerationBlock() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.getTemplate("template.skipGenerationBlock1.peb");
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("success", writer.toString());
+	}
+
 	@Test
 	public void testIf() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -188,6 +203,21 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
 		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
+	}
+	
+	/**
+	 * This ensures that macro inheritance works properly even if it skips a
+	 * generation.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void skipGenerationMacro() throws PebbleException, IOException {
+		PebbleTemplate template = pebble.getTemplate("template.skipGenerationMacro1.peb");
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("success", writer.toString());
 	}
 
 	@Test(expected = RuntimeException.class)

@@ -186,7 +186,7 @@ public class PebbleEngine {
 						TokenStream tokenStream = lexer.tokenize(templateSource, templateName);
 						root = parser.parse(tokenStream);
 
-						instance = new PebbleTemplateImpl(self, root);
+						instance = new PebbleTemplateImpl(self, root, templateName);
 
 						for (NodeVisitor visitor : nodeVisitors) {
 							visitor.setTemplate(instance);

@@ -1,0 +1,6 @@
+{# 
+	used by 
+		- CoreTagsTest.skipGenerationMacro
+#}
+{{ content() }}
+{% macro content() %}{% endmacro %}

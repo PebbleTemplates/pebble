@@ -42,11 +42,20 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	private final Map<String, Macro> macros = new HashMap<>();
 
+	/**
+	 * The root node of the AST to be rendered.
+	 */
 	private final RootNode rootNode;
 
-	public PebbleTemplateImpl(PebbleEngine engine, RootNode root) throws PebbleException {
+	/**
+	 * Name of template. Used to help with debugging.
+	 */
+	private final String name;
+
+	public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name) throws PebbleException {
 		this.engine = engine;
 		this.rootNode = root;
+		this.name = name;
 	}
 
 	public void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException {
@@ -240,6 +249,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 	public void setParent(EvaluationContext context, String parentName) throws PebbleException {
 		context.setParent((PebbleTemplateImpl) engine.getTemplate(parentName));
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }
