@@ -36,7 +36,7 @@ public class BlockNode extends AbstractRenderableNode {
 	@Override
 	public void render(final PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
 			IOException {
-		self.block(name, context, false, writer);
+		self.block(writer, context, name, false);
 	}
 
 	@Override

@@ -30,9 +30,9 @@ public class BlockFunctionExpression implements Expression<String> {
 	@Override
 	public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
 		Writer writer = new StringWriter();
-		String blockName = (String)blockNameExpression.evaluate(self, context);
+		String blockName = (String) blockNameExpression.evaluate(self, context);
 		try {
-			self.block(blockName, context, false, writer);
+			self.block(writer, context, blockName, false);
 		} catch (IOException e) {
 			throw new PebbleException(e, "Could not render block [" + blockName + "]");
 		}

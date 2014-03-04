@@ -38,7 +38,7 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 		if (functions.containsKey(functionName)) {
 			return applyFunction(self, context, functions.get(functionName), args);
 		}
-		return self.macro(functionName, context, args);
+		return self.macro(context, functionName, args, false);
 	}
 
 	private Object applyFunction(PebbleTemplateImpl self, EvaluationContext context, Function function,

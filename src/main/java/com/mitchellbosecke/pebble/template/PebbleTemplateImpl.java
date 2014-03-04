@@ -174,15 +174,15 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
-	public void block(String blockName, EvaluationContext context, boolean ignoreOverriden, Writer writer)
+	public void block(Writer writer, EvaluationContext context, String blockName, boolean ignoreOverriden)
 			throws PebbleException, IOException {
 
 		PebbleTemplateImpl childTemplate = context.getChildTemplate();
 
 		// check child
-		if (!ignoreOverriden && childTemplate != null && childTemplate.hasBlock(blockName)) {
+		if (!ignoreOverriden && childTemplate != null) {
 			context.descendInheritanceChain();
-			childTemplate.block(blockName, context, false, writer);
+			childTemplate.block(writer, context, blockName, false);
 			context.ascendInheritanceChain();
 
 			// check this template
@@ -193,25 +193,26 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 			// delegate to parent
 		} else {
 			if (context.getParentTemplate() != null) {
+				PebbleTemplateImpl parent = context.getParentTemplate();
 				context.ascendInheritanceChain();
-				context.getParentTemplate().block(blockName, context, true, writer);
+				parent.block(writer, context, blockName, true);
 				context.descendInheritanceChain();
 			}
 		}
 
 	}
 
-	public String macro(String macroName, EvaluationContext context, ArgumentsNode args) throws PebbleException {
+	public String macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden) throws PebbleException {
 		String result = null;
 		boolean found = false;
 
 		PebbleTemplateImpl childTemplate = context.getChildTemplate();
 
 		// check child template first
-		if (childTemplate != null && childTemplate.hasMacro(macroName)) {
+		if (!ignoreOverriden && childTemplate != null) {
 			found = true;
 			context.descendInheritanceChain();
-			result = childTemplate.macro(macroName, context, args);
+			result = childTemplate.macro(context, macroName, args, false);
 			context.ascendInheritanceChain();
 
 			// check current template
@@ -228,7 +229,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 			for (PebbleTemplateImpl template : context.getImportedTemplates()) {
 				if (template.hasMacro(macroName)) {
 					found = true;
-					result = template.macro(macroName, context, args);
+					result = template.macro(context, macroName, args, false);
 				}
 			}
 		}
@@ -236,8 +237,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 		// delegate to parent template
 		if (!found) {
 			if (context.getParentTemplate() != null) {
+				PebbleTemplateImpl parent = context.getParentTemplate();
 				context.ascendInheritanceChain();
-				result = context.getParentTemplate().macro(macroName, context, args);
+				result = parent.macro(context, macroName, args, true);
 				context.descendInheritanceChain();
 			} else {
 				throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));

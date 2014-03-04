@@ -32,7 +32,7 @@ public class MacroNode extends AbstractRenderableNode {
 	@Override
 	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
 			IOException {
-		self.macro(name, context, getArgs());
+		self.macro(context, name, getArgs(), false);
 	}
 
 	@Override
