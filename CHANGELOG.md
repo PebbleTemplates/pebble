@@ -1,3 +1,6 @@
+## v0.4.0-beta
+- No more code generation, all nodes of the AST are rendered during template evaluation phase.
+
 ## v0.3.0-beta
 - Autoescaping, more escaping strategies, autoescape tag, and raw filter.
 - Extensions can now provide node visitors to traverse the AST.
