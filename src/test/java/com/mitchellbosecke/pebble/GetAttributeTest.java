@@ -153,7 +153,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNullObjectWithStrictVariables() throws PebbleException, IOException {
+	public void testAttributeOfNullObjectWithStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		pebble.setStrictVariables(true);
@@ -167,7 +167,7 @@ public class GetAttributeTest extends AbstractTest {
 	}
 
 	@Test
-	public void testNullObjectWithoutStrictVariables() throws PebbleException, IOException {
+	public void testAttributeOfNullObjectWithoutStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		pebble.setStrictVariables(false);
