@@ -156,12 +156,30 @@ public class GetAttributeTest extends AbstractTest {
 	public void testNullObjectWithStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		pebble.setStrictVariables(true);
+
+		PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("object", null);
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+	}
+
+	@Test
+	public void testNullObjectWithoutStrictVariables() throws PebbleException, IOException {
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
 		pebble.setStrictVariables(false);
 
 		PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
+		Map<String, Object> context = new HashMap<>();
+		context.put("object", null);
 		Writer writer = new StringWriter();
-		template.evaluate(writer);
+		template.evaluate(writer, context);
+		
+		assertEquals("hello ", writer.toString());
 	}
 
 	@Test
