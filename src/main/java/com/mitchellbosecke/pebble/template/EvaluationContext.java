@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,11 +42,6 @@ public class EvaluationContext {
 	private Stack<Scope> scopes;
 
 	/**
-	 * We cache the attributes of objects for performance purposes.
-	 */
-	private Map<Class<?>, ClassAttributeCacheEntry> attributeCache;
-
-	/**
 	 * The locale of this template. Will be used by LocaleAware filters,
 	 * functions, etc.
 	 */
@@ -78,7 +72,6 @@ public class EvaluationContext {
 		this.executorService = executorService;
 		this.inheritanceChain = new InheritanceChain(self);
 		this.scopes = new Stack<>();
-		this.attributeCache = new HashMap<>();
 
 		// add an initial scope
 		this.scopes.add(new Scope(null));
@@ -93,7 +86,6 @@ public class EvaluationContext {
 	public EvaluationContext copyWithoutInheritanceChain(PebbleTemplateImpl self) {
 		EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
 				executorService);
-		result.setAttributeCache(attributeCache);
 		result.setScopes(scopes);
 		return result;
 	}
@@ -178,10 +170,6 @@ public class EvaluationContext {
 		return locale;
 	}
 
-	public Map<Class<?>, ClassAttributeCacheEntry> getAttributeCache() {
-		return attributeCache;
-	}
-
 	public Map<String, Test> getTests() {
 		return tests;
 	}
@@ -212,10 +200,6 @@ public class EvaluationContext {
 
 	public Stack<Scope> getScopes() {
 		return scopes;
-	}
-
-	public void setAttributeCache(Map<Class<?>, ClassAttributeCacheEntry> attributeCache) {
-		this.attributeCache = attributeCache;
 	}
 
 	public void setScopes(Stack<Scope> scopes) {

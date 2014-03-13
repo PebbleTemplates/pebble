@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -18,7 +19,6 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.ClassAttributeCacheEntry;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -44,63 +44,49 @@ public class GetAttributeExpression implements Expression<Object> {
 	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
 		Object object = node.evaluate(self, context);
 
-		if (object == null) {
-			if (context.isStrictVariables()) {
-				throw new NullPointerException(String.format("Can not get attribute [%s] of null object.",
-						attributeName));
-			} else {
-				return null;
-			}
-		}
-
-		// hold onto original name for error reporting
-		String originalAttributeName = attributeName;
-
-		Class<?> clazz = object.getClass();
-
 		Object result = null;
+		boolean found = false;
 
-		// first we check maps, as they are a bit of an exception
-		if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
-			return ((Map<?, ?>) object).get(attributeName);
-		}
+		if (object != null) {
 
-		Member member = null;
-		if (attributeName != null) {
-			// check if it's cached
-			ClassAttributeCacheEntry cacheEntry = context.getAttributeCache().get(clazz);
-			if (cacheEntry == null) {
-				cacheEntry = new ClassAttributeCacheEntry();
-				context.getAttributeCache().put(clazz, cacheEntry);
+			// first we check maps, as they are a bit of an exception
+			if (!found) {
+				if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
+					result = ((Map<?, ?>) object).get(attributeName);
+					found = true;
+				}
 			}
 
-			if (cacheEntry.hasAttribute(attributeName)) {
-				member = cacheEntry.getAttribute(attributeName);
-			} else {
-				member = findMember(object, attributeName);
-				cacheEntry.putAttribute(attributeName, member);
-			}
+			if (!found) {
+				Member member = null;
+				try {
+					member = findMember(object, attributeName);
+					if (member != null) {
 
+						if (member instanceof Method) {
+							result = ((Method) member).invoke(object);
+						} else if (member instanceof Field) {
+							result = ((Field) member).get(object);
+						}
+						found = true;
+					}
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+					throw new PebbleException(e, "Could not access attribute [" + attributeName + "]");
+				}
+
+			}
 		}
 
-		if (member == null && context.isStrictVariables()) {
+		if (!found && context.isStrictVariables()) {
 			throw new AttributeNotFoundException(
 					null,
 					String.format(
 							"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-							originalAttributeName, clazz));
-		}
-
-		try {
-			if (member instanceof Method) {
-				result = ((Method) member).invoke(object);
-			} else if (member instanceof Field) {
-				result = ((Field) member).get(object);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+							attributeName, object.getClass().getName()));
 		}
 		return result;
+
 	}
 
 	@Override
@@ -116,60 +102,65 @@ public class GetAttributeExpression implements Expression<Object> {
 		return attributeName;
 	}
 
-	private Member findMember(Object object, String attributeName) {
+	private Member findMember(Object object, String attributeName) throws IllegalAccessException {
 
 		Class<?> clazz = object.getClass();
 
-		Member member = null;
+		boolean found = false;
+		Member result = null;
 
 		// capitalize first letter of attribute for the following attempts
 		String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
 		// check get method
-		if (member == null) {
+		if (!found) {
 			try {
-				member = clazz.getMethod("get" + attributeCapitalized);
+				result = clazz.getMethod("get" + attributeCapitalized);
+				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// check is method
-		if (member == null) {
+		if (!found) {
 			try {
-				member = clazz.getMethod("is" + attributeCapitalized);
+				result = clazz.getMethod("is" + attributeCapitalized);
+				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// check has method
-		if (member == null) {
+		if (!found) {
 			try {
-				member = clazz.getMethod("has" + attributeCapitalized);
+				result = clazz.getMethod("has" + attributeCapitalized);
+				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// check if attribute is a public method
-		if (member == null) {
+		if (!found) {
 			try {
-				member = clazz.getMethod(attributeName);
+				result = clazz.getMethod(attributeName);
+				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
 		}
 
 		// public field
-		if (member == null) {
+		if (!found) {
 			try {
-				member = clazz.getField(attributeName);
+				result = clazz.getField(attributeName);
+				found = true;
 			} catch (NoSuchFieldException | SecurityException e) {
 			}
 		}
 
-		if (member != null) {
-			((AccessibleObject) member).setAccessible(true);
+		if (result != null) {
+			((AccessibleObject) result).setAccessible(true);
 		}
-
-		return member;
+		return result;
 	}
 
 }

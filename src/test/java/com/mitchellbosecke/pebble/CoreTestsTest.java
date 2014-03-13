@@ -224,8 +224,7 @@ public class CoreTestsTest extends AbstractTest {
 		assertEquals("no", writer.toString());
 	}
 
-	private static class Classroom {
-		@SuppressWarnings("unused")
+	public static class Classroom {
 		public static List<Object> students = new ArrayList<>();
 	}
 
