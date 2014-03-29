@@ -1,3 +1,6 @@
+## v1.0.0
+- Some code cleanup and fixed an incorrect unit test
+
 ## v0.4.0-beta
 - No more code generation, all nodes of the AST are rendered during template evaluation phase.
 
