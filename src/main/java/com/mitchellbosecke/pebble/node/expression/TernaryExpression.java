@@ -27,7 +27,7 @@ public class TernaryExpression implements Expression<Object> {
 
 	@Override
 	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		if (expression1.evaluate(self, context)) {
+		if (expression1.evaluate(self, context) == true) {
 			return expression2.evaluate(self, context);
 		} else {
 			return expression3.evaluate(self, context);
