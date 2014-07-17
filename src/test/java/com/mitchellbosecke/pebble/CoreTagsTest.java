@@ -1,8 +1,8 @@
 /*******************************************************************************
- * This file is part of Pebble.
+his file is part of Pebble.
  * 
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *  
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -157,6 +157,27 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("", writer.toString());
+	}
+	
+	@Test
+	public void testForWithArray() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% for user in users %}{{ user }}{% endfor %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		
+		String[] users = new String[3];
+		users[0] = "User 1";
+		users[1] = "User 2";
+		users[2] = "User 3";
+		context.put("users", users);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("User 1User 2User 3", writer.toString());
 	}
 
 	/**

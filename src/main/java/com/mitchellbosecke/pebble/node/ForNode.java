@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
@@ -42,11 +43,19 @@ public class ForNode extends AbstractRenderableNode {
 	@Override
 	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
 			IOException {
-		Iterable<?> iterable = (Iterable<?>) iterableExpression.evaluate(self, context);
+		Object iterableEvaluation = iterableExpression.evaluate(self, context);
+		Iterable<?> iterable = null;
 
-		if (iterable == null) {
+		if (iterableEvaluation == null) {
 			return;
 		}
+
+		// if it's a primitive array we must convert to an iterable ArrayList
+		if (iterableEvaluation.getClass().isArray()) {
+			iterableEvaluation = Lists.newArrayList((Object[]) iterableEvaluation);
+		}
+		iterable = (Iterable<?>) iterableEvaluation;
+
 		Iterator<?> iterator = iterable.iterator();
 
 		context.pushScope();
@@ -70,7 +79,6 @@ public class ForNode extends AbstractRenderableNode {
 		}
 
 		context.popScope();
-
 	}
 
 	private int getIteratorSize(Iterable<?> iterable) {
