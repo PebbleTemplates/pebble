@@ -10,6 +10,7 @@ package com.mitchellbosecke.pebble.node;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class ForNode extends AbstractRenderableNode {
 
 		// if it's a primitive array we must convert to an iterable ArrayList
 		if (iterableEvaluation.getClass().isArray()) {
-			iterableEvaluation = Lists.newArrayList((Object[]) iterableEvaluation);
+			iterableEvaluation = Arrays.asList((Object[]) iterableEvaluation);
 		}
 		iterable = (Iterable<?>) iterableEvaluation;
 
