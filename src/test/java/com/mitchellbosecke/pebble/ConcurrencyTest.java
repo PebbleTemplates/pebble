@@ -197,6 +197,7 @@ public class ConcurrencyTest extends AbstractTest {
 		}
 		// Wait for them all to complete
 		semaphore.acquire(numOfConcurrentThreads);
+		es.shutdown();
 		assertEquals(0, totalFailed.intValue());
 	}
 }
