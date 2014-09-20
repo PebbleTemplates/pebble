@@ -1,8 +1,8 @@
 /*******************************************************************************
 his file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- *  
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -38,7 +38,7 @@ public class CoreTagsTest extends AbstractTest {
 	/**
 	 * This ensures that block inheritance works properly even if it skips a
 	 * generation.
-	 * 
+	 *
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
@@ -65,6 +65,24 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("no", writer.toString());
+	}
+
+	@Test
+	public void testIfThenElse() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{% if alpha %}alpha{% elseif beta %}beta{% else %}gamma{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("alpha", true);
+		context.put("beta", false);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("alpha", writer.toString());
 	}
 
 	@Test
@@ -119,7 +137,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	/**
 	 * Issue #15
-	 * 
+	 *
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
@@ -158,7 +176,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("", writer.toString());
 	}
-	
+
 	@Test
 	public void testForWithArray() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -168,7 +186,7 @@ public class CoreTagsTest extends AbstractTest {
 		PebbleTemplate template = pebble.getTemplate(source);
 
 		Map<String, Object> context = new HashMap<>();
-		
+
 		String[] users = new String[3];
 		users[0] = "User 1";
 		users[1] = "User 2";
@@ -183,7 +201,7 @@ public class CoreTagsTest extends AbstractTest {
 	/**
 	 * There were compilation issues when having two for loops in the same
 	 * template due to the same variable name being declared twice.
-	 * 
+	 *
 	 * @throws PebbleException
 	 */
 	@Test
@@ -227,11 +245,11 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
 	}
-	
+
 	/**
 	 * This ensures that macro inheritance works properly even if it skips a
 	 * generation.
-	 * 
+	 *
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
@@ -270,7 +288,7 @@ public class CoreTagsTest extends AbstractTest {
 	/**
 	 * There was an issue where the second invokation of a macro did not have
 	 * access to the original arguments any more.
-	 * 
+	 *
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
@@ -298,7 +316,7 @@ public class CoreTagsTest extends AbstractTest {
 	/**
 	 * I was once writing macro output directly to writer which was preventing
 	 * output from being filtered. I have fixed this now.
-	 * 
+	 *
 	 * @throws PebbleException
 	 */
 	@Test
@@ -355,7 +373,7 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", writer.toString());
 	}
-	
+
 	/**
 	 * There was an issue when including a template that had it's own inheritance
 	 * chain.
@@ -382,7 +400,7 @@ public class CoreTagsTest extends AbstractTest {
 
 	/**
 	 * Issue #16
-	 * 
+	 *
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
@@ -399,7 +417,7 @@ public class CoreTagsTest extends AbstractTest {
 	/**
 	 * Ensures that when including a template it is safe to have conflicting
 	 * block names.
-	 * 
+	 *
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
