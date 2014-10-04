@@ -42,7 +42,9 @@ public class IfNode extends AbstractRenderableNode {
 		boolean satisfied = false;
 		for (Pair<Expression<?>, BodyNode> ifStatement : conditionsWithBodies) {
 
-			satisfied = (Boolean) ifStatement.getLeft().evaluate(self, context);
+			Object result = ifStatement.getLeft().evaluate(self, context);
+			if (result != null)
+				satisfied = (Boolean)result;
 
 			if (satisfied) {
 				ifStatement.getRight().render(self, writer, context);
