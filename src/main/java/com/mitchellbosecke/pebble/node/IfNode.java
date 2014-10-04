@@ -46,6 +46,7 @@ public class IfNode extends AbstractRenderableNode {
 
 			if (satisfied) {
 				ifStatement.getRight().render(self, writer, context);
+				break;
 			}
 		}
 
