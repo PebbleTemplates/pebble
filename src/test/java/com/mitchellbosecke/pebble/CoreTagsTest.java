@@ -8,7 +8,11 @@ his file is part of Pebble.
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,12 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class CoreTagsTest extends AbstractTest {
 
@@ -67,6 +66,30 @@ public class CoreTagsTest extends AbstractTest {
 		assertEquals("no", writer.toString());
 	}
 
+	/**
+	 * Issue #34
+	 *
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testIfThenElse() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{% if alpha %}alpha{% elseif beta %}beta{% else %}gamma{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("alpha", true);
+		context.put("beta", false);
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("alpha", writer.toString());
+	}
+
 	@Test
 	public void testIfThenElse() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -99,6 +122,40 @@ public class CoreTagsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("yes", writer.toString());
+	}
+
+	/**
+	 * Issue #37
+	 *
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testIfTestAgainstNullVar() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{% if foobar %}true{% else %}false{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		Writer writer = new StringWriter();
+
+		// "foobar" value not set at all yet
+
+		template.evaluate(writer, context);
+		assertEquals("false", writer.toString());
+
+		context.put("foobar", null);
+		writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("false", writer.toString());
+
+		context.put("foobar", true);
+		writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("true", writer.toString());
 	}
 
 	@Test
