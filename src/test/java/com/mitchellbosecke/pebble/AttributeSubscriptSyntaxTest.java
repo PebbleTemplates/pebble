@@ -22,7 +22,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class AttributeSubscriptSyntaxText extends AbstractTest {
+public class AttributeSubscriptSyntaxTest extends AbstractTest {
 	@Test
 	public void testAccessingValueWithSubscript() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
