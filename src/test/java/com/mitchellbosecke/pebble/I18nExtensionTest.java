@@ -37,7 +37,7 @@ public class I18nExtensionTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("Hello", writer.toString());
 	}
-	
+
 	@Test
 	public void testMessageWithNamedArguments() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -60,7 +60,7 @@ public class I18nExtensionTest extends AbstractTest {
 		PebbleTemplate template = pebble.getTemplate("{{ i18n('testMessages','greeting') }}");
 
 		Writer writer = new StringWriter();
-		template.evaluate(writer, new Locale("es_US"));
+		template.evaluate(writer, new Locale("es", "US"));
 		assertEquals("Hola", writer.toString());
 	}
 }

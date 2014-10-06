@@ -91,24 +91,6 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testIfThenElse() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(false);
-
-		String source = "{% if alpha %}alpha{% elseif beta %}beta{% else %}gamma{% endif %}";
-		PebbleTemplate template = pebble.getTemplate(source);
-
-		Map<String, Object> context = new HashMap<>();
-		context.put("alpha", true);
-		context.put("beta", false);
-
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("alpha", writer.toString());
-	}
-
-	@Test
 	public void testIfWithDirectProperty() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
@@ -125,7 +107,7 @@ public class CoreTagsTest extends AbstractTest {
 	}
 
 	/**
-	 * Issue #37
+	 * Issue #36
 	 *
 	 * @throws PebbleException
 	 * @throws IOException
