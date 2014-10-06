@@ -330,7 +330,8 @@ public class ExpressionParser {
 		while (true) {
 			current = stream.current();
 
-			if (current.test(Token.Type.PUNCTUATION, ".")) {
+			if (current.test(Token.Type.PUNCTUATION, ".")
+			    || current.test(Token.Type.PUNCTUATION, "[")) {
 
 				// a period represents getting an attribute from a variable or
 				// calling a method
@@ -417,7 +418,21 @@ public class ExpressionParser {
 
 			node = new GetAttributeExpression(node, token.getValue());
 
+		} else if (stream.current().test(Token.Type.PUNCTUATION, "[")) {
+			// skip over opening '[' bracket
+			stream.next();
+
+			// treat the string value inside the brackets just the same as we
+			// would an attribute name following a '.', except that the
+			// attribute name gathered this way is NOT held to the same naming
+			// restrictions (e.g. can include hyphens '-')
+			Token token = stream.expect(Token.Type.STRING);
+			node = new GetAttributeExpression(node, token.getValue());
+
+			// move past the closing ']' bracket
+			stream.expect(Token.Type.PUNCTUATION, "]");
 		}
+
 		return node;
 	}
 
