@@ -317,7 +317,8 @@ public class ExpressionParser {
 	/**
 	 * Determines if there is more to the provided expression than we originally
 	 * thought. We will look for the filter operator or perhaps we are getting
-	 * an attribute from a variable (ex. var.attribute).
+	 * an attribute from a variable (ex. var.attribute or var['attribute'] or
+	 * var.attribute(bar)).
 	 * 
 	 * @param node
 	 *            The expression that we have already discovered
@@ -330,12 +331,11 @@ public class ExpressionParser {
 		while (true) {
 			current = stream.current();
 
-			if (current.test(Token.Type.PUNCTUATION, ".")
-			    || current.test(Token.Type.PUNCTUATION, "[")) {
+			if (current.test(Token.Type.PUNCTUATION, ".") || current.test(Token.Type.PUNCTUATION, "[")) {
 
 				// a period represents getting an attribute from a variable or
 				// calling a method
-				node = parseSubscriptExpression(node);
+				node = parseBeanAttributeExpression(node);
 
 			} else if (current.test(Token.Type.PUNCTUATION, "(")) {
 
@@ -398,15 +398,17 @@ public class ExpressionParser {
 	}
 
 	/**
-	 * A subscript expression can either be an expression getting an attribute
-	 * from a variable, or calling a method from a variable.
+	 * A bean attribute expression can either be an expression getting an
+	 * attribute from a variable in the context, or calling a method from a variable.
+	 * 
+	 * Ex. foo.bar or foo['bar'] or foo.bar('baz')
 	 * 
 	 * @param node
 	 *            The expression parsed so far
 	 * @return NodeExpression The parsed subscript expression
 	 * @throws ParserException
 	 */
-	private Expression<?> parseSubscriptExpression(Expression<?> node) throws ParserException {
+	private Expression<?> parseBeanAttributeExpression(Expression<?> node) throws ParserException {
 		TokenStream stream = parser.getStream();
 
 		if (stream.current().test(Token.Type.PUNCTUATION, ".")) {
@@ -415,8 +417,16 @@ public class ExpressionParser {
 			stream.next();
 
 			Token token = stream.expect(Token.Type.NAME);
+			
+			ArgumentsNode args = null;
+			if(stream.current().test(Token.Type.PUNCTUATION, "(")){
+				args = this.parseArguments();
+				if(!args.getNamedArgs().isEmpty()){
+					throw new ParserException(null, "Can not use named arguments when calling a bean method");
+				}
+			}
 
-			node = new GetAttributeExpression(node, token.getValue());
+			node = new GetAttributeExpression(node, token.getValue(), args);
 
 		} else if (stream.current().test(Token.Type.PUNCTUATION, "[")) {
 			// skip over opening '[' bracket
@@ -477,7 +487,7 @@ public class ExpressionParser {
 			}
 
 			if (argumentName == null) {
-				if(!namedArgs.isEmpty()){
+				if (!namedArgs.isEmpty()) {
 					throw new ParserException(null, "Positional arguments must be declared before any named arguments.");
 				}
 				positionalArgs.add(new PositionalArgumentNode(argumentValue));

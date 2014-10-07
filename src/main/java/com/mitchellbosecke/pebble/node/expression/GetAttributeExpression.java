@@ -13,11 +13,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -33,10 +37,16 @@ public class GetAttributeExpression implements Expression<Object> {
 
 	private final Expression<?> node;
 	private final String attributeName;
+	private final ArgumentsNode args;
 
 	public GetAttributeExpression(Expression<?> node, String attributeName) {
+		this(node, attributeName, null);
+	}
+
+	public GetAttributeExpression(Expression<?> node, String attributeName, ArgumentsNode args) {
 		this.node = node;
 		this.attributeName = attributeName;
+		this.args = args;
 	}
 
 	@Override
@@ -49,7 +59,7 @@ public class GetAttributeExpression implements Expression<Object> {
 		if (object != null) {
 
 			// first we check maps, as they are a bit of an exception
-			if (!found) {
+			if (args == null) {
 				if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
 					result = ((Map<?, ?>) object).get(attributeName);
 					found = true;
@@ -57,13 +67,30 @@ public class GetAttributeExpression implements Expression<Object> {
 			}
 
 			if (!found) {
+
+				/*
+				 * turn args into an array of types and an array of values in
+				 * order to use them for our reflection calls
+				 */
+				List<Class<?>> parameterTypes = new ArrayList<>();
+				List<Object> parameterValues = new ArrayList<>();
+				if (this.args != null) {
+					for (PositionalArgumentNode arg : this.args.getPositionalArgs()) {
+						Object parameterValue = arg.getValueExpression().evaluate(self, context);
+						parameterTypes.add(parameterValue.getClass());
+						parameterValues.add(parameterValue);
+					}
+				}
+				Class<?>[] parameterTypesArray = parameterTypes.toArray(new Class[parameterTypes.size()]);
+				Object[] parameterValuesArray = parameterValues.toArray(new Object[parameterValues.size()]);
+
 				Member member = null;
 				try {
-					member = findMember(object, attributeName);
+					member = findMember(object, attributeName, parameterTypesArray);
 					if (member != null) {
 
 						if (member instanceof Method) {
-							result = ((Method) member).invoke(object);
+							result = ((Method) member).invoke(object, parameterValuesArray);
 						} else if (member instanceof Field) {
 							result = ((Field) member).get(object);
 						}
@@ -101,7 +128,12 @@ public class GetAttributeExpression implements Expression<Object> {
 		return attributeName;
 	}
 
-	private Member findMember(Object object, String attributeName) throws IllegalAccessException {
+	public ArgumentsNode getArgumentsNode() {
+		return args;
+	}
+
+	private Member findMember(Object object, String attributeName, Class<?>[] parameterTypes)
+			throws IllegalAccessException {
 
 		Class<?> clazz = object.getClass();
 
@@ -114,7 +146,7 @@ public class GetAttributeExpression implements Expression<Object> {
 		// check get method
 		if (!found) {
 			try {
-				result = clazz.getMethod("get" + attributeCapitalized);
+				result = clazz.getMethod("get" + attributeCapitalized, parameterTypes);
 				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
@@ -123,7 +155,7 @@ public class GetAttributeExpression implements Expression<Object> {
 		// check is method
 		if (!found) {
 			try {
-				result = clazz.getMethod("is" + attributeCapitalized);
+				result = clazz.getMethod("is" + attributeCapitalized, parameterTypes);
 				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
@@ -132,7 +164,7 @@ public class GetAttributeExpression implements Expression<Object> {
 		// check has method
 		if (!found) {
 			try {
-				result = clazz.getMethod("has" + attributeCapitalized);
+				result = clazz.getMethod("has" + attributeCapitalized, parameterTypes);
 				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
@@ -141,7 +173,7 @@ public class GetAttributeExpression implements Expression<Object> {
 		// check if attribute is a public method
 		if (!found) {
 			try {
-				result = clazz.getMethod(attributeName);
+				result = clazz.getMethod(attributeName, parameterTypes);
 				found = true;
 			} catch (NoSuchMethodException | SecurityException e) {
 			}
