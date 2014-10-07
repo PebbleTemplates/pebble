@@ -9,10 +9,10 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
@@ -47,7 +47,7 @@ public class EvaluationContext {
 	 * evaluation to look up the scope chain for variables. A macro is an
 	 * exception to this as it only has access to it's local variables.
 	 */
-	private Stack<Scope> scopes;
+	private LinkedList<Scope> scopes;
 
 	/**
 	 * The locale of this template. Will be used by LocaleAware filters,
@@ -68,7 +68,6 @@ public class EvaluationContext {
 	 */
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
-
 	public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
 			Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
 			ExecutorService executorService) {
@@ -79,7 +78,7 @@ public class EvaluationContext {
 		this.functions = functions;
 		this.executorService = executorService;
 		this.inheritanceChain = new InheritanceChain(self);
-		this.scopes = new Stack<>();
+		this.scopes = new LinkedList<>();
 
 		// add an initial scope
 		this.scopes.add(new Scope(null));
@@ -206,11 +205,11 @@ public class EvaluationContext {
 		inheritanceChain.pushAncestor(parent);
 	}
 
-	public Stack<Scope> getScopes() {
+	public LinkedList<Scope> getScopes() {
 		return scopes;
 	}
 
-	public void setScopes(Stack<Scope> scopes) {
+	public void setScopes(LinkedList<Scope> scopes) {
 		this.scopes = scopes;
 	}
 }

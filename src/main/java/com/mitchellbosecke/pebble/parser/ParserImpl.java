@@ -9,9 +9,9 @@
 package com.mitchellbosecke.pebble.parser;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.ParserException;
@@ -51,7 +51,7 @@ public class ParserImpl implements Parser {
 	 * used to keep track of the name of the block that we are currently inside
 	 * of. This is purely just for the parent() function.
 	 */
-	private Stack<String> blockStack;
+	private LinkedList<String> blockStack;
 
 	/**
 	 * Constructor
@@ -74,7 +74,7 @@ public class ParserImpl implements Parser {
 
 		this.stream = stream;
 
-		this.blockStack = new Stack<>();
+		this.blockStack = new LinkedList<>();
 
 		BodyNode body = subparse();
 

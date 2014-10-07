@@ -11,8 +11,8 @@ package com.mitchellbosecke.pebble.lexer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +48,7 @@ public class LexerImpl implements Lexer {
 	/**
 	 * Make sure every opening bracket has a closing bracket.
 	 */
-	private Stack<Pair<String, Integer>> brackets;
+	private LinkedList<Pair<String, Integer>> brackets;
 
 	/**
 	 * The different delimiters which change the state of the lexer. The regular
@@ -76,7 +76,7 @@ public class LexerImpl implements Lexer {
 	 * and to help discover errors in the template (ex. unclosed comments).
 	 */
 	private State state;
-	private Stack<State> states;
+	private LinkedList<State> states;
 
 	private static enum State {
 		DATA, EXECUTE, PRINT, COMMENT
@@ -140,8 +140,8 @@ public class LexerImpl implements Lexer {
 		this.cursor = 0;
 		this.end = source.length();
 		this.tokens = new ArrayList<>();
-		this.states = new Stack<>();
-		this.brackets = new Stack<>();
+		this.states = new LinkedList<>();
+		this.brackets = new LinkedList<>();
 
 		/*
 		 * loop through the entire source and apply different lexing methods

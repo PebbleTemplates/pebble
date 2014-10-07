@@ -9,8 +9,8 @@
 package com.mitchellbosecke.pebble.extension.escaper;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
@@ -28,9 +28,9 @@ import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
-	private final Stack<String> strategies = new Stack<>();
+	private final LinkedList<String> strategies = new LinkedList<>();
 
-	private final Stack<Boolean> active = new Stack<>();
+	private final LinkedList<Boolean> active = new LinkedList<>();
 
 	private final List<String> safeFilters = new ArrayList<>();
 
