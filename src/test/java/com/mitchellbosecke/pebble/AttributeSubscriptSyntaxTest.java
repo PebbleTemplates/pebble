@@ -12,6 +12,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,6 +24,8 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class AttributeSubscriptSyntaxTest extends AbstractTest {
+	
+	@SuppressWarnings("serial")
 	@Test
 	public void testAccessingValueWithSubscript() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -44,6 +47,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
 		assertEquals("Bob", writer.toString());
 	}
 
+	@SuppressWarnings("serial")
 	@Test
 	public void testAccessingNestedValuesWithSubscript() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -69,6 +73,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
 		assertEquals("Bob", writer.toString());
 	}
 
+	@SuppressWarnings("serial")
 	@Test
 	public void testMixAndMatchingAttributeSyntax() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
