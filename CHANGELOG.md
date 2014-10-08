@@ -1,5 +1,14 @@
+## v1.1.0
+- The ability to call bean methods that require arguments.
+- For loop now works with primitive arrays (i.e. no longer just Iterable objects).
+- Added "subscript syntax" support for accessing attributes.
+- Continuous integration with travis-ci.
+- Fixed NPE occurring in ternary expressions.
+- Fixed issue with if-then-else expressions
+- General code and testing improvements.
+
 ## v1.0.0
-- Some code cleanup and fixed an incorrect unit test
+- Some code cleanup and fixed an incorrect unit test.
 
 ## v0.4.0-beta
 - No more code generation, all nodes of the AST are rendered during template evaluation phase.

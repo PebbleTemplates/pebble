@@ -28,7 +28,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 /**
  * Used to get an attribute from an object. It will look up attributes in the
  * following order: map entry, get method, is method, has method, public method,
- * public field. It current only supports zero-argument methods.
+ * public field.
  * 
  * @author Mitchell
  * 
