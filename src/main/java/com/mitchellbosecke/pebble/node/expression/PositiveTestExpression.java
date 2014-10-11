@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.node.expression;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.TestInvocationExpression;
@@ -33,6 +34,10 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
 		if (test == null) {
 			throw new PebbleException(null, String.format(
 					"Test [%s] does not exist.", testName));
+		}
+
+		if (test instanceof LocaleAware) {
+			((LocaleAware) test).setLocale(context.getLocale());
 		}
 
 		Map<String, Object> namedArguments = args.getArgumentMap(self, context,

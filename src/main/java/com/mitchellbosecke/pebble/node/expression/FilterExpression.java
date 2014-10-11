@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -32,6 +33,10 @@ public class FilterExpression extends BinaryExpression<Object> {
 		if (filter == null) {
 			throw new PebbleException(null, String.format(
 					"Filter [%s] does not exist.", filterName));
+		}
+		
+		if (filter instanceof LocaleAware){
+			((LocaleAware) filter).setLocale(context.getLocale());
 		}
 
 		Map<String, Object> namedArguments = args.getArgumentMap(self, context,

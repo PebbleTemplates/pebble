@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
@@ -49,6 +50,11 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
 		Collections.addAll(arguments, args);
 
+		
+		if (function instanceof LocaleAware){
+			((LocaleAware) function).setLocale(context.getLocale());
+		}
+		
 		Map<String, Object> namedArguments = args.getArgumentMap(self, context,
 				function);
 		return function.execute(namedArguments);
