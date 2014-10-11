@@ -212,23 +212,6 @@ public class ConcurrencyTest extends AbstractTest {
 	}
 
 	@Test
-	public void testConcurrentEvaluationWithDifferingLocals()
-			throws InterruptedException, PebbleException, IOException {
-
-		String templateSource = "{{ 2000.234 | numberformat }}";
-		PebbleEngine engine = new PebbleEngine(new StringLoader());
-		final PebbleTemplate template = engine.getTemplate(templateSource);
-
-		Writer writer1 = new StringWriter();
-		template.evaluate(writer1, Locale.CANADA);
-		assertEquals("2,000.234", writer1.toString());
-
-		Writer writer2 = new StringWriter();
-		template.evaluate(writer2, Locale.GERMANY);
-		assertEquals("2.000,234", writer2.toString());
-	}
-
-	@Test
 	public void testConcurrentEvaluationWithDifferingLocals2()
 			throws InterruptedException, PebbleException {
 
