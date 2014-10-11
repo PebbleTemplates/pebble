@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Locale;
@@ -211,8 +210,14 @@ public class ConcurrencyTest extends AbstractTest {
 		assertEquals(0, totalFailed.intValue());
 	}
 
+	/**
+	 * Issue #40
+	 * 
+	 * @throws InterruptedException
+	 * @throws PebbleException
+	 */
 	@Test
-	public void testConcurrentEvaluationWithDifferingLocals2()
+	public void testConcurrentEvaluationWithDifferingLocals()
 			throws InterruptedException, PebbleException {
 
 		String templateSource = "{{ 2000.234 | numberformat }}";
