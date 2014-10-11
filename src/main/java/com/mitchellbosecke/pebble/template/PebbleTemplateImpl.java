@@ -51,13 +51,15 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	private final String name;
 
-	public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name) throws PebbleException {
+	public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name)
+			throws PebbleException {
 		this.engine = engine;
 		this.rootNode = root;
 		this.name = name;
 	}
 
-	public void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException {
+	public void buildContent(Writer writer, EvaluationContext context)
+			throws IOException, PebbleException {
 		rootNode.render(this, writer, context);
 		if (context.getParentTemplate() != null) {
 			PebbleTemplateImpl parent = context.getParentTemplate();
@@ -71,18 +73,21 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 		evaluate(writer, context);
 	}
 
-	public void evaluate(Writer writer, Locale locale) throws PebbleException, IOException {
+	public void evaluate(Writer writer, Locale locale) throws PebbleException,
+			IOException {
 		EvaluationContext context = initContext(locale);
 		evaluate(writer, context);
 	}
 
-	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
+	public void evaluate(Writer writer, Map<String, Object> map)
+			throws PebbleException, IOException {
 		EvaluationContext context = initContext(null);
 		context.putAll(map);
 		evaluate(writer, context);
 	}
 
-	public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
+	public void evaluate(Writer writer, Map<String, Object> map, Locale locale)
+			throws PebbleException, IOException {
 		EvaluationContext context = initContext(locale);
 		context.putAll(map);
 		evaluate(writer, context);
@@ -100,7 +105,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
-	public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
+	public void evaluate(Writer writer, EvaluationContext context)
+			throws PebbleException, IOException {
 		if (context.getExecutorService() != null) {
 			writer = new FutureWriter(writer, context.getExecutorService());
 		}
@@ -116,8 +122,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 */
 	private EvaluationContext initContext(Locale locale) {
 		locale = locale == null ? engine.getDefaultLocale() : locale;
-		EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
-				engine.getFilters(), engine.getTests(), engine.getFunctions(), engine.getExecutorService());
+		EvaluationContext context = new EvaluationContext(this,
+				engine.isStrictVariables(), locale, engine.getFilters(),
+				engine.getTests(), engine.getFunctions(),
+				engine.getExecutorService());
 		context.putAll(engine.getGlobalVariables());
 		return context;
 	}
@@ -128,14 +136,18 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 * @param template
 	 * @throws PebbleException
 	 */
-	public void importTemplate(EvaluationContext context, String name) throws PebbleException {
-		context.addImportedTemplate((PebbleTemplateImpl) engine.getTemplate(name));
+	public void importTemplate(EvaluationContext context, String name)
+			throws PebbleException {
+		context.addImportedTemplate((PebbleTemplateImpl) engine
+				.getTemplate(name));
 	}
 
-	public void includeTemplate(Writer writer, EvaluationContext context, String name) throws PebbleException,
-			IOException {
-		PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(name);
-		EvaluationContext newContext = context.copyWithoutInheritanceChain(template);
+	public void includeTemplate(Writer writer, EvaluationContext context,
+			String name) throws PebbleException, IOException {
+		PebbleTemplateImpl template = (PebbleTemplateImpl) engine
+				.getTemplate(name);
+		EvaluationContext newContext = context
+				.copyWithoutInheritanceChain(template);
 		template.evaluate(writer, newContext);
 	}
 
@@ -158,7 +170,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 	public void registerMacro(Macro macro) throws PebbleException {
 		if (macros.containsKey(macro.getName())) {
-			throw new PebbleException(null, "More than one macro can not share the same name: " + macro.getName());
+			throw new PebbleException(null,
+					"More than one macro can not share the same name: "
+							+ macro.getName());
 		}
 		this.macros.put(macro.getName(), macro);
 	}
@@ -174,8 +188,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
-	public void block(Writer writer, EvaluationContext context, String blockName, boolean ignoreOverriden)
-			throws PebbleException, IOException {
+	public void block(Writer writer, EvaluationContext context,
+			String blockName, boolean ignoreOverriden) throws PebbleException,
+			IOException {
 
 		PebbleTemplateImpl childTemplate = context.getChildTemplate();
 
@@ -202,7 +217,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 	}
 
-	public String macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden) throws PebbleException {
+	public String macro(EvaluationContext context, String macroName,
+			ArgumentsNode args, boolean ignoreOverriden) throws PebbleException {
 		String result = null;
 		boolean found = false;
 
@@ -220,7 +236,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 			found = true;
 			Macro macro = macros.get(macroName);
 
-			Map<String, Object> namedArguments = args.getArgumentMap(this, context, macro);
+			Map<String, Object> namedArguments = args.getArgumentMap(this,
+					context, macro);
 			result = macro.call(this, context, namedArguments);
 		}
 
@@ -242,14 +259,16 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 				result = parent.macro(context, macroName, args, true);
 				context.descendInheritanceChain();
 			} else {
-				throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));
+				throw new PebbleException(null, String.format(
+						"Function or Macro [%s] does not exist.", macroName));
 			}
 		}
 
 		return result;
 	}
 
-	public void setParent(EvaluationContext context, String parentName) throws PebbleException {
+	public void setParent(EvaluationContext context, String parentName)
+			throws PebbleException {
 		context.setParent((PebbleTemplateImpl) engine.getTemplate(parentName));
 	}
 

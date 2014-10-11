@@ -17,16 +17,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.LocaleAware;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 
-public class NumberFormatFilter implements Filter, LocaleAware {
-
-	private Locale locale;
-
-	@Override
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
+public class NumberFormatFilter implements Filter {
 
 	@Override
 	public List<String> getArgumentNames() {
@@ -41,6 +34,9 @@ public class NumberFormatFilter implements Filter, LocaleAware {
 			return null;
 		}
 		Number number = (Number) input;
+
+		EvaluationContext context = (EvaluationContext) args.get("_context");
+		Locale locale = context.getLocale();
 
 		if (args.get("format") != null) {
 			Format format = new DecimalFormat((String) args.get("format"));

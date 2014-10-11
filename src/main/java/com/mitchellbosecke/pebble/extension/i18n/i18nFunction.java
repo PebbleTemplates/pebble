@@ -14,16 +14,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 
-public class i18nFunction implements Function, LocaleAware {
-
-	private Locale locale;
-
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
+public class i18nFunction implements Function {
 
 	@Override
 	public List<String> getArgumentNames() {
@@ -37,6 +31,9 @@ public class i18nFunction implements Function, LocaleAware {
 	public Object execute(Map<String, Object> args) {
 		String basename = (String) args.get("bundle");
 		String key = (String) args.get("key");
+
+		EvaluationContext context = (EvaluationContext) args.get("_context");
+		Locale locale = context.getLocale();
 
 		ResourceBundle bundle = ResourceBundle.getBundle(basename, locale);
 

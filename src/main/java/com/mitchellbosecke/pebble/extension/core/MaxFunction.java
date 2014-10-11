@@ -24,7 +24,14 @@ public class MaxFunction implements Function {
 	@Override
 	public Object execute(Map<String, Object> args) {
 		Object min = null;
-		for (Object candidate : args.values()) {
+
+		int i = 0;
+
+		while (args.containsKey(String.valueOf(i))) {
+
+			Object candidate = args.get(String.valueOf(i));
+			i++;
+
 			if (min == null) {
 				min = candidate;
 				continue;
@@ -32,6 +39,7 @@ public class MaxFunction implements Function {
 			if (OperatorUtils.gt(candidate, min)) {
 				min = candidate;
 			}
+
 		}
 		return min;
 

@@ -12,7 +12,6 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -20,7 +19,8 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 public class FilterExpression extends BinaryExpression<Object> {
 
 	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context)
+			throws PebbleException {
 
 		FilterInvocationExpression filterInvocation = (FilterInvocationExpression) getRightExpression();
 		ArgumentsNode args = filterInvocation.getArgs();
@@ -30,15 +30,14 @@ public class FilterExpression extends BinaryExpression<Object> {
 		Filter filter = filters.get(filterInvocation.getFilterName());
 
 		if (filter == null) {
-			throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName));
+			throw new PebbleException(null, String.format(
+					"Filter [%s] does not exist.", filterName));
 		}
 
-		if (filter instanceof LocaleAware) {
-			((LocaleAware) filter).setLocale(context.getLocale());
-		}
+		Map<String, Object> namedArguments = args.getArgumentMap(self, context,
+				filter);
 
-		Map<String, Object> namedArguments = args.getArgumentMap(self, context, filter);
-
-		return filter.apply(getLeftExpression().evaluate(self, context), namedArguments);
+		return filter.apply(getLeftExpression().evaluate(self, context),
+				namedArguments);
 	}
 }

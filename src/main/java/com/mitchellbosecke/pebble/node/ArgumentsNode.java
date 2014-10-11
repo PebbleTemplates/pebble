@@ -25,7 +25,8 @@ public class ArgumentsNode implements Node {
 
 	private List<PositionalArgumentNode> positionalArgs;
 
-	public ArgumentsNode(List<PositionalArgumentNode> positionalArgs, List<NamedArgumentNode> namedArgs) {
+	public ArgumentsNode(List<PositionalArgumentNode> positionalArgs,
+			List<NamedArgumentNode> namedArgs) {
 		this.positionalArgs = positionalArgs;
 		this.namedArgs = namedArgs;
 	}
@@ -53,10 +54,12 @@ public class ArgumentsNode implements Node {
 	 * @return
 	 * @throws PebbleException
 	 */
-	public Map<String, Object> getArgumentMap(PebbleTemplateImpl self, EvaluationContext context,
+	public Map<String, Object> getArgumentMap(PebbleTemplateImpl self,
+			EvaluationContext context,
 			NamedArguments invocableWithNamedArguments) throws PebbleException {
 		Map<String, Object> result = new HashMap<>();
-		List<String> argumentNames = invocableWithNamedArguments.getArgumentNames();
+		List<String> argumentNames = invocableWithNamedArguments
+				.getArgumentNames();
 
 		if (argumentNames == null) {
 			if (positionalArgs == null || positionalArgs.isEmpty()) {
@@ -66,7 +69,8 @@ public class ArgumentsNode implements Node {
 			/* Some functions such as min and max use un-named varags */
 			else {
 				for (int i = 0; i < positionalArgs.size(); i++) {
-					result.put(String.valueOf(i), positionalArgs.get(i).getValueExpression().evaluate(self, context));
+					result.put(String.valueOf(i), positionalArgs.get(i)
+							.getValueExpression().evaluate(self, context));
 				}
 			}
 		} else {
@@ -74,7 +78,8 @@ public class ArgumentsNode implements Node {
 
 			if (positionalArgs != null) {
 				for (PositionalArgumentNode arg : positionalArgs) {
-					result.put(nameIterator.next(), arg.getValueExpression().evaluate(self, context));
+					result.put(nameIterator.next(), arg.getValueExpression()
+							.evaluate(self, context));
 				}
 			}
 
@@ -82,13 +87,19 @@ public class ArgumentsNode implements Node {
 				for (NamedArgumentNode arg : namedArgs) {
 					// check if user used an incorrect name
 					if (!argumentNames.contains(arg.getName())) {
-						throw new PebbleException(null, "The following named argument does not exist: " + arg.getName());
+						throw new PebbleException(null,
+								"The following named argument does not exist: "
+										+ arg.getName());
 					}
-					Object value = arg.getValueExpression() == null? null : arg.getValueExpression().evaluate(self, context);
+					Object value = arg.getValueExpression() == null ? null
+							: arg.getValueExpression().evaluate(self, context);
 					result.put(arg.getName(), value);
 				}
 			}
 		}
+
+		result.put("_self", self);
+		result.put("_context", context);
 
 		return result;
 	}

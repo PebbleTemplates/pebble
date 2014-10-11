@@ -31,13 +31,15 @@ public class ParallelNode extends AbstractRenderableNode {
 	}
 
 	@Override
-	public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
-			throws IOException, PebbleException {
+	public void render(final PebbleTemplateImpl self, Writer writer,
+			final EvaluationContext context) throws IOException,
+			PebbleException {
 
 		ExecutorService es = context.getExecutorService();
 
 		if (es == null) {
-			throw new PebbleException(null,
+			throw new PebbleException(
+					null,
 					"The parallel tag can not be used unless you provide an ExecutorService to the PebbleEngine.");
 		}
 

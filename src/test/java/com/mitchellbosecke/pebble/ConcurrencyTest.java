@@ -12,8 +12,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -45,7 +47,8 @@ public class ConcurrencyTest extends AbstractTest {
 	}
 
 	@Test
-	public void testConcurrentEvaluation() throws InterruptedException, PebbleException {
+	public void testConcurrentEvaluation() throws InterruptedException,
+			PebbleException {
 
 		String templateSource = "{{ test.a }}:{{ test.b }}:{{ test.c }}";
 		PebbleEngine engine = new PebbleEngine(new StringLoader());
@@ -54,10 +57,10 @@ public class ConcurrencyTest extends AbstractTest {
 		ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();
 
-		int numOfConcurrentThreads = 1000;
+		int numOfConcurrentThreads = 100;
 		final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
 
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			semaphore.acquire();
 			es.submit(new Runnable() {
 				@Override
@@ -75,8 +78,9 @@ public class ConcurrencyTest extends AbstractTest {
 						context.put("test", testObject);
 						template.evaluate(writer, context);
 
-						String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-								.append(c).toString();
+						String expectedResult = new StringBuilder().append(a)
+								.append(":").append(b).append(":").append(c)
+								.toString();
 
 						String actualResult = writer.toString();
 						if (!expectedResult.equals(actualResult)) {
@@ -100,6 +104,7 @@ public class ConcurrencyTest extends AbstractTest {
 		}
 		// Wait for them all to complete
 		semaphore.acquire(numOfConcurrentThreads);
+		es.shutdown();
 		assertEquals(0, totalFailed.intValue());
 	}
 
@@ -113,7 +118,8 @@ public class ConcurrencyTest extends AbstractTest {
 	 * @throws PebbleException
 	 */
 	@Test
-	public void testThreadSafeCompilationOfMultipleTemplates() throws InterruptedException, PebbleException {
+	public void testThreadSafeCompilationOfMultipleTemplates()
+			throws InterruptedException, PebbleException {
 		final PebbleEngine engine = new PebbleEngine();
 		final ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();
@@ -128,7 +134,8 @@ public class ConcurrencyTest extends AbstractTest {
 				@Override
 				public void run() {
 					try {
-						PebbleTemplate template = engine.getTemplate("templates/template.concurrent1.peb");
+						PebbleTemplate template = engine
+								.getTemplate("templates/template.concurrent1.peb");
 
 						int a = r.nextInt();
 						int b = r.nextInt();
@@ -141,8 +148,9 @@ public class ConcurrencyTest extends AbstractTest {
 						context.put("test", testObject);
 						template.evaluate(writer, context);
 
-						String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-								.append(c).toString();
+						String expectedResult = new StringBuilder().append(a)
+								.append(":").append(b).append(":").append(c)
+								.toString();
 
 						String actualResult = writer.toString();
 						if (!expectedResult.equals(actualResult)) {
@@ -161,7 +169,8 @@ public class ConcurrencyTest extends AbstractTest {
 				@Override
 				public void run() {
 					try {
-						PebbleTemplate template = engine.getTemplate("templates/template.concurrent2.peb");
+						PebbleTemplate template = engine
+								.getTemplate("templates/template.concurrent2.peb");
 
 						int a = r.nextInt();
 						int b = r.nextInt();
@@ -174,8 +183,9 @@ public class ConcurrencyTest extends AbstractTest {
 						context.put("test", testObject);
 						template.evaluate(writer, context);
 
-						String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-								.append(c).toString();
+						String expectedResult = new StringBuilder().append(a)
+								.append(":").append(b).append(":").append(c)
+								.toString();
 
 						String actualResult = writer.toString();
 						if (!expectedResult.equals(actualResult)) {
@@ -191,6 +201,87 @@ public class ConcurrencyTest extends AbstractTest {
 				}
 			});
 			cache.invalidateAll();
+			if (totalFailed.intValue() > 0) {
+				break;
+			}
+		}
+		// Wait for them all to complete
+		semaphore.acquire(numOfConcurrentThreads);
+		es.shutdown();
+		assertEquals(0, totalFailed.intValue());
+	}
+
+	@Test
+	public void testConcurrentEvaluationWithDifferingLocals()
+			throws InterruptedException, PebbleException, IOException {
+
+		String templateSource = "{{ 2000.234 | numberformat }}";
+		PebbleEngine engine = new PebbleEngine(new StringLoader());
+		final PebbleTemplate template = engine.getTemplate(templateSource);
+
+		Writer writer1 = new StringWriter();
+		template.evaluate(writer1, Locale.CANADA);
+		assertEquals("2,000.234", writer1.toString());
+
+		Writer writer2 = new StringWriter();
+		template.evaluate(writer2, Locale.GERMANY);
+		assertEquals("2.000,234", writer2.toString());
+	}
+
+	@Test
+	public void testConcurrentEvaluationWithDifferingLocals2()
+			throws InterruptedException, PebbleException {
+
+		String templateSource = "{{ 2000.234 | numberformat }}";
+		PebbleEngine engine = new PebbleEngine(new StringLoader());
+		final PebbleTemplate template = engine.getTemplate(templateSource);
+
+		ExecutorService es = Executors.newCachedThreadPool();
+		final AtomicInteger totalFailed = new AtomicInteger();
+
+		int numOfConcurrentThreads = 100;
+		final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
+
+		final String germanResult = "2.000,234";
+		final String canadianResult = "2,000.234";
+
+		for (int i = 0; i < 1000; i++) {
+			semaphore.acquire();
+			es.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+
+						final boolean isGerman = r.nextBoolean();
+
+						final Locale locale = isGerman ? Locale.GERMANY
+								: Locale.CANADA;
+
+						final StringWriter writer = new StringWriter();
+
+						template.evaluate(writer, locale);
+
+						final String expectedResult = isGerman ? germanResult
+								: canadianResult;
+
+						final String actualResult = writer.toString();
+
+						if (!expectedResult.equals(actualResult)) {
+							System.out.println(String.format(
+									"Locale: %s\nExpected: %s\nActual: %s\n",
+									locale.toString(), expectedResult,
+									actualResult));
+							totalFailed.incrementAndGet();
+						}
+
+					} catch (IOException | PebbleException e) {
+						e.printStackTrace();
+						totalFailed.incrementAndGet();
+					} finally {
+						semaphore.release();
+					}
+				}
+			});
 			if (totalFailed.intValue() > 0) {
 				break;
 			}

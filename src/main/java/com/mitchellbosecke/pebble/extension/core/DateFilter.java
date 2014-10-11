@@ -18,16 +18,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.LocaleAware;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 
-public class DateFilter implements Filter, LocaleAware {
-	
-	private Locale locale;
-	
-	@Override
-	public void setLocale(Locale locale){
-		this.locale = locale;
-	}
+public class DateFilter implements Filter {
 
 	@Override
 	public List<String> getArgumentNames() {
@@ -47,10 +40,15 @@ public class DateFilter implements Filter, LocaleAware {
 		DateFormat existingFormat = null;
 		DateFormat intendedFormat = null;
 
-		intendedFormat = new SimpleDateFormat((String) args.get("format"), locale);
+		EvaluationContext context = (EvaluationContext) args.get("_context");
+		Locale locale = context.getLocale();
+
+		intendedFormat = new SimpleDateFormat((String) args.get("format"),
+				locale);
 
 		if (args.get("existingFormat") != null) {
-			existingFormat = new SimpleDateFormat((String) args.get("existingFormat"), locale);
+			existingFormat = new SimpleDateFormat(
+					(String) args.get("existingFormat"), locale);
 			try {
 				date = existingFormat.parse((String) input);
 			} catch (ParseException e) {

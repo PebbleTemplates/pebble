@@ -55,12 +55,24 @@ public class EvaluationContext {
 	 */
 	private final Locale locale;
 
+	/**
+	 * All the available filters for this template.
+	 */
 	private final Map<String, Filter> filters;
 
+	/**
+	 * All the available tests for this template.
+	 */
 	private final Map<String, Test> tests;
 
+	/**
+	 * All the available functions for this template.
+	 */
 	private final Map<String, Function> functions;
 
+	/**
+	 * The user-provided ExecutorService (can be null).
+	 */
 	private final ExecutorService executorService;
 
 	/**
@@ -68,8 +80,20 @@ public class EvaluationContext {
 	 */
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
-	public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
-			Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
+	/**
+	 * Constructor
+	 * 
+	 * @param self
+	 * @param strictVariables
+	 * @param locale
+	 * @param filters
+	 * @param tests
+	 * @param functions
+	 * @param executorService
+	 */
+	public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables,
+			Locale locale, Map<String, Filter> filters,
+			Map<String, Test> tests, Map<String, Function> functions,
 			ExecutorService executorService) {
 		this.strictVariables = strictVariables;
 		this.locale = locale;
@@ -91,8 +115,8 @@ public class EvaluationContext {
 	 * @return
 	 */
 	public EvaluationContext copyWithoutInheritanceChain(PebbleTemplateImpl self) {
-		EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
-				executorService);
+		EvaluationContext result = new EvaluationContext(self, strictVariables,
+				getLocale(), filters, tests, functions, executorService);
 		result.setScopes(scopes);
 		return result;
 	}
@@ -128,8 +152,11 @@ public class EvaluationContext {
 		}
 
 		if (!found && isStrictVariables()) {
-			throw new AttributeNotFoundException(null, String.format(
-					"Variable [%s] does not exist and strict variables is set to true.", String.valueOf(key)));
+			throw new AttributeNotFoundException(
+					null,
+					String.format(
+							"Variable [%s] does not exist and strict variables is set to true.",
+							String.valueOf(key)));
 		}
 		return result;
 	}

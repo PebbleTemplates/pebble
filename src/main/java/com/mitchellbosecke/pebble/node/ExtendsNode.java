@@ -27,17 +27,19 @@ public class ExtendsNode extends AbstractRenderableNode {
 	}
 
 	@Override
-	public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
-			throws IOException, PebbleException {
-		self.setParent(context, (String) parentExpression.evaluate(self, context));
+	public void render(final PebbleTemplateImpl self, Writer writer,
+			final EvaluationContext context) throws IOException,
+			PebbleException {
+		self.setParent(context,
+				(String) parentExpression.evaluate(self, context));
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
 	}
-	
-	public Expression<?> getParentExpression(){
+
+	public Expression<?> getParentExpression() {
 		return parentExpression;
 	}
 }

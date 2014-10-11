@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.TestInvocationExpression;
@@ -21,7 +20,8 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 public class NegativeTestExpression extends BinaryExpression<Object> {
 
 	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context)
+			throws PebbleException {
 
 		TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
 		ArgumentsNode args = testInvocation.getArgs();
@@ -31,15 +31,14 @@ public class NegativeTestExpression extends BinaryExpression<Object> {
 		Test test = tests.get(testInvocation.getTestName());
 
 		if (test == null) {
-			throw new PebbleException(null, String.format("Test [%s] does not exist.", testName));
+			throw new PebbleException(null, String.format(
+					"Test [%s] does not exist.", testName));
 		}
 
-		if (test instanceof LocaleAware) {
-			((LocaleAware) test).setLocale(context.getLocale());
-		}
+		Map<String, Object> namedArguments = args.getArgumentMap(self, context,
+				test);
 
-		Map<String, Object> namedArguments = args.getArgumentMap(self, context, test);
-
-		return test.apply(getLeftExpression().evaluate(self, context), namedArguments) == false;
+		return test.apply(getLeftExpression().evaluate(self, context),
+				namedArguments) == false;
 	}
 }

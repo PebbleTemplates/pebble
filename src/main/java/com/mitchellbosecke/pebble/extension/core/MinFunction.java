@@ -24,7 +24,14 @@ public class MinFunction implements Function {
 	@Override
 	public Object execute(Map<String, Object> args) {
 		Object min = null;
-		for (Object candidate : args.values()) {
+
+		int i = 0;
+
+		while (args.containsKey(String.valueOf(i))) {
+
+			Object candidate = args.get(String.valueOf(i));
+			i++;
+
 			if (min == null) {
 				min = candidate;
 				continue;
