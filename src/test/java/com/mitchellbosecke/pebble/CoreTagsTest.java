@@ -492,6 +492,19 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("SUCCESS", writer.toString());
 	}
+	
+	@Test
+	public void testVerbatim() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleTemplate template = pebble.getTemplate("{% verbatim %}{{ foo }}{{ bar }}{% endverbatim %}");
+		Map<String, Object> context = new HashMap<>();
+		context.put("foo", "baz");
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("{{ foo }}{{ bar }}", writer.toString());
+	}
 
 	@Test(timeout = 3000)
 	public void testParallel() throws PebbleException, IOException {

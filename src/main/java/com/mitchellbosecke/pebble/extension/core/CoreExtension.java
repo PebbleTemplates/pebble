@@ -69,6 +69,8 @@ public class CoreExtension extends AbstractExtension {
 		parsers.add(new SetTokenParser());
 		parsers.add(new FlushTokenParser());
 		parsers.add(new ParallelTokenParser());
+		
+		// verbatim tag is implemented directly in the LexerImpl
 		return parsers;
 	}
 

@@ -70,6 +70,12 @@ public class LexerImpl implements Lexer {
 	private Pattern regexExecuteClose;
 	private Pattern regexCommentClose;
 	private Pattern regexStartDelimiters;
+	
+	/**
+	 * Regular expressions used to find "verbatim" and "endverbatim" tags.
+	 */
+	private Pattern regexVerbatimOpen;
+	private Pattern regexVerbatimClose;
 
 	/**
 	 * The state of the lexer is important so that we know what to expect next
@@ -112,6 +118,10 @@ public class LexerImpl implements Lexer {
 		// Generate a special regex used to find the next START delimiters
 		this.regexStartDelimiters = Pattern.compile(Pattern.quote(delimiterPrintOpen) + "|"
 				+ Pattern.quote(delimiterExecuteOpen) + "|" + Pattern.quote(delimiterCommentOpen));
+		
+		// generate regex to find the verbatim tag
+		this.regexVerbatimOpen = Pattern.compile("^\\s*verbatim\\s*" + Pattern.quote(delimiterExecuteClose) + "\\n?");
+		this.regexVerbatimClose = Pattern.compile(Pattern.quote(delimiterExecuteOpen) + "\\s*endverbatim\\s*" + Pattern.quote(delimiterExecuteClose)+ "\\n?");
 	}
 
 	/**
@@ -186,8 +196,9 @@ public class LexerImpl implements Lexer {
 	 * meaningful delimiters. We are currently looking for the next "open" or
 	 * "start" delimiter, ex. the opening comment delimiter, or the opening
 	 * variable delimiter.
+	 * @throws ParserException 
 	 */
-	private void lexData() {
+	private void lexData() throws ParserException {
 		// find the next start delimiter
 		Matcher matcher = regexStartDelimiters.matcher(source);
 		boolean match = matcher.find(cursor);
@@ -219,11 +230,23 @@ public class LexerImpl implements Lexer {
 			pushState(State.PRINT);
 
 		} else if (delimiterExecuteOpen.equals(token)) {
+			
+			// check for verbatim tag
+			Matcher verbatimOpenMatcher = regexVerbatimOpen.matcher(source.substring(cursor));
+			if (verbatimOpenMatcher.lookingAt()) {
+				
+				lexVerbatimData(verbatimOpenMatcher);
+				pushState(State.DATA);
+				
+			}else{
 
-			pushToken(Token.Type.EXECUTE_START);
-			pushState(State.EXECUTE);
+				pushToken(Token.Type.EXECUTE_START);
+				pushState(State.EXECUTE);
+			
+			}
 
 		}
+		
 
 	}
 
@@ -391,6 +414,37 @@ public class LexerImpl implements Lexer {
 		throw new ParserException(null, String.format("Unexpected character [%s]", source.charAt(cursor)),
 				lineNumber, filename);
 
+	}
+	
+	/**
+	 * Implementation of the "verbatim" tag
+	 * @throws ParserException 
+	 */
+	private void lexVerbatimData(Matcher verbatimOpenMatcher)
+			throws ParserException {
+
+		// move cursor past the opening verbatim tag
+		moveCursor(source.substring(cursor, cursor + verbatimOpenMatcher.end()));
+
+		// look for the "endverbatim" tag and storing everything between
+		// now and then into a TEXT node
+		Matcher verbatimCloseMatcher = regexVerbatimClose.matcher(source);
+
+		// check for EOF
+		if (!verbatimCloseMatcher.find(cursor)) {
+			throw new ParserException(null, "Unclosed verbatim tag.",
+					lineNumber, filename);
+		}
+		String verbatimText = source.substring(cursor,
+				verbatimCloseMatcher.start());
+		
+		// move cursor past the verbatim text
+		moveCursor(verbatimText);
+		
+		// move cursor past the "endverbatim" tag
+		moveCursor(source.substring(cursor, verbatimCloseMatcher.end()));
+		
+		pushToken(Type.TEXT, verbatimText);
 	}
 
 	/**

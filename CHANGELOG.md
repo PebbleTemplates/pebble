@@ -1,3 +1,7 @@
+## v1.2.0
+- Added verbatim tag
+- Removed the LocaleAware interface; filters/functions/tests now get the locale via the EvaluationContext that is passed as a "_context" argument in the argument map
+
 ## v1.1.0
 - The ability to call bean methods that require arguments.
 - For loop now works with primitive arrays (i.e. no longer just Iterable objects).
