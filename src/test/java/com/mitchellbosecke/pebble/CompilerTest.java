@@ -30,12 +30,12 @@ public class CompilerTest extends AbstractTest {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.getTemplate("hello {{ test }}");
+		PebbleTemplate template = pebble.getTemplate("hello {{ foo }}");
 		Map<String, Object> context = new HashMap<>();
-		context.put("test", "TEST");
+		context.put("foo", "BAR");
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
-		assertEquals(writer.toString(), "hello TEST");
+		assertEquals("hello BAR", writer.toString());
 	}
 
 	/**

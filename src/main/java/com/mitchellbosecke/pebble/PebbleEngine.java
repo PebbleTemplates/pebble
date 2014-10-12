@@ -46,7 +46,6 @@ import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-import com.mitchellbosecke.pebble.utils.IOUtils;
 
 /**
  * The main class used for compiling templates. The PebbleEngine is responsible
@@ -175,14 +174,7 @@ public class PebbleEngine {
 
 						Reader templateReader = loader.getReader(templateName);
 
-						/*
-						 * TODO: Pass the reader to the Lexer and just let the
-						 * lexer iterate through the characters without having
-						 * to use an intermediary string.
-						 */
-						String templateSource = IOUtils.toString(templateReader);
-
-						TokenStream tokenStream = lexer.tokenize(templateSource, templateName);
+						TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
 						root = parser.parse(tokenStream);
 
 						instance = new PebbleTemplateImpl(self, root, templateName);

@@ -22,11 +22,10 @@ import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
-@Ignore
 public class BenchmarkTest extends AbstractTest {
 
 	@Test
-	public void benchmark() throws PebbleException, IOException {
+	public void benchmarkEvaluations() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
 
@@ -35,10 +34,24 @@ public class BenchmarkTest extends AbstractTest {
 		context.put("object", new SimpleObject());
 
 		Writer writer = new StringWriter();
-		int numberOfEvaluations = 1000_000;
+		int numberOfEvaluations = 1_000_000;
 		
 		for (int i = 0; i < numberOfEvaluations; i++) {
 			template.evaluate(writer, context);
+		}
+	}
+	
+	@Test
+	public void benchmarkCompilations() throws PebbleException, IOException {
+		Loader stringLoader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(stringLoader);
+		pebble.setTemplateCache(null);
+
+		int numberOfCompilations = 1_000_000;
+		
+		PebbleTemplate template;
+		for (int i = 0; i < numberOfCompilations; i++) {
+			template = pebble.getTemplate("hello {{ object.firstName }} {{ object.lastName }}");
 		}
 	}
 

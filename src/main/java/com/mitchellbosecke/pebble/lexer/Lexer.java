@@ -8,11 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.lexer;
 
+import java.io.Reader;
+
 import com.mitchellbosecke.pebble.error.ParserException;
 
 public interface Lexer {
 
-	public TokenStream tokenize(String source, String name) throws ParserException;
+	public TokenStream tokenize(Reader templateReader, String name) throws ParserException;
 
 	/**
 	 * @return the commentOpenDelimiter
