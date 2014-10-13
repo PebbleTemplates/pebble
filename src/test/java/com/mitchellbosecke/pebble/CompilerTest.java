@@ -59,12 +59,5 @@ public class CompilerTest extends AbstractTest {
 		assertEquals("test", writer.toString());
 	}
 
-	@Test
-	public void testEscapeCharactersText() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("template.escapeCharactersInText.peb");
-		Map<String, Object> context = new HashMap<>();
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-	}
 
 }

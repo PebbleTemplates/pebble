@@ -31,11 +31,21 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 public class ParsingOdditiesTest extends AbstractTest {
 
 	@Test
+	public void testEscapeCharactersText() throws PebbleException, IOException {
+		PebbleTemplate template = pebble
+				.getTemplate("template.escapeCharactersInText.peb");
+		Map<String, Object> context = new HashMap<>();
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+	}
+
+	@Test
 	public void testExpressionInArguments() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.getTemplate("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+		PebbleTemplate template = pebble
+				.getTemplate("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -43,7 +53,8 @@ public class ParsingOdditiesTest extends AbstractTest {
 	}
 
 	@Test
-	public void testPositionalAndNamedArguments() throws PebbleException, IOException, ParseException {
+	public void testPositionalAndNamedArguments() throws PebbleException,
+			IOException, ParseException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -59,9 +70,10 @@ public class ParsingOdditiesTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("2012/July/1", writer.toString());
 	}
-	
+
 	@Test(expected = PebbleException.class)
-	public void testPositionalArgumentAfterNamedArguments() throws PebbleException, IOException, ParseException {
+	public void testPositionalArgumentAfterNamedArguments()
+			throws PebbleException, IOException, ParseException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -77,13 +89,15 @@ public class ParsingOdditiesTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("2012/July/1", writer.toString());
 	}
-	
+
 	@Test
-	public void testVariableNamePrefixedWithOperatorName() throws PebbleException, IOException {
+	public void testVariableNamePrefixedWithOperatorName()
+			throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.getTemplate("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
+		PebbleTemplate template = pebble
+				.getTemplate("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
 		Map<String, Object> context = new HashMap<>();
 		context.put("organization", "organization");
 		context.put("nothing", "nothing");
@@ -92,11 +106,13 @@ public class ParsingOdditiesTest extends AbstractTest {
 		context.put("istanbul", "istanbul");
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
-		assertEquals("organization nothing andy equalsy istanbul", writer.toString());
+		assertEquals("organization nothing andy equalsy istanbul",
+				writer.toString());
 	}
-	
+
 	@Test
-	public void testAttributeNamePrefixedWithOperatorName() throws PebbleException, IOException {
+	public void testAttributeNamePrefixedWithOperatorName()
+			throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -107,21 +123,23 @@ public class ParsingOdditiesTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("success", writer.toString());
 	}
-	
+
 	public static class Foo {
 		public String org;
-		
-		public Foo(String org){
+
+		public Foo(String org) {
 			this.org = org;
 		}
 	}
-	
-	@Test(expected=PebbleException.class)
-	public void testIncorrectlyNamedArgument() throws PebbleException, IOException {
+
+	@Test(expected = PebbleException.class)
+	public void testIncorrectlyNamedArgument() throws PebbleException,
+			IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
+		PebbleTemplate template = pebble
+				.getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -129,7 +147,8 @@ public class ParsingOdditiesTest extends AbstractTest {
 	}
 
 	@Test
-	public void testStringConstantWithLinebreak() throws PebbleException, IOException {
+	public void testStringConstantWithLinebreak() throws PebbleException,
+			IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -141,7 +160,8 @@ public class ParsingOdditiesTest extends AbstractTest {
 	}
 
 	@Test(expected = ParserException.class)
-	public void testStringWithDifferentQuotationMarks() throws PebbleException, IOException {
+	public void testStringWithDifferentQuotationMarks() throws PebbleException,
+			IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -153,7 +173,8 @@ public class ParsingOdditiesTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSingleQuoteWithinDoubleQuotes() throws PebbleException, IOException {
+	public void testSingleQuoteWithinDoubleQuotes() throws PebbleException,
+			IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 

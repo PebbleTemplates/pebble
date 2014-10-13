@@ -226,7 +226,7 @@ public class LexerImpl implements Lexer {
 		// token goes all the way to the end of the template.
 		if (!match) {
 			text = source.toString();
-			source.advance(text);
+			source.advance(source.length());
 		}else{
 			text = source.substring(matcher.start());
 			startDelimiterToken = source.substring(matcher.start(), matcher.end());
@@ -440,7 +440,7 @@ public class LexerImpl implements Lexer {
 		if (matcher.lookingAt()) {
 			token = source.substring(matcher.end());
 
-			source.advance(token);
+			source.advance(matcher.end());
 
 			char quotationType = token.charAt(0);
 

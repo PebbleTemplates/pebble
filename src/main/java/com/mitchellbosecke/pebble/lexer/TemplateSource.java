@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TemplateSource implements CharSequence {
 
@@ -23,8 +21,6 @@ public class TemplateSource implements CharSequence {
 	private int lineNumber = 1;
 	
 	private final String filename;
-
-	private Pattern newLine = Pattern.compile(Pattern.quote("\n"));
 
 	public TemplateSource(Reader reader, String filename) throws IOException {
 		this.value = copyReaderIntoCharArray(reader);
@@ -48,19 +44,6 @@ public class TemplateSource implements CharSequence {
 		return value.toCharArray();
 	}
 	
-	public void advance(int amount){
-		for(int index = 0; index < amount; index++){
-			char character = value[index];
-			if(character == '\n'){
-				this.lineNumber++;
-			}
-		}
-
-		// advance the index used to represent the start of the remaining
-		// un-tokenized source.
-		this.offset += amount;
-	}
-
 	/**
 	 * Moves the start index a distance equal to the length of the provided
 	 * text.
@@ -73,16 +56,17 @@ public class TemplateSource implements CharSequence {
 	 *            The text of which the length determines how far the cursor is
 	 *            moved
 	 */
-	public void advance(String text) {
-		// count newlines
-		Matcher matcher = newLine.matcher(text);
-		while (matcher.find()) {
-			this.lineNumber++;
+	public void advance(int amount){
+		for(int index = offset; index < amount; index++){
+			char character = value[index];
+			if(character == '\n'){
+				this.lineNumber++;
+			}
 		}
 
 		// advance the index used to represent the start of the remaining
 		// un-tokenized source.
-		this.offset += text.length();
+		this.offset += amount;
 	}
 	
 	public String substring(int start, int end){

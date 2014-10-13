@@ -1,0 +1,6 @@
+
+test
+test
+test
+{% error %} {# should throw error #}
+test
