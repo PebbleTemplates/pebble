@@ -40,15 +40,14 @@ public class LexerImpl implements Lexer {
 	/**
 	 * As we progress through the source we maintain
 	 * a second string which is the text that has yet
-	 * to be lexed.
+	 * to be tokenized.
 	 */
 	private String remainingSource;
 
 	/**
-	 * Variables for keeping track of where we are located
+	 * Must keep track of line number to help with error reporting
 	 */
 	private int lineNumber;
-	private int end;
 
 	/**
 	 * The list of tokens that we find and use to create a TokenStream
@@ -179,7 +178,6 @@ public class LexerImpl implements Lexer {
 
 		this.filename = name;
 		this.lineNumber = 1;
-		this.end = originalSource.length();
 		this.tokens = new ArrayList<>();
 		this.states = new LinkedList<>();
 		this.brackets = new LinkedList<>();
@@ -237,6 +235,7 @@ public class LexerImpl implements Lexer {
 		boolean match = matcher.find();
 
 		String text;
+		String startDelimiterToken = null;
 		
 		// if we didn't find another start delimiter, the text
 		// token goes all the way to the end of the template.
@@ -244,6 +243,7 @@ public class LexerImpl implements Lexer {
 			text = remainingSource;
 		}else{
 			text = remainingSource.substring(0, matcher.start());
+			startDelimiterToken = remainingSource.substring(matcher.start(), matcher.end());
 		}
 		advanceThroughSource(text);
 		
@@ -256,26 +256,23 @@ public class LexerImpl implements Lexer {
 		Token textToken = pushToken(Type.TEXT, text);
 		
 		if(match){
-			
-			// get the individual delimiter, we still don't know which one it was
-			String token = remainingSource.substring(matcher.start() - 1, matcher.end());
 
-			advanceThroughSource(token);
+			advanceThroughSource(startDelimiterToken);
 
 			checkForLeadingWhitespaceTrim(textToken);
 
-			if (delimiterCommentOpen.equals(token)) {
+			if (delimiterCommentOpen.equals(startDelimiterToken)) {
 
 				// we don't actually push any tokens for comments
 				pushState(State.COMMENT);
 
-			} else if (delimiterPrintOpen.equals(token)) {
+			} else if (delimiterPrintOpen.equals(startDelimiterToken)) {
 				
 				pushToken(Token.Type.PRINT_START);
 				pushState(State.PRINT);
 		
 
-			} else if (delimiterExecuteOpen.equals(token)) {
+			} else if (delimiterExecuteOpen.equals(startDelimiterToken)) {
 
 				// check for verbatim tag
 				Matcher verbatimStartMatcher = regexVerbatimStart.matcher(remainingSource);
@@ -528,6 +525,13 @@ public class LexerImpl implements Lexer {
 					lineNumber, filename);
 		}
 		String verbatimText = remainingSource.substring(0, verbatimEndMatcher.start());
+		String verbatimEndTag = remainingSource.substring(verbatimEndMatcher.start(), verbatimEndMatcher.end());
+
+		// move cursor past the verbatim text
+		advanceThroughSource(verbatimText);
+		
+		// move cursor past the "endverbatim" tag
+		advanceThroughSource(verbatimEndTag);
 		
 		// check if the verbatim start tag has a trailing whitespace trim
 		if(verbatimStartMatcher.group(0) != null){
@@ -538,17 +542,12 @@ public class LexerImpl implements Lexer {
 		if(verbatimEndMatcher.group(1) != null){
 			verbatimText = StringUtils.rtrim(verbatimText);
 		}
-
-		// move cursor past the verbatim text
-		advanceThroughSource(verbatimText);
 		
 		// check if the verbatim end tag had a trailing whitespace trim
 		if(verbatimEndMatcher.group(2) != null){
 			trimLeadingWhitespaceFromNextData = true;
 		}
 
-		// move cursor past the "endverbatim" tag
-		advanceThroughSource(remainingSource.substring(0, verbatimEndMatcher.end()));
 
 		pushToken(Type.TEXT, verbatimText);
 	}

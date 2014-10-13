@@ -22,6 +22,7 @@ import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
+@Ignore
 public class BenchmarkTest extends AbstractTest {
 
 	@Test
@@ -41,6 +42,12 @@ public class BenchmarkTest extends AbstractTest {
 		}
 	}
 	
+	/**
+	 * Average: 47 seconds
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
 	@Test
 	public void benchmarkCompilations() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
