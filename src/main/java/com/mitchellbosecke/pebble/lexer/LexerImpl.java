@@ -510,9 +510,6 @@ public class LexerImpl implements Lexer {
 		}
 		String verbatimText = source.substring(verbatimEndMatcher.start());
 
-		// move cursor past the verbatim text and end delimiter
-		source.advance(verbatimEndMatcher.end());
-		
 		// check if the verbatim start tag has a trailing whitespace trim
 		if(verbatimStartMatcher.group(0) != null){
 			verbatimText = StringUtils.ltrim(verbatimText);
@@ -527,6 +524,9 @@ public class LexerImpl implements Lexer {
 		if(verbatimEndMatcher.group(2) != null){
 			trimLeadingWhitespaceFromNextData = true;
 		}
+
+		// move cursor past the verbatim text and end delimiter
+		source.advance(verbatimEndMatcher.end());
 
 
 		pushToken(Type.TEXT, verbatimText);
