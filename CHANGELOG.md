@@ -1,6 +1,8 @@
 ## v1.2.0
 - Added verbatim tag
 - Removed the LocaleAware interface; filters/functions/tests now get the locale via the EvaluationContext that is passed as a "_context" argument in the argument map
+- Added a whitespace control character: "-"
+- Fixed bug where macros were being secretly evaluated one too many times
 
 ## v1.1.0
 - The ability to call bean methods that require arguments.
