@@ -22,7 +22,8 @@ import java.util.concurrent.Executors;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.AssertNotNullExtension;
+import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -346,12 +347,16 @@ public class CoreTagsTest extends AbstractTest {
     public void testFunctionInMacroInvokedTwice() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.addExtension(new AssertNotNullExtension());
-        PebbleTemplate template = pebble.getTemplate("{{ test('OK') }}{% macro test(input) %}{{ assertNotNull(input) }}{% endmacro %}");
+        
+        TestingExtension extension = new TestingExtension();
+        pebble.addExtension(extension);
+        PebbleTemplate template = pebble.getTemplate("{{ test() }}{% macro test() %}{{ invocationCountingFunction() }}{% endmacro %}");
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("OK", writer.toString());
+        
+        InvocationCountingFunction function = extension.getInvocationCountingFunction();
+        assertEquals(1, function.getInvocationCount());
     }
 
 	@Test
