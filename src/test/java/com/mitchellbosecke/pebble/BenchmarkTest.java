@@ -43,7 +43,7 @@ public class BenchmarkTest extends AbstractTest {
 	}
 	
 	/**
-	 * Average: 47 seconds
+	 * Average on Mitchell's home computer: 47 seconds
 	 * 
 	 * @throws PebbleException
 	 * @throws IOException
@@ -56,7 +56,8 @@ public class BenchmarkTest extends AbstractTest {
 
 		int numberOfCompilations = 1_000_000;
 		
-		PebbleTemplate template;
+		@SuppressWarnings("unused")
+		PebbleTemplate template = null;
 		for (int i = 0; i < numberOfCompilations; i++) {
 			template = pebble.getTemplate("hello {{ object.firstName }} {{ object.lastName }}");
 		}

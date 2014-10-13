@@ -23,7 +23,6 @@ import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
-import com.mitchellbosecke.pebble.utils.IOUtils;
 import com.mitchellbosecke.pebble.utils.Pair;
 import com.mitchellbosecke.pebble.utils.StringLengthComparator;
 import com.mitchellbosecke.pebble.utils.StringUtils;
@@ -34,20 +33,12 @@ public class LexerImpl implements Lexer {
 	 * Main components
 	 */
 	private final PebbleEngine engine;
-	private String filename;
-	private String originalSource;
 	
 	/**
-	 * As we progress through the source we maintain
-	 * a second string which is the text that has yet
-	 * to be tokenized.
+	 * As we progress through the source we maintain a string which is the text
+	 * that has yet to be tokenized.
 	 */
-	private String remainingSource;
-
-	/**
-	 * Must keep track of line number to help with error reporting
-	 */
-	private int lineNumber;
+	private TemplateSource source;
 
 	/**
 	 * The list of tokens that we find and use to create a TokenStream
@@ -95,6 +86,10 @@ public class LexerImpl implements Lexer {
 	 */
 	private State state;
 	private LinkedList<State> states;
+
+	private static enum State {
+		DATA, EXECUTE, PRINT, COMMENT
+	};
 	
 	/**
 	 * If we encountered an END delimiter that was preceded with a whitespace
@@ -104,22 +99,15 @@ public class LexerImpl implements Lexer {
 	 */
 	private boolean trimLeadingWhitespaceFromNextData = false;
 
-	private static enum State {
-		DATA, EXECUTE, PRINT, COMMENT
-	};
-
 	/**
 	 * Static regular expressions for names, numbers, and punctuation.
 	 */
-	private static final Pattern REGEX_NAME = Pattern
-			.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
-	private static final Pattern REGEX_NUMBER = Pattern
-			.compile("^[0-9]+(\\.[0-9]+)?");
+	private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
+	private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
 
 	// the negative lookbehind assertion is used to ignore escaped quotation
 	// marks
-	private static final Pattern REGEX_STRING = Pattern.compile(
-			"((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))", Pattern.DOTALL);
+	private static final Pattern REGEX_STRING = Pattern.compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))", Pattern.DOTALL);
 	private static final String PUNCTUATION = "()[]{}?:.,|=";
 
 	/**
@@ -137,7 +125,7 @@ public class LexerImpl implements Lexer {
 		this.regexExecuteClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?" + Pattern.quote(delimiterExecuteClose) + "\\n?");
 		this.regexCommentClose = Pattern.compile(Pattern.quote(delimiterCommentClose) + "\\n?");
 
-		// combination regex used to find the next START delimiters of any kind
+		// combination regex used to find the next START delimiter of any kind
 		this.regexStartDelimiters = Pattern.compile(Pattern.quote(delimiterPrintOpen) + "|"	+ Pattern.quote(delimiterExecuteOpen) + "|"	+ Pattern.quote(delimiterCommentOpen));
 
 		// regex to find the verbatim tag
@@ -164,11 +152,10 @@ public class LexerImpl implements Lexer {
 		
 		// standardize the character used for line breaks
 		try {
-			this.originalSource = IOUtils.toString(reader).replaceAll("(\r\n|\n)", "\n");
+			this.source  = new TemplateSource(reader, name);
 		} catch (IOException e) {
 			throw new ParserException(e, "Can not convert template Reader into a String");
 		}
-		this.remainingSource = this.originalSource;
 
 		/*
 		 * Start in a DATA state. This state basically means that we are NOT in
@@ -176,8 +163,6 @@ public class LexerImpl implements Lexer {
 		 */
 		this.state = State.DATA;
 
-		this.filename = name;
-		this.lineNumber = 1;
 		this.tokens = new ArrayList<>();
 		this.states = new LinkedList<>();
 		this.brackets = new LinkedList<>();
@@ -188,7 +173,7 @@ public class LexerImpl implements Lexer {
 		 * 
 		 * This will always start on lexData();
 		 */
-		while (this.remainingSource.length() > 0) {
+		while (this.source.length() > 0) {
 			switch (this.state) {
 			case DATA:
 				lexData();
@@ -215,10 +200,10 @@ public class LexerImpl implements Lexer {
 		if (!this.brackets.isEmpty()) {
 			String expected = brackets.pop().getLeft();
 			throw new ParserException(null, String.format("Unclosed \"%s\"",
-					expected), lineNumber, filename);
+					expected), source.getLineNumber(), source.getFilename());
 		}
 
-		return new TokenStream(tokens, filename);
+		return new TokenStream(tokens, source.getFilename());
 	}
 
 	/**
@@ -231,7 +216,7 @@ public class LexerImpl implements Lexer {
 	 */
 	private void lexData() throws ParserException {
 		// find the next start delimiter
-		Matcher matcher = regexStartDelimiters.matcher(remainingSource);
+		Matcher matcher = regexStartDelimiters.matcher(source);
 		boolean match = matcher.find();
 
 		String text;
@@ -240,12 +225,15 @@ public class LexerImpl implements Lexer {
 		// if we didn't find another start delimiter, the text
 		// token goes all the way to the end of the template.
 		if (!match) {
-			text = remainingSource;
+			text = source.toString();
+			source.advance(text);
 		}else{
-			text = remainingSource.substring(0, matcher.start());
-			startDelimiterToken = remainingSource.substring(matcher.start(), matcher.end());
+			text = source.substring(matcher.start());
+			startDelimiterToken = source.substring(matcher.start(), matcher.end());
+			
+			// advance to after the start delimiter
+			source.advance(matcher.end());
 		}
-		advanceThroughSource(text);
 		
 		// trim leading whitespace from this text if we previously
 		// encountered the appropriate whitespace trim character
@@ -256,8 +244,6 @@ public class LexerImpl implements Lexer {
 		Token textToken = pushToken(Type.TEXT, text);
 		
 		if(match){
-
-			advanceThroughSource(startDelimiterToken);
 
 			checkForLeadingWhitespaceTrim(textToken);
 
@@ -275,7 +261,7 @@ public class LexerImpl implements Lexer {
 			} else if (delimiterExecuteOpen.equals(startDelimiterToken)) {
 
 				// check for verbatim tag
-				Matcher verbatimStartMatcher = regexVerbatimStart.matcher(remainingSource);
+				Matcher verbatimStartMatcher = regexVerbatimStart.matcher(source);
 				if (verbatimStartMatcher.lookingAt()) {
 
 					lexVerbatimData(verbatimStartMatcher);
@@ -303,13 +289,12 @@ public class LexerImpl implements Lexer {
 		// check for the trailing whitespace trim character 
 		checkForTrailingWhitespaceTrim();
 		
-		Matcher matcher = regexExecuteClose.matcher(remainingSource);
+		Matcher matcher = regexExecuteClose.matcher(source);
 
 		// check if we are at the execute closing delimiter
 		if (brackets.isEmpty() && matcher.lookingAt()) {
-			String token = remainingSource.substring(0, matcher.end());
 			pushToken(Token.Type.EXECUTE_END, delimiterExecuteClose);
-			advanceThroughSource(token);
+			source.advance(matcher.end());
 			popState();
 		} else {
 			lexExpression();
@@ -326,13 +311,12 @@ public class LexerImpl implements Lexer {
 		// check for the trailing whitespace trim character 
 		checkForTrailingWhitespaceTrim();
 		
-		Matcher matcher = regexPrintClose.matcher(remainingSource);
+		Matcher matcher = regexPrintClose.matcher(source);
 
 		// check if we are at the print closing delimiter
 		if (brackets.isEmpty() && matcher.lookingAt()) {
-			String token = remainingSource.substring(0, matcher.end());
 			pushToken(Token.Type.PRINT_END, delimiterPrintClose);
-			advanceThroughSource(token);
+			source.advance(matcher.end());
 			popState();
 		} else {
 			lexExpression();
@@ -350,19 +334,19 @@ public class LexerImpl implements Lexer {
 	private void lexComment() throws ParserException {
 
 		// all we need to do is find the end of the comment.
-		Matcher matcher = regexCommentClose.matcher(remainingSource);
+		Matcher matcher = regexCommentClose.matcher(source);
 
 		boolean match = matcher.find(0);
 		if (!match) {
-			throw new ParserException(null, "Unclosed comment.", lineNumber,
-					filename);
+			throw new ParserException(null, "Unclosed comment.", source.getLineNumber(),
+					source.getFilename());
 		}
 		
 		/* 
 		 * check if the commented ended with the whitespace trim character
 		 * by reversing the comment and performing a regular forward regex search.
 		 */
-		String comment = remainingSource.substring(0, matcher.start());
+		String comment = source.substring(matcher.start());
 		String reversedComment = new StringBuilder(comment).reverse().toString();
 		Matcher whitespaceTrimMatcher = regexLeadingWhitespaceTrim.matcher(reversedComment);
 		if (whitespaceTrimMatcher.lookingAt()) {
@@ -370,7 +354,7 @@ public class LexerImpl implements Lexer {
 		}
 		
 		// move cursor to end of comment (and closing delimiter)
-		advanceThroughSource(remainingSource.substring(0, matcher.end()));
+		source.advance(matcher.end());
 		popState();
 	}
 
@@ -385,53 +369,53 @@ public class LexerImpl implements Lexer {
 
 		// whitespace
 		Pattern whitespace = Pattern.compile("^\\s+");
-		Matcher matcher = whitespace.matcher(remainingSource);
+		Matcher matcher = whitespace.matcher(source);
 		if (matcher.lookingAt()) {
-			advanceThroughSource(remainingSource.substring(0, matcher.end()));
+			source.advance(matcher.end());
 		}
 
 		// operators
 		Pattern operators = getOperatorRegex();
-		matcher = operators.matcher(remainingSource);
+		matcher = operators.matcher(source);
 		if (matcher.lookingAt()) {
-			token = remainingSource.substring(0, matcher.end());
+			token = source.substring(matcher.end());
 			pushToken(Token.Type.OPERATOR, token);
-			advanceThroughSource(token);
+			source.advance(matcher.end());
 			return;
 		}
 
 		// names
-		matcher = REGEX_NAME.matcher(remainingSource);
+		matcher = REGEX_NAME.matcher(source);
 		if (matcher.lookingAt()) {
-			token = remainingSource.substring(0, matcher.end());
+			token = source.substring(matcher.end());
 			pushToken(Token.Type.NAME, token);
-			advanceThroughSource(token);
+			source.advance(matcher.end());
 			return;
 		}
 
 		// numbers
-		matcher = REGEX_NUMBER.matcher(remainingSource);
+		matcher = REGEX_NUMBER.matcher(source);
 		if (matcher.lookingAt()) {
-			token = remainingSource.substring(0, matcher.end());
+			token = source.substring(matcher.end());
 			pushToken(Token.Type.NUMBER, token);
-			advanceThroughSource(token);
+			source.advance(matcher.end());
 			return;
 		}
 
 		// punctuation
-		if (PUNCTUATION.indexOf(remainingSource.charAt(0)) >= 0) {
-			String character = String.valueOf(remainingSource.charAt(0));
+		if (PUNCTUATION.indexOf(source.charAt(0)) >= 0) {
+			String character = String.valueOf(source.charAt(0));
 
 			// opening bracket
 			if ("([{".indexOf(character) >= 0) {
-				brackets.push(new Pair<String, Integer>(character, lineNumber));
+				brackets.push(new Pair<String, Integer>(character, source.getLineNumber()));
 			}
 
 			// closing bracket
 			else if (")]}".indexOf(character) >= 0) {
 				if (brackets.isEmpty())
 					throw new ParserException(null, "Unexpected \"" + character
-							+ "\"", lineNumber, filename);
+							+ "\"", source.getLineNumber(), source.getFilename());
 				else {
 					HashMap<String, String> validPairs = new HashMap<>();
 					validPairs.put("(", ")");
@@ -441,22 +425,22 @@ public class LexerImpl implements Lexer {
 					String expected = validPairs.get(lastBracket);
 					if (!expected.equals(character)) {
 						throw new ParserException(null, "Unclosed \""
-								+ expected + "\"", lineNumber, filename);
+								+ expected + "\"", source.getLineNumber(), source.getFilename());
 					}
 				}
 			}
 
 			pushToken(Token.Type.PUNCTUATION, character);
-			advanceThroughSource(character);
+			source.advance(1);
 			return;
 		}
 
 		// strings
-		matcher = REGEX_STRING.matcher(remainingSource);
+		matcher = REGEX_STRING.matcher(source);
 		if (matcher.lookingAt()) {
-			token = remainingSource.substring(0, matcher.end());
+			token = source.substring(matcher.end());
 
-			advanceThroughSource(token);
+			source.advance(token);
 
 			char quotationType = token.charAt(0);
 
@@ -476,28 +460,28 @@ public class LexerImpl implements Lexer {
 
 		// we should have found something and returned by this point
 		throw new ParserException(null, String.format(
-				"Unexpected character [%s]", remainingSource.charAt(0)),
-				lineNumber, filename);
+				"Unexpected character [%s]", source.charAt(0)),
+				source.getLineNumber(), source.getFilename());
 
 	}
 
 	private void checkForLeadingWhitespaceTrim(Token leadingToken) {
 		
 		Matcher whitespaceTrimMatcher = regexLeadingWhitespaceTrim
-				.matcher(remainingSource);
+				.matcher(source);
 
 		if (whitespaceTrimMatcher.lookingAt()) {
 			if (leadingToken != null) {
 				leadingToken
 						.setValue(StringUtils.rtrim(leadingToken.getValue()));
 			}
-			advanceThroughSource(remainingSource.substring(0, whitespaceTrimMatcher.end()));
+			source.advance(whitespaceTrimMatcher.end());
 		}
 		
 	}
 	
 	private void checkForTrailingWhitespaceTrim() {
-		Matcher whitespaceTrimMatcher = regexTrailingWhitespaceTrim.matcher(remainingSource);
+		Matcher whitespaceTrimMatcher = regexTrailingWhitespaceTrim.matcher(source);
 
 		if (whitespaceTrimMatcher.lookingAt()) {
 			this.trimLeadingWhitespaceFromNextData = true;
@@ -513,25 +497,21 @@ public class LexerImpl implements Lexer {
 			throws ParserException {
 
 		// move cursor past the opening verbatim tag
-		advanceThroughSource(remainingSource.substring(0, verbatimStartMatcher.end()));
+		source.advance(verbatimStartMatcher.end());
 
 		// look for the "endverbatim" tag and storing everything between
 		// now and then into a TEXT node
-		Matcher verbatimEndMatcher = regexVerbatimEnd.matcher(remainingSource);
+		Matcher verbatimEndMatcher = regexVerbatimEnd.matcher(source);
 
 		// check for EOF
 		if (!verbatimEndMatcher.find()) {
 			throw new ParserException(null, "Unclosed verbatim tag.",
-					lineNumber, filename);
+					source.getLineNumber(), source.getFilename());
 		}
-		String verbatimText = remainingSource.substring(0, verbatimEndMatcher.start());
-		String verbatimEndTag = remainingSource.substring(verbatimEndMatcher.start(), verbatimEndMatcher.end());
+		String verbatimText = source.substring(verbatimEndMatcher.start());
 
-		// move cursor past the verbatim text
-		advanceThroughSource(verbatimText);
-		
-		// move cursor past the "endverbatim" tag
-		advanceThroughSource(verbatimEndTag);
+		// move cursor past the verbatim text and end delimiter
+		source.advance(verbatimEndMatcher.end());
 		
 		// check if the verbatim start tag has a trailing whitespace trim
 		if(verbatimStartMatcher.group(0) != null){
@@ -578,37 +558,13 @@ public class LexerImpl implements Lexer {
 		if (type.equals(Token.Type.TEXT) && (value == null || "".equals(value))) {
 			return null;
 		}
-		Token result = new Token(type, value, this.lineNumber);
+		Token result = new Token(type, value, source.getLineNumber());
 		this.tokens.add(result);
 
 		return result;
 	}
 
-	/**
-	 * Moves the cursor a distance equal to the length of the provided text.
-	 * 
-	 * This method also counts how many "newlines" are within this text so that
-	 * we can increment which line number we're on. The line number is used to
-	 * create valuable error messages.
-	 * 
-	 * @param text
-	 *            The text of which the length determines how far the cursor is
-	 *            moved
-	 */
-	private void advanceThroughSource(String text) {
-		
-		// count newlines
-		Pattern newLine = Pattern.compile(Pattern.quote("\n"));
-		Matcher matcher = newLine.matcher(text);
-		int count = 0;
-		while (matcher.find()) {
-			count += 1;
-		}
-		this.lineNumber += count;
-		
-		// update remainingSource
-		this.remainingSource = remainingSource.substring(text.length());
-	}
+
 
 	/**
 	 * Pushes the current state onto the stack and then updates the current
