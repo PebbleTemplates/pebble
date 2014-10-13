@@ -8,11 +8,7 @@ his file is part of Pebble.
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,7 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreTagsTest extends AbstractTest {
 
@@ -339,6 +342,22 @@ public class CoreTagsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals("onetwo", writer.toString());
 	}
+	
+    @Test
+    public void testFunctionInMacroInvokedTwice() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        
+        TestingExtension extension = new TestingExtension();
+        pebble.addExtension(extension);
+        PebbleTemplate template = pebble.getTemplate("{{ test() }}{% macro test() %}{{ invocationCountingFunction() }}{% endmacro %}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        
+        InvocationCountingFunction function = extension.getInvocationCountingFunction();
+        assertEquals(1, function.getInvocationCount());
+    }
 
 	@Test
 	public void testMacroInvocationWithoutAllArguments() throws PebbleException, IOException {
