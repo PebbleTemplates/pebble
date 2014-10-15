@@ -24,6 +24,24 @@ import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class WhitespaceControlTest extends AbstractTest {
+	
+	@Test
+	public void testStandardizationOfNewlineCharacters() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		
+		// windows
+		PebbleTemplate windowsTemplate = pebble.getTemplate("\r\n");
+		Writer windowsWriter = new StringWriter();
+		windowsTemplate.evaluate(windowsWriter);
+		assertEquals(System.lineSeparator(), windowsWriter.toString());
+		
+		// unix
+		PebbleTemplate unixTemplate = pebble.getTemplate("\n");
+		Writer unixWriter = new StringWriter();
+		unixTemplate.evaluate(unixWriter);
+		assertEquals(System.lineSeparator(), unixWriter.toString());
+	}
 
 	@Test
 	public void testLeadingWhitespaceTrimWithPrintDelimiter() throws PebbleException, IOException {

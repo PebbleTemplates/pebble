@@ -119,18 +119,20 @@ public class LexerImpl implements Lexer {
 	 */
 	public LexerImpl(PebbleEngine engine) {
 		this.engine = engine;
+		
+		String newline = Pattern.quote(System.lineSeparator());
 
 		// regexes used to find the individual delimiters
-		this.regexPrintClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?" + Pattern.quote(delimiterPrintClose) + "\\n?");
-		this.regexExecuteClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?" + Pattern.quote(delimiterExecuteClose) + "\\n?");
-		this.regexCommentClose = Pattern.compile(Pattern.quote(delimiterCommentClose) + "\\n?");
+		this.regexPrintClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?" + Pattern.quote(delimiterPrintClose) +  newline + "?");
+		this.regexExecuteClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?" + Pattern.quote(delimiterExecuteClose) + newline + "?");
+		this.regexCommentClose = Pattern.compile(Pattern.quote(delimiterCommentClose) + newline + "?");
 
 		// combination regex used to find the next START delimiter of any kind
 		this.regexStartDelimiters = Pattern.compile(Pattern.quote(delimiterPrintOpen) + "|"	+ Pattern.quote(delimiterExecuteOpen) + "|"	+ Pattern.quote(delimiterCommentOpen));
 
 		// regex to find the verbatim tag
 		this.regexVerbatimStart = Pattern.compile("^\\s*verbatim\\s*(" + Pattern.quote(whitespaceTrim) + ")?" + Pattern.quote(delimiterExecuteClose) + "\\n?");
-		this.regexVerbatimEnd = Pattern.compile(Pattern.quote(delimiterExecuteOpen) + "(" + Pattern.quote(whitespaceTrim) + ")?" + "\\s*endverbatim\\s*("  + Pattern.quote(whitespaceTrim) + ")?" + Pattern.quote(delimiterExecuteClose) + "\\n?");
+		this.regexVerbatimEnd = Pattern.compile(Pattern.quote(delimiterExecuteOpen) + "(" + Pattern.quote(whitespaceTrim) + ")?" + "\\s*endverbatim\\s*("  + Pattern.quote(whitespaceTrim) + ")?" + Pattern.quote(delimiterExecuteClose) + newline + "?");
 
 		// regex for the whitespace trim character
 		this.regexLeadingWhitespaceTrim = Pattern.compile(Pattern.quote(whitespaceTrim) + "\\s+");
