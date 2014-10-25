@@ -2,12 +2,17 @@ package com.mitchellbosecke.pebble.template;
 
 import java.lang.reflect.Member;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ClassAttributeCache {
 
-	private final Map<CacheKey, Member> attributes = new HashMap<>();
+	private final Map<CacheKey, Member> attributes;
+	
+	public ClassAttributeCache(){
+		this.attributes = Collections.synchronizedMap(new HashMap<CacheKey, Member>());
+	}
 
 	public boolean containsKey(Object object, String attributeName,
 			Class<?>[] parameterTypes) {

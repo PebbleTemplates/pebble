@@ -88,7 +88,7 @@ public class GetAttributeExpression implements Expression<Object> {
 				Member member = null;
 				try {
 					
-					ClassAttributeCache cache = context.getAttributeCache();
+					ClassAttributeCache cache = self.getAttributeCache();
 					if(cache.containsKey(object, attributeName, parameterTypesArray)){
 						member = cache.get(object, attributeName, parameterTypesArray);
 					}else{

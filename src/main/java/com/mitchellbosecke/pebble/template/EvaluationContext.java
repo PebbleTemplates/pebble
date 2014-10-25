@@ -81,11 +81,6 @@ public class EvaluationContext {
 	private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
 	/**
-	 * Cache for accessing attributes of user-provided objects
-	 */
-	private final ClassAttributeCache attributeCache = new ClassAttributeCache();
-
-	/**
 	 * Constructor
 	 * 
 	 * @param self
@@ -243,9 +238,5 @@ public class EvaluationContext {
 
 	public void setScopes(LinkedList<Scope> scopes) {
 		this.scopes = scopes;
-	}
-
-	public ClassAttributeCache getAttributeCache() {
-		return attributeCache;
 	}
 }

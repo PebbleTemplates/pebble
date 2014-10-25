@@ -50,6 +50,11 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 	 * Name of template. Used to help with debugging.
 	 */
 	private final String name;
+	
+	/**
+	 * Cache for accessing attributes of user-provided objects
+	 */
+	private final ClassAttributeCache attributeCache = new ClassAttributeCache();
 
 	public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name)
 			throws PebbleException {
@@ -274,6 +279,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
 	public String getName() {
 		return name;
+	}
+	
+	public ClassAttributeCache getAttributeCache() {
+		return attributeCache;
 	}
 
 }
