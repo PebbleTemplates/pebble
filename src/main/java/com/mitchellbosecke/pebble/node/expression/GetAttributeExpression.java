@@ -36,171 +36,189 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
  */
 public class GetAttributeExpression implements Expression<Object> {
 
-	private final Expression<?> node;
-	private final String attributeName;
-	private final ArgumentsNode args;
+    private final Expression<?> node;
 
-	public GetAttributeExpression(Expression<?> node, String attributeName) {
-		this(node, attributeName, null);
-	}
+    private final String attributeName;
 
-	public GetAttributeExpression(Expression<?> node, String attributeName, ArgumentsNode args) {
-		this.node = node;
-		this.attributeName = attributeName;
-		this.args = args;
-	}
+    private final ArgumentsNode args;
 
-	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		Object object = node.evaluate(self, context);
+    public GetAttributeExpression(Expression<?> node, String attributeName) {
+        this(node, attributeName, null);
+    }
 
-		Object result = null;
-		boolean found = false;
+    public GetAttributeExpression(Expression<?> node, String attributeName, ArgumentsNode args) {
+        this.node = node;
+        this.attributeName = attributeName;
+        this.args = args;
+    }
 
-		if (object != null) {
+    @Override
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        Object object = node.evaluate(self, context);
 
-			// first we check maps, as they are a bit of an exception
-			if (args == null) {
-				if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
-					result = ((Map<?, ?>) object).get(attributeName);
-					found = true;
-				}
-			}
+        Object result = null;
+        boolean found = false;
 
-			if (!found) {
+        if (object != null) {
 
-				/*
-				 * turn args into an array of types and an array of values in
-				 * order to use them for our reflection calls
-				 */
-				List<Class<?>> parameterTypes = new ArrayList<>();
-				List<Object> parameterValues = new ArrayList<>();
-				if (this.args != null) {
-					for (PositionalArgumentNode arg : this.args.getPositionalArgs()) {
-						Object parameterValue = arg.getValueExpression().evaluate(self, context);
-						parameterTypes.add(parameterValue.getClass());
-						parameterValues.add(parameterValue);
-					}
-				}
-				Class<?>[] parameterTypesArray = parameterTypes.toArray(new Class[parameterTypes.size()]);
-				Object[] parameterValuesArray = parameterValues.toArray(new Object[parameterValues.size()]);
+            // first we check maps, as they are a bit of an exception
+            if (args == null) {
+                if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
+                    result = ((Map<?, ?>) object).get(attributeName);
+                    found = true;
+                }
+            }
 
-				Member member = null;
-				try {
-					
-					ClassAttributeCache cache = self.getAttributeCache();
-					if(cache.containsKey(object, attributeName, parameterTypesArray)){
-						member = cache.get(object, attributeName, parameterTypesArray);
-					}else{
-						member = findMember(object, attributeName, parameterTypesArray);
-						cache.put(object, attributeName, parameterTypesArray, member);
-					}
-					
-					if (member != null) {
+            if (!found) {
 
-						if (member instanceof Method) {
-							result = ((Method) member).invoke(object, parameterValuesArray);
-						} else if (member instanceof Field) {
-							result = ((Field) member).get(object);
-						}
-						found = true;
-					}
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
-					throw new PebbleException(e, "Could not access attribute [" + attributeName + "]");
-				}
+                /*
+                 * turn args into an array of types and an array of values in
+                 * order to use them for our reflection calls
+                 */
+                List<Class<?>> parameterTypes = new ArrayList<>();
+                List<Object> parameterValues = new ArrayList<>();
+                if (this.args != null) {
+                    for (PositionalArgumentNode arg : this.args.getPositionalArgs()) {
+                        Object parameterValue = arg.getValueExpression().evaluate(self, context);
+                        parameterTypes.add(parameterValue.getClass());
+                        parameterValues.add(parameterValue);
+                    }
+                }
+                Class<?>[] parameterTypesArray = parameterTypes.toArray(new Class[parameterTypes.size()]);
+                Object[] parameterValuesArray = parameterValues.toArray(new Object[parameterValues.size()]);
 
-			}
-		}
+                Member member = null;
+                try {
 
-		if (!found && context.isStrictVariables()) {
-			throw new AttributeNotFoundException(
-					null,
-					String.format(
-							"Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-							attributeName, object.getClass().getName()));
-		}
-		return result;
+                    ClassAttributeCache cache = self.getAttributeCache();
 
-	}
+                    /*
+                     * Because we are performing more than one atomic action on
+                     * the cache ("containsKey", "get", and "put") we would
+                     * typically wrap these in a synchronized block. However,
+                     * objects are never removed from the cache (only added) and
+                     * therefore I don't think complete synchronization is
+                     * necessary.
+                     * 
+                     * There is a chance that more than one thread will attempt
+                     * to insert an entry into the cache at the same time but
+                     * theoretically each thread would be adding the exact same
+                     * value and the "put" method by itself is atomic so no harm
+                     * done (other than some unnecessary work by at least one of
+                     * the threads).
+                     */
+                    if (cache.containsKey(object, attributeName, parameterTypesArray)) {
+                        member = cache.get(object, attributeName, parameterTypesArray);
+                    } else {
+                        member = findMember(object, attributeName, parameterTypesArray);
+                        cache.put(object, attributeName, parameterTypesArray, member);
+                    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+                    if (member != null) {
 
-	public Expression<?> getNode() {
-		return node;
-	}
+                        if (member instanceof Method) {
+                            result = ((Method) member).invoke(object, parameterValuesArray);
+                        } else if (member instanceof Field) {
+                            result = ((Field) member).get(object);
+                        }
+                        found = true;
+                    }
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    e.printStackTrace();
+                    throw new PebbleException(e, "Could not access attribute [" + attributeName + "]");
+                }
 
-	public String getAttribute() {
-		return attributeName;
-	}
+            }
+        }
 
-	public ArgumentsNode getArgumentsNode() {
-		return args;
-	}
+        if (!found && context.isStrictVariables()) {
+            throw new AttributeNotFoundException(
+                    null,
+                    String.format(
+                            "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                            attributeName, object.getClass().getName()));
+        }
+        return result;
 
-	private Member findMember(Object object, String attributeName, Class<?>[] parameterTypes)
-			throws IllegalAccessException {
+    }
 
-		Class<?> clazz = object.getClass();
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-		boolean found = false;
-		Member result = null;
+    public Expression<?> getNode() {
+        return node;
+    }
 
-		// capitalize first letter of attribute for the following attempts
-		String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
+    public String getAttribute() {
+        return attributeName;
+    }
 
-		// check get method
-		if (!found) {
-			try {
-				result = clazz.getMethod("get" + attributeCapitalized, parameterTypes);
-				found = true;
-			} catch (NoSuchMethodException | SecurityException e) {
-			}
-		}
+    public ArgumentsNode getArgumentsNode() {
+        return args;
+    }
 
-		// check is method
-		if (!found) {
-			try {
-				result = clazz.getMethod("is" + attributeCapitalized, parameterTypes);
-				found = true;
-			} catch (NoSuchMethodException | SecurityException e) {
-			}
-		}
+    private Member findMember(Object object, String attributeName, Class<?>[] parameterTypes)
+            throws IllegalAccessException {
 
-		// check has method
-		if (!found) {
-			try {
-				result = clazz.getMethod("has" + attributeCapitalized, parameterTypes);
-				found = true;
-			} catch (NoSuchMethodException | SecurityException e) {
-			}
-		}
+        Class<?> clazz = object.getClass();
 
-		// check if attribute is a public method
-		if (!found) {
-			try {
-				result = clazz.getMethod(attributeName, parameterTypes);
-				found = true;
-			} catch (NoSuchMethodException | SecurityException e) {
-			}
-		}
+        boolean found = false;
+        Member result = null;
 
-		// public field
-		if (!found) {
-			try {
-				result = clazz.getField(attributeName);
-				found = true;
-			} catch (NoSuchFieldException | SecurityException e) {
-			}
-		}
+        // capitalize first letter of attribute for the following attempts
+        String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
-		if (result != null) {
-			((AccessibleObject) result).setAccessible(true);
-		}
-		return result;
-	}
+        // check get method
+        if (!found) {
+            try {
+                result = clazz.getMethod("get" + attributeCapitalized, parameterTypes);
+                found = true;
+            } catch (NoSuchMethodException | SecurityException e) {
+            }
+        }
+
+        // check is method
+        if (!found) {
+            try {
+                result = clazz.getMethod("is" + attributeCapitalized, parameterTypes);
+                found = true;
+            } catch (NoSuchMethodException | SecurityException e) {
+            }
+        }
+
+        // check has method
+        if (!found) {
+            try {
+                result = clazz.getMethod("has" + attributeCapitalized, parameterTypes);
+                found = true;
+            } catch (NoSuchMethodException | SecurityException e) {
+            }
+        }
+
+        // check if attribute is a public method
+        if (!found) {
+            try {
+                result = clazz.getMethod(attributeName, parameterTypes);
+                found = true;
+            } catch (NoSuchMethodException | SecurityException e) {
+            }
+        }
+
+        // public field
+        if (!found) {
+            try {
+                result = clazz.getField(attributeName);
+                found = true;
+            } catch (NoSuchFieldException | SecurityException e) {
+            }
+        }
+
+        if (result != null) {
+            ((AccessibleObject) result).setAccessible(true);
+        }
+        return result;
+    }
 
 }
