@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -239,7 +240,7 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("User 1User 2User 3", writer.toString());
     }
-    
+
     @Test
     public void testForWithArrayOfPrimitives() throws PebbleException, IOException {
         Loader loader = new StringLoader();
@@ -562,6 +563,33 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
 
         assertEquals("beginning first middle second end third", writer.toString());
+
+    }
+
+    /**
+     * The for loop will add variables into the evaluation context during
+     * runtime and there was an issue where the evaluation context wasn't thread
+     * safe.
+     * 
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Ignore
+    @Test
+    public void testParallelTagWhileEvaluationContextIsChanging() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setExecutorService(Executors.newCachedThreadPool());
+        String source = "{% for num in array %}{% parallel %}{{ loop.index }}{% endparallel %}{% endfor%}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("array", new int[10]);
+        template.evaluate(writer, context);
+
+        assertEquals("0123456789", writer.toString());
 
     }
 

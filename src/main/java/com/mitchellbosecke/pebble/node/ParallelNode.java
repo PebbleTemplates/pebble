@@ -30,6 +30,14 @@ public class ParallelNode extends AbstractRenderableNode {
 
     private final BodyNode body;
 
+    /**
+     * If the user is using the parallel tag but doesn't provide an
+     * ExecutorService we will warn them that this tag will essentially be
+     * ignored but it's important that we only warn them once because this tag
+     * may show up in a loop.
+     */
+    private boolean hasWarnedAboutNonExistingExecutorService = false;
+
     public ParallelNode(int lineNumber, BodyNode body) {
         super(lineNumber);
         this.body = body;
@@ -42,28 +50,34 @@ public class ParallelNode extends AbstractRenderableNode {
         ExecutorService es = context.getExecutorService();
 
         if (es == null) {
-            logger.info(String.format(
-                    "The parallel tag was used [%s:%d] but no ExecutorService was provided. The parallel tag will be ignored "
-                            + "and it's contents will be rendered in sequence with the rest of the template.",
-                    self.getName(), getLineNumber()));
+
+            if (!hasWarnedAboutNonExistingExecutorService) {
+                logger.info(String.format(
+                        "The parallel tag was used [%s:%d] but no ExecutorService was provided. The parallel tag will be ignored "
+                                + "and it's contents will be rendered in sequence with the rest of the template.",
+                        self.getName(), getLineNumber()));
+                hasWarnedAboutNonExistingExecutorService = true;
+            }
+
             /*
              * If user did not provide an ExecutorService, we simply ignore the
              * parallel tag and render it's contents like we normally would.
              */
             body.render(self, writer, context);
             return;
+        } else {
+
+            final Writer stringWriter = new StringWriter();
+            Future<String> future = es.submit(new Callable<String>() {
+
+                @Override
+                public String call() throws PebbleException, IOException {
+                    body.render(self, stringWriter, context);
+                    return stringWriter.toString();
+                }
+            });
+            ((FutureWriter) writer).enqueue(future);
         }
-
-        final Writer stringWriter = new StringWriter();
-        Future<String> future = es.submit(new Callable<String>() {
-
-            @Override
-            public String call() throws PebbleException, IOException {
-                body.render(self, stringWriter, context);
-                return stringWriter.toString();
-            }
-        });
-        ((FutureWriter) writer).enqueue(future);
     }
 
     @Override
