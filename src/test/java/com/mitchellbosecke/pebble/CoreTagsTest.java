@@ -239,6 +239,27 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("User 1User 2User 3", writer.toString());
     }
+    
+    @Test
+    public void testForWithArrayOfPrimitives() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for num in ints %}{{ num }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        int[] ints = new int[3];
+        ints[0] = 1;
+        ints[1] = 2;
+        ints[2] = 3;
+        context.put("ints", ints);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("123", writer.toString());
+    }
 
     /**
      * There were compilation issues when having two for loops in the same

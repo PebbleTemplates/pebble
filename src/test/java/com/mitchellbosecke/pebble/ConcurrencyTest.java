@@ -58,7 +58,7 @@ public class ConcurrencyTest extends AbstractTest {
         ExecutorService es = Executors.newCachedThreadPool();
         final AtomicInteger totalFailed = new AtomicInteger();
 
-        int numOfConcurrentThreads = 100;
+        int numOfConcurrentThreads = 60;
         final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
 
         for (int i = 0; i < 10000; i++) {
@@ -124,7 +124,7 @@ public class ConcurrencyTest extends AbstractTest {
         final ExecutorService es = Executors.newCachedThreadPool();
         final AtomicInteger totalFailed = new AtomicInteger();
 
-        int numOfConcurrentThreads = 100;
+        int numOfConcurrentThreads = 60;
         final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
 
         Cache<String, PebbleTemplate> cache = engine.getTemplateCache();
