@@ -22,6 +22,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
+import com.mitchellbosecke.pebble.template.ClassAttributeCache;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -86,7 +87,15 @@ public class GetAttributeExpression implements Expression<Object> {
 
 				Member member = null;
 				try {
-					member = findMember(object, attributeName, parameterTypesArray);
+					
+					ClassAttributeCache cache = context.getAttributeCache();
+					if(cache.containsKey(object, attributeName, parameterTypesArray)){
+						member = cache.get(object, attributeName, parameterTypesArray);
+					}else{
+						member = findMember(object, attributeName, parameterTypesArray);
+						cache.put(object, attributeName, parameterTypesArray, member);
+					}
+					
 					if (member != null) {
 
 						if (member instanceof Method) {
