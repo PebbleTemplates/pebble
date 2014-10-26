@@ -359,7 +359,7 @@ public class ExpressionParser {
 		 */
 		switch (functionName) {
 			case "parent":
-				return new ParentFunctionExpression(parser.peekBlockStack());
+				return new ParentFunctionExpression(parser.peekBlockStack(), stream.current().getLineNumber());
 			case "block":
 				return new BlockFunctionExpression(args);
 		}

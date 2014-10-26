@@ -1,0 +1,10 @@
+{# used by ErrorReportingTest.testLineNumberErrorReportingDuringEvaluation #}
+
+
+{# comment #}
+
+content here
+{% block content %}
+	{{ parent() }} {# error on line 7 due to no parent template#}
+{% endblock %}
+content here too

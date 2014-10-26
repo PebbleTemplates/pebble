@@ -23,54 +23,49 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
-	private final String functionName;
-	private final ArgumentsNode args;
+    private final String functionName;
 
-	public FunctionOrMacroInvocationExpression(String functionName,
-			ArgumentsNode arguments) {
-		this.functionName = functionName;
-		this.args = arguments;
-	}
+    private final ArgumentsNode args;
 
-	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context)
-			throws PebbleException {
-		Map<String, Function> functions = context.getFunctions();
-		if (functions.containsKey(functionName)) {
-			return applyFunction(self, context, functions.get(functionName),
-					args);
-		}
-		return self.macro(context, functionName, args, false);
-	}
+    public FunctionOrMacroInvocationExpression(String functionName, ArgumentsNode arguments) {
+        this.functionName = functionName;
+        this.args = arguments;
+    }
 
-	private Object applyFunction(PebbleTemplateImpl self,
-			EvaluationContext context, Function function, ArgumentsNode args)
-			throws PebbleException {
-		List<Object> arguments = new ArrayList<>();
+    @Override
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        Map<String, Function> functions = context.getFunctions();
+        if (functions.containsKey(functionName)) {
+            return applyFunction(self, context, functions.get(functionName), args);
+        }
+        return self.macro(context, functionName, args, false);
+    }
 
-		Collections.addAll(arguments, args);
+    private Object applyFunction(PebbleTemplateImpl self, EvaluationContext context, Function function,
+            ArgumentsNode args) throws PebbleException {
+        List<Object> arguments = new ArrayList<>();
 
-		
-		if (function instanceof LocaleAware){
-			((LocaleAware) function).setLocale(context.getLocale());
-		}
-		
-		Map<String, Object> namedArguments = args.getArgumentMap(self, context,
-				function);
-		return function.execute(namedArguments);
-	}
+        Collections.addAll(arguments, args);
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+        if (function instanceof LocaleAware) {
+            ((LocaleAware) function).setLocale(context.getLocale());
+        }
 
-	public String getFunctionName() {
-		return functionName;
-	}
+        Map<String, Object> namedArguments = args.getArgumentMap(self, context, function);
+        return function.execute(namedArguments);
+    }
 
-	public ArgumentsNode getArguments() {
-		return args;
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    public String getFunctionName() {
+        return functionName;
+    }
+
+    public ArgumentsNode getArguments() {
+        return args;
+    }
 
 }

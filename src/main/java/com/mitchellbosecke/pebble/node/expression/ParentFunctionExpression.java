@@ -19,26 +19,34 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class ParentFunctionExpression implements Expression<String> {
 
-	private final String blockName;
+    private final String blockName;
 
-	public ParentFunctionExpression(String blockName) {
-		this.blockName = blockName;
-	}
+    private final int lineNumber;
 
-	@Override
-	public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		Writer writer = new StringWriter();
-		try {
-			context.getParentTemplate().block(writer, context, blockName, true);
-		} catch (IOException e) {
-			throw new PebbleException(e, "Could not render block [" + blockName + "]");
-		}
-		return writer.toString();
-	}
+    public ParentFunctionExpression(String blockName, int lineNumber) {
+        this.blockName = blockName;
+        this.lineNumber = lineNumber;
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        Writer writer = new StringWriter();
+        try {
+            if (context.getParentTemplate() == null) {
+                throw new PebbleException(null,
+                        "Can not use parent function if template does not extend another template.", lineNumber,
+                        self.getName());
+            }
+            context.getParentTemplate().block(writer, context, blockName, true);
+        } catch (IOException e) {
+            throw new PebbleException(e, "Could not render block [" + blockName + "]");
+        }
+        return writer.toString();
+    }
+
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }

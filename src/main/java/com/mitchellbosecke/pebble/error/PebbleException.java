@@ -10,22 +10,26 @@ package com.mitchellbosecke.pebble.error;
 
 public class PebbleException extends Exception {
 
-	private static final long serialVersionUID = -2855774187093732189L;
+    private static final long serialVersionUID = -2855774187093732189L;
 
-	protected Integer lineNumber;
-	protected String filename;
-	protected String message;
-	protected PebbleException previous;
+    protected Integer lineNumber;
 
-	public PebbleException(Throwable cause, String message) {
-		this(cause, message, null, null);
-	}
+    protected String filename;
 
-	public PebbleException(Throwable cause, String message, Integer lineNumber, String filename) {
-		super(String.format("%s (%s:%d)", message, filename, lineNumber), cause);
-		this.message = message;
-		this.lineNumber = lineNumber;
-		this.filename = filename;
-	}
+    protected String message;
+
+    protected PebbleException previous;
+
+    public PebbleException(Throwable cause, String message) {
+        this(cause, message, null, null);
+    }
+
+    public PebbleException(Throwable cause, String message, Integer lineNumber, String filename) {
+        super(String.format("%s (%s:%s)", message, filename == null ? "?" : filename,
+                lineNumber == null ? "?" : String.valueOf(lineNumber)), cause);
+        this.message = message;
+        this.lineNumber = lineNumber;
+        this.filename = filename;
+    }
 
 }

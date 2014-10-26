@@ -18,180 +18,190 @@ import java.util.regex.Pattern;
  */
 public class TemplateSource implements CharSequence {
 
-	/**
-	 * The characters found within the template.
-	 */
-	private char source[];
+    /**
+     * The characters found within the template.
+     */
+    private char source[];
 
-	/**
-	 * Number of characters stored in source array
-	 */
-	private int size = 0;
+    /**
+     * Number of characters stored in source array
+     */
+    private int size = 0;
 
-	/**
-	 * Default capacity
-	 */
-	private static final int DEFAULT_CAPACITY = 1024;
+    /**
+     * Default capacity
+     */
+    private static final int DEFAULT_CAPACITY = 1024;
 
-	/**
-	 * An index of the first character for the remaining un-tokenized source.
-	 */
-	private int offset = 0;
+    /**
+     * An index of the first character for the remaining un-tokenized source.
+     */
+    private int offset = 0;
 
-	/**
-	 * Tracking the line number that we are currently tokenizing.
-	 */
-	private int lineNumber = 1;
+    /**
+     * Tracking the line number that we are currently tokenizing.
+     */
+    private int lineNumber = 1;
 
-	/**
-	 * Filename of the template
-	 */
-	private final String filename;
+    /**
+     * Filename of the template
+     */
+    private final String filename;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param reader
-	 * @param filename
-	 * @throws IOException
-	 */
-	public TemplateSource(Reader reader, String filename) throws IOException {
-		this.filename = filename;
-		this.source = new char[DEFAULT_CAPACITY];
-		copyReaderIntoCharArray(reader);
-		normalizeNewlines();
-	}
+    /**
+     * Constructor
+     * 
+     * @param reader
+     * @param filename
+     * @throws IOException
+     */
+    public TemplateSource(Reader reader, String filename) throws IOException {
+        this.filename = filename;
+        this.source = new char[DEFAULT_CAPACITY];
+        copyReaderIntoCharArray(reader);
+        normalizeNewlines();
+    }
 
-	/**
-	 * Read the contents of the template into the internal char[].
-	 * 
-	 * @param reader
-	 * @return
-	 * @throws IOException
-	 */
-	private void copyReaderIntoCharArray(Reader reader) throws IOException {
-		char[] buffer = new char[1024 * 4];
-		int amountJustRead = 0;
-		while ((amountJustRead = reader.read(buffer)) != -1) {
+    /**
+     * Read the contents of the template into the internal char[].
+     * 
+     * @param reader
+     * @return
+     * @throws IOException
+     */
+    private void copyReaderIntoCharArray(Reader reader) throws IOException {
+        char[] buffer = new char[1024 * 4];
+        int amountJustRead = 0;
+        while ((amountJustRead = reader.read(buffer)) != -1) {
 
-			ensureCapacity(size + amountJustRead);
-			append(buffer, amountJustRead);
-		}
-	}
+            ensureCapacity(size + amountJustRead);
+            append(buffer, amountJustRead);
+        }
+    }
 
-	/**
-	 * Append characters to the internal array.
-	 * 
-	 * @param characters
-	 * @param amount
-	 */
-	private void append(char[] characters, int amount) {
-		for (int i = 0; i < amount; ++i) {
-			this.source[size + i] = characters[i];
-		}
-		size += amount;
-	}
-	
-	/**
-	 * Normalize line endings between windows and unix machines.
-	 */
-	private void normalizeNewlines() {
-		Matcher matcher = Pattern.compile("(\r\n|\n\r|\r|\n|\u0085|\u2028|\u2029)").matcher(this);
-		String result = matcher.replaceAll(System.lineSeparator());
-		this.source = result.toCharArray();
-		
-		// this normalization could affect character count, so let's set it again
-		this.size = this.source.length;
-	}
+    /**
+     * Append characters to the internal array.
+     * 
+     * @param characters
+     * @param amount
+     */
+    private void append(char[] characters, int amount) {
+        for (int i = 0; i < amount; ++i) {
+            this.source[size + i] = characters[i];
+        }
+        size += amount;
+    }
 
-	/**
-	 * Ensure that the internal array has a minimum capacity.
-	 * 
-	 * @param minCapacity
-	 */
-	private void ensureCapacity(int minCapacity) {
-		if (source.length - minCapacity < 0) {
-			grow(minCapacity);
-		}
-	}
+    /**
+     * Normalize line endings between windows and unix machines.
+     */
+    private void normalizeNewlines() {
+        Matcher matcher = Pattern.compile("(\r\n|\n\r|\r|\n|\u0085|\u2028|\u2029)").matcher(this);
+        String result = matcher.replaceAll(System.lineSeparator());
+        this.source = result.toCharArray();
 
-	/**
-	 * Grow the internal array to at least the desired minimum capacity.
-	 * 
-	 * @param minCapacity
-	 */
-	private void grow(int minCapacity) {
-		int oldCapacity = source.length;
-		
-		/* 
-		 * double the capacity of the array and if that's
-		 * not enough, just use the minCapacity
-		 */
-		int newCapacity = Math.max(oldCapacity << 1, minCapacity);
+        // this normalization could affect character count, so let's set it
+        // again
+        this.size = this.source.length;
+    }
 
-		this.source = Arrays.copyOf(source, newCapacity);
-	}
+    /**
+     * Ensure that the internal array has a minimum capacity.
+     * 
+     * @param minCapacity
+     */
+    private void ensureCapacity(int minCapacity) {
+        if (source.length - minCapacity < 0) {
+            grow(minCapacity);
+        }
+    }
 
-	/**
-	 * Moves the start index a distance equal to the length of the provided
-	 * text.
-	 * 
-	 * This method also counts how many "newlines" are within this text so that
-	 * we can increment which line number we're on. The line number is used to
-	 * create valuable error messages.
-	 * 
-	 * @param text
-	 *            The text of which the length determines how far the cursor is
-	 *            moved
-	 */
-	public void advance(int amount) {
-		for (int index = offset; index < amount; index++) {
-			char character = source[index];
-			if (character == '\n') {
-				this.lineNumber++;
-			}
-		}
+    /**
+     * Grow the internal array to at least the desired minimum capacity.
+     * 
+     * @param minCapacity
+     */
+    private void grow(int minCapacity) {
+        int oldCapacity = source.length;
 
-		// advance the index used to represent the start of the remaining
-		// un-tokenized source.
-		this.offset += amount;
-		this.size -= amount;
-	}
+        /*
+         * double the capacity of the array and if that's not enough, just use
+         * the minCapacity
+         */
+        int newCapacity = Math.max(oldCapacity << 1, minCapacity);
 
-	public String substring(int start, int end) {
-		return new String(Arrays.copyOfRange(source, this.offset + start,
-				this.offset + end));
-	}
+        this.source = Arrays.copyOf(source, newCapacity);
+    }
 
-	public String substring(int end) {
-		return new String(Arrays.copyOfRange(source, offset, offset + end));
-	}
+    /**
+     * Moves the start index a distance equal to the length of the provided
+     * text.
+     * 
+     * This method also counts how many "newlines" are within this text so that
+     * we can increment which line number we're on. The line number is used to
+     * create valuable error messages.
+     * 
+     * @param text
+     *            The text of which the length determines how far the cursor is
+     *            moved
+     */
+    public void advance(int amount) {
+        Pattern newLinePattern = Pattern.compile(Pattern.quote(System.lineSeparator()));
+        Matcher newLineMatcher;
+        for (int index = 0; index < amount; index++) {
+            
+            newLineMatcher = newLinePattern.matcher(this);
 
-	@Override
-	public int length() {
-		return size;
-	}
+            if(newLineMatcher.lookingAt()){
+                this.lineNumber++;
+            }
+            
+            this.size--;
+            this.offset++;
+            //char character = source[index];
+            // if (character ==System.lineSeparator()) {
+            // this.lineNumber++;
+            // }
+        }
 
-	@Override
-	public char charAt(int index) {
-		return source[offset + index];
-	}
+        // advance the index used to represent the start of the remaining
+        // un-tokenized source.
+        //this.offset += amount;
+        //this.size -= amount;
+    }
 
-	@Override
-	public CharSequence subSequence(int start, int end) {
-		return new String(Arrays.copyOfRange(source, this.offset + start,
-				this.offset + end));
-	}
+    public String substring(int start, int end) {
+        return new String(Arrays.copyOfRange(source, this.offset + start, this.offset + end));
+    }
 
-	public String toString() {
-		return new String(Arrays.copyOfRange(source, offset, offset + size));
-	}
+    public String substring(int end) {
+        return new String(Arrays.copyOfRange(source, offset, offset + end));
+    }
 
-	public int getLineNumber() {
-		return lineNumber;
-	}
+    @Override
+    public int length() {
+        return size;
+    }
 
-	public String getFilename() {
-		return filename;
-	}
+    @Override
+    public char charAt(int index) {
+        return source[offset + index];
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return new String(Arrays.copyOfRange(source, this.offset + start, this.offset + end));
+    }
+
+    public String toString() {
+        return new String(Arrays.copyOfRange(source, offset, offset + size));
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
 }

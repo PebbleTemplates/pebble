@@ -16,127 +16,129 @@ import com.mitchellbosecke.pebble.lexer.Token.Type;
 
 public class TokenStream {
 
-	private ArrayList<Token> tokens = new ArrayList<>();
-	private int current;
-	private String filename;
+    private ArrayList<Token> tokens = new ArrayList<>();
 
-	/**
-	 * Constructor for a Token Stream
-	 * 
-	 * @param tokens
-	 *            A collection of tokens
-	 * @param name
-	 *            The filename of the template that these tokens came from
-	 */
-	public TokenStream(Collection<Token> tokens, String name) {
-		this.tokens.addAll(tokens);
-		this.current = 0;
-		this.filename = name;
-	}
+    private int current;
 
-	public void injectTokens(Collection<Token> tokens) {
-		this.tokens.addAll(current + 1, tokens);
-	}
+    private String filename;
 
-	/**
-	 * Consumes and returns the next token in the stream.
-	 * 
-	 * @return The next token
-	 */
-	public Token next() {
-		return tokens.get(++current);
-	}
+    /**
+     * Constructor for a Token Stream
+     * 
+     * @param tokens
+     *            A collection of tokens
+     * @param name
+     *            The filename of the template that these tokens came from
+     */
+    public TokenStream(Collection<Token> tokens, String name) {
+        this.tokens.addAll(tokens);
+        this.current = 0;
+        this.filename = name;
+    }
 
-	/**
-	 * Checks the current token to see if it matches the provided type. If it
-	 * doesn't match this will throw a SyntaxException. This will consume a
-	 * token.
-	 * 
-	 * @param type
-	 *            The type of token that we expect
-	 * @return The current token
-	 * @throws ParserException
-	 */
-	public Token expect(Token.Type type) throws ParserException {
-		return expect(type, null);
-	}
+    public void injectTokens(Collection<Token> tokens) {
+        this.tokens.addAll(current + 1, tokens);
+    }
 
-	/**
-	 * Checks the current token to see if it matches the provided type. If it
-	 * doesn't match this will throw a SyntaxException. This will consume a
-	 * token.
-	 * 
-	 * @param type
-	 *            The type of token that we expect
-	 * @return The current token
-	 * @throws ParserException
-	 */
-	public Token expect(Token.Type type, String value) throws ParserException {
-		Token token = tokens.get(current);
+    /**
+     * Consumes and returns the next token in the stream.
+     * 
+     * @return The next token
+     */
+    public Token next() {
+        return tokens.get(++current);
+    }
 
-		boolean success = true;
-		String message = null;
-		if (value == null) {
-			success = token.test(type);
-			if (!success && message == null) {
-				message = "Unexpected token of value [" + token.getValue() + "] expected token of type " + type;
-			}
-		} else {
-			success = token.test(type, value);
-			if (!success && message == null) {
-				message = "Unexpected token of value [" + token.getValue() + "] expected [" + value + "] ";
-			}
-		}
-		if (!success) {
-			throw new ParserException(null, message, token.getLineNumber(), filename);
-		}
-		this.next();
-		return token;
-	}
+    /**
+     * Checks the current token to see if it matches the provided type. If it
+     * doesn't match this will throw a SyntaxException. This will consume a
+     * token.
+     * 
+     * @param type
+     *            The type of token that we expect
+     * @return The current token
+     * @throws ParserException
+     */
+    public Token expect(Token.Type type) throws ParserException {
+        return expect(type, null);
+    }
 
-	/**
-	 * Returns the next token in the stream without consuming it.
-	 * 
-	 * @return The next token
-	 */
-	public Token peek() {
-		return peek(1);
-	}
+    /**
+     * Checks the current token to see if it matches the provided type. If it
+     * doesn't match this will throw a SyntaxException. This will consume a
+     * token.
+     * 
+     * @param type
+     *            The type of token that we expect
+     * @return The current token
+     * @throws ParserException
+     */
+    public Token expect(Token.Type type, String value) throws ParserException {
+        Token token = tokens.get(current);
 
-	/**
-	 * Returns a future token in the stream without consuming any.
-	 * 
-	 * @param number
-	 *            How many tokens to lookahead
-	 * @return The token we are peeking at
-	 */
-	public Token peek(int number) {
-		return this.tokens.get(this.current + number);
-	}
+        boolean success = true;
+        String message = null;
+        if (value == null) {
+            success = token.test(type);
+        } else {
+            success = token.test(type, value);
+        }
 
-	public boolean isEOF() {
-		return this.tokens.get(current).getType().equals(Type.EOF);
-	}
+        if (!success) {
+            if (message == null) {
+                message = String.format(
+                        "Unexpected token of value \"%s\" and type %s, expected token of type %s",
+                        token.getValue(), token.getType().toString(), type);
+            }
+            throw new ParserException(null, message, token.getLineNumber(), filename);
+        }
+        this.next();
+        return token;
+    }
 
-	@Override
-	public String toString() {
-		return tokens.toString();
-	}
+    /**
+     * Returns the next token in the stream without consuming it.
+     * 
+     * @return The next token
+     */
+    public Token peek() {
+        return peek(1);
+    }
 
-	public Token current() {
-		return this.tokens.get(current);
-	}
+    /**
+     * Returns a future token in the stream without consuming any.
+     * 
+     * @param number
+     *            How many tokens to lookahead
+     * @return The token we are peeking at
+     */
+    public Token peek(int number) {
+        return this.tokens.get(this.current + number);
+    }
 
-	public String getFilename() {
-		return filename;
-	}
+    public boolean isEOF() {
+        return this.tokens.get(current).getType().equals(Type.EOF);
+    }
 
-	/**
-	 * used for testing purposes
-	 * 
-	 * @return
-	 */
-	public ArrayList<Token> getTokens() {
-		return tokens;
-	}
+    @Override
+    public String toString() {
+        return tokens.toString();
+    }
+
+    public Token current() {
+        return this.tokens.get(current);
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
+     * used for testing purposes
+     * 
+     * @return
+     */
+    public ArrayList<Token> getTokens() {
+        return tokens;
+    }
 }
