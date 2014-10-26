@@ -18,25 +18,25 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class ImportNode extends AbstractRenderableNode {
 
-	private final Expression<?> importExpression;
+    private final Expression<?> importExpression;
 
-	public ImportNode(int lineNumber, Expression<?> importExpression) {
-		super(lineNumber);
-		this.importExpression = importExpression;
-	}
+    public ImportNode(int lineNumber, Expression<?> importExpression) {
+        super(lineNumber);
+        this.importExpression = importExpression;
+    }
 
-	@Override
-	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
-		self.importTemplate(context, (String) importExpression.evaluate(self, context));
-	}
+    @Override
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
+        self.importTemplate(context, (String) importExpression.evaluate(self, context));
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public Expression<?> getImportExpression() {
-		return importExpression;
-	}
+    public Expression<?> getImportExpression() {
+        return importExpression;
+    }
 
 }

@@ -42,53 +42,53 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
  */
 public interface NodeVisitor {
 
-	public abstract void setTemplate(PebbleTemplateImpl template);
+    public abstract void setTemplate(PebbleTemplateImpl template);
 
-	/**
-	 * Default method invoked with unknown nodes such as nodes provided by user
-	 * extensions.
-	 * 
-	 * @param node
-	 */
-	public abstract void visit(Node node);
+    /**
+     * Default method invoked with unknown nodes such as nodes provided by user
+     * extensions.
+     * 
+     * @param node
+     */
+    public abstract void visit(Node node);
 
-	/*
-	 * OVERLOADED NODES (keep alphabetized)
-	 */
-	public abstract void visit(ArgumentsNode node);
+    /*
+     * OVERLOADED NODES (keep alphabetized)
+     */
+    public abstract void visit(ArgumentsNode node);
 
-	public abstract void visit(AutoEscapeNode node);
+    public abstract void visit(AutoEscapeNode node);
 
-	public abstract void visit(BlockNode node);
+    public abstract void visit(BlockNode node);
 
-	public abstract void visit(BodyNode node);
+    public abstract void visit(BodyNode node);
 
-	public abstract void visit(ExtendsNode node);
+    public abstract void visit(ExtendsNode node);
 
-	public abstract void visit(FlushNode node);
+    public abstract void visit(FlushNode node);
 
-	public abstract void visit(ForNode node);
+    public abstract void visit(ForNode node);
 
-	public abstract void visit(IfNode node);
+    public abstract void visit(IfNode node);
 
-	public abstract void visit(ImportNode node);
+    public abstract void visit(ImportNode node);
 
-	public abstract void visit(IncludeNode node);
+    public abstract void visit(IncludeNode node);
 
-	public abstract void visit(MacroNode node);
+    public abstract void visit(MacroNode node);
 
-	public abstract void visit(NamedArgumentNode node);
+    public abstract void visit(NamedArgumentNode node);
 
-	public abstract void visit(ParallelNode node);
+    public abstract void visit(ParallelNode node);
 
-	public abstract void visit(PositionalArgumentNode node);
+    public abstract void visit(PositionalArgumentNode node);
 
-	public abstract void visit(PrintNode node);
+    public abstract void visit(PrintNode node);
 
-	public abstract void visit(RootNode node);
+    public abstract void visit(RootNode node);
 
-	public abstract void visit(SetNode node);
+    public abstract void visit(SetNode node);
 
-	public abstract void visit(TextNode node);
+    public abstract void visit(TextNode node);
 
 }

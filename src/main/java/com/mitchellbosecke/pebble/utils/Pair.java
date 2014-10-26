@@ -18,20 +18,21 @@ package com.mitchellbosecke.pebble.utils;
  */
 public class Pair<L, R> {
 
-	private final L left;
-	private final R right;
+    private final L left;
 
-	public Pair(L left, R right) {
-		this.left = left;
-		this.right = right;
-	}
+    private final R right;
 
-	public L getLeft() {
-		return left;
-	}
+    public Pair(L left, R right) {
+        this.left = left;
+        this.right = right;
+    }
 
-	public R getRight() {
-		return right;
-	}
+    public L getLeft() {
+        return left;
+    }
+
+    public R getRight() {
+        return right;
+    }
 
 }

@@ -12,36 +12,39 @@ import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
 
 public class BinaryOperatorImpl implements BinaryOperator {
 
-	private final int precedence;
-	private final String symbol;
-	private final Class<? extends BinaryExpression<?>> nodeClass;
-	private final Associativity associativity;
+    private final int precedence;
 
-	public BinaryOperatorImpl(String symbol, int precedence, Class<? extends BinaryExpression<?>> nodeClass,
-			Associativity associativity) {
-		this.symbol = symbol;
-		this.precedence = precedence;
-		this.nodeClass = nodeClass;
-		this.associativity = associativity;
-	}
+    private final String symbol;
 
-	@Override
-	public int getPrecedence() {
-		return precedence;
-	}
+    private final Class<? extends BinaryExpression<?>> nodeClass;
 
-	@Override
-	public String getSymbol() {
-		return symbol;
-	}
+    private final Associativity associativity;
 
-	@Override
-	public Class<? extends BinaryExpression<?>> getNodeClass() {
-		return nodeClass;
-	}
+    public BinaryOperatorImpl(String symbol, int precedence, Class<? extends BinaryExpression<?>> nodeClass,
+            Associativity associativity) {
+        this.symbol = symbol;
+        this.precedence = precedence;
+        this.nodeClass = nodeClass;
+        this.associativity = associativity;
+    }
 
-	@Override
-	public Associativity getAssociativity() {
-		return associativity;
-	}
+    @Override
+    public int getPrecedence() {
+        return precedence;
+    }
+
+    @Override
+    public String getSymbol() {
+        return symbol;
+    }
+
+    @Override
+    public Class<? extends BinaryExpression<?>> getNodeClass() {
+        return nodeClass;
+    }
+
+    @Override
+    public Associativity getAssociativity() {
+        return associativity;
+    }
 }

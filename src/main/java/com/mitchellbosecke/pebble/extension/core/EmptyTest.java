@@ -16,29 +16,29 @@ import com.mitchellbosecke.pebble.extension.Test;
 
 public class EmptyTest implements Test {
 
-	@Override
-	public List<String> getArgumentNames() {
-		return null;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        return null;
+    }
 
-	@Override
-	public boolean apply(Object input, Map<String, Object> args) {
-		boolean isEmpty = input == null;
+    @Override
+    public boolean apply(Object input, Map<String, Object> args) {
+        boolean isEmpty = input == null;
 
-		if (!isEmpty && input instanceof String) {
-			String value = (String) input;
-			isEmpty = "".equals(value.trim());
-		}
+        if (!isEmpty && input instanceof String) {
+            String value = (String) input;
+            isEmpty = "".equals(value.trim());
+        }
 
-		if (!isEmpty && input instanceof Collection) {
-			isEmpty = ((Collection<?>) input).isEmpty();
-		}
+        if (!isEmpty && input instanceof Collection) {
+            isEmpty = ((Collection<?>) input).isEmpty();
+        }
 
-		if (!isEmpty && input instanceof Map) {
-			isEmpty = ((Map<?, ?>) input).isEmpty();
-		}
+        if (!isEmpty && input instanceof Map) {
+            isEmpty = ((Map<?, ?>) input).isEmpty();
+        }
 
-		return isEmpty;
-	}
+        return isEmpty;
+    }
 
 }

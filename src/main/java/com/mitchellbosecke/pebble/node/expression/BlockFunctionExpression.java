@@ -20,27 +20,27 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class BlockFunctionExpression implements Expression<String> {
 
-	private final Expression<?> blockNameExpression;
+    private final Expression<?> blockNameExpression;
 
-	public BlockFunctionExpression(ArgumentsNode args) {
-		this.blockNameExpression = args.getPositionalArgs().get(0).getValueExpression();
-	}
+    public BlockFunctionExpression(ArgumentsNode args) {
+        this.blockNameExpression = args.getPositionalArgs().get(0).getValueExpression();
+    }
 
-	@Override
-	public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		Writer writer = new StringWriter();
-		String blockName = (String) blockNameExpression.evaluate(self, context);
-		try {
-			self.block(writer, context, blockName, false);
-		} catch (IOException e) {
-			throw new PebbleException(e, "Could not render block [" + blockName + "]");
-		}
-		return writer.toString();
-	}
+    @Override
+    public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        Writer writer = new StringWriter();
+        String blockName = (String) blockNameExpression.evaluate(self, context);
+        try {
+            self.block(writer, context, blockName, false);
+        } catch (IOException e) {
+            throw new PebbleException(e, "Could not render block [" + blockName + "]");
+        }
+        return writer.toString();
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }

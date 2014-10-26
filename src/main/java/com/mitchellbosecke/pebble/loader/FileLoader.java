@@ -24,98 +24,98 @@ import com.mitchellbosecke.pebble.error.LoaderException;
 
 public class FileLoader implements Loader {
 
-	private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
-	private String prefix;
+    private String prefix;
 
-	private String suffix;
+    private String suffix;
 
-	private String charset = "UTF-8";
+    private String charset = "UTF-8";
 
-	@Override
-	public Reader getReader(String templateName) throws LoaderException {
+    @Override
+    public Reader getReader(String templateName) throws LoaderException {
 
-		InputStreamReader isr = null;
-		Reader reader = null;
+        InputStreamReader isr = null;
+        Reader reader = null;
 
-		InputStream is = null;
+        InputStream is = null;
 
-		StringBuilder path = new StringBuilder("");
-		if (getPrefix() != null) {
+        StringBuilder path = new StringBuilder("");
+        if (getPrefix() != null) {
 
-			path.append(getPrefix());
+            path.append(getPrefix());
 
-			if (!getPrefix().endsWith(String.valueOf(File.separatorChar))) {
-				path.append(File.separatorChar);
-			}
-		}
+            if (!getPrefix().endsWith(String.valueOf(File.separatorChar))) {
+                path.append(File.separatorChar);
+            }
+        }
 
-		String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
-		logger.debug("Looking for template in {}.", location);
+        String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
+        logger.debug("Looking for template in {}.", location);
 
-		/*
-		 * if template name contains path segments, move those segments into the
-		 * path variable. The below technique needs to know the difference
-		 * between the path and file name.
-		 */
-		String[] pathSegments = templateName.split("\\\\|/");
+        /*
+         * if template name contains path segments, move those segments into the
+         * path variable. The below technique needs to know the difference
+         * between the path and file name.
+         */
+        String[] pathSegments = templateName.split("\\\\|/");
 
-		if (pathSegments.length > 1) {
-			// file name is the last segment
-			templateName = pathSegments[pathSegments.length - 1];
-		}
-		for (int i = 0; i < (pathSegments.length - 1); i++) {
-			path.append(pathSegments[i]).append(File.separatorChar);
-		}
+        if (pathSegments.length > 1) {
+            // file name is the last segment
+            templateName = pathSegments[pathSegments.length - 1];
+        }
+        for (int i = 0; i < (pathSegments.length - 1); i++) {
+            path.append(pathSegments[i]).append(File.separatorChar);
+        }
 
-		// try to load File
-		if (is == null) {
-			File file = new File(path.toString(), templateName);
-			if (file.exists() && file.isFile()) {
-				try {
-					is = new FileInputStream(file);
-				} catch (FileNotFoundException e) {
-				}
-			}
-		}
+        // try to load File
+        if (is == null) {
+            File file = new File(path.toString(), templateName);
+            if (file.exists() && file.isFile()) {
+                try {
+                    is = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                }
+            }
+        }
 
-		if (is == null) {
-			throw new LoaderException(null, "Could not find template \"" + location + "\"");
-		}
+        if (is == null) {
+            throw new LoaderException(null, "Could not find template \"" + location + "\"");
+        }
 
-		try {
-			isr = new InputStreamReader(is, charset);
-			reader = new BufferedReader(isr);
-		} catch (UnsupportedEncodingException e) {
-		}
+        try {
+            isr = new InputStreamReader(is, charset);
+            reader = new BufferedReader(isr);
+        } catch (UnsupportedEncodingException e) {
+        }
 
-		return reader;
-	}
+        return reader;
+    }
 
-	public String getSuffix() {
-		return suffix;
-	}
+    public String getSuffix() {
+        return suffix;
+    }
 
-	@Override
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
+    @Override
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
 
-	public String getPrefix() {
-		return prefix;
-	}
+    public String getPrefix() {
+        return prefix;
+    }
 
-	@Override
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    @Override
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	public String getCharset() {
-		return charset;
-	}
+    public String getCharset() {
+        return charset;
+    }
 
-	@Override
-	public void setCharset(String charset) {
-		this.charset = charset;
-	}
+    @Override
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
 }

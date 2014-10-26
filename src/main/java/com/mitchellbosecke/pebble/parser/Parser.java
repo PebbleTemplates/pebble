@@ -15,34 +15,34 @@ import com.mitchellbosecke.pebble.node.RootNode;
 
 public interface Parser {
 
-	public RootNode parse(TokenStream stream) throws ParserException;
+    public RootNode parse(TokenStream stream) throws ParserException;
 
-	public BodyNode subparse() throws ParserException;
+    public BodyNode subparse() throws ParserException;
 
-	/**
-	 * Provides the stream of tokens which ultimately need to be "parsed" into
-	 * Nodes.
-	 * 
-	 * @return TokenStream
-	 */
-	public TokenStream getStream();
+    /**
+     * Provides the stream of tokens which ultimately need to be "parsed" into
+     * Nodes.
+     * 
+     * @return TokenStream
+     */
+    public TokenStream getStream();
 
-	/**
-	 * Parses the existing TokenStream, starting at the current Token, and
-	 * ending when the stopCondition is fullfilled.
-	 * 
-	 * @param stopCondition
-	 * @return
-	 * @throws ParserException
-	 */
-	public BodyNode subparse(StoppingCondition stopCondition) throws ParserException;
+    /**
+     * Parses the existing TokenStream, starting at the current Token, and
+     * ending when the stopCondition is fullfilled.
+     * 
+     * @param stopCondition
+     * @return
+     * @throws ParserException
+     */
+    public BodyNode subparse(StoppingCondition stopCondition) throws ParserException;
 
-	public ExpressionParser getExpressionParser();
+    public ExpressionParser getExpressionParser();
 
-	public String peekBlockStack();
+    public String peekBlockStack();
 
-	public String popBlockStack();
+    public String popBlockStack();
 
-	public void pushBlockStack(String blockName);
+    public void pushBlockStack(String blockName);
 
 }

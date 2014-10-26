@@ -12,28 +12,29 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 
 public abstract class BinaryExpression<T> implements Expression<T> {
 
-	private Expression<?> leftExpression;
-	private Expression<?> rightExpression;
+    private Expression<?> leftExpression;
 
-	public void setLeft(Expression<?> left) {
-		this.leftExpression = left;
-	}
+    private Expression<?> rightExpression;
 
-	public void setRight(Expression<?> right) {
-		this.rightExpression = right;
-	}
+    public void setLeft(Expression<?> left) {
+        this.leftExpression = left;
+    }
 
-	public Expression<?> getLeftExpression() {
-		return leftExpression;
-	}
+    public void setRight(Expression<?> right) {
+        this.rightExpression = right;
+    }
 
-	public Expression<?> getRightExpression() {
-		return rightExpression;
-	}
+    public Expression<?> getLeftExpression() {
+        return leftExpression;
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    public Expression<?> getRightExpression() {
+        return rightExpression;
+    }
+
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }

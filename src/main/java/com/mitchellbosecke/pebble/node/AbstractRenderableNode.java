@@ -18,27 +18,27 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public abstract class AbstractRenderableNode implements RenderableNode {
 
-	private int lineNumber;
+    private int lineNumber;
 
-	@Override
-	public abstract void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
-			throws PebbleException, IOException;
+    @Override
+    public abstract void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
+            throws PebbleException, IOException;
 
-	@Override
-	public abstract void accept(NodeVisitor visitor);
+    @Override
+    public abstract void accept(NodeVisitor visitor);
 
-	public AbstractRenderableNode() {
-	}
+    public AbstractRenderableNode() {
+    }
 
-	public AbstractRenderableNode(int lineNumber) {
-		this.setLineNumber(lineNumber);
-	}
+    public AbstractRenderableNode(int lineNumber) {
+        this.setLineNumber(lineNumber);
+    }
 
-	public int getLineNumber() {
-		return lineNumber;
-	}
+    public int getLineNumber() {
+        return lineNumber;
+    }
 
-	public void setLineNumber(int lineNumber) {
-		this.lineNumber = lineNumber;
-	}
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+    }
 }

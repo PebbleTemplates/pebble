@@ -16,33 +16,33 @@ import com.mitchellbosecke.pebble.utils.OperatorUtils;
 
 public class MaxFunction implements Function {
 
-	@Override
-	public List<String> getArgumentNames() {
-		return null;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        return null;
+    }
 
-	@Override
-	public Object execute(Map<String, Object> args) {
-		Object min = null;
+    @Override
+    public Object execute(Map<String, Object> args) {
+        Object min = null;
 
-		int i = 0;
+        int i = 0;
 
-		while (args.containsKey(String.valueOf(i))) {
+        while (args.containsKey(String.valueOf(i))) {
 
-			Object candidate = args.get(String.valueOf(i));
-			i++;
+            Object candidate = args.get(String.valueOf(i));
+            i++;
 
-			if (min == null) {
-				min = candidate;
-				continue;
-			}
-			if (OperatorUtils.gt(candidate, min)) {
-				min = candidate;
-			}
+            if (min == null) {
+                min = candidate;
+                continue;
+            }
+            if (OperatorUtils.gt(candidate, min)) {
+                min = candidate;
+            }
 
-		}
-		return min;
+        }
+        return min;
 
-	}
+    }
 
 }

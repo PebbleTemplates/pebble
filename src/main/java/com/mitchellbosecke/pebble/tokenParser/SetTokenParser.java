@@ -17,27 +17,27 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 
 public class SetTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
-		
-		// skip the 'set' token
-		stream.next();
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		String name = this.parser.getExpressionParser().parseNewVariableName();
+        // skip the 'set' token
+        stream.next();
 
-		stream.expect(Token.Type.PUNCTUATION, "=");
-		
-		Expression<?> value = this.parser.getExpressionParser().parseExpression();
+        String name = this.parser.getExpressionParser().parseNewVariableName();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.PUNCTUATION, "=");
 
-		return new SetNode(lineNumber, name, value);
-	}
+        Expression<?> value = this.parser.getExpressionParser().parseExpression();
 
-	@Override
-	public String getTag() {
-		return "set";
-	}
+        stream.expect(Token.Type.EXECUTE_END);
+
+        return new SetNode(lineNumber, name, value);
+    }
+
+    @Override
+    public String getTag() {
+        return "set";
+    }
 }

@@ -12,6 +12,6 @@ import java.util.Map;
 
 public interface Function extends NamedArguments {
 
-	public Object execute(Map<String, Object> args);
+    public Object execute(Map<String, Object> args);
 
 }

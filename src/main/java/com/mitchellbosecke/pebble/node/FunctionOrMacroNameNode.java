@@ -16,24 +16,24 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class FunctionOrMacroNameNode implements Expression<String> {
 
-	private final String name;
+    private final String name;
 
-	public FunctionOrMacroNameNode(String name) {
-		this.name = name;
-	}
+    public FunctionOrMacroNameNode(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
 }

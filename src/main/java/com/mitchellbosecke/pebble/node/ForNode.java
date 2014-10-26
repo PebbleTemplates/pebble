@@ -67,7 +67,7 @@ public class ForNode extends AbstractRenderableNode {
                 loop.put("index", index++);
                 loop.put("length", length);
                 context.put("loop", loop);
-                
+
                 context.put(variableName, iterator.next());
                 body.render(self, writer, context);
             }
@@ -115,35 +115,35 @@ public class ForNode extends AbstractRenderableNode {
 
     @SuppressWarnings("unchecked")
     private Iterable<Object> toIterable(final Object obj) {
-        
+
         Iterable<Object> result = null;
-        
-        if(obj.getClass().isArray()){
- 
+
+        if (obj.getClass().isArray()) {
+
             if (Array.getLength(obj) == 0) {
                 return new ArrayList<>(0);
             }
-    
+
             result = new Iterable<Object>() {
-    
+
                 @Override
                 public Iterator<Object> iterator() {
                     return new Iterator<Object>() {
-    
+
                         private int index = 0;
-    
+
                         private final int length = Array.getLength(obj);
-    
+
                         @Override
                         public boolean hasNext() {
                             return index < length;
                         }
-    
+
                         @Override
                         public Object next() {
                             return Array.get(obj, index++);
                         }
-    
+
                         @Override
                         public void remove() {
                             throw new UnsupportedOperationException();
@@ -151,10 +151,10 @@ public class ForNode extends AbstractRenderableNode {
                     };
                 }
             };
-        }else if (obj instanceof Iterable<?>){
-            result = (Iterable<Object>)obj;
+        } else if (obj instanceof Iterable<?>) {
+            result = (Iterable<Object>) obj;
         }
-        
+
         return result;
     }
 }

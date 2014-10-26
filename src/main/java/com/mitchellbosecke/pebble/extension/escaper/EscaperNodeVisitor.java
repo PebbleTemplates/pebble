@@ -28,116 +28,116 @@ import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
-	private final LinkedList<String> strategies = new LinkedList<>();
+    private final LinkedList<String> strategies = new LinkedList<>();
 
-	private final LinkedList<Boolean> active = new LinkedList<>();
+    private final LinkedList<Boolean> active = new LinkedList<>();
 
-	private final List<String> safeFilters = new ArrayList<>();
+    private final List<String> safeFilters = new ArrayList<>();
 
-	public EscaperNodeVisitor() {
-		safeFilters.add("raw");
-		safeFilters.add("escape");
-		safeFilters.add("date");
-	}
+    public EscaperNodeVisitor() {
+        safeFilters.add("raw");
+        safeFilters.add("escape");
+        safeFilters.add("date");
+    }
 
-	@Override
-	public void visit(PrintNode node) {
-		Expression<?> expression = node.getExpression();
+    @Override
+    public void visit(PrintNode node) {
+        Expression<?> expression = node.getExpression();
 
-		if (expression instanceof TernaryExpression) {
-			TernaryExpression ternary = (TernaryExpression) expression;
-			Expression<?> left = ternary.getExpression2();
-			Expression<?> right = ternary.getExpression3();
-			if (!isSafe(left)) {
-				ternary.setExpression2(escape(left));
-			}
-			if (!isSafe(right)) {
-				ternary.setExpression3(escape(right));
-			}
-		} else {
-			if (!isSafe(expression)) {
-				node.setExpression(escape(expression));
-			}
-		}
-	}
+        if (expression instanceof TernaryExpression) {
+            TernaryExpression ternary = (TernaryExpression) expression;
+            Expression<?> left = ternary.getExpression2();
+            Expression<?> right = ternary.getExpression3();
+            if (!isSafe(left)) {
+                ternary.setExpression2(escape(left));
+            }
+            if (!isSafe(right)) {
+                ternary.setExpression3(escape(right));
+            }
+        } else {
+            if (!isSafe(expression)) {
+                node.setExpression(escape(expression));
+            }
+        }
+    }
 
-	@Override
-	public void visit(AutoEscapeNode node) {
-		active.push(node.isActive());
-		strategies.push(node.getStrategy());
+    @Override
+    public void visit(AutoEscapeNode node) {
+        active.push(node.isActive());
+        strategies.push(node.getStrategy());
 
-		node.getBody().accept(this);
+        node.getBody().accept(this);
 
-		active.pop();
-		strategies.pop();
-	}
+        active.pop();
+        strategies.pop();
+    }
 
-	private Expression<?> escape(Expression<?> expression) {
+    private Expression<?> escape(Expression<?> expression) {
 
-		/*
-		 * Build the arguments to the escape filter. The arguments will just
-		 * include the strategy being used.
-		 */
-		List<NamedArgumentNode> namedArgs = new ArrayList<>();
-		if (!strategies.isEmpty() && strategies.peek() != null) {
-			String strategy = strategies.peek();
-			namedArgs.add(new NamedArgumentNode("strategy", new LiteralStringExpression(strategy)));
-		}
-		ArgumentsNode args = new ArgumentsNode(null, namedArgs);
+        /*
+         * Build the arguments to the escape filter. The arguments will just
+         * include the strategy being used.
+         */
+        List<NamedArgumentNode> namedArgs = new ArrayList<>();
+        if (!strategies.isEmpty() && strategies.peek() != null) {
+            String strategy = strategies.peek();
+            namedArgs.add(new NamedArgumentNode("strategy", new LiteralStringExpression(strategy)));
+        }
+        ArgumentsNode args = new ArgumentsNode(null, namedArgs);
 
-		/*
-		 * Create the filter invocation with the newly created named arguments.
-		 */
-		FilterInvocationExpression filter = new FilterInvocationExpression("escape", args);
+        /*
+         * Create the filter invocation with the newly created named arguments.
+         */
+        FilterInvocationExpression filter = new FilterInvocationExpression("escape", args);
 
-		/*
-		 * The given expression and the filter invocation now become a binary
-		 * expression which is what is returned.
-		 */
-		FilterExpression binary = new FilterExpression();
-		binary.setLeft(expression);
-		binary.setRight(filter);
-		return binary;
-	}
+        /*
+         * The given expression and the filter invocation now become a binary
+         * expression which is what is returned.
+         */
+        FilterExpression binary = new FilterExpression();
+        binary.setLeft(expression);
+        binary.setRight(filter);
+        return binary;
+    }
 
-	private boolean isSafe(Expression<?> expression) {
+    private boolean isSafe(Expression<?> expression) {
 
-		// check whether the autoescaper is even active
-		if (!active.isEmpty() && active.peek() == false) {
-			return true;
-		}
+        // check whether the autoescaper is even active
+        if (!active.isEmpty() && active.peek() == false) {
+            return true;
+        }
 
-		boolean safe = false;
+        boolean safe = false;
 
-		// string literals are safe
-		if (expression instanceof LiteralStringExpression) {
-			safe = true;
-		}
-		// function and macro calls are considered safe
-		else if (expression instanceof FunctionOrMacroInvocationExpression
-				|| expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
-			safe = true;
-		} else if (expression instanceof FilterExpression) {
+        // string literals are safe
+        if (expression instanceof LiteralStringExpression) {
+            safe = true;
+        }
+        // function and macro calls are considered safe
+        else if (expression instanceof FunctionOrMacroInvocationExpression
+                || expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
+            safe = true;
+        } else if (expression instanceof FilterExpression) {
 
-			// certain filters do not need to be escaped
-			FilterExpression binary = (FilterExpression) expression;
-			FilterInvocationExpression filterInvocation = (FilterInvocationExpression) binary.getRightExpression();
-			String filterName = filterInvocation.getFilterName();
+            // certain filters do not need to be escaped
+            FilterExpression binary = (FilterExpression) expression;
+            FilterInvocationExpression filterInvocation = (FilterInvocationExpression) binary.getRightExpression();
+            String filterName = filterInvocation.getFilterName();
 
-			if (safeFilters.contains(filterName)) {
-				safe = true;
-			}
-		}
+            if (safeFilters.contains(filterName)) {
+                safe = true;
+            }
+        }
 
-		return safe;
-	}
+        return safe;
+    }
 
-	public void addSafeFilter(String filter) {
-		this.safeFilters.add(filter);
-	}
+    public void addSafeFilter(String filter) {
+        this.safeFilters.add(filter);
+    }
 
-	public void pushAutoEscapeState(boolean auto) {
-		active.push(auto);
-	}
+    public void pushAutoEscapeState(boolean auto) {
+        active.push(auto);
+    }
 
 }

@@ -18,32 +18,32 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class SetNode extends AbstractRenderableNode {
 
-	private final String name;
+    private final String name;
 
-	private final Expression<?> value;
+    private final Expression<?> value;
 
-	public SetNode(int lineNumber, String name, Expression<?> value) {
-		super(lineNumber);
-		this.name = name;
-		this.value = value;
-	}
+    public SetNode(int lineNumber, String name, Expression<?> value) {
+        super(lineNumber);
+        this.name = name;
+        this.value = value;
+    }
 
-	@Override
-	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
-		context.put(name, value.evaluate(self, context));
-	}
+    @Override
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
+        context.put(name, value.evaluate(self, context));
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public Expression<?> getValue() {
-		return value;
-	}
+    public Expression<?> getValue() {
+        return value;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
 }

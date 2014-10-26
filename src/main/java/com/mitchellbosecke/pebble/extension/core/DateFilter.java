@@ -22,42 +22,40 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class DateFilter implements Filter {
 
-	@Override
-	public List<String> getArgumentNames() {
-		List<String> names = new ArrayList<>();
-		names.add("format");
-		names.add("existingFormat");
-		return names;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        List<String> names = new ArrayList<>();
+        names.add("format");
+        names.add("existingFormat");
+        return names;
+    }
 
-	@Override
-	public Object apply(Object input, Map<String, Object> args) {
-		if (input == null) {
-			return null;
-		}
-		Date date = null;
+    @Override
+    public Object apply(Object input, Map<String, Object> args) {
+        if (input == null) {
+            return null;
+        }
+        Date date = null;
 
-		DateFormat existingFormat = null;
-		DateFormat intendedFormat = null;
+        DateFormat existingFormat = null;
+        DateFormat intendedFormat = null;
 
-		EvaluationContext context = (EvaluationContext) args.get("_context");
-		Locale locale = context.getLocale();
+        EvaluationContext context = (EvaluationContext) args.get("_context");
+        Locale locale = context.getLocale();
 
-		intendedFormat = new SimpleDateFormat((String) args.get("format"),
-				locale);
+        intendedFormat = new SimpleDateFormat((String) args.get("format"), locale);
 
-		if (args.get("existingFormat") != null) {
-			existingFormat = new SimpleDateFormat(
-					(String) args.get("existingFormat"), locale);
-			try {
-				date = existingFormat.parse((String) input);
-			} catch (ParseException e) {
-				throw new RuntimeException("Could not parse date", e);
-			}
-		} else {
-			date = (Date) input;
-		}
+        if (args.get("existingFormat") != null) {
+            existingFormat = new SimpleDateFormat((String) args.get("existingFormat"), locale);
+            try {
+                date = existingFormat.parse((String) input);
+            } catch (ParseException e) {
+                throw new RuntimeException("Could not parse date", e);
+            }
+        } else {
+            date = (Date) input;
+        }
 
-		return intendedFormat.format(date);
-	}
+        return intendedFormat.format(date);
+    }
 }

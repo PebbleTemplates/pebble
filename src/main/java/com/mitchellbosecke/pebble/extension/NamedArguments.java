@@ -12,5 +12,5 @@ import java.util.List;
 
 public interface NamedArguments {
 
-	public List<String> getArgumentNames();
+    public List<String> getArgumentNames();
 }

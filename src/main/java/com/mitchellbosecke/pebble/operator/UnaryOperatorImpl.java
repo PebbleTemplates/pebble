@@ -12,28 +12,30 @@ import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 
 public class UnaryOperatorImpl implements UnaryOperator {
 
-	private final int precedence;
-	private final String symbol;
-	private final Class<? extends UnaryExpression> nodeClass;
+    private final int precedence;
 
-	public UnaryOperatorImpl(String symbol, int precedence, Class<? extends UnaryExpression> nodeClass) {
-		this.symbol = symbol;
-		this.precedence = precedence;
-		this.nodeClass = nodeClass;
-	}
+    private final String symbol;
 
-	@Override
-	public int getPrecedence() {
-		return precedence;
-	}
+    private final Class<? extends UnaryExpression> nodeClass;
 
-	@Override
-	public String getSymbol() {
-		return symbol;
-	}
+    public UnaryOperatorImpl(String symbol, int precedence, Class<? extends UnaryExpression> nodeClass) {
+        this.symbol = symbol;
+        this.precedence = precedence;
+        this.nodeClass = nodeClass;
+    }
 
-	@Override
-	public Class<? extends UnaryExpression> getNodeClass() {
-		return nodeClass;
-	}
+    @Override
+    public int getPrecedence() {
+        return precedence;
+    }
+
+    @Override
+    public String getSymbol() {
+        return symbol;
+    }
+
+    @Override
+    public Class<? extends UnaryExpression> getNodeClass() {
+        return nodeClass;
+    }
 }

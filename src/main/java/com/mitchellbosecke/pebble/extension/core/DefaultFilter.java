@@ -18,23 +18,23 @@ import com.mitchellbosecke.pebble.extension.Test;
 
 public class DefaultFilter implements Filter {
 
-	@Override
-	public List<String> getArgumentNames() {
-		List<String> names = new ArrayList<>();
-		names.add("default");
-		return names;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        List<String> names = new ArrayList<>();
+        names.add("default");
+        return names;
+    }
 
-	@Override
-	public Object apply(Object input, Map<String, Object> args) {
+    @Override
+    public Object apply(Object input, Map<String, Object> args) {
 
-		Object defaultObj = args.get("default");
+        Object defaultObj = args.get("default");
 
-		Test emptyTest = new EmptyTest();
-		if (emptyTest.apply(input, new HashMap<String, Object>())) {
-			return defaultObj;
-		}
-		return input;
-	}
+        Test emptyTest = new EmptyTest();
+        if (emptyTest.apply(input, new HashMap<String, Object>())) {
+            return defaultObj;
+        }
+        return input;
+    }
 
 }

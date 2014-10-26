@@ -20,55 +20,55 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class BodyNode extends AbstractRenderableNode {
 
-	private final List<RenderableNode> children;
+    private final List<RenderableNode> children;
 
-	/**
-	 * When a template extends a parent template there are very few nodes in the
-	 * child that should actually get rendered such as set and import. All
-	 * others should be ignored.
-	 */
-	private boolean onlyRenderInheritanceSafeNodes = false;
+    /**
+     * When a template extends a parent template there are very few nodes in the
+     * child that should actually get rendered such as set and import. All
+     * others should be ignored.
+     */
+    private boolean onlyRenderInheritanceSafeNodes = false;
 
-	public BodyNode(int lineNumber, List<RenderableNode> children) {
-		super(lineNumber);
-		this.children = children;
-	}
+    public BodyNode(int lineNumber, List<RenderableNode> children) {
+        super(lineNumber);
+        this.children = children;
+    }
 
-	@Override
-	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
-			IOException {
-		for (RenderableNode child : children) {
-			if (onlyRenderInheritanceSafeNodes && context.getParentTemplate() != null) {
-				if (!nodesToRenderInChild.contains(child.getClass())) {
-					continue;
-				}
-			}
-			child.render(self, writer, context);
-		}
-	}
+    @Override
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
+            IOException {
+        for (RenderableNode child : children) {
+            if (onlyRenderInheritanceSafeNodes && context.getParentTemplate() != null) {
+                if (!nodesToRenderInChild.contains(child.getClass())) {
+                    continue;
+                }
+            }
+            child.render(self, writer, context);
+        }
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public List<RenderableNode> getChildren() {
-		return children;
-	}
+    public List<RenderableNode> getChildren() {
+        return children;
+    }
 
-	public boolean isOnlyRenderInheritanceSafeNodes() {
-		return onlyRenderInheritanceSafeNodes;
-	}
+    public boolean isOnlyRenderInheritanceSafeNodes() {
+        return onlyRenderInheritanceSafeNodes;
+    }
 
-	public void setOnlyRenderInheritanceSafeNodes(boolean onlyRenderInheritanceSafeNodes) {
-		this.onlyRenderInheritanceSafeNodes = onlyRenderInheritanceSafeNodes;
-	}
+    public void setOnlyRenderInheritanceSafeNodes(boolean onlyRenderInheritanceSafeNodes) {
+        this.onlyRenderInheritanceSafeNodes = onlyRenderInheritanceSafeNodes;
+    }
 
-	private static List<Class<? extends Node>> nodesToRenderInChild = new ArrayList<>();
+    private static List<Class<? extends Node>> nodesToRenderInChild = new ArrayList<>();
 
-	static {
-		nodesToRenderInChild.add(SetNode.class);
-		nodesToRenderInChild.add(ImportNode.class);
-	}
+    static {
+        nodesToRenderInChild.add(SetNode.class);
+        nodesToRenderInChild.add(ImportNode.class);
+    }
 
 }

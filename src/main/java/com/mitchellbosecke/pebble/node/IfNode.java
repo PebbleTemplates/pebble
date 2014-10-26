@@ -21,53 +21,53 @@ import com.mitchellbosecke.pebble.utils.Pair;
 
 public class IfNode extends AbstractRenderableNode {
 
-	private final List<Pair<Expression<?>, BodyNode>> conditionsWithBodies;
+    private final List<Pair<Expression<?>, BodyNode>> conditionsWithBodies;
 
-	private final BodyNode elseBody;
+    private final BodyNode elseBody;
 
-	public IfNode(int lineNumber, List<Pair<Expression<?>, BodyNode>> conditionsWithBodies) {
-		this(lineNumber, conditionsWithBodies, null);
-	}
+    public IfNode(int lineNumber, List<Pair<Expression<?>, BodyNode>> conditionsWithBodies) {
+        this(lineNumber, conditionsWithBodies, null);
+    }
 
-	public IfNode(int lineNumber, List<Pair<Expression<?>, BodyNode>> conditionsWithBodies, BodyNode elseBody) {
-		super(lineNumber);
-		this.conditionsWithBodies = conditionsWithBodies;
-		this.elseBody = elseBody;
-	}
+    public IfNode(int lineNumber, List<Pair<Expression<?>, BodyNode>> conditionsWithBodies, BodyNode elseBody) {
+        super(lineNumber);
+        this.conditionsWithBodies = conditionsWithBodies;
+        this.elseBody = elseBody;
+    }
 
-	@Override
-	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
-			IOException {
+    @Override
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
+            IOException {
 
-		boolean satisfied = false;
-		for (Pair<Expression<?>, BodyNode> ifStatement : conditionsWithBodies) {
+        boolean satisfied = false;
+        for (Pair<Expression<?>, BodyNode> ifStatement : conditionsWithBodies) {
 
-			Object result = ifStatement.getLeft().evaluate(self, context);
-			if (result != null)
-				satisfied = (Boolean)result;
+            Object result = ifStatement.getLeft().evaluate(self, context);
+            if (result != null)
+                satisfied = (Boolean) result;
 
-			if (satisfied) {
-				ifStatement.getRight().render(self, writer, context);
-				break;
-			}
-		}
+            if (satisfied) {
+                ifStatement.getRight().render(self, writer, context);
+                break;
+            }
+        }
 
-		if (!satisfied && elseBody != null) {
-			elseBody.render(self, writer, context);
-		}
-	}
+        if (!satisfied && elseBody != null) {
+            elseBody.render(self, writer, context);
+        }
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public List<Pair<Expression<?>, BodyNode>> getConditionsWithBodies() {
-		return conditionsWithBodies;
-	}
+    public List<Pair<Expression<?>, BodyNode>> getConditionsWithBodies() {
+        return conditionsWithBodies;
+    }
 
-	public BodyNode getElseBody() {
-		return elseBody;
-	}
+    public BodyNode getElseBody() {
+        return elseBody;
+    }
 
 }

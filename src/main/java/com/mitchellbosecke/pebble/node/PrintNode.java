@@ -19,33 +19,33 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class PrintNode extends AbstractRenderableNode {
 
-	private Expression<?> expression;
+    private Expression<?> expression;
 
-	public PrintNode(Expression<?> expression, int lineNumber) {
-		super(lineNumber);
-		this.expression = expression;
-	}
+    public PrintNode(Expression<?> expression, int lineNumber) {
+        super(lineNumber);
+        this.expression = expression;
+    }
 
-	@Override
-	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException,
-			PebbleException {
-		Object var = expression.evaluate(self, context);
-		if (var != null) {
-			writer.write(var.toString());
-		}
-	}
+    @Override
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException,
+            PebbleException {
+        Object var = expression.evaluate(self, context);
+        if (var != null) {
+            writer.write(var.toString());
+        }
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public Expression<?> getExpression() {
-		return expression;
-	}
+    public Expression<?> getExpression() {
+        return expression;
+    }
 
-	public void setExpression(Expression<?> expression) {
-		this.expression = expression;
-	}
+    public void setExpression(Expression<?> expression) {
+        this.expression = expression;
+    }
 
 }

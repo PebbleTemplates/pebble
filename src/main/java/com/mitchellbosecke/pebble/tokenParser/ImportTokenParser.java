@@ -17,24 +17,24 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 
 public class ImportTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
 
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		// skip over the 'import' token
-		stream.next();
+        // skip over the 'import' token
+        stream.next();
 
-		Expression<?> importExpression = this.parser.getExpressionParser().parseExpression();
+        Expression<?> importExpression = this.parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		return new ImportNode(lineNumber, importExpression);
-	}
+        return new ImportNode(lineNumber, importExpression);
+    }
 
-	@Override
-	public String getTag() {
-		return "import";
-	}
+    @Override
+    public String getTag() {
+        return "import";
+    }
 }

@@ -15,13 +15,13 @@ import com.mitchellbosecke.pebble.extension.Test;
 
 public class NullTest implements Test {
 
-	@Override
-	public List<String> getArgumentNames() {
-		return null;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        return null;
+    }
 
-	@Override
-	public boolean apply(Object input, Map<String, Object> args) {
-		return input == null;
-	}
+    @Override
+    public boolean apply(Object input, Map<String, Object> args) {
+        return input == null;
+    }
 }

@@ -16,22 +16,22 @@ import com.mitchellbosecke.pebble.node.RenderableNode;
 
 public class FlushTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
 
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		// skip over the 'flush' token
-		stream.next();
+        // skip over the 'flush' token
+        stream.next();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		return new FlushNode(lineNumber);
-	}
+        return new FlushNode(lineNumber);
+    }
 
-	@Override
-	public String getTag() {
-		return "flush";
-	}
+    @Override
+    public String getTag() {
+        return "flush";
+    }
 }

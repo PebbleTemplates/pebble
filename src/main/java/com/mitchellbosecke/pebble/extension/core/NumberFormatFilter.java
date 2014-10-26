@@ -21,30 +21,30 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class NumberFormatFilter implements Filter {
 
-	@Override
-	public List<String> getArgumentNames() {
-		List<String> names = new ArrayList<>();
-		names.add("format");
-		return names;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        List<String> names = new ArrayList<>();
+        names.add("format");
+        return names;
+    }
 
-	@Override
-	public Object apply(Object input, Map<String, Object> args) {
-		if (input == null) {
-			return null;
-		}
-		Number number = (Number) input;
+    @Override
+    public Object apply(Object input, Map<String, Object> args) {
+        if (input == null) {
+            return null;
+        }
+        Number number = (Number) input;
 
-		EvaluationContext context = (EvaluationContext) args.get("_context");
-		Locale locale = context.getLocale();
+        EvaluationContext context = (EvaluationContext) args.get("_context");
+        Locale locale = context.getLocale();
 
-		if (args.get("format") != null) {
-			Format format = new DecimalFormat((String) args.get("format"));
-			return format.format(number);
-		} else {
-			NumberFormat numberFormat = NumberFormat.getInstance(locale);
-			return numberFormat.format(number);
-		}
-	}
+        if (args.get("format") != null) {
+            Format format = new DecimalFormat((String) args.get("format"));
+            return format.format(number);
+        } else {
+            NumberFormat numberFormat = NumberFormat.getInstance(locale);
+            return numberFormat.format(number);
+        }
+    }
 
 }

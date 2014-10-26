@@ -15,20 +15,20 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class LiteralStringExpression implements Expression<String> {
 
-	private final String value;
+    private final String value;
 
-	public LiteralStringExpression(String value) {
-		this.value = value;
-	}
+    public LiteralStringExpression(String value) {
+        this.value = value;
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	@Override
-	public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		return value;
-	}
+    @Override
+    public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        return value;
+    }
 
 }

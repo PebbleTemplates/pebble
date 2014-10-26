@@ -17,18 +17,18 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class FlushNode extends AbstractRenderableNode {
 
-	public FlushNode(int lineNumber) {
-		super(lineNumber);
-	}
+    public FlushNode(int lineNumber) {
+        super(lineNumber);
+    }
 
-	@Override
-	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
-		writer.flush();
-	}
+    @Override
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
+        writer.flush();
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }

@@ -15,14 +15,14 @@ import com.mitchellbosecke.pebble.extension.Test;
 
 public class IterableTest implements Test {
 
-	@Override
-	public List<String> getArgumentNames() {
-		return null;
-	}
-	
-	@Override
-	public boolean apply(Object input, Map<String, Object> args) {
+    @Override
+    public List<String> getArgumentNames() {
+        return null;
+    }
 
-		return input instanceof Iterable;
-	}
+    @Override
+    public boolean apply(Object input, Map<String, Object> args) {
+
+        return input instanceof Iterable;
+    }
 }

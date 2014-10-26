@@ -19,25 +19,25 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class i18nFunction implements Function {
 
-	@Override
-	public List<String> getArgumentNames() {
-		List<String> names = new ArrayList<>();
-		names.add("bundle");
-		names.add("key");
-		return names;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        List<String> names = new ArrayList<>();
+        names.add("bundle");
+        names.add("key");
+        return names;
+    }
 
-	@Override
-	public Object execute(Map<String, Object> args) {
-		String basename = (String) args.get("bundle");
-		String key = (String) args.get("key");
+    @Override
+    public Object execute(Map<String, Object> args) {
+        String basename = (String) args.get("bundle");
+        String key = (String) args.get("key");
 
-		EvaluationContext context = (EvaluationContext) args.get("_context");
-		Locale locale = context.getLocale();
+        EvaluationContext context = (EvaluationContext) args.get("_context");
+        Locale locale = context.getLocale();
 
-		ResourceBundle bundle = ResourceBundle.getBundle(basename, locale);
+        ResourceBundle bundle = ResourceBundle.getBundle(basename, locale);
 
-		return bundle.getObject(key);
-	}
+        return bundle.getObject(key);
+    }
 
 }

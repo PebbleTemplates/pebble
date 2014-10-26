@@ -15,24 +15,24 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class ContextVariableExpression implements Expression<Object> {
 
-	protected final String name;
+    protected final String name;
 
-	public ContextVariableExpression(String name) {
-		this.name = name;
-	}
+    public ContextVariableExpression(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		return context.get(name);
-	}
+    @Override
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        return context.get(name);
+    }
 
 }

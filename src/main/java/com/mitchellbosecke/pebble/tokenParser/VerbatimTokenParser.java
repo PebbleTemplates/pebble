@@ -21,14 +21,14 @@ import com.mitchellbosecke.pebble.node.RenderableNode;
  */
 public class VerbatimTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
 
-		throw new UnsupportedOperationException();
-	}
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String getTag() {
-		return "verbatim";
-	}
+    @Override
+    public String getTag() {
+        return "verbatim";
+    }
 }

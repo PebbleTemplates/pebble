@@ -27,75 +27,75 @@ import java.util.concurrent.Future;
  */
 public class FutureWriter extends Writer {
 
-	private final ConcurrentLinkedQueue<Future<String>> orderedFutures = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Future<String>> orderedFutures = new ConcurrentLinkedQueue<>();
 
-	private final ExecutorService es;
+    private final ExecutorService es;
 
-	private final Writer internalWriter;
+    private final Writer internalWriter;
 
-	private boolean closed = false;
+    private boolean closed = false;
 
-	public FutureWriter(Writer writer, ExecutorService es) {
-		this.internalWriter = writer;
-		this.es = es;
-	}
+    public FutureWriter(Writer writer, ExecutorService es) {
+        this.internalWriter = writer;
+        this.es = es;
+    }
 
-	public void enqueue(Future<String> future) throws IOException {
-		if (closed) {
-			throw new IOException("Writer is closed");
-		}
-		orderedFutures.add(future);
-	}
+    public void enqueue(Future<String> future) throws IOException {
+        if (closed) {
+            throw new IOException("Writer is closed");
+        }
+        orderedFutures.add(future);
+    }
 
-	@Override
-	public void write(final char[] cbuf, final int off, final int len) throws IOException {
+    @Override
+    public void write(final char[] cbuf, final int off, final int len) throws IOException {
 
-		/*
-		 * We need to make a defensive copy of the character buffer because this
-		 * class will continue to reuse the same buffer with future invocations
-		 * of this write method.
-		 */
-		final char[] finalCharacterBuffer = Arrays.copyOf(cbuf, len);
+        /*
+         * We need to make a defensive copy of the character buffer because this
+         * class will continue to reuse the same buffer with future invocations
+         * of this write method.
+         */
+        final char[] finalCharacterBuffer = Arrays.copyOf(cbuf, len);
 
-		if (orderedFutures.isEmpty()) {
-			internalWriter.write(finalCharacterBuffer, off, len);
-		} else {
-			Future<String> future = es.submit(new Callable<String>() {
+        if (orderedFutures.isEmpty()) {
+            internalWriter.write(finalCharacterBuffer, off, len);
+        } else {
+            Future<String> future = es.submit(new Callable<String>() {
 
-				@Override
-				public String call() throws Exception {
-					char[] chars = new char[len];
-					System.arraycopy(finalCharacterBuffer, off, chars, 0, len);
-					return new String(chars);
-				}
+                @Override
+                public String call() throws Exception {
+                    char[] chars = new char[len];
+                    System.arraycopy(finalCharacterBuffer, off, chars, 0, len);
+                    return new String(chars);
+                }
 
-			});
+            });
 
-			orderedFutures.add(future);
-		}
-	}
+            orderedFutures.add(future);
+        }
+    }
 
-	@Override
-	public void flush() throws IOException {
-		for (Future<String> future : orderedFutures) {
-			try {
-				String result = future.get();
-				internalWriter.write(result);
-				internalWriter.flush();
-			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		orderedFutures.clear();
-	}
+    @Override
+    public void flush() throws IOException {
+        for (Future<String> future : orderedFutures) {
+            try {
+                String result = future.get();
+                internalWriter.write(result);
+                internalWriter.flush();
+            } catch (InterruptedException | ExecutionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        orderedFutures.clear();
+    }
 
-	@Override
-	public void close() throws IOException {
-		flush();
-		internalWriter.close();
-		closed = true;
+    @Override
+    public void close() throws IOException {
+        flush();
+        internalWriter.close();
+        closed = true;
 
-	}
+    }
 
 }

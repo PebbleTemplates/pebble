@@ -17,22 +17,22 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 
 public class ExtendsTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		// skip the 'extends' token
-		stream.next();
+        // skip the 'extends' token
+        stream.next();
 
-		Expression<?> parentTemplateExpression = parser.getExpressionParser().parseExpression();
+        Expression<?> parentTemplateExpression = parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.EXECUTE_END);
-		return new ExtendsNode(lineNumber, parentTemplateExpression);
-	}
+        stream.expect(Token.Type.EXECUTE_END);
+        return new ExtendsNode(lineNumber, parentTemplateExpression);
+    }
 
-	@Override
-	public String getTag() {
-		return "extends";
-	}
+    @Override
+    public String getTag() {
+        return "extends";
+    }
 }

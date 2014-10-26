@@ -15,48 +15,50 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class TernaryExpression implements Expression<Object> {
 
-	private final Expression<Boolean> expression1;
-	private Expression<?> expression2;
-	private Expression<?> expression3;
+    private final Expression<Boolean> expression1;
 
-	public TernaryExpression(Expression<Boolean> expression1, Expression<?> expression2, Expression<?> expression3) {
-		this.expression1 = expression1;
-		this.expression2 = expression2;
-		this.expression3 = expression3;
-	}
+    private Expression<?> expression2;
 
-	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		if (expression1.evaluate(self, context) != null && expression1.evaluate(self, context) == true) {
-			return expression2.evaluate(self, context);
-		} else {
-			return expression3.evaluate(self, context);
-		}
-	}
+    private Expression<?> expression3;
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    public TernaryExpression(Expression<Boolean> expression1, Expression<?> expression2, Expression<?> expression3) {
+        this.expression1 = expression1;
+        this.expression2 = expression2;
+        this.expression3 = expression3;
+    }
 
-	public Expression<Boolean> getExpression1() {
-		return expression1;
-	}
+    @Override
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        if (expression1.evaluate(self, context) != null && expression1.evaluate(self, context) == true) {
+            return expression2.evaluate(self, context);
+        } else {
+            return expression3.evaluate(self, context);
+        }
+    }
 
-	public Expression<?> getExpression2() {
-		return expression2;
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public Expression<?> getExpression3() {
-		return expression3;
-	}
+    public Expression<Boolean> getExpression1() {
+        return expression1;
+    }
 
-	public void setExpression3(Expression<?> expression3) {
-		this.expression3 = expression3;
-	}
+    public Expression<?> getExpression2() {
+        return expression2;
+    }
 
-	public void setExpression2(Expression<?> expression2) {
-		this.expression2 = expression2;
-	}
+    public Expression<?> getExpression3() {
+        return expression3;
+    }
+
+    public void setExpression3(Expression<?> expression3) {
+        this.expression3 = expression3;
+    }
+
+    public void setExpression2(Expression<?> expression2) {
+        this.expression2 = expression2;
+    }
 
 }

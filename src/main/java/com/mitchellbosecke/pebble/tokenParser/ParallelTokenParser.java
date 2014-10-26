@@ -18,34 +18,35 @@ import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class ParallelTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		// skip the 'parallel' token
-		stream.next();
+        // skip the 'parallel' token
+        stream.next();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		BodyNode body = this.parser.subparse(decideParallelEnd);
+        BodyNode body = this.parser.subparse(decideParallelEnd);
 
-		// skip the 'endparallel' token
-		stream.next();
+        // skip the 'endparallel' token
+        stream.next();
 
-		stream.expect(Token.Type.EXECUTE_END);
-		return new ParallelNode(lineNumber, body);
-	}
+        stream.expect(Token.Type.EXECUTE_END);
+        return new ParallelNode(lineNumber, body);
+    }
 
-	private StoppingCondition decideParallelEnd = new StoppingCondition() {
-		@Override
-		public boolean evaluate(Token token) {
-			return token.test(Token.Type.NAME, "endparallel");
-		}
-	};
+    private StoppingCondition decideParallelEnd = new StoppingCondition() {
 
-	@Override
-	public String getTag() {
-		return "parallel";
-	}
+        @Override
+        public boolean evaluate(Token token) {
+            return token.test(Token.Type.NAME, "endparallel");
+        }
+    };
+
+    @Override
+    public String getTag() {
+        return "parallel";
+    }
 }

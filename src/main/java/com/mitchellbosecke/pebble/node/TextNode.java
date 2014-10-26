@@ -17,25 +17,25 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class TextNode extends AbstractRenderableNode {
 
-	private final String data;
+    private final String data;
 
-	public TextNode(String data, int lineNumber) {
-		super(lineNumber);
-		this.data = data;
-	}
+    public TextNode(String data, int lineNumber) {
+        super(lineNumber);
+        this.data = data;
+    }
 
-	@Override
-	public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
-		writer.write(data);
-	}
+    @Override
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
+        writer.write(data);
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public String getData() {
-		return data;
-	}
+    public String getData() {
+        return data;
+    }
 
 }

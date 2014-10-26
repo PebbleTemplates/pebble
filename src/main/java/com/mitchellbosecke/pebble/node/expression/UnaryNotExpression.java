@@ -14,10 +14,10 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class UnaryNotExpression extends UnaryExpression {
 
-	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		Boolean result = (Boolean) getChildExpression().evaluate(self, context);
-		return !result;
-	}
+    @Override
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        Boolean result = (Boolean) getChildExpression().evaluate(self, context);
+        return !result;
+    }
 
 }

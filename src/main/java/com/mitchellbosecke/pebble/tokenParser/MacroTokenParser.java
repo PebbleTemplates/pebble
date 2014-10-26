@@ -19,40 +19,41 @@ import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class MacroTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
 
-		TokenStream stream = this.parser.getStream();
+        TokenStream stream = this.parser.getStream();
 
-		// skip over the 'macro' token
-		stream.next();
+        // skip over the 'macro' token
+        stream.next();
 
-		String macroName = stream.expect(Token.Type.NAME).getValue();
+        String macroName = stream.expect(Token.Type.NAME).getValue();
 
-		ArgumentsNode args = this.parser.getExpressionParser().parseArguments(true);
+        ArgumentsNode args = this.parser.getExpressionParser().parseArguments(true);
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		// parse the body
-		BodyNode body = this.parser.subparse(decideMacroEnd);
+        // parse the body
+        BodyNode body = this.parser.subparse(decideMacroEnd);
 
-		// skip the 'endmacro' token
-		stream.next();
+        // skip the 'endmacro' token
+        stream.next();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		return new MacroNode(macroName, args, body);
-	}
+        return new MacroNode(macroName, args, body);
+    }
 
-	private StoppingCondition decideMacroEnd = new StoppingCondition() {
-		@Override
-		public boolean evaluate(Token token) {
-			return token.test(Token.Type.NAME, "endmacro");
-		}
-	};
+    private StoppingCondition decideMacroEnd = new StoppingCondition() {
 
-	@Override
-	public String getTag() {
-		return "macro";
-	}
+        @Override
+        public boolean evaluate(Token token) {
+            return token.test(Token.Type.NAME, "endmacro");
+        }
+    };
+
+    @Override
+    public String getTag() {
+        return "macro";
+    }
 }

@@ -15,8 +15,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 
 public interface Block {
 
-	public String getName();
+    public String getName();
 
-	public void evaluate(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
-			IOException;
+    public void evaluate(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
+            IOException;
 }

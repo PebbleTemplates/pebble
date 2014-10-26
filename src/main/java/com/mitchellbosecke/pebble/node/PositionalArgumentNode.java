@@ -13,19 +13,19 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 
 public class PositionalArgumentNode implements Node {
 
-	private final Expression<?> value;
+    private final Expression<?> value;
 
-	public PositionalArgumentNode(Expression<?> value) {
-		this.value = value;
-	}
+    public PositionalArgumentNode(Expression<?> value) {
+        this.value = value;
+    }
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	public Expression<?> getValueExpression() {
-		return value;
-	}
+    public Expression<?> getValueExpression() {
+        return value;
+    }
 
 }

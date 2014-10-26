@@ -19,59 +19,61 @@ import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class ForTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		// skip the 'for' token
-		stream.next();
+        // skip the 'for' token
+        stream.next();
 
-		// get the iteration variable
-		String iterationVariable = this.parser.getExpressionParser().parseNewVariableName();
+        // get the iteration variable
+        String iterationVariable = this.parser.getExpressionParser().parseNewVariableName();
 
-		stream.expect(Token.Type.NAME, "in");
+        stream.expect(Token.Type.NAME, "in");
 
-		// get the iterable variable
-		Expression<?> iterable = this.parser.getExpressionParser().parseExpression();
+        // get the iterable variable
+        Expression<?> iterable = this.parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		BodyNode body = this.parser.subparse(decideForFork);
+        BodyNode body = this.parser.subparse(decideForFork);
 
-		BodyNode elseBody = null;
+        BodyNode elseBody = null;
 
-		if (stream.current().test(Token.Type.NAME, "else")) {
-			// skip the 'else' token
-			stream.next();
-			stream.expect(Token.Type.EXECUTE_END);
-			elseBody = this.parser.subparse(decideForEnd);
-		}
+        if (stream.current().test(Token.Type.NAME, "else")) {
+            // skip the 'else' token
+            stream.next();
+            stream.expect(Token.Type.EXECUTE_END);
+            elseBody = this.parser.subparse(decideForEnd);
+        }
 
-		// skip the 'endfor' token
-		stream.next();
+        // skip the 'endfor' token
+        stream.next();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		return new ForNode(lineNumber, iterationVariable, iterable, body, elseBody);
-	}
+        return new ForNode(lineNumber, iterationVariable, iterable, body, elseBody);
+    }
 
-	private StoppingCondition decideForFork = new StoppingCondition() {
-		@Override
-		public boolean evaluate(Token token) {
-			return token.test(Token.Type.NAME, "else", "endfor");
-		}
-	};
+    private StoppingCondition decideForFork = new StoppingCondition() {
 
-	private StoppingCondition decideForEnd = new StoppingCondition() {
-		@Override
-		public boolean evaluate(Token token) {
-			return token.test(Token.Type.NAME, "endfor");
-		}
-	};
+        @Override
+        public boolean evaluate(Token token) {
+            return token.test(Token.Type.NAME, "else", "endfor");
+        }
+    };
 
-	@Override
-	public String getTag() {
-		return "for";
-	}
+    private StoppingCondition decideForEnd = new StoppingCondition() {
+
+        @Override
+        public boolean evaluate(Token token) {
+            return token.test(Token.Type.NAME, "endfor");
+        }
+    };
+
+    @Override
+    public String getTag() {
+        return "for";
+    }
 }

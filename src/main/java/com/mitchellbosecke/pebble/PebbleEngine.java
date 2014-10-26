@@ -57,326 +57,337 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
  */
 public class PebbleEngine {
 
-	/*
-	 * Major components
-	 */
-	private Loader loader;
-	private final Parser parser;
-	private final Lexer lexer;
+    /*
+     * Major components
+     */
+    private Loader loader;
 
-	/*
-	 * User Editable Settings
-	 */
-	private boolean strictVariables = false;
-	private Locale defaultLocale = Locale.getDefault();
-	private ExecutorService executorService;
+    private final Parser parser;
 
-	/**
-	 * Template cache
-	 */
-	private Cache<String, PebbleTemplate> templateCache;
+    private final Lexer lexer;
 
-	/*
-	 * Extensions
-	 */
-	private HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
+    /*
+     * User Editable Settings
+     */
+    private boolean strictVariables = false;
 
-	/*
-	 * Elements retrieved from extensions
-	 */
-	private Map<String, TokenParser> tokenParsers = new HashMap<>();
-	private Map<String, UnaryOperator> unaryOperators = new HashMap<>();
-	private Map<String, BinaryOperator> binaryOperators = new HashMap<>();
-	private Map<String, Filter> filters = new HashMap<>();
-	private Map<String, Test> tests = new HashMap<>();
-	private Map<String, Object> globalVariables = new HashMap<>();
-	private Map<String, Function> functions = new HashMap<>();
-	private List<NodeVisitor> nodeVisitors = new ArrayList<>();
+    private Locale defaultLocale = Locale.getDefault();
 
-	/**
-	 * compilationMutex ensures that only one template is being compiled at a
-	 * time. Only concurrent evaluation is supported at this time.
-	 */
-	private final Semaphore compilationMutex = new Semaphore(1, true);
+    private ExecutorService executorService;
 
-	public PebbleEngine() {
-		this(null);
-	}
+    /**
+     * Template cache
+     */
+    private Cache<String, PebbleTemplate> templateCache;
 
-	/**
-	 * Constructor for the Pebble Engine given an instantiated Loader.
-	 * 
-	 * @param loader
-	 *            The template loader for this engine
-	 */
-	public PebbleEngine(Loader loader) {
+    /*
+     * Extensions
+     */
+    private HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
 
-		// set up a default loader if necessary
-		if (loader == null) {
-			List<Loader> defaultLoadingStrategies = new ArrayList<>();
-			defaultLoadingStrategies.add(new ClasspathLoader());
-			defaultLoadingStrategies.add(new FileLoader());
-			loader = new DelegatingLoader(defaultLoadingStrategies);
-		}
+    /*
+     * Elements retrieved from extensions
+     */
+    private Map<String, TokenParser> tokenParsers = new HashMap<>();
 
-		// set up a default cache
-		templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
+    private Map<String, UnaryOperator> unaryOperators = new HashMap<>();
 
-		this.loader = loader;
-		lexer = new LexerImpl(this);
-		parser = new ParserImpl(this);
+    private Map<String, BinaryOperator> binaryOperators = new HashMap<>();
 
-		// register default extensions
-		this.addExtension(new CoreExtension());
-		this.addExtension(new EscaperExtension());
-		this.addExtension(new I18nExtension());
+    private Map<String, Filter> filters = new HashMap<>();
 
-	}
+    private Map<String, Test> tests = new HashMap<>();
 
-	/**
-	 * 
-	 * Loads, parses, and compiles a template into an instance of PebbleTemplate
-	 * and returns this instance.
-	 * 
-	 * @param templateName
-	 * @return PebbleTemplate
-	 * @throws PebbleException
-	 */
-	public PebbleTemplate getTemplate(final String templateName) throws PebbleException {
+    private Map<String, Object> globalVariables = new HashMap<>();
 
-		/*
-		 * template name will be null if user uses the extends tag with an
-		 * expression that evaluates to null
-		 */
-		if (templateName == null) {
-			return null;
-		}
+    private Map<String, Function> functions = new HashMap<>();
 
-		if (this.loader == null) {
-			throw new LoaderException(null, "Loader has not yet been specified.");
-		}
+    private List<NodeVisitor> nodeVisitors = new ArrayList<>();
 
-		final PebbleEngine self = this;
-		PebbleTemplate result = null;
+    /**
+     * compilationMutex ensures that only one template is being compiled at a
+     * time. Only concurrent evaluation is supported at this time.
+     */
+    private final Semaphore compilationMutex = new Semaphore(1, true);
 
-		try {
+    public PebbleEngine() {
+        this(null);
+    }
 
-			result = templateCache.get(templateName, new Callable<PebbleTemplate>() {
+    /**
+     * Constructor for the Pebble Engine given an instantiated Loader.
+     * 
+     * @param loader
+     *            The template loader for this engine
+     */
+    public PebbleEngine(Loader loader) {
 
-				public PebbleTemplateImpl call() throws Exception {
+        // set up a default loader if necessary
+        if (loader == null) {
+            List<Loader> defaultLoadingStrategies = new ArrayList<>();
+            defaultLoadingStrategies.add(new ClasspathLoader());
+            defaultLoadingStrategies.add(new FileLoader());
+            loader = new DelegatingLoader(defaultLoadingStrategies);
+        }
 
-					compilationMutex.acquire();
+        // set up a default cache
+        templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
 
-					PebbleTemplateImpl instance = null;
-					RootNode root = null;
+        this.loader = loader;
+        lexer = new LexerImpl(this);
+        parser = new ParserImpl(this);
 
-					try {
+        // register default extensions
+        this.addExtension(new CoreExtension());
+        this.addExtension(new EscaperExtension());
+        this.addExtension(new I18nExtension());
 
-						Reader templateReader = loader.getReader(templateName);
+    }
 
-						TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
-						root = parser.parse(tokenStream);
+    /**
+     * 
+     * Loads, parses, and compiles a template into an instance of PebbleTemplate
+     * and returns this instance.
+     * 
+     * @param templateName
+     * @return PebbleTemplate
+     * @throws PebbleException
+     */
+    public PebbleTemplate getTemplate(final String templateName) throws PebbleException {
 
-						instance = new PebbleTemplateImpl(self, root, templateName);
+        /*
+         * template name will be null if user uses the extends tag with an
+         * expression that evaluates to null
+         */
+        if (templateName == null) {
+            return null;
+        }
 
-						for (NodeVisitor visitor : nodeVisitors) {
-							visitor.setTemplate(instance);
-							visitor.visit(root);
-						}
+        if (this.loader == null) {
+            throw new LoaderException(null, "Loader has not yet been specified.");
+        }
 
-					} finally {
-						compilationMutex.release();
-					}
+        final PebbleEngine self = this;
+        PebbleTemplate result = null;
 
-					return instance;
-				}
-			});
-		} catch (ExecutionException e) {
-			/*
-			 * The execution exception is probably caused by a PebbleException
-			 * being thrown in the above Callable. We will unravel it and throw
-			 * the original PebbleException which is more helpful to the end
-			 * user.
-			 */
-			if (e.getCause() != null && e.getCause() instanceof PebbleException) {
-				throw (PebbleException) e.getCause();
-			} else {
-				throw new PebbleException(e, String.format("An error occurred while compiling %s", templateName));
-			}
-		}
+        try {
 
-		return result;
-	}
+            result = templateCache.get(templateName, new Callable<PebbleTemplate>() {
 
-	public void setLoader(Loader loader) {
-		this.loader = loader;
-	}
+                public PebbleTemplateImpl call() throws Exception {
 
-	public Loader getLoader() {
-		return loader;
-	}
+                    compilationMutex.acquire();
 
-	public Parser getParser() {
-		return parser;
-	}
+                    PebbleTemplateImpl instance = null;
+                    RootNode root = null;
 
-	public Lexer getLexer() {
-		return lexer;
-	}
+                    try {
 
-	public void addExtension(Extension extension) {
-		this.extensions.put(extension.getClass(), extension);
+                        Reader templateReader = loader.getReader(templateName);
 
-		// token parsers
-		if (extension.getTokenParsers() != null) {
-			for (TokenParser tokenParser : extension.getTokenParsers()) {
-				this.tokenParsers.put(tokenParser.getTag(), tokenParser);
-			}
-		}
+                        TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
+                        root = parser.parse(tokenStream);
 
-		// binary operators
-		if (extension.getBinaryOperators() != null) {
-			for (BinaryOperator operator : extension.getBinaryOperators()) {
-				if (!this.binaryOperators.containsKey(operator.getSymbol())) {
-					this.binaryOperators.put(operator.getSymbol(), operator);
-				}
-			}
-		}
+                        instance = new PebbleTemplateImpl(self, root, templateName);
 
-		// unary operators
-		if (extension.getUnaryOperators() != null) {
-			for (UnaryOperator operator : extension.getUnaryOperators()) {
-				if (!this.unaryOperators.containsKey(operator.getSymbol())) {
-					this.unaryOperators.put(operator.getSymbol(), operator);
-				}
-			}
-		}
+                        for (NodeVisitor visitor : nodeVisitors) {
+                            visitor.setTemplate(instance);
+                            visitor.visit(root);
+                        }
 
-		// filters
-		if (extension.getFilters() != null) {
-			this.filters.putAll(extension.getFilters());
-		}
+                    } finally {
+                        compilationMutex.release();
+                    }
 
-		// tests
-		if (extension.getTests() != null) {
-			this.tests.putAll(extension.getTests());
-		}
+                    return instance;
+                }
+            });
+        } catch (ExecutionException e) {
+            /*
+             * The execution exception is probably caused by a PebbleException
+             * being thrown in the above Callable. We will unravel it and throw
+             * the original PebbleException which is more helpful to the end
+             * user.
+             */
+            if (e.getCause() != null && e.getCause() instanceof PebbleException) {
+                throw (PebbleException) e.getCause();
+            } else {
+                throw new PebbleException(e, String.format("An error occurred while compiling %s", templateName));
+            }
+        }
 
-		// tests
-		if (extension.getFunctions() != null) {
-			this.functions.putAll(extension.getFunctions());
-		}
+        return result;
+    }
 
-		// global variables
-		if (extension.getGlobalVariables() != null) {
-			this.globalVariables.putAll(extension.getGlobalVariables());
-		}
+    public void setLoader(Loader loader) {
+        this.loader = loader;
+    }
 
-		// node visitors
-		if (extension.getNodeVisitors() != null) {
-			this.nodeVisitors.addAll(extension.getNodeVisitors());
-		}
+    public Loader getLoader() {
+        return loader;
+    }
 
-	}
+    public Parser getParser() {
+        return parser;
+    }
 
-	@SuppressWarnings("unchecked")
-	public <T extends Extension> T getExtension(Class<T> clazz) {
-		return (T) this.extensions.get(clazz);
-	}
+    public Lexer getLexer() {
+        return lexer;
+    }
 
-	public Map<String, TokenParser> getTokenParsers() {
-		return this.tokenParsers;
-	}
+    public void addExtension(Extension extension) {
+        this.extensions.put(extension.getClass(), extension);
 
-	public Map<String, BinaryOperator> getBinaryOperators() {
-		return this.binaryOperators;
-	}
+        // token parsers
+        if (extension.getTokenParsers() != null) {
+            for (TokenParser tokenParser : extension.getTokenParsers()) {
+                this.tokenParsers.put(tokenParser.getTag(), tokenParser);
+            }
+        }
 
-	public Map<String, UnaryOperator> getUnaryOperators() {
-		return this.unaryOperators;
-	}
+        // binary operators
+        if (extension.getBinaryOperators() != null) {
+            for (BinaryOperator operator : extension.getBinaryOperators()) {
+                if (!this.binaryOperators.containsKey(operator.getSymbol())) {
+                    this.binaryOperators.put(operator.getSymbol(), operator);
+                }
+            }
+        }
 
-	public Map<String, Filter> getFilters() {
-		return this.filters;
-	}
+        // unary operators
+        if (extension.getUnaryOperators() != null) {
+            for (UnaryOperator operator : extension.getUnaryOperators()) {
+                if (!this.unaryOperators.containsKey(operator.getSymbol())) {
+                    this.unaryOperators.put(operator.getSymbol(), operator);
+                }
+            }
+        }
 
-	public Map<String, Test> getTests() {
-		return this.tests;
-	}
+        // filters
+        if (extension.getFilters() != null) {
+            this.filters.putAll(extension.getFilters());
+        }
 
-	public Map<String, Function> getFunctions() {
-		return this.functions;
-	}
+        // tests
+        if (extension.getTests() != null) {
+            this.tests.putAll(extension.getTests());
+        }
 
-	public Map<String, Object> getGlobalVariables() {
-		return this.globalVariables;
-	}
+        // tests
+        if (extension.getFunctions() != null) {
+            this.functions.putAll(extension.getFunctions());
+        }
 
-	public List<NodeVisitor> getNodeVisitors() {
-		return this.nodeVisitors;
-	}
+        // global variables
+        if (extension.getGlobalVariables() != null) {
+            this.globalVariables.putAll(extension.getGlobalVariables());
+        }
 
-	public Cache<String, PebbleTemplate> getTemplateCache() {
-		return templateCache;
-	}
+        // node visitors
+        if (extension.getNodeVisitors() != null) {
+            this.nodeVisitors.addAll(extension.getNodeVisitors());
+        }
 
-	/**
-	 * Sets the cache to be used for storing compiled PebbleTemplate instances.
-	 * 
-	 * @param cache
-	 *            The cache to be used
-	 */
-	public void setTemplateCache(Cache<String, PebbleTemplate> cache) {
-		if (cache == null) {
-			templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
-		} else {
-			templateCache = cache;
-		}
-	}
+    }
 
-	public boolean isStrictVariables() {
-		return strictVariables;
-	}
+    @SuppressWarnings("unchecked")
+    public <T extends Extension> T getExtension(Class<T> clazz) {
+        return (T) this.extensions.get(clazz);
+    }
 
-	/**
-	 * Changes the <code>strictVariables</code> setting of the PebbleEngine. If
-	 * strictVariables is equal to false (which is the default) then expressions
-	 * become much more null-safe and type issues are handled in a much more
-	 * graceful manner.
-	 * 
-	 * @param strictVariables
-	 */
-	public void setStrictVariables(boolean strictVariables) {
-		this.strictVariables = strictVariables;
-	}
+    public Map<String, TokenParser> getTokenParsers() {
+        return this.tokenParsers;
+    }
 
-	public Locale getDefaultLocale() {
-		return defaultLocale;
-	}
+    public Map<String, BinaryOperator> getBinaryOperators() {
+        return this.binaryOperators;
+    }
 
-	/**
-	 * The default locale that will be passed to each template upon compilation.
-	 * An individual template can be given a new locale on evaluation.
-	 * 
-	 * @param locale
-	 *            The default locale to pass to all newly compiled templates.
-	 */
-	public void setDefaultLocale(Locale locale) {
-		this.defaultLocale = locale;
-	}
+    public Map<String, UnaryOperator> getUnaryOperators() {
+        return this.unaryOperators;
+    }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public Map<String, Filter> getFilters() {
+        return this.filters;
+    }
 
-	/**
-	 * Providing an ExecutorService will enable some advanced multithreading
-	 * features such as the parallel tag.
-	 * 
-	 * @param executorService
-	 *            The ExecutorService to enable multithreading features.
-	 */
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public Map<String, Test> getTests() {
+        return this.tests;
+    }
+
+    public Map<String, Function> getFunctions() {
+        return this.functions;
+    }
+
+    public Map<String, Object> getGlobalVariables() {
+        return this.globalVariables;
+    }
+
+    public List<NodeVisitor> getNodeVisitors() {
+        return this.nodeVisitors;
+    }
+
+    public Cache<String, PebbleTemplate> getTemplateCache() {
+        return templateCache;
+    }
+
+    /**
+     * Sets the cache to be used for storing compiled PebbleTemplate instances.
+     * 
+     * @param cache
+     *            The cache to be used
+     */
+    public void setTemplateCache(Cache<String, PebbleTemplate> cache) {
+        if (cache == null) {
+            templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
+        } else {
+            templateCache = cache;
+        }
+    }
+
+    public boolean isStrictVariables() {
+        return strictVariables;
+    }
+
+    /**
+     * Changes the <code>strictVariables</code> setting of the PebbleEngine. If
+     * strictVariables is equal to false (which is the default) then expressions
+     * become much more null-safe and type issues are handled in a much more
+     * graceful manner.
+     * 
+     * @param strictVariables
+     */
+    public void setStrictVariables(boolean strictVariables) {
+        this.strictVariables = strictVariables;
+    }
+
+    public Locale getDefaultLocale() {
+        return defaultLocale;
+    }
+
+    /**
+     * The default locale that will be passed to each template upon compilation.
+     * An individual template can be given a new locale on evaluation.
+     * 
+     * @param locale
+     *            The default locale to pass to all newly compiled templates.
+     */
+    public void setDefaultLocale(Locale locale) {
+        this.defaultLocale = locale;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    /**
+     * Providing an ExecutorService will enable some advanced multithreading
+     * features such as the parallel tag.
+     * 
+     * @param executorService
+     *            The ExecutorService to enable multithreading features.
+     */
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

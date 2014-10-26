@@ -15,9 +15,9 @@ import com.mitchellbosecke.pebble.utils.OperatorUtils;
 
 public class UnaryMinusExpression extends UnaryExpression {
 
-	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-		return OperatorUtils.unaryMinus(getChildExpression().evaluate(self, context));
-	}
+    @Override
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        return OperatorUtils.unaryMinus(getChildExpression().evaluate(self, context));
+    }
 
 }

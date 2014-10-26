@@ -17,11 +17,11 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 
 public interface PebbleTemplate {
 
-	public void evaluate(Writer writer) throws PebbleException, IOException;
+    public void evaluate(Writer writer) throws PebbleException, IOException;
 
-	public void evaluate(Writer writer, Locale locale) throws PebbleException, IOException;
+    public void evaluate(Writer writer, Locale locale) throws PebbleException, IOException;
 
-	public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException;
+    public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException;
 
-	public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException;
+    public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException;
 }

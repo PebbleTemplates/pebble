@@ -16,39 +16,38 @@ import com.mitchellbosecke.pebble.extension.Filter;
 
 public class CapitalizeFilter implements Filter {
 
-	@Override
-	public List<String> getArgumentNames() {
-		return null;
-	}
+    @Override
+    public List<String> getArgumentNames() {
+        return null;
+    }
 
-	@Override
-	public Object apply(Object input, Map<String, Object> args) {
-		if (input == null) {
-			return null;
-		}
-		String value = (String) input;
+    @Override
+    public Object apply(Object input, Map<String, Object> args) {
+        if (input == null) {
+            return null;
+        }
+        String value = (String) input;
 
-		if (value.length() == 0) {
-			return value;
-		}
-		
-		StringBuilder result = new StringBuilder();
-		
-		
-		char[] chars = value.toCharArray();
-		for(int i = 0; i < chars.length; i++){
-			char c = chars[i];
-			
-			if(Character.isWhitespace(c)){
-				result.append(c);
-			}else{
-				result.append(Character.toTitleCase(c));
-				result.append(Arrays.copyOfRange(chars, i + 1, chars.length));
-				break;
-			}
-		}
+        if (value.length() == 0) {
+            return value;
+        }
 
-		return result.toString();
-	}
+        StringBuilder result = new StringBuilder();
+
+        char[] chars = value.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+
+            if (Character.isWhitespace(c)) {
+                result.append(c);
+            } else {
+                result.append(Character.toTitleCase(c));
+                result.append(Arrays.copyOfRange(chars, i + 1, chars.length));
+                break;
+            }
+        }
+
+        return result.toString();
+    }
 
 }

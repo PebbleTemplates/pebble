@@ -14,12 +14,12 @@ import com.mitchellbosecke.pebble.error.LoaderException;
 
 public interface Loader {
 
-	public Reader getReader(String templateName) throws LoaderException;
-	
-	public void setCharset(String charset);
+    public Reader getReader(String templateName) throws LoaderException;
 
-	public void setPrefix(String prefix);
+    public void setCharset(String charset);
 
-	public void setSuffix(String suffix);
+    public void setPrefix(String prefix);
+
+    public void setSuffix(String suffix);
 
 }

@@ -25,5 +25,5 @@ import com.mitchellbosecke.pebble.lexer.Token;
  */
 public interface StoppingCondition {
 
-	public boolean evaluate(Token data);
+    public boolean evaluate(Token data);
 }

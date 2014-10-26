@@ -111,7 +111,7 @@ public class GetAttributeExpression implements Expression<Object> {
                         member = cache.get(object, attributeName, parameterTypesArray);
                     } else {
                         member = findMember(object, attributeName, parameterTypesArray);
-                        if(member != null){
+                        if (member != null) {
                             cache.put(object, attributeName, parameterTypesArray, member);
                         }
                     }

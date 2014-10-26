@@ -149,16 +149,16 @@ public class TemplateSource implements CharSequence {
         Pattern newLinePattern = Pattern.compile(Pattern.quote(System.lineSeparator()));
         Matcher newLineMatcher;
         for (int index = 0; index < amount; index++) {
-            
+
             newLineMatcher = newLinePattern.matcher(this);
 
-            if(newLineMatcher.lookingAt()){
+            if (newLineMatcher.lookingAt()) {
                 this.lineNumber++;
             }
-            
+
             this.size--;
             this.offset++;
-            //char character = source[index];
+            // char character = source[index];
             // if (character ==System.lineSeparator()) {
             // this.lineNumber++;
             // }
@@ -166,8 +166,8 @@ public class TemplateSource implements CharSequence {
 
         // advance the index used to represent the start of the remaining
         // un-tokenized source.
-        //this.offset += amount;
-        //this.size -= amount;
+        // this.offset += amount;
+        // this.size -= amount;
     }
 
     public String substring(int start, int end) {

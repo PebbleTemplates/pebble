@@ -21,52 +21,52 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 public class EscaperExtension extends AbstractExtension {
 
-	private final EscapeFilter filter;
+    private final EscapeFilter filter;
 
-	private final EscaperNodeVisitor visitor;
+    private final EscaperNodeVisitor visitor;
 
-	public EscaperExtension() {
-		this.filter = new EscapeFilter();
-		this.visitor = new EscaperNodeVisitor();
-	}
+    public EscaperExtension() {
+        this.filter = new EscapeFilter();
+        this.visitor = new EscaperNodeVisitor();
+    }
 
-	@Override
-	public Map<String, Filter> getFilters() {
-		Map<String, Filter> filters = new HashMap<>();
-		filters.put("escape", filter);
-		filters.put("raw", new RawFilter());
-		return filters;
-	}
+    @Override
+    public Map<String, Filter> getFilters() {
+        Map<String, Filter> filters = new HashMap<>();
+        filters.put("escape", filter);
+        filters.put("raw", new RawFilter());
+        return filters;
+    }
 
-	@Override
-	public List<TokenParser> getTokenParsers() {
-		List<TokenParser> parsers = new ArrayList<>();
-		parsers.add(new AutoEscapeTokenParser());
-		return parsers;
-	}
+    @Override
+    public List<TokenParser> getTokenParsers() {
+        List<TokenParser> parsers = new ArrayList<>();
+        parsers.add(new AutoEscapeTokenParser());
+        return parsers;
+    }
 
-	@Override
-	public List<NodeVisitor> getNodeVisitors() {
-		List<NodeVisitor> visitors = new ArrayList<>();
-		visitors.add(visitor);
-		return visitors;
-	}
+    @Override
+    public List<NodeVisitor> getNodeVisitors() {
+        List<NodeVisitor> visitors = new ArrayList<>();
+        visitors.add(visitor);
+        return visitors;
+    }
 
-	/**
-	 * Sets the default escaping strategy.
-	 * 
-	 * @param strategy
-	 */
-	public void setDefaultStrategy(String strategy) {
-		filter.setDefaultStrategy(strategy);
-	}
+    /**
+     * Sets the default escaping strategy.
+     * 
+     * @param strategy
+     */
+    public void setDefaultStrategy(String strategy) {
+        filter.setDefaultStrategy(strategy);
+    }
 
-	public void setAutoEscaping(boolean auto) {
-		visitor.pushAutoEscapeState(auto);
-	}
+    public void setAutoEscaping(boolean auto) {
+        visitor.pushAutoEscapeState(auto);
+    }
 
-	public void addSafeFilter(String filter) {
-		visitor.addSafeFilter(filter);
-	}
+    public void addSafeFilter(String filter) {
+        visitor.addSafeFilter(filter);
+    }
 
 }

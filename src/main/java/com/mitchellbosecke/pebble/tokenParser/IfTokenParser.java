@@ -23,74 +23,76 @@ import com.mitchellbosecke.pebble.utils.Pair;
 
 public class IfTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		// skip the 'if' token
-		stream.next();
+        // skip the 'if' token
+        stream.next();
 
-		List<Pair<Expression<?>, BodyNode>> conditionsWithBodies = new ArrayList<>();
+        List<Pair<Expression<?>, BodyNode>> conditionsWithBodies = new ArrayList<>();
 
-		Expression<?> expression = this.parser.getExpressionParser().parseExpression();
+        Expression<?> expression = this.parser.getExpressionParser().parseExpression();
 
-		stream.expect(Token.Type.EXECUTE_END);
+        stream.expect(Token.Type.EXECUTE_END);
 
-		BodyNode body = this.parser.subparse(decideIfFork);
+        BodyNode body = this.parser.subparse(decideIfFork);
 
-		conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
+        conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
 
-		BodyNode elseBody = null;
-		boolean end = false;
-		while (!end) {
-			switch (stream.current().getValue()) {
-				case "else":
-					stream.next();
-					stream.expect(Token.Type.EXECUTE_END);
-					elseBody = this.parser.subparse(decideIfEnd);
-					break;
+        BodyNode elseBody = null;
+        boolean end = false;
+        while (!end) {
+            switch (stream.current().getValue()) {
+            case "else":
+                stream.next();
+                stream.expect(Token.Type.EXECUTE_END);
+                elseBody = this.parser.subparse(decideIfEnd);
+                break;
 
-				case "elseif":
-					stream.next();
-					expression = this.parser.getExpressionParser().parseExpression();
-					stream.expect(Token.Type.EXECUTE_END);
-					body = this.parser.subparse(decideIfFork);
-					conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
-					break;
+            case "elseif":
+                stream.next();
+                expression = this.parser.getExpressionParser().parseExpression();
+                stream.expect(Token.Type.EXECUTE_END);
+                body = this.parser.subparse(decideIfFork);
+                conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
+                break;
 
-				case "endif":
-					stream.next();
-					end = true;
-					break;
-				default:
-					throw new ParserException(
-							null,
-							String.format("Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\""),
-							stream.current().getLineNumber(), stream.getFilename());
-			}
-		}
+            case "endif":
+                stream.next();
+                end = true;
+                break;
+            default:
+                throw new ParserException(
+                        null,
+                        String.format("Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\""),
+                        stream.current().getLineNumber(), stream.getFilename());
+            }
+        }
 
-		stream.expect(Token.Type.EXECUTE_END);
-		return new IfNode(lineNumber, conditionsWithBodies, elseBody);
-	}
+        stream.expect(Token.Type.EXECUTE_END);
+        return new IfNode(lineNumber, conditionsWithBodies, elseBody);
+    }
 
-	private StoppingCondition decideIfFork = new StoppingCondition() {
-		@Override
-		public boolean evaluate(Token token) {
-			return token.test(Token.Type.NAME, "elseif", "else", "endif");
-		}
-	};
+    private StoppingCondition decideIfFork = new StoppingCondition() {
 
-	private StoppingCondition decideIfEnd = new StoppingCondition() {
-		@Override
-		public boolean evaluate(Token token) {
-			return token.test(Token.Type.NAME, "endif");
-		}
-	};
+        @Override
+        public boolean evaluate(Token token) {
+            return token.test(Token.Type.NAME, "elseif", "else", "endif");
+        }
+    };
 
-	@Override
-	public String getTag() {
-		return "if";
-	}
+    private StoppingCondition decideIfEnd = new StoppingCondition() {
+
+        @Override
+        public boolean evaluate(Token token) {
+            return token.test(Token.Type.NAME, "endif");
+        }
+    };
+
+    @Override
+    public String getTag() {
+        return "if";
+    }
 }

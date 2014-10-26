@@ -17,54 +17,54 @@ import com.mitchellbosecke.pebble.extension.Filter;
 
 public class EscapeFilter implements Filter {
 
-	private String defaultStrategy = "html";
+    private String defaultStrategy = "html";
 
-	public List<String> getArgumentNames() {
-		List<String> names = new ArrayList<>();
-		names.add("strategy");
-		return names;
-	}
+    public List<String> getArgumentNames() {
+        List<String> names = new ArrayList<>();
+        names.add("strategy");
+        return names;
+    }
 
-	public Object apply(Object inputObject, Map<String, Object> args) {
-		if (!(inputObject instanceof String)) {
-			return inputObject;
-		}
-		String input = (String) inputObject;
+    public Object apply(Object inputObject, Map<String, Object> args) {
+        if (!(inputObject instanceof String)) {
+            return inputObject;
+        }
+        String input = (String) inputObject;
 
-		String strategy = defaultStrategy;
+        String strategy = defaultStrategy;
 
-		if (args.get("strategy") != null) {
-			strategy = (String) args.get("strategy");
-		}
+        if (args.get("strategy") != null) {
+            strategy = (String) args.get("strategy");
+        }
 
-		switch (strategy) {
-			case "html":
-				input = Escape.htmlText(input);
-				break;
-			case "js":
-				input = Escape.jsString(input);
-				break;
-			case "css":
-				input = Escape.cssString(input);
-				break;
-			case "html_attr":
-				input = Escape.html(input);
-				break;
-			case "url_param":
-				input = Escape.uriParam(input);
-			default:
-				throw new RuntimeException("Unknown escaping strategy");
+        switch (strategy) {
+        case "html":
+            input = Escape.htmlText(input);
+            break;
+        case "js":
+            input = Escape.jsString(input);
+            break;
+        case "css":
+            input = Escape.cssString(input);
+            break;
+        case "html_attr":
+            input = Escape.html(input);
+            break;
+        case "url_param":
+            input = Escape.uriParam(input);
+        default:
+            throw new RuntimeException("Unknown escaping strategy");
 
-		}
-		return input;
-	}
+        }
+        return input;
+    }
 
-	public String getDefaultStrategy() {
-		return defaultStrategy;
-	}
+    public String getDefaultStrategy() {
+        return defaultStrategy;
+    }
 
-	public void setDefaultStrategy(String defaultStrategy) {
-		this.defaultStrategy = defaultStrategy;
-	}
+    public void setDefaultStrategy(String defaultStrategy) {
+        this.defaultStrategy = defaultStrategy;
+    }
 
 }

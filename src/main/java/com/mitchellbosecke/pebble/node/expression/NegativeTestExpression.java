@@ -20,31 +20,26 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class NegativeTestExpression extends BinaryExpression<Object> {
 
-	@Override
-	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context)
-			throws PebbleException {
+    @Override
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
 
-		TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
-		ArgumentsNode args = testInvocation.getArgs();
-		String testName = testInvocation.getTestName();
+        TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
+        ArgumentsNode args = testInvocation.getArgs();
+        String testName = testInvocation.getTestName();
 
-		Map<String, Test> tests = context.getTests();
-		Test test = tests.get(testInvocation.getTestName());
+        Map<String, Test> tests = context.getTests();
+        Test test = tests.get(testInvocation.getTestName());
 
-		if (test == null) {
-			throw new PebbleException(null, String.format(
-					"Test [%s] does not exist.", testName));
-		}
-		
-		
-		if (test instanceof LocaleAware){
-			((LocaleAware) test).setLocale(context.getLocale());
-		}
+        if (test == null) {
+            throw new PebbleException(null, String.format("Test [%s] does not exist.", testName));
+        }
 
-		Map<String, Object> namedArguments = args.getArgumentMap(self, context,
-				test);
+        if (test instanceof LocaleAware) {
+            ((LocaleAware) test).setLocale(context.getLocale());
+        }
 
-		return test.apply(getLeftExpression().evaluate(self, context),
-				namedArguments) == false;
-	}
+        Map<String, Object> namedArguments = args.getArgumentMap(self, context, test);
+
+        return test.apply(getLeftExpression().evaluate(self, context), namedArguments) == false;
+    }
 }
