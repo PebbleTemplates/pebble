@@ -58,8 +58,8 @@ public class ConcurrencyTest extends AbstractTest {
         ExecutorService es = Executors.newCachedThreadPool();
         final AtomicInteger totalFailed = new AtomicInteger();
 
-        int numOfConcurrentThreads = 60;
-        final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
+        int numOfConcurrentEvaluations = Math.min(4, Runtime.getRuntime().availableProcessors());
+        final Semaphore semaphore = new Semaphore(numOfConcurrentEvaluations);
 
         for (int i = 0; i < 10000; i++) {
             semaphore.acquire();
@@ -104,7 +104,7 @@ public class ConcurrencyTest extends AbstractTest {
             }
         }
         // Wait for them all to complete
-        semaphore.acquire(numOfConcurrentThreads);
+        semaphore.acquire(numOfConcurrentEvaluations);
         es.shutdown();
         assertEquals(0, totalFailed.intValue());
     }
@@ -124,8 +124,8 @@ public class ConcurrencyTest extends AbstractTest {
         final ExecutorService es = Executors.newCachedThreadPool();
         final AtomicInteger totalFailed = new AtomicInteger();
 
-        int numOfConcurrentThreads = 60;
-        final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
+        int numOfConcurrentEvaluations = Math.min(4, Runtime.getRuntime().availableProcessors());
+        final Semaphore semaphore = new Semaphore(numOfConcurrentEvaluations);
 
         Cache<String, PebbleTemplate> cache = engine.getTemplateCache();
         for (int i = 0; i < 1000; i++) {
@@ -204,7 +204,7 @@ public class ConcurrencyTest extends AbstractTest {
             }
         }
         // Wait for them all to complete
-        semaphore.acquire(numOfConcurrentThreads);
+        semaphore.acquire(numOfConcurrentEvaluations);
         es.shutdown();
         assertEquals(0, totalFailed.intValue());
     }
@@ -225,8 +225,8 @@ public class ConcurrencyTest extends AbstractTest {
         ExecutorService es = Executors.newCachedThreadPool();
         final AtomicInteger totalFailed = new AtomicInteger();
 
-        int numOfConcurrentThreads = 100;
-        final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
+        int numOfConcurrentEvaluations = Math.min(4, Runtime.getRuntime().availableProcessors());
+        final Semaphore semaphore = new Semaphore(numOfConcurrentEvaluations);
 
         final String germanResult = "2.000,234";
         final String canadianResult = "2,000.234";
@@ -270,7 +270,7 @@ public class ConcurrencyTest extends AbstractTest {
             }
         }
         // Wait for them all to complete
-        semaphore.acquire(numOfConcurrentThreads);
+        semaphore.acquire(numOfConcurrentEvaluations);
         es.shutdown();
         assertEquals(0, totalFailed.intValue());
     }

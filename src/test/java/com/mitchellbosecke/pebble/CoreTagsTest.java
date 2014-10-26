@@ -548,7 +548,7 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("{{ foo }}{{ bar }}", writer.toString());
     }
 
-    @Test(timeout = 3000)
+    @Test(timeout = 300)
     public void testParallel() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
@@ -590,6 +590,22 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("0123456789", writer.toString());
     }
 
+    @Test(timeout = 300)
+    public void testIncludeWithinParallelTag() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine();
+        pebble.getLoader().setPrefix("templates");
+        pebble.setStrictVariables(true);
+        
+        pebble.setExecutorService(Executors.newCachedThreadPool());
+        PebbleTemplate template = pebble.getTemplate("template.parallelInclude1.peb");
+        
+        Writer writer = new StringWriter();
+        Map<String, Object> context = new HashMap<>();
+        context.put("slowObject", new SlowObject());
+        template.evaluate(writer, context);
+        assertEquals("first\nTEMPLATE1\nfirst", writer.toString());
+    }
+
     @Test
     public void testParallelWithoutExecutorService() throws PebbleException, IOException {
         Loader loader = new StringLoader();
@@ -609,7 +625,7 @@ public class CoreTagsTest extends AbstractTest {
 
         public String first() {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -619,7 +635,7 @@ public class CoreTagsTest extends AbstractTest {
 
         public String second() {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -629,7 +645,7 @@ public class CoreTagsTest extends AbstractTest {
 
         public String third() {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

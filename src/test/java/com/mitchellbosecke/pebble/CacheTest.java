@@ -120,7 +120,7 @@ public class CacheTest extends AbstractTest {
 		final ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();
 
-		int numOfConcurrentThreads = 1000;
+		int numOfConcurrentThreads = Math.min(4, Runtime.getRuntime().availableProcessors());
 		final Semaphore semaphore = new Semaphore(numOfConcurrentThreads);
 
 		for (int i = 0; i < 100000; i++) {

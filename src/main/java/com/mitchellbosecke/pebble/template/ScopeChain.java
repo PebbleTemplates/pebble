@@ -24,8 +24,9 @@ public class ScopeChain {
 
     /**
      * Creates a deep copy of the ScopeChain. This is used for the parallel tag
-     * because every new thread should have a "snapshot" of the scopes, i.e. one
-     * thread should not affect rendering output of another.
+     * because every new thread should have a "snapshot" of the scopes, i.e. if
+     * one thread adds a new object to a scope, it should not be available to
+     * the other threads.
      * 
      * @return
      */

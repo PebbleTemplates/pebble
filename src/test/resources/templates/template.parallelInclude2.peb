@@ -1,0 +1,2 @@
+{# used by CoreTagsTest.testIncludeWithinParallelTag #}
+{{ slowObject.first }}
