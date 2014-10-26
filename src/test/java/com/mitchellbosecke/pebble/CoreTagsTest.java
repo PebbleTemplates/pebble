@@ -574,8 +574,8 @@ public class CoreTagsTest extends AbstractTest {
      * @throws PebbleException
      * @throws IOException
      */
-    @Ignore
     @Test
+    @Ignore
     public void testParallelTagWhileEvaluationContextIsChanging() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
@@ -590,7 +590,6 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
 
         assertEquals("0123456789", writer.toString());
-
     }
 
     @Test

@@ -152,7 +152,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 		PebbleTemplateImpl template = (PebbleTemplateImpl) engine
 				.getTemplate(name);
 		EvaluationContext newContext = context
-				.copyWithoutInheritanceChain(template);
+				.shallowCopyWithoutInheritanceChain(template);
 		template.evaluate(writer, newContext);
 	}
 

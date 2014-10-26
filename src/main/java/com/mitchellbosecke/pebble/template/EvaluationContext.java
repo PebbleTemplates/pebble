@@ -9,12 +9,10 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -48,7 +46,7 @@ public class EvaluationContext {
      * evaluation to look up the scope chain for variables. A macro is an
      * exception to this as it only has access to it's local variables.
      */
-    private LinkedList<Scope> scopes;
+    private final ScopeChain scopeChain;
 
     /**
      * The locale of this template. Will be used by LocaleAware filters,
@@ -82,16 +80,7 @@ public class EvaluationContext {
     private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
     /**
-     * While multiple threads are evaluating the same template (via parallel
-     * tag) we will use this lock to ensure that thread safety. Not all methods
-     * in this class are invoked during the rendering phase and therefore don't
-     * all have to be thread safe.
-     */
-
-    private ReentrantLock renderLock = new ReentrantLock();
-
-    /**
-     * Constructor
+     * Main constructor.
      * 
      * @param self
      * @param strictVariables
@@ -104,17 +93,60 @@ public class EvaluationContext {
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
             Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
             ExecutorService executorService) {
+        this(self, strictVariables, locale, filters, tests, functions, executorService, null, null);
+    }
+
+    /**
+     * Constructor used to provide everything except for an InheritanceChain.
+     * 
+     * @param self
+     * @param strictVariables
+     * @param locale
+     * @param filters
+     * @param tests
+     * @param functions
+     * @param executorService
+     * @param scopes
+     */
+    public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
+            Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
+            ExecutorService executorService, ScopeChain scopeChain) {
+        this(self, strictVariables, locale, filters, tests, functions, executorService, scopeChain, null);
+    }
+
+    /**
+     * Constructor used to provide all final variables.
+     * 
+     * @param self
+     * @param strictVariables
+     * @param locale
+     * @param filters
+     * @param tests
+     * @param functions
+     * @param executorService
+     * @param scopes
+     * @param inheritanceChain
+     */
+    public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
+            Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
+            ExecutorService executorService, ScopeChain scopeChain, InheritanceChain inheritanceChain) {
+
+        if (scopeChain == null) {
+            scopeChain = new ScopeChain();
+        }
+
+        if (inheritanceChain == null) {
+            inheritanceChain = new InheritanceChain(self);
+        }
+
         this.strictVariables = strictVariables;
         this.locale = locale;
         this.filters = filters;
         this.tests = tests;
         this.functions = functions;
         this.executorService = executorService;
-        this.inheritanceChain = new InheritanceChain(self);
-        this.scopes = new LinkedList<>();
-
-        // add an initial scope
-        this.scopes.add(new Scope(null));
+        this.scopeChain = scopeChain;
+        this.inheritanceChain = inheritanceChain;
     }
 
     /**
@@ -123,25 +155,24 @@ public class EvaluationContext {
      * 
      * @return
      */
-    public EvaluationContext copyWithoutInheritanceChain(PebbleTemplateImpl self) {
-        lockEvaluationContext();
-        EvaluationContext result = new EvaluationContext(self, strictVariables, getLocale(), filters, tests, functions,
-                executorService);
-        result.setScopes(scopes);
-        unlockEvaluationContext();
+    public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
+        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
+                executorService, scopeChain);
         return result;
     }
 
-    private void lockEvaluationContext() {
-        if (executorService != null) {
-            renderLock.lock();
-        }
-    }
-
-    private void unlockEvaluationContext() {
-        if (executorService != null) {
-            renderLock.unlock();
-        }
+    /**
+     * Makes an exact copy of the evaluation context except the "scopeChain"
+     * object will be a deep copy without reference to the original. This is
+     * used for the "parallel" tag.
+     * 
+     * @param self
+     * @return
+     */
+    public EvaluationContext deepCopy(PebbleTemplateImpl self) {
+        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
+                executorService, scopeChain.deepCopy(), inheritanceChain);
+        return result;
     }
 
     /**
@@ -150,7 +181,7 @@ public class EvaluationContext {
      * @param objects
      */
     public void putAll(Map<String, Object> objects) {
-        scopes.peek().putAll(objects);
+        scopeChain.putAll(objects);
     }
 
     /**
@@ -162,9 +193,7 @@ public class EvaluationContext {
      * @param value
      */
     public void put(String key, Object value) {
-        lockEvaluationContext();
-        scopes.peek().put(key, value);
-        unlockEvaluationContext();
+        scopeChain.put(key, value);
     }
 
     /**
@@ -176,37 +205,15 @@ public class EvaluationContext {
      * @throws AttributeNotFoundException
      */
     public Object get(Object key) throws AttributeNotFoundException {
-        lockEvaluationContext();
-        Object result = null;
-        boolean found = false;
-
-        Scope scope = scopes.peek();
-        while (scope != null && !found) {
-            if (scope.containsKey(key)) {
-                found = true;
-                result = scope.get(key);
-            }
-            scope = scope.getParent();
-        }
-
-        if (!found && isStrictVariables()) {
-            throw new AttributeNotFoundException(null, String.format(
-                    "Variable [%s] does not exist and strict variables is set to true.", String.valueOf(key)));
-        }
-        unlockEvaluationContext();
-        return result;
+        return scopeChain.get(key, isStrictVariables());
     }
 
     public void ascendInheritanceChain() {
-        lockEvaluationContext();
         inheritanceChain.ascend();
-        unlockEvaluationContext();
     }
 
     public void descendInheritanceChain() {
-        lockEvaluationContext();
         inheritanceChain.descend();
-        unlockEvaluationContext();
     }
 
     public PebbleTemplateImpl getParentTemplate() {
@@ -221,9 +228,7 @@ public class EvaluationContext {
      * Creates a new scope that contains a reference to the current scope.
      */
     public void pushScope() {
-        lockEvaluationContext();
-        scopes.push(new Scope(scopes.peek()));
-        unlockEvaluationContext();
+        scopeChain.pushScope();
     }
 
     /**
@@ -231,15 +236,11 @@ public class EvaluationContext {
      * This occurs for macros. Variable lookup will end at this scope.
      */
     public void pushLocalScope() {
-        lockEvaluationContext();
-        scopes.push(new Scope(null));
-        unlockEvaluationContext();
+        scopeChain.pushLocalScope();
     }
 
     public void popScope() {
-        lockEvaluationContext();
-        scopes.pop();
-        unlockEvaluationContext();
+        scopeChain.popScope();
     }
 
     public boolean isStrictVariables() {
@@ -278,7 +279,4 @@ public class EvaluationContext {
         inheritanceChain.pushAncestor(parent);
     }
 
-    public void setScopes(LinkedList<Scope> scopes) {
-        this.scopes = scopes;
-    }
 }
