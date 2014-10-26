@@ -36,10 +36,6 @@ public class TokenStream {
         this.filename = name;
     }
 
-    public void injectTokens(Collection<Token> tokens) {
-        this.tokens.addAll(current + 1, tokens);
-    }
-
     /**
      * Consumes and returns the next token in the stream.
      * 
@@ -124,6 +120,11 @@ public class TokenStream {
         return tokens.toString();
     }
 
+    /**
+     * Looks at the current token. Does not consume the token.
+     * 
+     * @return
+     */
     public Token current() {
         return this.tokens.get(current);
     }

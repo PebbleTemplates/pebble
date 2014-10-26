@@ -18,47 +18,58 @@ import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class BlockTokenParser extends AbstractTokenParser {
 
-	@Override
-	public RenderableNode parse(Token token) throws ParserException {
-		TokenStream stream = this.parser.getStream();
-		int lineNumber = token.getLineNumber();
+    @Override
+    public RenderableNode parse(Token token) throws ParserException {
+        TokenStream stream = this.parser.getStream();
+        int lineNumber = token.getLineNumber();
 
-		// skip over the 'block' token
-		stream.next();
+        // skip over the 'block' token to the name token
+        Token blockName = stream.next();
 
-		// expect a name for the new block
-		Token blockName = stream.expect(Token.Type.NAME);
+        // expect a name or string for the new block
+        if (!blockName.test(Token.Type.NAME) && !blockName.test(Token.Type.STRING)) {
 
-		// get the name of the new block
-		String name = blockName.getValue();
+            // we already know an error has occurred but let's just call the
+            // typical "expect" method so that we know a proper error
+            // message is given to user
+            stream.expect(Token.Type.NAME);
+        }
 
-		stream.expect(Token.Type.EXECUTE_END);
+        // get the name of the new block
+        String name = blockName.getValue();
 
-		this.parser.pushBlockStack(name);
-		// now we parse the block body
-		BodyNode blockBody = this.parser.subparse(new StoppingCondition() {
-			@Override
-			public boolean evaluate(Token token) {
-				return token.test(Token.Type.NAME, "endblock");
-			}
-		});
-		this.parser.popBlockStack();
+        // skip over name
+        stream.next();
 
-		// skip the 'endblock' token
-		stream.next();
+        stream.expect(Token.Type.EXECUTE_END);
 
-		// check if user included block name in endblock
-		Token current = stream.current();
-		if (current.test(Token.Type.NAME, name)) {
-			stream.next();
-		}
+        this.parser.pushBlockStack(name);
 
-		stream.expect(Token.Type.EXECUTE_END);
-		return new BlockNode(lineNumber, name, blockBody);
-	}
+        // now we parse the block body
+        BodyNode blockBody = this.parser.subparse(new StoppingCondition() {
 
-	@Override
-	public String getTag() {
-		return "block";
-	}
+            @Override
+            public boolean evaluate(Token token) {
+                return token.test(Token.Type.NAME, "endblock");
+            }
+        });
+        this.parser.popBlockStack();
+
+        // skip the 'endblock' token
+        stream.next();
+
+        // check if user included block name in endblock
+        Token current = stream.current();
+        if (current.test(Token.Type.NAME, name) || current.test(Token.Type.STRING, name)) {
+            stream.next();
+        }
+
+        stream.expect(Token.Type.EXECUTE_END);
+        return new BlockNode(lineNumber, name, blockBody);
+    }
+
+    @Override
+    public String getTag() {
+        return "block";
+    }
 }

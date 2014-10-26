@@ -52,6 +52,26 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("success", writer.toString());
     }
 
+    /**
+     * The template used to fail if the user wrapped the block name in quotes.
+     * 
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testBlockWithStringLiteralName() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
+
+        String source = "{% block 'content' %}hello{% endblock 'content' %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("hello", writer.toString());
+    }
+
     @Test
     public void testIf() throws PebbleException, IOException {
         Loader loader = new StringLoader();
@@ -595,10 +615,10 @@ public class CoreTagsTest extends AbstractTest {
         PebbleEngine pebble = new PebbleEngine();
         pebble.getLoader().setPrefix("templates");
         pebble.setStrictVariables(true);
-        
+
         pebble.setExecutorService(Executors.newCachedThreadPool());
         PebbleTemplate template = pebble.getTemplate("template.parallelInclude1.peb");
-        
+
         Writer writer = new StringWriter();
         Map<String, Object> context = new HashMap<>();
         context.put("slowObject", new SlowObject());
