@@ -86,8 +86,7 @@ public class TokenStream {
 
         if (!success) {
             if (message == null) {
-                message = String.format(
-                        "Unexpected token of value \"%s\" and type %s, expected token of type %s",
+                message = String.format("Unexpected token of value \"%s\" and type %s, expected token of type %s",
                         token.getValue(), token.getType().toString(), type);
             }
             throw new ParserException(null, message, token.getLineNumber(), filename);
