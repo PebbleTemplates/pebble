@@ -56,19 +56,20 @@ public class ForNode extends AbstractRenderableNode {
         Iterator<?> iterator = iterable.iterator();
 
         context.pushScope();
-        Map<String, Object> loop = new HashMap<>();
         int length = getIteratorSize(iterable);
         int index = 0;
-        loop.put("index", index);
-        loop.put("length", length);
-        context.put("loop", loop);
 
         if (iterable != null && iterator.hasNext()) {
 
             while (iterator.hasNext()) {
+
+                Map<String, Object> loop = new HashMap<>();
+                loop.put("index", index++);
+                loop.put("length", length);
+                context.put("loop", loop);
+                
                 context.put(variableName, iterator.next());
                 body.render(self, writer, context);
-                loop.put("index", ++index);
             }
 
         } else if (elseBody != null) {

@@ -24,6 +24,17 @@ public class Scope extends HashMap<String, Object> {
 
     private boolean isLocal;
 
+    public Scope() {
+
+    }
+
+    public Scope deepCopy() {
+        Scope copy = new Scope();
+        copy.putAll(this);
+        copy.setLocal(isLocal);
+        return copy;
+    }
+
     public boolean isLocal() {
         return isLocal;
     }

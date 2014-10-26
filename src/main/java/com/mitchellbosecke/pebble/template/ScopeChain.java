@@ -22,8 +22,21 @@ public class ScopeChain {
         pushScope();
     }
 
+    public ScopeChain deepCopy() {
+        ScopeChain copy = new ScopeChain();
+
+        for (Scope originalScope : stack) {
+            copy.stack.add(originalScope.deepCopy());
+        }
+        return copy;
+    }
+
     public void pushScope() {
-        stack.push(new Scope());
+        pushScope(new Scope());
+    }
+
+    public void pushScope(Scope scope) {
+        stack.push(scope);
     }
 
     public void pushLocalScope() {
@@ -35,12 +48,12 @@ public class ScopeChain {
     public void popScope() {
         stack.pop();
     }
-    
-    public void putAll(Map<String, Object> objects){
+
+    public void putAll(Map<String, Object> objects) {
         stack.peek().putAll(objects);
     }
-    
-    public void put(String key, Object value){
+
+    public void put(String key, Object value) {
         stack.peek().put(key, value);
     }
 
@@ -54,12 +67,12 @@ public class ScopeChain {
 
         while (iterator.hasNext() && !found) {
             scope = iterator.next();
-            
+
             if (scope.containsKey(key)) {
                 found = true;
                 result = scope.get(key);
             }
-            if(scope.isLocal()){
+            if (scope.isLocal()) {
                 break;
             }
         }
@@ -71,7 +84,4 @@ public class ScopeChain {
         return result;
     }
 
-    public ScopeChain deepCopy() {
-        return this;
-    }
 }

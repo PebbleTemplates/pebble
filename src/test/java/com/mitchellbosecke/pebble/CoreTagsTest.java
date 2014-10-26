@@ -575,7 +575,6 @@ public class CoreTagsTest extends AbstractTest {
      * @throws IOException
      */
     @Test
-    @Ignore
     public void testParallelTagWhileEvaluationContextIsChanging() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);

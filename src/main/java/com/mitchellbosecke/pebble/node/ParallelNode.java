@@ -70,7 +70,7 @@ public class ParallelNode extends AbstractRenderableNode {
             final EvaluationContext contextCopy = context.deepCopy(self);
 
             final Writer stringWriter = new StringWriter();
-            
+
             Future<String> future = es.submit(new Callable<String>() {
 
                 @Override
