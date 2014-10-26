@@ -22,11 +22,18 @@ public class ScopeChain {
         pushScope();
     }
 
+    /**
+     * Creates a deep copy of the ScopeChain. This is used for the parallel tag
+     * because every new thread should have a "snapshot" of the scopes, i.e. one
+     * thread should not affect rendering output of another.
+     * 
+     * @return
+     */
     public ScopeChain deepCopy() {
         ScopeChain copy = new ScopeChain();
 
         for (Scope originalScope : stack) {
-            copy.stack.add(originalScope.deepCopy());
+            copy.stack.add(originalScope.shallowCopy());
         }
         return copy;
     }

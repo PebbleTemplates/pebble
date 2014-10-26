@@ -11,8 +11,8 @@ package com.mitchellbosecke.pebble.template;
 import java.util.HashMap;
 
 /**
- * A scope is a map of variables. If it's a "locale" scope that means that tells
- * the ScopeChain to stop looking for a variable if it can't find it in this
+ * A scope is a map of variables. If it's a "local" scope that tells the
+ * ScopeChain to stop looking for a variable if it can't find it in this
  * particular scope.
  * 
  * @author Mitchell
@@ -28,7 +28,14 @@ public class Scope extends HashMap<String, Object> {
 
     }
 
-    public Scope deepCopy() {
+    /**
+     * Creates a shallow copy of the Scope. This is used for the parallel tag
+     * because every new thread should have a "snapshot" of the scopes, i.e. one
+     * thread should not affect rendering output of another.
+     * 
+     * @return
+     */
+    public Scope shallowCopy() {
         Scope copy = new Scope();
         copy.putAll(this);
         copy.setLocal(isLocal);
