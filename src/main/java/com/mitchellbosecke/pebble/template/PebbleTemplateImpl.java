@@ -107,7 +107,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      */
     public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
         if (context.getExecutorService() != null) {
-            writer = new FutureWriter(writer, context.getExecutorService());
+            writer = new FutureWriter(writer);
         }
         buildContent(writer, context);
         writer.flush();

@@ -69,14 +69,17 @@ public class ParallelNode extends AbstractRenderableNode {
 
             final EvaluationContext contextCopy = context.deepCopy(self);
 
-            final Writer stringWriter = new StringWriter();
+            final StringWriter newStringWriter = new StringWriter();
+            final Writer newFutureWriter = new FutureWriter(newStringWriter);
 
             Future<String> future = es.submit(new Callable<String>() {
 
                 @Override
                 public String call() throws PebbleException, IOException {
-                    body.render(self, stringWriter, contextCopy);
-                    return stringWriter.toString();
+                    body.render(self, newFutureWriter, contextCopy);
+                    newFutureWriter.flush();
+                    newFutureWriter.close();
+                    return newStringWriter.toString();
                 }
             });
             ((FutureWriter) writer).enqueue(future);

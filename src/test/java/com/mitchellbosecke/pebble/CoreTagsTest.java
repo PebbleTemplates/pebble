@@ -610,6 +610,34 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("0123456789", writer.toString());
     }
 
+    /**
+     * Nested parallel tags were throwing an error.
+     * 
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test(timeout = 500)
+    public void testNestedParallel() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setExecutorService(Executors.newCachedThreadPool());
+        // @formatter:off
+        String source = "{% parallel %}"
+                + "{% parallel %}{{ slowObject.fourth() }}{% endparallel %} {% parallel %}{{ slowObject.first() }}{% endparallel %} "
+                + "{% parallel %}{{ slowObject.fourth() }}{% endparallel %} {% parallel %}{{ slowObject.first() }}{% endparallel %}"
+                + "{% endparallel %}";
+        // @formatter:on
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("slowObject", new SlowObject());
+        template.evaluate(writer, context);
+
+        assertEquals("fourth first fourth first", writer.toString());
+    }
+
     @Test(timeout = 300)
     public void testIncludeWithinParallelTag() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine();
@@ -671,6 +699,16 @@ public class CoreTagsTest extends AbstractTest {
                 e.printStackTrace();
             }
             return "third";
+        }
+
+        public String fourth() {
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return "fourth";
         }
     }
 

@@ -10,34 +10,33 @@ package com.mitchellbosecke.pebble.utils;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * A Writer that will wrap around the user-provided writer if the user also
  * provided an ExecutorService to the main PebbleEngine. A FutureWriter is
  * capable of handling Futures that will return a string.
  * 
+ * It is not thread safe but that is okay. Each thread will have it's own
+ * writer, provided by the "parallel" node; i.e. they will never share writers.
+ * 
  * @author Mitchell
  * 
  */
 public class FutureWriter extends Writer {
 
-    private final ConcurrentLinkedQueue<Future<String>> orderedFutures = new ConcurrentLinkedQueue<>();
-
-    private final ExecutorService es;
+    private final LinkedList<Future<String>> orderedFutures = new LinkedList<>();
 
     private final Writer internalWriter;
 
     private boolean closed = false;
 
-    public FutureWriter(Writer writer, ExecutorService es) {
+    public FutureWriter(Writer writer) {
         this.internalWriter = writer;
-        this.es = es;
     }
 
     public void enqueue(Future<String> future) throws IOException {
@@ -50,26 +49,44 @@ public class FutureWriter extends Writer {
     @Override
     public void write(final char[] cbuf, final int off, final int len) throws IOException {
 
-        /*
-         * We need to make a defensive copy of the character buffer because this
-         * class will continue to reuse the same buffer with future invocations
-         * of this write method.
-         */
-        final char[] finalCharacterBuffer = Arrays.copyOf(cbuf, len);
+        if (closed) {
+            throw new IOException("Writer is closed");
+        }
+
+        final String result = new String(cbuf, off, len);
 
         if (orderedFutures.isEmpty()) {
-            internalWriter.write(finalCharacterBuffer, off, len);
+            internalWriter.write(result);
         } else {
-            Future<String> future = es.submit(new Callable<String>() {
+            Future<String> future = new Future<String>() {
 
                 @Override
-                public String call() throws Exception {
-                    char[] chars = new char[len];
-                    System.arraycopy(finalCharacterBuffer, off, chars, 0, len);
-                    return new String(chars);
+                public boolean cancel(boolean mayInterruptIfRunning) {
+                    return false;
                 }
 
-            });
+                @Override
+                public boolean isCancelled() {
+                    return false;
+                }
+
+                @Override
+                public boolean isDone() {
+                    return true;
+                }
+
+                @Override
+                public String get() throws InterruptedException, ExecutionException {
+                    return result;
+                }
+
+                @Override
+                public String get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException,
+                        TimeoutException {
+                    return null;
+                }
+
+            };
 
             orderedFutures.add(future);
         }
