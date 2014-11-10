@@ -1,11 +1,13 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- ******************************************************************************/
+ *
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
+ *****************************************************************************
+ */
 package com.mitchellbosecke.pebble.extension.i18n;
 
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.ResourceBundle;
 
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import java.util.MissingResourceException;
 
 public class i18nFunction implements Function {
 
@@ -37,7 +40,12 @@ public class i18nFunction implements Function {
 
         ResourceBundle bundle = ResourceBundle.getBundle(basename, locale);
 
-        return bundle.getObject(key);
+        try {
+            return bundle.getObject(key);
+        } catch (MissingResourceException e) {
+            return key;
+        }
+
     }
 
 }
