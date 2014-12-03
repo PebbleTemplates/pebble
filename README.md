@@ -51,11 +51,10 @@ Now we want to compile the template, and render it:
 PebbleEngine engine = new PebbleEngine();
 PebbleTemplate compiledTemplate = engine.getTemplate("home.html");
 
-Writer writer = new StringWriter();
-
 Map<String, Object> context = new HashMap<>();
 context.put("name", "Mitchell");
 
+Writer writer = new StringWriter();
 compiledTemplate.evaluate(writer, context);
 
 String output = writer.toString();
