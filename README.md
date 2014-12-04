@@ -78,7 +78,7 @@ The output should result in the following:
 ```
 
 ## Contributing
-Currently looking for contributors! In particular we need help with new feature ideas, bug reports/fixes, API feedback, performance optimization, and IDE integration. For more information on understanding the code base, see [here](http://www.mitchellbosecke.com/pebble/contributing). No contribution is too small and contributing is super easy:
+Currently looking for contributors! In particular we need help with new feature ideas, bug reports/fixes, API feedback, performance optimization, and IDE integration. Just one little commit and you'll be forever listed on the [contributors page](http://www.mitchellbosecke.com/pebble/contributing). No contribution is too small and contributing is super easy:
 
 * `git clone git@github.com:mbosecke/pebble.git`
 * Add feature or fix bug.
