@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -18,8 +19,8 @@ public class ScopeChain {
 
     private LinkedList<Scope> stack = new LinkedList<>();
 
-    public ScopeChain() {
-        pushScope();
+    public ScopeChain(Map<String, Object> map) {
+        pushScope(map);
     }
 
     /**
@@ -31,7 +32,7 @@ public class ScopeChain {
      * @return
      */
     public ScopeChain deepCopy() {
-        ScopeChain copy = new ScopeChain();
+        ScopeChain copy = new ScopeChain(new HashMap<String, Object>());
 
         for (Scope originalScope : stack) {
             copy.stack.add(originalScope.shallowCopy());
@@ -39,33 +40,26 @@ public class ScopeChain {
         return copy;
     }
 
-    public void pushScope() {
-        pushScope(new Scope());
-    }
-
-    public void pushScope(Scope scope) {
+    public void pushScope(Map<String, Object> map) {
+        Scope scope = new Scope(map, false);
         stack.push(scope);
     }
 
     public void pushLocalScope() {
-        Scope local = new Scope();
-        local.setLocal(true);
-        stack.push(local);
+        Scope scope = new Scope(new HashMap<String, Object>(), true);
+        stack.push(scope);
     }
 
     public void popScope() {
         stack.pop();
     }
 
-    public void putAll(Map<String, Object> objects) {
-        stack.peek().putAll(objects);
-    }
 
     public void put(String key, Object value) {
         stack.peek().put(key, value);
     }
 
-    public Object get(Object key, boolean isStrictVariables) throws AttributeNotFoundException {
+    public Object get(String key, boolean isStrictVariables) throws AttributeNotFoundException {
         Object result = null;
         boolean found = false;
 

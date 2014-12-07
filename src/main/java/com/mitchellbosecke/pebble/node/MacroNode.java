@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,7 +83,7 @@ public class MacroNode extends AbstractRenderableNode {
                 }
 
                 // scope for user provided arguments
-                context.pushScope();
+                context.pushScope(new HashMap<String, Object>());
                 for (Entry<String, Object> arg : macroArgs.entrySet()) {
                     context.put(arg.getKey(), arg.getValue());
                 }

@@ -72,24 +72,24 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     public void evaluate(Writer writer) throws PebbleException, IOException {
-        EvaluationContext context = initContext(null);
+        EvaluationContext context = initContext(null, null);
         evaluate(writer, context);
     }
 
     public void evaluate(Writer writer, Locale locale) throws PebbleException, IOException {
-        EvaluationContext context = initContext(locale);
+        EvaluationContext context = initContext(null, locale);
         evaluate(writer, context);
     }
 
     public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
-        EvaluationContext context = initContext(null);
-        context.putAll(map);
+        EvaluationContext context = initContext(map, null);
+        context.pushScope(map);
         evaluate(writer, context);
     }
 
     public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
-        EvaluationContext context = initContext(locale);
-        context.putAll(map);
+        EvaluationContext context = initContext(map, locale);
+        context.pushScope(map);
         evaluate(writer, context);
     }
 
@@ -119,11 +119,11 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param locale
      * @return
      */
-    private EvaluationContext initContext(Locale locale) {
+    private EvaluationContext initContext(Map<String, Object> map, Locale locale) {
         locale = locale == null ? engine.getDefaultLocale() : locale;
+        ScopeChain scopeChain = new ScopeChain(engine.getGlobalVariables());
         EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
-                engine.getFilters(), engine.getTests(), engine.getFunctions(), engine.getExecutorService());
-        context.putAll(engine.getGlobalVariables());
+                engine.getFilters(), engine.getTests(), engine.getFunctions(), engine.getExecutorService(), scopeChain, null);
         return context;
     }
 

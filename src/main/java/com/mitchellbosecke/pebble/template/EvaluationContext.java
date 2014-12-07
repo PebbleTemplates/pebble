@@ -80,41 +80,6 @@ public class EvaluationContext {
     private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
 
     /**
-     * Main constructor.
-     * 
-     * @param self
-     * @param strictVariables
-     * @param locale
-     * @param filters
-     * @param tests
-     * @param functions
-     * @param executorService
-     */
-    public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
-            Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
-            ExecutorService executorService) {
-        this(self, strictVariables, locale, filters, tests, functions, executorService, null, null);
-    }
-
-    /**
-     * Constructor used to provide everything except for an InheritanceChain.
-     * 
-     * @param self
-     * @param strictVariables
-     * @param locale
-     * @param filters
-     * @param tests
-     * @param functions
-     * @param executorService
-     * @param scopes
-     */
-    public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
-            Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
-            ExecutorService executorService, ScopeChain scopeChain) {
-        this(self, strictVariables, locale, filters, tests, functions, executorService, scopeChain, null);
-    }
-
-    /**
      * Constructor used to provide all final variables.
      * 
      * @param self
@@ -130,10 +95,6 @@ public class EvaluationContext {
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
             Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
             ExecutorService executorService, ScopeChain scopeChain, InheritanceChain inheritanceChain) {
-
-        if (scopeChain == null) {
-            scopeChain = new ScopeChain();
-        }
 
         if (inheritanceChain == null) {
             inheritanceChain = new InheritanceChain(self);
@@ -157,7 +118,7 @@ public class EvaluationContext {
      */
     public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
-                executorService, scopeChain);
+                executorService, scopeChain, null);
         return result;
     }
 
@@ -176,17 +137,8 @@ public class EvaluationContext {
     }
 
     /**
-     * Used to add all the user-provided context.
-     * 
-     * @param objects
-     */
-    public void putAll(Map<String, Object> objects) {
-        scopeChain.putAll(objects);
-    }
-
-    /**
      * This method might be called DURING the evaluation of a template (ex. for
-     * node, set node, and macro node) and must be synchronized in case there
+     * node, set node, and macro node) and must be thread safe in case there
      * are multiple threads evaluating the same template (via parallel tag).
      * 
      * @param key
@@ -204,7 +156,7 @@ public class EvaluationContext {
      * @return
      * @throws AttributeNotFoundException
      */
-    public Object get(Object key) throws AttributeNotFoundException {
+    public Object get(String key) throws AttributeNotFoundException {
         return scopeChain.get(key, isStrictVariables());
     }
 
@@ -227,8 +179,8 @@ public class EvaluationContext {
     /**
      * Creates a new scope that contains a reference to the current scope.
      */
-    public void pushScope() {
-        scopeChain.pushScope();
+    public void pushScope(Map<String, Object> map) {
+        scopeChain.pushScope(map);
     }
 
     /**

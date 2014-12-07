@@ -55,7 +55,7 @@ public class ForNode extends AbstractRenderableNode {
 
         Iterator<?> iterator = iterable.iterator();
 
-        context.pushScope();
+        context.pushScope(new HashMap<String, Object>());
         int length = getIteratorSize(iterable);
         int index = 0;
 

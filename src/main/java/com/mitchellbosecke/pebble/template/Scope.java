@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A scope is a map of variables. If it's a "local" scope that tells the
@@ -18,14 +19,15 @@ import java.util.HashMap;
  * @author Mitchell
  * 
  */
-public class Scope extends HashMap<String, Object> {
+public class Scope {
 
-    private static final long serialVersionUID = -3220073691105236100L;
+    private final boolean isLocal;
 
-    private boolean isLocal;
+    private final Map<String, Object> backingMap;
 
-    public Scope() {
-
+    public Scope(Map<String, Object> backingMap, boolean isLocal) {
+        this.backingMap = backingMap == null ? new HashMap<String, Object>() : backingMap;
+        this.isLocal = isLocal;
     }
 
     /**
@@ -36,18 +38,27 @@ public class Scope extends HashMap<String, Object> {
      * @return
      */
     public Scope shallowCopy() {
-        Scope copy = new Scope();
-        copy.putAll(this);
-        copy.setLocal(isLocal);
-        return copy;
+
+        Map<String, Object> backingMapCopy = new HashMap<>();
+        backingMapCopy.putAll(backingMap);
+
+        return new Scope(backingMapCopy, isLocal);
     }
 
     public boolean isLocal() {
         return isLocal;
     }
 
-    public void setLocal(boolean isLocal) {
-        this.isLocal = isLocal;
+    public void put(String key, Object value) {
+        backingMap.put(key, value);
+    }
+
+    public boolean containsKey(String key) {
+        return backingMap.containsKey(key);
+    }
+
+    public Object get(String key) {
+        return backingMap.get(key);
     }
 
 }
