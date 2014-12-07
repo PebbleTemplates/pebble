@@ -10,6 +10,8 @@ package com.mitchellbosecke.pebble.error;
 
 public class ParserException extends PebbleException {
 
+    private static final long serialVersionUID = -3712498518512126529L;
+
     /**
      * Parser exception
      * 
@@ -23,14 +25,5 @@ public class ParserException extends PebbleException {
     public ParserException(Throwable cause, String message, int lineNumber, String filename) {
         super(cause, message, lineNumber, filename);
     }
-
-    public ParserException(Throwable cause, String message) {
-        super(cause, message);
-    }
-
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = -3712498518512126529L;
 
 }

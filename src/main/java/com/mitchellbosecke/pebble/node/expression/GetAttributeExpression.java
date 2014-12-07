@@ -61,12 +61,35 @@ public class GetAttributeExpression implements Expression<Object> {
 
         if (object != null) {
 
-            // first we check maps, as they are a bit of an exception
+            // optimization check to avoid checking maps/arrays/lists if user
+            // provided argument
             if (args == null) {
+
+                // first we check maps
                 if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
                     result = ((Map<?, ?>) object).get(attributeName);
                     found = true;
                 }
+
+                try {
+                    Integer key = Integer.valueOf(attributeName);
+
+                    // then we check arrays
+                    if (object instanceof Object[]) {
+                        Object[] arr = ((Object[]) object);
+                        return arr[key];
+                    }
+
+                    // then lists
+                    if(object instanceof List){
+                        @SuppressWarnings("unchecked")
+                        List<Object> list = (List<Object>)object;
+                        return list.get(key);
+                    }
+                } catch (NumberFormatException ex) {
+                    // do nothing
+                }
+
             }
 
             if (!found) {

@@ -179,7 +179,7 @@ public class LexerImpl implements Lexer {
         try {
             this.source = new TemplateSource(reader, name);
         } catch (IOException e) {
-            throw new ParserException(e, "Can not convert template Reader into a String");
+            throw new ParserException(e, "Can not convert template Reader into a String", 0, name);
         }
 
         /*

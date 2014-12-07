@@ -16,6 +16,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
+import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.FunctionOrMacroNameNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
@@ -176,7 +177,8 @@ public class ExpressionParser {
                 finalExpression = operatorNodeClass.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
-                throw new ParserException(e, "Error instantiating operator node [" + operatorNodeClass.getName() + "]");
+                throw new ParserException(e, "Error instantiating operator node [" + operatorNodeClass.getName() + "]",
+                        token.getLineNumber(), stream.getFilename());
             }
 
             finalExpression.setLeft(expression);
@@ -426,7 +428,8 @@ public class ExpressionParser {
             if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
                 args = this.parseArguments();
                 if (!args.getNamedArgs().isEmpty()) {
-                    throw new ParserException(null, "Can not use named arguments when calling a bean method");
+                    throw new ParserException(null, "Can not use named arguments when calling a bean method", stream
+                            .current().getLineNumber(), stream.getFilename());
                 }
             }
 
@@ -440,8 +443,14 @@ public class ExpressionParser {
             // would an attribute name following a '.', except that the
             // attribute name gathered this way is NOT held to the same naming
             // restrictions (e.g. can include hyphens '-')
-            Token token = stream.expect(Token.Type.STRING);
-            node = new GetAttributeExpression(node, token.getValue());
+            Token token = stream.current();
+            if (token.test(Type.STRING) || token.test(Type.NUMBER)) {
+                node = new GetAttributeExpression(node, token.getValue());
+            } else {
+                throw new ParserException(null, "Only strings and numbers allowed within square brackets.",
+                        token.getLineNumber(), stream.getFilename());
+            }
+            stream.next();
 
             // move past the closing ']' bracket
             stream.expect(Token.Type.PUNCTUATION, "]");
@@ -492,7 +501,9 @@ public class ExpressionParser {
 
             if (argumentName == null) {
                 if (!namedArgs.isEmpty()) {
-                    throw new ParserException(null, "Positional arguments must be declared before any named arguments.");
+                    throw new ParserException(null,
+                            "Positional arguments must be declared before any named arguments.", stream.current()
+                                    .getLineNumber(), stream.getFilename());
                 }
                 positionalArgs.add(new PositionalArgumentNode(argumentValue));
             } else {
