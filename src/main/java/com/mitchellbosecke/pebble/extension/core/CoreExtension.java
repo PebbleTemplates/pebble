@@ -117,6 +117,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("default", new DefaultFilter());
         filters.put("lower", new LowerFilter());
         filters.put("numberformat", new NumberFormatFilter());
+        filters.put("sort", new SortFilter());
         filters.put("title", new TitleFilter());
         filters.put("trim", new TrimFilter());
         filters.put("upper", new UpperFilter());

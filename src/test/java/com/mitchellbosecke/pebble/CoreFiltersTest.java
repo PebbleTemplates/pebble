@@ -16,8 +16,10 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -321,6 +323,27 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("", writer.toString());
+    }
+    
+    @Test
+    public void testSortFilter() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{% for word in words|sort %}{{ word }} {% endfor %}");
+        List<String> words = new ArrayList<>();
+        words.add("zebra");
+        words.add("apple");
+        words.add(" cat");
+        words.add("123");
+        words.add("Apple");
+        words.add("cat");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("words", words);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals(" cat 123 Apple apple cat zebra ", writer.toString());
     }
 
     @Test
