@@ -111,6 +111,7 @@ public class CoreExtension extends AbstractExtension {
     public Map<String, Filter> getFilters() {
         Map<String, Filter> filters = new HashMap<>();
         filters.put("abbreviate", new AbbreviateFilter());
+        filters.put("abs", new AbsFilter());
         filters.put("capitalize", new CapitalizeFilter());
         filters.put("date", new DateFilter());
         filters.put("default", new DefaultFilter());
