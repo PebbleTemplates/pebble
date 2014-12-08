@@ -59,12 +59,9 @@ public class ArgumentsNode implements Node {
         List<String> argumentNames = invocableWithNamedArguments.getArgumentNames();
 
         if (argumentNames == null) {
-            if (positionalArgs == null || positionalArgs.isEmpty()) {
-                return result;
-            }
 
             /* Some functions such as min and max use un-named varags */
-            else {
+            if (positionalArgs != null && !positionalArgs.isEmpty()) {
                 for (int i = 0; i < positionalArgs.size(); i++) {
                     result.put(String.valueOf(i), positionalArgs.get(i).getValueExpression().evaluate(self, context));
                 }
