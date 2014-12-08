@@ -1,3 +1,9 @@
+## v1.3.0-SNAPSHOT
+- Added "filter" tag
+- Added "abs" filter
+- Added "sort" filter
+- Pebble now uses the exact Map implementation provided by user instead of moving variables into it's own map implementation. This allows for custom "lazy" maps and other unique implementations.
+
 ## v1.2.0
 - Added verbatim tag
 - Removed the LocaleAware interface; filters/functions/tests now get the locale via the EvaluationContext that is passed as a "_context" argument in the argument map
