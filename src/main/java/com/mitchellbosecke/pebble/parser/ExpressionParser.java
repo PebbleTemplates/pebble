@@ -372,7 +372,7 @@ public class ExpressionParser {
         return new FunctionOrMacroInvocationExpression(functionName, args);
     }
 
-    private Expression<?> parseFilterInvocationExpression() throws ParserException {
+    public FilterInvocationExpression parseFilterInvocationExpression() throws ParserException {
         TokenStream stream = parser.getStream();
         Token filterToken = stream.expect(Token.Type.NAME);
 

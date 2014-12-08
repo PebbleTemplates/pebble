@@ -196,6 +196,32 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("[2]0Alex1Bob", writer.toString());
     }
+    
+    @Test
+    public void testFilterTag() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% filter upper %}hello{% endfilter %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("HELLO", writer.toString());
+    }
+    
+    @Test
+    public void testChainedFilterTag() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% filter lower | escape %}HELLO<br>{% endfilter %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("hello&lt;br&gt;", writer.toString());
+    }
 
     /**
      * Issue #15

@@ -11,6 +11,10 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 
 public abstract class BinaryExpression<T> implements Expression<T> {
+    
+    public BinaryExpression(){
+        
+    }
 
     private Expression<?> leftExpression;
 
