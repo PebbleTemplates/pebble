@@ -1,4 +1,4 @@
-## v1.3.0-SNAPSHOT
+## v1.3.0
 - Added "filter" tag
 - Added "abs" filter
 - Added "sort" filter
