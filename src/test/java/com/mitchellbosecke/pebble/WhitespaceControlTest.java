@@ -34,13 +34,13 @@ public class WhitespaceControlTest extends AbstractTest {
 		PebbleTemplate windowsTemplate = pebble.getTemplate("\r\n");
 		Writer windowsWriter = new StringWriter();
 		windowsTemplate.evaluate(windowsWriter);
-		assertEquals(System.lineSeparator(), windowsWriter.toString());
+		assertEquals("\r\n", windowsWriter.toString());
 		
 		// unix
 		PebbleTemplate unixTemplate = pebble.getTemplate("\n");
 		Writer unixWriter = new StringWriter();
 		unixTemplate.evaluate(unixWriter);
-		assertEquals(System.lineSeparator(), unixWriter.toString());
+		assertEquals("\n", unixWriter.toString());
 	}
 
 	@Test

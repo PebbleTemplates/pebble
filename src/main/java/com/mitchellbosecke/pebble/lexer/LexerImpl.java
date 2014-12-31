@@ -136,14 +136,14 @@ public class LexerImpl implements Lexer {
     public LexerImpl(PebbleEngine engine) {
         this.engine = engine;
 
-        String newline = Pattern.quote(System.lineSeparator());
+        String possibleNewline = "(\r\n|\n\r|\r|\n|\u0085|\u2028|\u2029)?";
 
         // regexes used to find the individual delimiters
         this.regexPrintClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?"
-                + Pattern.quote(delimiterPrintClose) + newline + "?");
+                + Pattern.quote(delimiterPrintClose) + possibleNewline);
         this.regexExecuteClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?"
-                + Pattern.quote(delimiterExecuteClose) + newline + "?");
-        this.regexCommentClose = Pattern.compile(Pattern.quote(delimiterCommentClose) + newline + "?");
+                + Pattern.quote(delimiterExecuteClose) + possibleNewline);
+        this.regexCommentClose = Pattern.compile(Pattern.quote(delimiterCommentClose) + possibleNewline);
 
         // combination regex used to find the next START delimiter of any kind
         this.regexStartDelimiters = Pattern.compile(Pattern.quote(delimiterPrintOpen) + "|"
@@ -151,10 +151,10 @@ public class LexerImpl implements Lexer {
 
         // regex to find the verbatim tag
         this.regexVerbatimStart = Pattern.compile("^\\s*verbatim\\s*(" + Pattern.quote(whitespaceTrim) + ")?"
-                + Pattern.quote(delimiterExecuteClose) + "\\n?");
+                + Pattern.quote(delimiterExecuteClose) + possibleNewline);
         this.regexVerbatimEnd = Pattern.compile(Pattern.quote(delimiterExecuteOpen) + "("
                 + Pattern.quote(whitespaceTrim) + ")?" + "\\s*endverbatim\\s*(" + Pattern.quote(whitespaceTrim) + ")?"
-                + Pattern.quote(delimiterExecuteClose) + newline + "?");
+                + Pattern.quote(delimiterExecuteClose) + possibleNewline);
 
         // regex for the whitespace trim character
         this.regexLeadingWhitespaceTrim = Pattern.compile(Pattern.quote(whitespaceTrim) + "\\s+");
