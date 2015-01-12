@@ -128,7 +128,8 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-            return op1 == op2;
+    		// == shouldn't be used here since two objects are being compared.
+        	return op1.equals(op2);
         default:
             return null;
         }
@@ -155,7 +156,8 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-            return op1 == op2;
+        	// == shouldn't be used here since two objects are being compared.
+            return op1.equals(op2);
         default:
             return null;
         }
@@ -182,7 +184,8 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-            return op1 == op2;
+        	// == shouldn't be used here since two objects are being compared.
+            return op1.equals(op2);
         default:
             return null;
         }
@@ -209,7 +212,8 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-            return op1 == op2;
+        	// == shouldn't be used here since two objects are being compared.
+            return op1.equals(op2);
         default:
             return null;
         }

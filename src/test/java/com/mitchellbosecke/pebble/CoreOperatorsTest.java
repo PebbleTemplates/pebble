@@ -13,7 +13,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -22,6 +24,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.utils.Pair;
 
 public class CoreOperatorsTest extends AbstractTest {
 
@@ -235,6 +238,42 @@ public class CoreOperatorsTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
 		assertEquals("yesyes", writer.toString());
+	}
+
+	/**
+	 * There was an bug where two Number objects (Integer, Double etc.) were
+	 * compared for equality using ==. This was fixed to use equals().
+	 *
+	 * @see https://github.com/mbosecke/pebble/issues/46
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test()
+	public void testEqualsOperatorWithNumberObjects() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if (v == 1) %}num1{% elseif (v == 999999) %}num999999{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		// Test Integer, Long, Float and Double.
+		List<Pair<Number, String>> tests = new ArrayList<>();
+		tests.add(new Pair(1, "num1"));
+		tests.add(new Pair(999999, "num999999"));
+		tests.add(new Pair(1l, "num1"));
+		tests.add(new Pair(999999l, "num999999"));
+		tests.add(new Pair(1f, "num1"));
+		tests.add(new Pair(999999f, "num999999"));
+		tests.add(new Pair(1d, "num1"));
+		tests.add(new Pair(999999d, "num999999"));
+
+		for (Pair<Number, String> test : tests) {
+			Map<String, Object> context = new HashMap<>();
+			context.put("v", test.getLeft());
+
+			Writer writer = new StringWriter();
+			template.evaluate(writer, context);
+			assertEquals(test.getRight(), writer.toString());
+		}
 	}
 
 	/**
