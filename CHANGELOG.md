@@ -1,5 +1,6 @@
 ## v1.3.1
 - Fixed lexing issue on windows
+- Fixed number comparison issue
 
 ## v1.3.0
 - Added "filter" tag
