@@ -1,8 +1,12 @@
+## v1.3.1
+- Fixed lexing issue on windows
+
 ## v1.3.0
 - Added "filter" tag
 - Added "abs" filter
 - Added "sort" filter
 - Pebble now uses the exact Map implementation provided by user instead of moving variables into it's own map implementation. This allows for custom "lazy" maps and other unique implementations.
+- Arrays and lists can now be accessed by index
 
 ## v1.2.0
 - Added verbatim tag
