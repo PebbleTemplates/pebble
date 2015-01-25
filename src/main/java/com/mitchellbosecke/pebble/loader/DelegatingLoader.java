@@ -14,6 +14,15 @@ import java.util.List;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
+/**
+ * This loader will delegate control to a list of children loaders. This is the
+ * default implementation used by Pebble; it delegates to a classpath loader and
+ * a file loader to increase the chances of finding templates with varying
+ * setups.
+ * 
+ * @author mbosecke
+ *
+ */
 public class DelegatingLoader implements Loader {
 
     private String prefix;
@@ -22,8 +31,18 @@ public class DelegatingLoader implements Loader {
 
     private String charset = "UTF-8";
 
+    /**
+     * Children loaders to delegate to. The loaders are used in order and as
+     * soon as one of them finds a template, the others will not be given a
+     * chance to do so.
+     */
     private final List<Loader> loaders = new ArrayList<>();
 
+    /**
+     * Constructor provided with a list of children loaders.
+     * 
+     * @param loaders
+     */
     public DelegatingLoader(List<Loader> loaders) {
         this.loaders.addAll(loaders);
     }

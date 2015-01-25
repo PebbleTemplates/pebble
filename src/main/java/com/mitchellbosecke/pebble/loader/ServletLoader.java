@@ -1,11 +1,3 @@
-/*******************************************************************************
- * This file is part of Pebble.
- * 
- * Copyright (c) 2014 by Mitchell Bösecke
- * 
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
 import java.io.BufferedReader;
@@ -15,26 +7,34 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
+import javax.servlet.ServletContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
 /**
- * Uses a classloader to find templates located on the classpath.
+ * Loader that uses a servlet context to find templates.
  * 
  * @author mbosecke
  *
  */
-public class ClasspathLoader implements Loader {
+public class ServletLoader implements Loader {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClasspathLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServletLoader.class);
 
     private String prefix;
 
     private String suffix;
 
     private String charset = "UTF-8";
+
+    private final ServletContext context;
+
+    public ServletLoader(ServletContext context) {
+        this.context = context;
+    }
 
     @Override
     public Reader getReader(String templateName) throws LoaderException {
@@ -44,8 +44,7 @@ public class ClasspathLoader implements Loader {
 
         InputStream is = null;
 
-        // append the prefix and make sure prefix ends with a separator
-        // character
+        // Add the prefix and make sure that it ends with a separater character
         StringBuilder path = new StringBuilder("");
         if (getPrefix() != null) {
 
@@ -59,9 +58,7 @@ public class ClasspathLoader implements Loader {
         String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
         logger.debug("Looking for template in {}.", location);
 
-        // perform the lookup
-        ClassLoader rcl = ClasspathLoader.class.getClassLoader();
-        is = rcl.getResourceAsStream(location);
+        is = context.getResourceAsStream(location);
 
         if (is == null) {
             throw new LoaderException(null, "Could not find template \"" + location + "\"");
@@ -102,4 +99,5 @@ public class ClasspathLoader implements Loader {
     public void setCharset(String charset) {
         this.charset = charset;
     }
+
 }

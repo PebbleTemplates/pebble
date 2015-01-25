@@ -22,6 +22,13 @@ import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
+/**
+ * This loader searches for a file located anywhere on the filesystem. It uses
+ * java.io.File to perform the lookup.
+ * 
+ * @author mbosecke
+ *
+ */
 public class FileLoader implements Loader {
 
     private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
@@ -40,6 +47,7 @@ public class FileLoader implements Loader {
 
         InputStream is = null;
 
+        // add the prefix and ensure the prefix ends with a separator character
         StringBuilder path = new StringBuilder("");
         if (getPrefix() != null) {
 
