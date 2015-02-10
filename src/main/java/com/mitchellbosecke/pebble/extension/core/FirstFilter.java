@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +24,7 @@ public class FirstFilter implements Filter {
 
     @Override
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("collection");
-        return names;
+        return null;
     }
 
     @Override

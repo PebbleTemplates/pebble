@@ -476,6 +476,84 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("A", writer.toString());
     }
+    
+    @Test
+    public void testJoin() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ names | join(',') }}");
+        
+        List<String> names = new ArrayList<>();
+        names.add("Alex");
+        names.add("Joe");
+        names.add("Bob");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Alex,Joe,Bob", writer.toString());
+    }
+    
+    
+    @Test
+    public void testJoinWithoutGlue() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ names | join }}");
+        
+        List<String> names = new ArrayList<>();
+        names.add("Alex");
+        names.add("Joe");
+        names.add("Bob");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("AlexJoeBob", writer.toString());
+    }
+    
+    
+    @Test
+    public void testJoinWithNumbers() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ numbers | join(',') }}");
+        
+        List<Integer> numbers = new ArrayList<>();
+        numbers.add(1);
+        numbers.add(2);
+        numbers.add(3);
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("numbers", numbers);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("1,2,3", writer.toString());
+    }
+    
+    @Test
+    public void testJoinWithNullInput() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ null | join(',') }}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("", writer.toString());
+    }
 
     public class User {
 
