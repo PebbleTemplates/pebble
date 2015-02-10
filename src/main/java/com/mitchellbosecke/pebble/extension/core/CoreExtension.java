@@ -117,6 +117,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("capitalize", new CapitalizeFilter());
         filters.put("date", new DateFilter());
         filters.put("default", new DefaultFilter());
+        filters.put("first", new FirstFilter());
         filters.put("lower", new LowerFilter());
         filters.put("numberformat", new NumberFormatFilter());
         filters.put("sort", new SortFilter());

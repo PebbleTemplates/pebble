@@ -1,3 +1,7 @@
+## v1.4.0
+- Added ServletLoader which is the only built-in loader that works with JBoss/Wildfly
+- Added "first" filter
+
 ## v1.3.1
 - Fixed lexing issue on windows
 - Fixed number comparison issue

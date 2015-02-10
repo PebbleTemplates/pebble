@@ -423,6 +423,59 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("ONE", writer.toString());
     }
+    
+    @Test
+    public void testFirst() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ names | first }}");
+        
+        List<String> names = new ArrayList<>();
+        names.add("Alex");
+        names.add("Joe");
+        names.add("Bob");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Alex", writer.toString());
+    }
+    
+    @Test
+    public void testFirstWithNullInput() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ names | first }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", null);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
+    }
+    
+    @Test
+    public void testFirstWithStringInput() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ name | first }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("name", "Alex");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("A", writer.toString());
+    }
 
     public class User {
 
