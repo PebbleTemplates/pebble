@@ -554,6 +554,56 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer);
         assertEquals("", writer.toString());
     }
+    
+    @Test
+    public void testLast() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ names | last }}");
+        
+        List<String> names = new ArrayList<>();
+        names.add("Alex");
+        names.add("Joe");
+        names.add("Bob");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Bob", writer.toString());
+    }
+    
+    @Test
+    public void testLastWithNullInput() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ null | last }}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("", writer.toString());
+    }
+    
+    @Test
+    public void testLastWithStringInput() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ name | last }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("name", "Alex");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("x", writer.toString());
+    }
 
     public class User {
 
