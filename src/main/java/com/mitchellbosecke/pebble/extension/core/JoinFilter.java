@@ -27,7 +27,7 @@ public class JoinFilter implements Filter {
     @Override
     public List<String> getArgumentNames() {
         List<String> names = new ArrayList<>();
-        names.add("glue");
+        names.add("separator");
         return names;
     }
 
@@ -43,8 +43,8 @@ public class JoinFilter implements Filter {
         StringBuilder builder = new StringBuilder();
         
         String glue = null;
-        if(args.containsKey("glue")){
-            glue = (String)args.get("glue");
+        if(args.containsKey("separator")){
+            glue = (String)args.get("separator");
         }
         
         boolean isFirst = true;
