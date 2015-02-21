@@ -42,18 +42,11 @@ public class ClassAttributeCache {
             this.parameterTypes = parameterTypes;
         }
 
-        private ClassAttributeCache getOuterType() {
-            return ClassAttributeCache.this;
-        }
-
         @Override
         public int hashCode() {
             final int prime = 31;
-            int result = 1;
-            result = prime * result + getOuterType().hashCode();
-            result = prime * result + ((attributeName == null) ? 0 : attributeName.hashCode());
-            result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
-            result = prime * result + Arrays.hashCode(parameterTypes);
+            int result = ((attributeName == null) ? 0 : attributeName.hashCode());
+            result = prime * result + ((clazz == null) ? 0 : clazz.getName().hashCode());
             return result;
         }
 
@@ -66,8 +59,6 @@ public class ClassAttributeCache {
             if (getClass() != obj.getClass())
                 return false;
             CacheKey other = (CacheKey) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
             if (attributeName == null) {
                 if (other.attributeName != null)
                     return false;

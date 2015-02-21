@@ -29,10 +29,11 @@ public class ErrorReportingTest extends AbstractTest {
         PebbleEngine pebble = new PebbleEngine(loader);
         try {
             @SuppressWarnings("unused")
-            PebbleTemplate template = pebble.getTemplate("test\ntest\ntest\ntest\n{% error %}\ntest");
+            PebbleTemplate template = pebble.getTemplate("test\n\n\ntest\ntest\ntest\n{% error %}\ntest");
         } catch (ParserException ex) {
             String message = ex.getMessage();
-            assertEquals(":5)", message.substring(message.length() - 3, message.length()));
+            System.out.println(message.substring(message.length() - 3, message.length()));
+            assertEquals(":7)", message.substring(message.length() - 3, message.length()));
             throw ex;
         }
     }
@@ -43,10 +44,10 @@ public class ErrorReportingTest extends AbstractTest {
         PebbleEngine pebble = new PebbleEngine(loader);
         try {
             @SuppressWarnings("unused")
-            PebbleTemplate template = pebble.getTemplate("test\r\ntest\r\ntest\r\ntest\r\n{% error %}\r\ntest");
+            PebbleTemplate template = pebble.getTemplate("test\r\n\r\ntest\r\ntest\r\ntest\r\n{% error %}\r\ntest");
         } catch (ParserException ex) {
             String message = ex.getMessage();
-            assertEquals(":5)", message.substring(message.length() - 3, message.length()));
+            assertEquals(":6)", message.substring(message.length() - 3, message.length()));
             throw ex;
         }
     }
