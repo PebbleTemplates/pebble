@@ -1,3 +1,6 @@
+## v1.4.1
+- Performance improvements
+
 ## v1.4.0
 - Added ServletLoader which is the only built-in loader that works with JBoss/Wildfly
 - Added "first" filter
