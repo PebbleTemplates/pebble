@@ -3,8 +3,6 @@ package com.mitchellbosecke.pebble.lexer;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * An implementation of CharSequence that is tuned to be used specifically by
@@ -125,40 +123,69 @@ public class TemplateSource implements CharSequence {
     }
 
     /**
-     * Moves the start index a distance equal to the length of the provided
-     * text.
-     * 
-     * This method also counts how many "newlines" are within this text so that
-     * we can increment which line number we're on. The line number is used to
-     * create valuable error messages.
-     * 
-     * @param text
-     *            The text of which the length determines how far the cursor is
-     *            moved
+     * Moves the start index a certain amount. While traversing this amount we
+     * will count how many newlines have been encountered.
      */
     public void advance(int amount) {
 
-        for (int index = 0; index < amount; index++) {
+        int index = 0;
+        while (index < amount) {
+            int sizeOfNewline = advanceThroughNewline(index);
 
-            char character = this.charAt(index);
-
-            // windows newline
-            if ('\r' == character && '\n' == this.charAt(index + 1)) {
-
-                this.lineNumber++;
-                index++; // increment by an extra character due to newline being
-                         // a two-character entity
-
-                // various other newline characters
-            } else if ('\r' == character || '\n' == character || '\u0085' == character || '\u2028' == character
-                    || '\u2029' == character) {
-                
-                this.lineNumber ++;
+            if (sizeOfNewline > 0) {
+                index += sizeOfNewline;
+            } else {
+                index++;
             }
         }
 
         this.size -= amount;
         this.offset += amount;
+    }
+
+    public void advanceThroughWhitespace() {
+        int index = 0;
+
+        while (Character.isWhitespace(this.charAt(index))) {
+            int sizeOfNewline = advanceThroughNewline(index);
+
+            if (sizeOfNewline > 0) {
+                index += sizeOfNewline;
+            } else {
+                index++;
+            }
+        }
+
+        this.size -= index;
+        this.offset += index;
+    }
+
+    /**
+     * Advances through possible newline character and returns how many
+     * characters were used to represent the newline (windows uses two
+     * characters to represent one newline).
+     * 
+     * @param index
+     * @return
+     */
+    private int advanceThroughNewline(int index) {
+        char character = this.charAt(index);
+        int numOfCharacters = 0;
+
+        // windows newline
+        if ('\r' == character && '\n' == this.charAt(index + 1)) {
+
+            this.lineNumber++;
+            numOfCharacters = 2;
+
+            // various other newline characters
+        } else if ('\n' == character || '\r' == character || '\u0085' == character || '\u2028' == character
+                || '\u2029' == character) {
+
+            this.lineNumber++;
+            numOfCharacters = 1;
+        }
+        return numOfCharacters;
     }
 
     public String substring(int start, int end) {

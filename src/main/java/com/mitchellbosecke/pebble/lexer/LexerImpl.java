@@ -128,8 +128,6 @@ public class LexerImpl implements Lexer {
     // marks
     private static final Pattern REGEX_STRING = Pattern.compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))",
             Pattern.DOTALL);
-    
-    private static final Pattern REGEX_WHITESPACE = Pattern.compile("^\\s+");
 
     private static final String PUNCTUATION = "()[]{}?:.,|=";
 
@@ -401,13 +399,16 @@ public class LexerImpl implements Lexer {
         String token;
 
         // whitespace
+        source.advanceThroughWhitespace();
+        /*
         Matcher matcher = REGEX_WHITESPACE.matcher(source);
         if (matcher.lookingAt()) {
             source.advance(matcher.end());
         }
+        */
 
         // operators
-        matcher = regexOperators.matcher(source);
+        Matcher matcher = regexOperators.matcher(source);
         if (matcher.lookingAt()) {
             token = source.substring(matcher.end());
             pushToken(Token.Type.OPERATOR, token);

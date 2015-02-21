@@ -125,8 +125,8 @@ public class PebbleEngine {
         // set up a default loader if necessary
         if (loader == null) {
             List<Loader> defaultLoadingStrategies = new ArrayList<>();
-            defaultLoadingStrategies.add(new ClasspathLoader());
             defaultLoadingStrategies.add(new FileLoader());
+            defaultLoadingStrategies.add(new ClasspathLoader());
             loader = new DelegatingLoader(defaultLoadingStrategies);
         }
 
