@@ -72,16 +72,17 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
 
                 try {
-                    Integer key = Integer.valueOf(attributeName);
 
                     // then we check arrays
                     if (object instanceof Object[]) {
+                        Integer key = Integer.valueOf(attributeName);
                         Object[] arr = ((Object[]) object);
                         return arr[key];
                     }
 
                     // then lists
                     if(object instanceof List){
+                        Integer key = Integer.valueOf(attributeName);
                         @SuppressWarnings("unchecked")
                         List<Object> list = (List<Object>)object;
                         return list.get(key);
