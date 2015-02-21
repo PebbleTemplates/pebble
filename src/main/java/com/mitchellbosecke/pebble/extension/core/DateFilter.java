@@ -22,12 +22,16 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class DateFilter implements Filter {
 
+    private final List<String> argumentNames = new ArrayList<>();
+
+    public DateFilter() {
+        argumentNames.add("format");
+        argumentNames.add("existingFormat");
+    }
+
     @Override
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("format");
-        names.add("existingFormat");
-        return names;
+        return argumentNames;
     }
 
     @Override

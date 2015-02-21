@@ -19,10 +19,14 @@ public class EscapeFilter implements Filter {
 
     private String defaultStrategy = "html";
 
+    private final List<String> argumentNames = new ArrayList<>();
+
+    public EscapeFilter() {
+        argumentNames.add("strategy");
+    }
+
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("strategy");
-        return names;
+        return argumentNames;
     }
 
     public Object apply(Object inputObject, Map<String, Object> args) {

@@ -229,10 +229,8 @@ public class GetAttributeTest extends AbstractTest {
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
-        Map<String, Object> context = new HashMap<>();
-        context.put("object", null);
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        template.evaluate(writer);
     }
 
     @Test

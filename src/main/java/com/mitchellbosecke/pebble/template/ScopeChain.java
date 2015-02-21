@@ -54,35 +54,26 @@ public class ScopeChain {
         stack.pop();
     }
 
-
     public void put(String key, Object value) {
         stack.peek().put(key, value);
     }
 
     public Object get(String key, boolean isStrictVariables) throws AttributeNotFoundException {
         Object result = null;
-        boolean found = false;
 
         Scope scope;
 
         Iterator<Scope> iterator = stack.iterator();
 
-        while (iterator.hasNext() && !found) {
+        while (result == null && iterator.hasNext()) {
             scope = iterator.next();
 
-            if (scope.containsKey(key)) {
-                found = true;
-                result = scope.get(key);
-            }
+            result = scope.get(key);
             if (scope.isLocal()) {
                 break;
             }
         }
 
-        if (!found && isStrictVariables) {
-            throw new AttributeNotFoundException(null, String.format(
-                    "Variable [%s] does not exist and strict variables is set to true.", String.valueOf(key)));
-        }
         return result;
     }
 

@@ -19,12 +19,16 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class i18nFunction implements Function {
 
+    private final List<String> argumentNames = new ArrayList<>();
+
+    public i18nFunction() {
+        argumentNames.add("bundle");
+        argumentNames.add("key");
+    }
+
     @Override
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("bundle");
-        names.add("key");
-        return names;
+        return argumentNames;
     }
 
     @Override

@@ -118,7 +118,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
                     /*
                      * Because we are performing more than one atomic action on
-                     * the cache ("containsKey", "get", and "put") we would
+                     * the cache ("get", and "put") we would
                      * typically wrap these in a synchronized block. However,
                      * objects are never removed from the cache (only added) and
                      * therefore I don't think complete synchronization is
@@ -131,9 +131,8 @@ public class GetAttributeExpression implements Expression<Object> {
                      * done (other than some unnecessary work by at least one of
                      * the threads).
                      */
-                    if (cache.containsKey(object, attributeName, parameterTypesArray)) {
-                        member = cache.get(object, attributeName, parameterTypesArray);
-                    } else {
+                    member = cache.get(object, attributeName, parameterTypesArray);
+                    if(member == null){
                         member = findMember(object, attributeName, parameterTypesArray);
                         if (member != null) {
                             cache.put(object, attributeName, parameterTypesArray, member);

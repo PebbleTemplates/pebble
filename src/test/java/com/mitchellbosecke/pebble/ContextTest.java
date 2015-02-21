@@ -14,10 +14,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -68,7 +68,7 @@ public class ContextTest extends AbstractTest {
         assertEquals("", writer.toString());
     }
 
-    @Test(expected = AttributeNotFoundException.class)
+    @Test
     public void testMissingContextVariableWithStrictVariables() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
@@ -78,6 +78,22 @@ public class ContextTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("", writer.toString());
+    }
+    
+    @Test
+    public void testExistingButNullContextVariableWithStrictVariables() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(true);
+
+        PebbleTemplate template = pebble.getTemplate("{% if foo == null %}YES{% endif %}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("foo", null);
+        
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("YES", writer.toString());
     }
 
 }

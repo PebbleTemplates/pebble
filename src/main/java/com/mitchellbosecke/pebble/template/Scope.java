@@ -53,10 +53,6 @@ public class Scope {
         backingMap.put(key, value);
     }
 
-    public boolean containsKey(String key) {
-        return backingMap.containsKey(key);
-    }
-
     public Object get(String key) {
         return backingMap.get(key);
     }

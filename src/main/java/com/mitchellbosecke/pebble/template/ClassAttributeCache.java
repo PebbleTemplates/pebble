@@ -2,21 +2,11 @@ package com.mitchellbosecke.pebble.template;
 
 import java.lang.reflect.Member;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClassAttributeCache {
 
-    private final Map<CacheKey, Member> attributes;
-
-    public ClassAttributeCache() {
-        this.attributes = new ConcurrentHashMap<CacheKey, Member>();
-    }
-
-    public boolean containsKey(Object object, String attributeName, Class<?>[] parameterTypes) {
-        CacheKey key = new CacheKey(object, attributeName, parameterTypes);
-        return attributes.containsKey(key);
-    }
+    private final ConcurrentHashMap<CacheKey, Member> attributes = new ConcurrentHashMap<CacheKey, Member>();
 
     public Member get(Object object, String attributeName, Class<?>[] parameterTypes) {
         CacheKey key = new CacheKey(object, attributeName, parameterTypes);
@@ -59,16 +49,22 @@ public class ClassAttributeCache {
             if (getClass() != obj.getClass())
                 return false;
             CacheKey other = (CacheKey) obj;
-            if (attributeName == null) {
-                if (other.attributeName != null)
-                    return false;
-            } else if (!attributeName.equals(other.attributeName))
-                return false;
+
+            // compare class
             if (clazz == null) {
                 if (other.clazz != null)
                     return false;
             } else if (!clazz.equals(other.clazz))
                 return false;
+
+            // compare attribute name
+            if (attributeName == null) {
+                if (other.attributeName != null)
+                    return false;
+            } else if (!attributeName.equals(other.attributeName))
+                return false;
+
+            // compare parameter types
             if (!Arrays.equals(parameterTypes, other.parameterTypes))
                 return false;
             return true;

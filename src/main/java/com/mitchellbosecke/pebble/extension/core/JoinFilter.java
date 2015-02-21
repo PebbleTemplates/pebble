@@ -16,19 +16,23 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.extension.Filter;
 
 /**
- * Concatenates all entries of a collection, optionally glued together
- * with a particular character such as a comma.
+ * Concatenates all entries of a collection, optionally glued together with a
+ * particular character such as a comma.
  * 
  * @author mbosecke
  *
  */
 public class JoinFilter implements Filter {
 
+    private final List<String> argumentNames = new ArrayList<>();
+
+    public JoinFilter() {
+        argumentNames.add("separator");
+    }
+
     @Override
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("separator");
-        return names;
+        return argumentNames;
     }
 
     @Override
@@ -36,25 +40,25 @@ public class JoinFilter implements Filter {
         if (input == null) {
             return null;
         }
-        
+
         @SuppressWarnings("unchecked")
         Collection<Object> inputCollection = (Collection<Object>) input;
-        
+
         StringBuilder builder = new StringBuilder();
-        
+
         String glue = null;
-        if(args.containsKey("separator")){
-            glue = (String)args.get("separator");
+        if (args.containsKey("separator")) {
+            glue = (String) args.get("separator");
         }
-        
+
         boolean isFirst = true;
-        for(Object entry : inputCollection){
-            
-            if(!isFirst && glue != null){
+        for (Object entry : inputCollection) {
+
+            if (!isFirst && glue != null) {
                 builder.append(glue);
             }
             builder.append(entry);
-            
+
             isFirst = false;
         }
         return builder.toString();

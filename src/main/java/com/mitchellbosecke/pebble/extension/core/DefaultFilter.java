@@ -18,11 +18,15 @@ import com.mitchellbosecke.pebble.extension.Test;
 
 public class DefaultFilter implements Filter {
 
+    private final List<String> argumentNames = new ArrayList<>();
+
+    public DefaultFilter() {
+        argumentNames.add("default");
+    }
+
     @Override
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("default");
-        return names;
+        return argumentNames;
     }
 
     @Override

@@ -21,11 +21,15 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class NumberFormatFilter implements Filter {
 
+    private final List<String> argumentNames = new ArrayList<>();
+
+    public NumberFormatFilter() {
+        argumentNames.add("format");
+    }
+
     @Override
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("format");
-        return names;
+        return argumentNames;
     }
 
     @Override

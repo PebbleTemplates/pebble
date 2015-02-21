@@ -9,7 +9,6 @@
 package com.mitchellbosecke.pebble.node;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,12 +65,14 @@ public class ArgumentsNode implements Node {
                     result.put(String.valueOf(i), positionalArgs.get(i).getValueExpression().evaluate(self, context));
                 }
             }
-        } else {
-            Iterator<String> nameIterator = argumentNames.iterator();
+        } else {            
 
             if (positionalArgs != null) {
+                int nameIndex = 0;
+                
                 for (PositionalArgumentNode arg : positionalArgs) {
-                    result.put(nameIterator.next(), arg.getValueExpression().evaluate(self, context));
+                    result.put(argumentNames.get(nameIndex), arg.getValueExpression().evaluate(self, context));
+                    nameIndex++;
                 }
             }
 

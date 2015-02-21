@@ -16,11 +16,15 @@ import com.mitchellbosecke.pebble.extension.Filter;
 
 public class AbbreviateFilter implements Filter {
 
+    private final List<String> argumentNames = new ArrayList<>();
+
+    public AbbreviateFilter() {
+        argumentNames.add("length");
+    }
+
     @Override
     public List<String> getArgumentNames() {
-        List<String> names = new ArrayList<>();
-        names.add("length");
-        return names;
+        return argumentNames;
     }
 
     @Override
