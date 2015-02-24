@@ -21,7 +21,6 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
-import com.mitchellbosecke.pebble.template.ClassAttributeCache;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -42,13 +41,15 @@ public class GetAttributeExpression implements Expression<Object> {
     private final ArgumentsNode args;
 
     /**
-     * Cached on first evaluation.
+     * Potentially cached on first evaluation.
      */
-    private Class<?>[] argumentTypes;
+    private Member member;
 
-    private Object[] argumentValues;
-    
-    private boolean firstEvaluation;
+    /**
+     * A lock to ensure that only one thread at a time will update the "member"
+     * field.
+     */
+    private Object memberLock = new Object();
 
     public GetAttributeExpression(Expression<?> node, String attributeName) {
         this(node, attributeName, null);
@@ -58,7 +59,7 @@ public class GetAttributeExpression implements Expression<Object> {
         this.node = node;
         this.attributeName = attributeName;
         this.args = args;
-        this.firstEvaluation = true;
+        this.member = null;
     }
 
     @Override
@@ -66,18 +67,20 @@ public class GetAttributeExpression implements Expression<Object> {
         Object object = node.evaluate(self, context);
 
         Object result = null;
-        boolean found = false;
 
-        if (object != null) {
+        Object[] argumentValues = null;
 
-            // optimization check to avoid checking maps/arrays/lists if user
-            // provided argument
+        if (object != null && member == null) {
+
+            /*
+             * If, and only if, no arguments were provided does it make sense to
+             * check maps/arrays/lists
+             */
             if (args == null) {
 
                 // first we check maps
                 if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
-                    result = ((Map<?, ?>) object).get(attributeName);
-                    found = true;
+                    return ((Map<?, ?>) object).get(attributeName);
                 }
 
                 try {
@@ -102,82 +105,35 @@ public class GetAttributeExpression implements Expression<Object> {
 
             }
 
-            if (!found) {
+            /*
+             * Only one thread at a time should
+             */
+            synchronized (memberLock) {
 
-                /*
-                 * turn args into an array of types and an array of values in
-                 * order to use them for our reflection calls
-                 */
-                if (this.args != null) {
-
-                    List<PositionalArgumentNode> args = this.args.getPositionalArgs();
-
-                    // argument types is only set on the first evaluation
-                    // of the template; cached from that point on.
-                    if (this.firstEvaluation) {
-                        this.argumentTypes = new Class<?>[args.size()];
-                        this.argumentValues = new Object[args.size()];
-                    }
-
-                    int index = 0;
-                    for (PositionalArgumentNode arg : args) {
-                        Object argumentValue = arg.getValueExpression().evaluate(self, context);
-                        argumentValues[index] = argumentValue;
-                        
-                        if(this.firstEvaluation){
-                            argumentTypes[index] = argumentValue.getClass();
-                        }
-                        
-                        index++;
-                    }
-                }
-
-                Member member = null;
-                try {
-
-                    ClassAttributeCache cache = self.getAttributeCache();
-
+                if (member == null) {
                     /*
-                     * Because we are performing more than one atomic action on
-                     * the cache ("get", and "put") we would typically wrap
-                     * these in a synchronized block. However, objects are never
-                     * removed from the cache (only added) and therefore I don't
-                     * think complete synchronization is necessary.
-                     * 
-                     * There is a chance that more than one thread will attempt
-                     * to insert an entry into the cache at the same time but
-                     * theoretically each thread would be adding the exact same
-                     * value and the "put" method by itself is atomic so no harm
-                     * done (other than some unnecessary work by at least one of
-                     * the threads).
+                     * turn args into an array of types and an array of values
+                     * in order to use them for our reflection calls
                      */
-                    member = cache.get(object, attributeName, this.argumentTypes);
-                    if (member == null) {
-                        member = findMember(object, attributeName, this.argumentTypes);
-                        if (member != null) {
-                            cache.put(object, attributeName, argumentTypes, member);
-                        }
+                    argumentValues = getArgumentValues(self, context);
+                    Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
+
+                    for (int i = 0; i < argumentValues.length; i++) {
+                        argumentTypes[i] = argumentValues[i].getClass();
                     }
 
-                    if (member != null) {
-
-                        if (member instanceof Method) {
-                            result = ((Method) member).invoke(object, argumentValues);
-                        } else if (member instanceof Field) {
-                            result = ((Field) member).get(object);
-                        }
-                        found = true;
-                    }
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    e.printStackTrace();
-                    throw new PebbleException(e, "Could not access attribute [" + attributeName + "]");
+                    member = reflect(object, attributeName, argumentTypes);
                 }
-
             }
+
         }
 
-        this.firstEvaluation = false;
-        if (!found && context.isStrictVariables()) {
+        if (member != null) {
+            if (argumentValues == null) {
+                argumentValues = getArgumentValues(self, context);
+            }
+            result = invokeMember(object, member, argumentValues);
+        } else if (context.isStrictVariables()) {
             throw new AttributeNotFoundException(
                     null,
                     String.format(
@@ -188,25 +144,70 @@ public class GetAttributeExpression implements Expression<Object> {
 
     }
 
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.visit(this);
+    /**
+     * Invoke the "Member" that was found via reflection.
+     * 
+     * @param object
+     * @param member
+     * @param argumentValues
+     * @return
+     */
+    private Object invokeMember(Object object, Member member, Object[] argumentValues) {
+        Object result = null;
+        try {
+            if (member != null) {
+
+                if (member instanceof Method) {
+                    result = ((Method) member).invoke(object, argumentValues);
+                } else if (member instanceof Field) {
+                    result = ((Field) member).get(object);
+                }
+            }
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+
+        }
+        return result;
     }
 
-    public Expression<?> getNode() {
-        return node;
+    /**
+     * Fully evaluates the individual arguments.
+     * 
+     * @param self
+     * @param context
+     * @return
+     * @throws PebbleException
+     */
+    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+
+        Object[] argumentValues;
+
+        if (this.args == null) {
+            argumentValues = new Object[0];
+        } else {
+            List<PositionalArgumentNode> args = this.args.getPositionalArgs();
+
+            argumentValues = new Object[args.size()];
+
+            int index = 0;
+            for (PositionalArgumentNode arg : args) {
+                Object argumentValue = arg.getValueExpression().evaluate(self, context);
+                argumentValues[index] = argumentValue;
+                index++;
+            }
+        }
+        return argumentValues;
     }
 
-    public String getAttribute() {
-        return attributeName;
-    }
-
-    public ArgumentsNode getArgumentsNode() {
-        return args;
-    }
-
-    private Member findMember(Object object, String attributeName, Class<?>[] parameterTypes)
-            throws IllegalAccessException {
+    /**
+     * Performs the actual reflection to obtain a "Member" from a class.
+     * 
+     * @param object
+     * @param attributeName
+     * @param parameterTypes
+     * @return
+     */
+    private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes) {
 
         Class<?> clazz = object.getClass();
 
@@ -215,6 +216,8 @@ public class GetAttributeExpression implements Expression<Object> {
 
         // capitalize first letter of attribute for the following attempts
         String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
+
+        // try {
 
         // check get method
         if (!found) {
@@ -264,7 +267,25 @@ public class GetAttributeExpression implements Expression<Object> {
         if (result != null) {
             ((AccessibleObject) result).setAccessible(true);
         }
+
         return result;
+    }
+
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    public Expression<?> getNode() {
+        return node;
+    }
+
+    public String getAttribute() {
+        return attributeName;
+    }
+
+    public ArgumentsNode getArgumentsNode() {
+        return args;
     }
 
 }

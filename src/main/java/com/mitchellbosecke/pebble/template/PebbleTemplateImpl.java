@@ -51,11 +51,6 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      */
     private final String name;
 
-    /**
-     * Cache for accessing attributes of user-provided objects
-     */
-    private final ClassAttributeCache attributeCache = new ClassAttributeCache();
-
     public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name) throws PebbleException {
         this.engine = engine;
         this.rootNode = root;
@@ -123,7 +118,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         locale = locale == null ? engine.getDefaultLocale() : locale;
         ScopeChain scopeChain = new ScopeChain(engine.getGlobalVariables());
         EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
-                engine.getFilters(), engine.getTests(), engine.getFunctions(), engine.getExecutorService(), scopeChain, null);
+                engine.getFilters(), engine.getTests(), engine.getFunctions(), engine.getExecutorService(), scopeChain,
+                null);
         return context;
     }
 
@@ -261,10 +257,6 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
     public String getName() {
         return name;
-    }
-
-    public ClassAttributeCache getAttributeCache() {
-        return attributeCache;
     }
 
 }

@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import com.google.common.cache.Cache;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -121,15 +120,15 @@ public class ConcurrencyTest extends AbstractTest {
     @Test
     public void testThreadSafeCompilationOfMultipleTemplates() throws InterruptedException, PebbleException {
         final PebbleEngine engine = new PebbleEngine();
+        engine.setTemplateCache(null);
         final ExecutorService es = Executors.newCachedThreadPool();
         final AtomicInteger totalFailed = new AtomicInteger();
 
         int numOfConcurrentEvaluations = Math.min(4, Runtime.getRuntime().availableProcessors());
         final Semaphore semaphore = new Semaphore(numOfConcurrentEvaluations);
 
-        Cache<String, PebbleTemplate> cache = engine.getTemplateCache();
         for (int i = 0; i < 1000; i++) {
-            semaphore.acquire(2);
+            semaphore.acquire(1);
             es.submit(new Runnable() {
 
                 @Override
@@ -153,6 +152,8 @@ public class ConcurrencyTest extends AbstractTest {
 
                         String actualResult = writer.toString();
                         if (!expectedResult.equals(actualResult)) {
+                            System.out.println("Expected1: " + expectedResult);
+                            System.out.println("Actual1: " + actualResult);
                             totalFailed.incrementAndGet();
                         }
 
@@ -187,6 +188,8 @@ public class ConcurrencyTest extends AbstractTest {
 
                         String actualResult = writer.toString();
                         if (!expectedResult.equals(actualResult)) {
+                            System.out.println("Expected2: " + expectedResult);
+                            System.out.println("Actual2: " + actualResult);
                             totalFailed.incrementAndGet();
                         }
 
@@ -198,7 +201,7 @@ public class ConcurrencyTest extends AbstractTest {
                     }
                 }
             });
-            cache.invalidateAll();
+            
             if (totalFailed.intValue() > 0) {
                 break;
             }
