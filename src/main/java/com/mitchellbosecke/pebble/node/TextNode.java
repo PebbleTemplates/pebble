@@ -15,13 +15,26 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+/**
+ * Represents static text in a template.
+ * 
+ * @author mbosecke
+ *
+ */
 public class TextNode extends AbstractRenderableNode {
 
-    private final String data;
+    /**
+     * Most Writers will convert strings to char[] so we might as well store it
+     * as a char[] to begin with; small performance optimization.
+     */
+    private final char[] data;
 
-    public TextNode(String data, int lineNumber) {
+    public TextNode(String text, int lineNumber) {
         super(lineNumber);
-        this.data = data;
+
+        int length = text.length();
+        this.data = new char[text.length()];
+        text.getChars(0, length, this.data, 0);
     }
 
     @Override
@@ -34,7 +47,7 @@ public class TextNode extends AbstractRenderableNode {
         visitor.visit(this);
     }
 
-    public String getData() {
+    public char[] getData() {
         return data;
     }
 

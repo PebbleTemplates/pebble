@@ -235,7 +235,8 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
 
     @Override
     public void visit(TextNode node) {
-        String preview = node.getData().length() > 10 ? node.getData().substring(0, 10) + "..." : node.getData();
+        String text = new String(node.getData());
+        String preview = text.length() > 10 ? text.substring(0, 10) + "..." : text;
         write(String.format("text [%s]", preview));
         level++;
         super.visit(node);
