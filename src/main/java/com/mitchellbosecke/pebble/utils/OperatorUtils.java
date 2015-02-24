@@ -24,7 +24,11 @@ package com.mitchellbosecke.pebble.utils;
 public class OperatorUtils {
 
     private enum Operation {
-        ADD, SUBTRACT, MULTIPLICATION, DIVISION, MODULUS, GREATER_THAN, GREATER_THAN_EQUALS, LESS_THAN, LESS_THAN_EQUALS, EQUALS
+        ADD, SUBTRACT, MULTIPLICATION, DIVISION, MODULUS
+    };
+
+    private enum Comparison {
+        GREATER_THAN, GREATER_THAN_EQUALS, LESS_THAN, LESS_THAN_EQUALS, EQUALS
     };
 
     public static Object add(Object op1, Object op2) {
@@ -52,26 +56,26 @@ public class OperatorUtils {
 
     public static boolean equals(Object op1, Object op2) {
         if (op1 != null && op1 instanceof Number && op2 != null && op2 instanceof Number) {
-            return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.EQUALS);
+            return wideningConversionBinaryComparison(op1, op2, Comparison.EQUALS);
         } else {
             return ((op1 == op2) || ((op1 != null) && op1.equals(op2)));
         }
     }
 
     public static boolean gt(Object op1, Object op2) {
-        return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN);
+        return wideningConversionBinaryComparison(op1, op2, Comparison.GREATER_THAN);
     }
 
     public static boolean gte(Object op1, Object op2) {
-        return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.GREATER_THAN_EQUALS);
+        return wideningConversionBinaryComparison(op1, op2, Comparison.GREATER_THAN_EQUALS);
     }
 
     public static boolean lt(Object op1, Object op2) {
-        return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN);
+        return wideningConversionBinaryComparison(op1, op2, Comparison.LESS_THAN);
     }
 
     public static boolean lte(Object op1, Object op2) {
-        return (boolean) wideningConversionBinaryOperation(op1, op2, Operation.LESS_THAN_EQUALS);
+        return wideningConversionBinaryComparison(op1, op2, Comparison.LESS_THAN_EQUALS);
     }
 
     public static Object unaryPlus(Object op1) {
@@ -89,25 +93,54 @@ public class OperatorUtils {
     private static Object wideningConversionBinaryOperation(Object op1, Object op2, Operation operation) {
 
         if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
-            throw new RuntimeException("invalid operands for mathematical operator [+]");
+            throw new RuntimeException(String.format("invalid operands for mathematical operation [%s]",
+                    operation.toString()));
         }
 
-        if (op1 instanceof Double || op2 instanceof Double) {
-            return doubleOperation(((Number) op1).doubleValue(), ((Number) op2).doubleValue(), operation);
+        Number num1 = (Number) op1;
+        Number num2 = (Number) op2;
+
+        if (num1 instanceof Double || num2 instanceof Double) {
+            return doubleOperation(num1.doubleValue(), num2.doubleValue(), operation);
         }
 
-        if (op1 instanceof Float || op2 instanceof Float) {
-            return floatOperation(((Number) op1).floatValue(), ((Number) op2).floatValue(), operation);
+        if (num1 instanceof Float || num2 instanceof Float) {
+            return floatOperation(num1.floatValue(), num2.floatValue(), operation);
         }
 
-        if (op1 instanceof Long || op2 instanceof Long) {
-            return longOperation(((Number) op1).longValue(), ((Number) op2).longValue(), operation);
+        if (num1 instanceof Long || num2 instanceof Long) {
+            return longOperation(num1.longValue(), num2.longValue(), operation);
         }
 
-        return integerOperation(((Number) op1).intValue(), ((Number) op2).intValue(), operation);
+        return integerOperation(num1.intValue(), num2.intValue(), operation);
     }
 
-    private static Object doubleOperation(Double op1, Double op2, Operation operation) {
+    private static boolean wideningConversionBinaryComparison(Object op1, Object op2, Comparison comparison) {
+
+        if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
+            throw new RuntimeException(String.format("invalid operands for mathematical comparison [%s]",
+                    comparison.toString()));
+        }
+
+        Number num1 = (Number) op1;
+        Number num2 = (Number) op2;
+
+        if (num1 instanceof Double || num2 instanceof Double) {
+            return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
+        }
+
+        if (num1 instanceof Float || num2 instanceof Float) {
+            return floatComparison(num1.floatValue(), num2.floatValue(), comparison);
+        }
+
+        if (num1 instanceof Long || num2 instanceof Long) {
+            return longComparison(num1.longValue(), num2.longValue(), comparison);
+        }
+
+        return integerComparison(num1.intValue(), num2.intValue(), comparison);
+    }
+
+    private static double doubleOperation(double op1, double op2, Operation operation) {
         switch (operation) {
         case ADD:
             return op1 + op2;
@@ -119,6 +152,13 @@ public class OperatorUtils {
             return op1 / op2;
         case MODULUS:
             return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+
+    private static boolean doubleComparison(double op1, double op2, Comparison comparison) {
+        switch (comparison) {
         case GREATER_THAN:
             return op1 > op2;
         case GREATER_THAN_EQUALS:
@@ -128,14 +168,13 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-    		// == shouldn't be used here since two objects are being compared.
-        	return op1.equals(op2);
+            return op1 == op2;
         default:
-            return null;
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
 
-    private static Object floatOperation(Float op1, Float op2, Operation operation) {
+    private static Float floatOperation(Float op1, Float op2, Operation operation) {
         switch (operation) {
         case ADD:
             return op1 + op2;
@@ -147,6 +186,13 @@ public class OperatorUtils {
             return op1 / op2;
         case MODULUS:
             return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+
+    private static boolean floatComparison(float op1, float op2, Comparison comparison) {
+        switch (comparison) {
         case GREATER_THAN:
             return op1 > op2;
         case GREATER_THAN_EQUALS:
@@ -156,14 +202,13 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-        	// == shouldn't be used here since two objects are being compared.
-            return op1.equals(op2);
+            return op1 == op2;
         default:
-            return null;
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
 
-    private static Object longOperation(Long op1, Long op2, Operation operation) {
+    private static long longOperation(long op1, long op2, Operation operation) {
         switch (operation) {
         case ADD:
             return op1 + op2;
@@ -175,6 +220,13 @@ public class OperatorUtils {
             return op1 / op2;
         case MODULUS:
             return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+    
+    private static boolean longComparison(long op1, long op2, Comparison comparison) {
+        switch (comparison) {
         case GREATER_THAN:
             return op1 > op2;
         case GREATER_THAN_EQUALS:
@@ -184,14 +236,13 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-        	// == shouldn't be used here since two objects are being compared.
-            return op1.equals(op2);
+            return op1 == op2;
         default:
-            return null;
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
 
-    private static Object integerOperation(Integer op1, Integer op2, Operation operation) {
+    private static int integerOperation(int op1, int op2, Operation operation) {
         switch (operation) {
         case ADD:
             return op1 + op2;
@@ -203,6 +254,13 @@ public class OperatorUtils {
             return op1 / op2;
         case MODULUS:
             return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+    
+    private static boolean integerComparison(int op1, int op2, Comparison comparison) {
+        switch (comparison) {
         case GREATER_THAN:
             return op1 > op2;
         case GREATER_THAN_EQUALS:
@@ -212,10 +270,9 @@ public class OperatorUtils {
         case LESS_THAN_EQUALS:
             return op1 <= op2;
         case EQUALS:
-        	// == shouldn't be used here since two objects are being compared.
-            return op1.equals(op2);
+            return op1 == op2;
         default:
-            return null;
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
 
