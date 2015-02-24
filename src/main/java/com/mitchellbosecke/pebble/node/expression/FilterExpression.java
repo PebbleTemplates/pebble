@@ -19,6 +19,16 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class FilterExpression extends BinaryExpression<Object> {
 
+    /**
+     * Save the filter instance on the first evaluation.
+     */
+    private Filter filter = null;
+
+    public FilterExpression() {
+        super();
+
+    }
+
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
 
@@ -26,8 +36,10 @@ public class FilterExpression extends BinaryExpression<Object> {
         ArgumentsNode args = filterInvocation.getArgs();
         String filterName = filterInvocation.getFilterName();
 
-        Map<String, Filter> filters = context.getFilters();
-        Filter filter = filters.get(filterInvocation.getFilterName());
+        if (this.filter == null) {
+            Map<String, Filter> filters = context.getFilters();
+            this.filter = filters.get(filterInvocation.getFilterName());
+        }
 
         if (filter == null) {
             throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName));

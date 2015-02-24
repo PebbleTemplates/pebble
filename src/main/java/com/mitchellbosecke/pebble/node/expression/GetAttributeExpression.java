@@ -13,7 +13,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +41,15 @@ public class GetAttributeExpression implements Expression<Object> {
 
     private final ArgumentsNode args;
 
+    /**
+     * Cached on first evaluation.
+     */
+    private Class<?>[] argumentTypes;
+
+    private Object[] argumentValues;
+    
+    private boolean firstEvaluation;
+
     public GetAttributeExpression(Expression<?> node, String attributeName) {
         this(node, attributeName, null);
     }
@@ -50,6 +58,7 @@ public class GetAttributeExpression implements Expression<Object> {
         this.node = node;
         this.attributeName = attributeName;
         this.args = args;
+        this.firstEvaluation = true;
     }
 
     @Override
@@ -81,10 +90,10 @@ public class GetAttributeExpression implements Expression<Object> {
                     }
 
                     // then lists
-                    if(object instanceof List){
+                    if (object instanceof List) {
                         Integer key = Integer.valueOf(attributeName);
                         @SuppressWarnings("unchecked")
-                        List<Object> list = (List<Object>)object;
+                        List<Object> list = (List<Object>) object;
                         return list.get(key);
                     }
                 } catch (NumberFormatException ex) {
@@ -99,17 +108,29 @@ public class GetAttributeExpression implements Expression<Object> {
                  * turn args into an array of types and an array of values in
                  * order to use them for our reflection calls
                  */
-                List<Class<?>> parameterTypes = new ArrayList<>();
-                List<Object> parameterValues = new ArrayList<>();
                 if (this.args != null) {
-                    for (PositionalArgumentNode arg : this.args.getPositionalArgs()) {
-                        Object parameterValue = arg.getValueExpression().evaluate(self, context);
-                        parameterTypes.add(parameterValue.getClass());
-                        parameterValues.add(parameterValue);
+
+                    List<PositionalArgumentNode> args = this.args.getPositionalArgs();
+
+                    // argument types is only set on the first evaluation
+                    // of the template; cached from that point on.
+                    if (this.firstEvaluation) {
+                        this.argumentTypes = new Class<?>[args.size()];
+                        this.argumentValues = new Object[args.size()];
+                    }
+
+                    int index = 0;
+                    for (PositionalArgumentNode arg : args) {
+                        Object argumentValue = arg.getValueExpression().evaluate(self, context);
+                        argumentValues[index] = argumentValue;
+                        
+                        if(this.firstEvaluation){
+                            argumentTypes[index] = argumentValue.getClass();
+                        }
+                        
+                        index++;
                     }
                 }
-                Class<?>[] parameterTypesArray = parameterTypes.toArray(new Class[parameterTypes.size()]);
-                Object[] parameterValuesArray = parameterValues.toArray(new Object[parameterValues.size()]);
 
                 Member member = null;
                 try {
@@ -118,11 +139,10 @@ public class GetAttributeExpression implements Expression<Object> {
 
                     /*
                      * Because we are performing more than one atomic action on
-                     * the cache ("get", and "put") we would
-                     * typically wrap these in a synchronized block. However,
-                     * objects are never removed from the cache (only added) and
-                     * therefore I don't think complete synchronization is
-                     * necessary.
+                     * the cache ("get", and "put") we would typically wrap
+                     * these in a synchronized block. However, objects are never
+                     * removed from the cache (only added) and therefore I don't
+                     * think complete synchronization is necessary.
                      * 
                      * There is a chance that more than one thread will attempt
                      * to insert an entry into the cache at the same time but
@@ -131,18 +151,18 @@ public class GetAttributeExpression implements Expression<Object> {
                      * done (other than some unnecessary work by at least one of
                      * the threads).
                      */
-                    member = cache.get(object, attributeName, parameterTypesArray);
-                    if(member == null){
-                        member = findMember(object, attributeName, parameterTypesArray);
+                    member = cache.get(object, attributeName, this.argumentTypes);
+                    if (member == null) {
+                        member = findMember(object, attributeName, this.argumentTypes);
                         if (member != null) {
-                            cache.put(object, attributeName, parameterTypesArray, member);
+                            cache.put(object, attributeName, argumentTypes, member);
                         }
                     }
 
                     if (member != null) {
 
                         if (member instanceof Method) {
-                            result = ((Method) member).invoke(object, parameterValuesArray);
+                            result = ((Method) member).invoke(object, argumentValues);
                         } else if (member instanceof Field) {
                             result = ((Field) member).get(object);
                         }
@@ -156,6 +176,7 @@ public class GetAttributeExpression implements Expression<Object> {
             }
         }
 
+        this.firstEvaluation = false;
         if (!found && context.isStrictVariables()) {
             throw new AttributeNotFoundException(
                     null,
