@@ -19,8 +19,13 @@ public class ScopeChain {
 
     private LinkedList<Scope> stack = new LinkedList<>();
 
+    public ScopeChain() {
+
+    }
+
     public ScopeChain(Map<String, Object> map) {
-        pushScope(map);
+        Scope scope = new Scope(new HashMap<String, Object>(), false);
+        stack.push(scope);
     }
 
     /**
@@ -32,7 +37,7 @@ public class ScopeChain {
      * @return
      */
     public ScopeChain deepCopy() {
-        ScopeChain copy = new ScopeChain(new HashMap<String, Object>());
+        ScopeChain copy = new ScopeChain();
 
         for (Scope originalScope : stack) {
             copy.stack.add(originalScope.shallowCopy());
@@ -75,6 +80,10 @@ public class ScopeChain {
         }
 
         return result;
+    }
+
+    public boolean currentScopeContainsVariable(String variableName) {
+        return stack.getFirst().containsKey(variableName);
     }
 
 }

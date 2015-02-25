@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -138,8 +139,8 @@ public class EvaluationContext {
 
     /**
      * This method might be called DURING the evaluation of a template (ex. for
-     * node, set node, and macro node) and must be thread safe in case there
-     * are multiple threads evaluating the same template (via parallel tag).
+     * node, set node, and macro node) and must be thread safe in case there are
+     * multiple threads evaluating the same template (via parallel tag).
      * 
      * @param key
      * @param value
@@ -179,8 +180,16 @@ public class EvaluationContext {
     /**
      * Creates a new scope that contains a reference to the current scope.
      */
+    public void pushScope() {
+        pushScope(new HashMap<String, Object>());
+    }
+
     public void pushScope(Map<String, Object> map) {
         scopeChain.pushScope(map);
+    }
+
+    public boolean currentScopeContainsVariable(String variableName) {
+        return scopeChain.currentScopeContainsVariable(variableName);
     }
 
     /**

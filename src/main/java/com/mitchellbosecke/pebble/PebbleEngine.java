@@ -239,15 +239,17 @@ public class PebbleEngine {
         this.extensions.put(extension.getClass(), extension);
 
         // token parsers
-        if (extension.getTokenParsers() != null) {
-            for (TokenParser tokenParser : extension.getTokenParsers()) {
+        List<TokenParser> tokenParsers = extension.getTokenParsers();
+        if (tokenParsers != null) {
+            for (TokenParser tokenParser : tokenParsers) {
                 this.tokenParsers.put(tokenParser.getTag(), tokenParser);
             }
         }
 
         // binary operators
-        if (extension.getBinaryOperators() != null) {
-            for (BinaryOperator operator : extension.getBinaryOperators()) {
+        List<BinaryOperator> binaryOperators = extension.getBinaryOperators();
+        if (binaryOperators != null) {
+            for (BinaryOperator operator : binaryOperators) {
                 if (!this.binaryOperators.containsKey(operator.getSymbol())) {
                     this.binaryOperators.put(operator.getSymbol(), operator);
                 }
@@ -255,8 +257,9 @@ public class PebbleEngine {
         }
 
         // unary operators
-        if (extension.getUnaryOperators() != null) {
-            for (UnaryOperator operator : extension.getUnaryOperators()) {
+        List<UnaryOperator> unaryOperators = extension.getUnaryOperators();
+        if (unaryOperators != null) {
+            for (UnaryOperator operator : unaryOperators) {
                 if (!this.unaryOperators.containsKey(operator.getSymbol())) {
                     this.unaryOperators.put(operator.getSymbol(), operator);
                 }
@@ -264,28 +267,33 @@ public class PebbleEngine {
         }
 
         // filters
-        if (extension.getFilters() != null) {
-            this.filters.putAll(extension.getFilters());
+        Map<String, Filter> filters = extension.getFilters();
+        if (filters != null) {
+            this.filters.putAll(filters);
         }
 
         // tests
-        if (extension.getTests() != null) {
-            this.tests.putAll(extension.getTests());
+        Map<String, Test> tests = extension.getTests();
+        if (tests != null) {
+            this.tests.putAll(tests);
         }
 
         // tests
-        if (extension.getFunctions() != null) {
-            this.functions.putAll(extension.getFunctions());
+        Map<String, Function> functions = extension.getFunctions();
+        if (functions != null) {
+            this.functions.putAll(functions);
         }
 
         // global variables
-        if (extension.getGlobalVariables() != null) {
-            this.globalVariables.putAll(extension.getGlobalVariables());
+        Map<String, Object> globalVariables = extension.getGlobalVariables();
+        if (globalVariables != null) {
+            this.globalVariables.putAll(globalVariables);
         }
 
         // node visitors
-        if (extension.getNodeVisitors() != null) {
-            this.nodeVisitors.addAll(extension.getNodeVisitors());
+        List<NodeVisitor> nodeVisitors = extension.getNodeVisitors();
+        if (nodeVisitors != null) {
+            this.nodeVisitors.addAll(nodeVisitors);
         }
 
     }

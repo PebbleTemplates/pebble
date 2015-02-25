@@ -57,4 +57,8 @@ public class Scope {
         return backingMap.get(key);
     }
 
+    public boolean containsKey(String key) {
+        return backingMap.containsKey(key);
+    }
+
 }

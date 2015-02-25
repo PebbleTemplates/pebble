@@ -55,14 +55,29 @@ public class ForNode extends AbstractRenderableNode {
 
         Iterator<?> iterator = iterable.iterator();
 
-        context.pushScope(new HashMap<String, Object>());
-        int length = getIteratorSize(iterable);
-        int index = 0;
+        if (iterator.hasNext()) {
 
-        if (iterable != null && iterator.hasNext()) {
+            /*
+             * Only if there is a variable name conflict between one of the
+             * variables added by the for loop construct and an existing
+             * variable do we push another scope, otherwise we reuse the current
+             * scope for performance purposes.
+             */
+            if (context.currentScopeContainsVariable("loop") || context.currentScopeContainsVariable(variableName)) {
+                context.pushScope();
+            }
+
+            int length = getIteratorSize(iterable);
+            int index = 0;
 
             while (iterator.hasNext()) {
 
+                /*
+                 * Must create a new map with every iteration instead of
+                 * re-using the same one just in case there is a "parallel" tag
+                 * within this for loop; it's imperative that each thread would
+                 * get it's own distinct copy of the context.
+                 */
                 Map<String, Object> loop = new HashMap<>();
                 loop.put("index", index++);
                 loop.put("length", length);
@@ -70,6 +85,7 @@ public class ForNode extends AbstractRenderableNode {
 
                 context.put(variableName, iterator.next());
                 body.render(self, writer, context);
+
             }
 
         } else if (elseBody != null) {

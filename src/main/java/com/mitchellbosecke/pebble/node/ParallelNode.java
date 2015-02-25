@@ -64,7 +64,7 @@ public class ParallelNode extends AbstractRenderableNode {
              * parallel tag and render it's contents like we normally would.
              */
             body.render(self, writer, context);
-            return;
+            
         } else {
 
             final EvaluationContext contextCopy = context.deepCopy(self);

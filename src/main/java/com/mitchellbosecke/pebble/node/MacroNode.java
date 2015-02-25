@@ -12,10 +12,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -83,17 +81,17 @@ public class MacroNode extends AbstractRenderableNode {
                 }
 
                 // scope for user provided arguments
-                context.pushScope(new HashMap<String, Object>());
-                for (Entry<String, Object> arg : macroArgs.entrySet()) {
-                    context.put(arg.getKey(), arg.getValue());
-                }
+                context.pushScope(macroArgs);
+
                 try {
                     getBody().render(self, writer, context);
                 } catch (IOException e) {
                     throw new RuntimeException("Could not evaluate macro [" + name + "]", e);
                 }
-                context.popScope();
-                context.popScope();
+
+                context.popScope(); // user arguments
+                context.popScope(); // default arguments
+
                 return writer.toString();
             }
 
