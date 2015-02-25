@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class ForNode extends AbstractRenderableNode {
                 context.pushScope();
             }
 
-            int length = getIteratorSize(iterable);
+            int length = getIteratorSize(iterableEvaluation);
             int index = 0;
 
             while (iterator.hasNext()) {
@@ -99,19 +100,6 @@ public class ForNode extends AbstractRenderableNode {
         }
 
         context.popScope();
-    }
-
-    private int getIteratorSize(Iterable<?> iterable) {
-        if (iterable == null) {
-            return 0;
-        }
-        Iterator<?> it = iterable.iterator();
-        int size = 0;
-        while (it.hasNext()) {
-            size++;
-            it.next();
-        }
-        return size;
     }
 
     @Override
@@ -140,7 +128,11 @@ public class ForNode extends AbstractRenderableNode {
 
         Iterable<Object> result = null;
 
-        if (obj.getClass().isArray()) {
+        if (obj instanceof Iterable<?>) {
+
+            result = (Iterable<Object>) obj;
+
+        } else if (obj.getClass().isArray()) {
 
             if (Array.getLength(obj) == 0) {
                 return new ArrayList<>(0);
@@ -173,10 +165,29 @@ public class ForNode extends AbstractRenderableNode {
                     };
                 }
             };
-        } else if (obj instanceof Iterable<?>) {
-            result = (Iterable<Object>) obj;
         }
 
         return result;
+    }
+
+    private int getIteratorSize(Object iterable) {
+        if (iterable == null) {
+            return 0;
+        }
+        if (iterable instanceof Collection) {
+            return ((Collection<?>) iterable).size();
+        }
+        if (iterable.getClass().isArray()) {
+            return Array.getLength(iterable);
+        }
+
+        // assumed to be of type Iterator
+        Iterator<?> it = ((Iterable<?>) iterable).iterator();
+        int size = 0;
+        while (it.hasNext()) {
+            size++;
+            it.next();
+        }
+        return size;
     }
 }
