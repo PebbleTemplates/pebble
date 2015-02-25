@@ -22,6 +22,12 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+/**
+ * Represents a "for" loop within the template.
+ * 
+ * @author mbosecke
+ *
+ */
 public class ForNode extends AbstractRenderableNode {
 
     private final String variableName;

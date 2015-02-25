@@ -66,16 +66,28 @@ public class ScopeChain {
     public Object get(String key, boolean isStrictVariables) throws AttributeNotFoundException {
         Object result = null;
 
-        Scope scope;
+        /*
+         * The majority of time, the requested variable will be in the first
+         * scope so we do a quick lookup in that scope before attempting to
+         * create an iterator, etc. This is solely for performance.
+         */
+        Scope scope = stack.getFirst();
+        result = scope.get(key);
 
-        Iterator<Scope> iterator = stack.iterator();
+        if (result == null) {
 
-        while (result == null && iterator.hasNext()) {
-            scope = iterator.next();
+            Iterator<Scope> iterator = stack.iterator();
 
-            result = scope.get(key);
-            if (scope.isLocal()) {
-                break;
+            // account for the first lookup we did
+            iterator.next();
+
+            while (result == null && iterator.hasNext()) {
+                scope = iterator.next();
+
+                result = scope.get(key);
+                if (scope.isLocal()) {
+                    break;
+                }
             }
         }
 
