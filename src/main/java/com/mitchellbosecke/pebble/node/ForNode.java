@@ -61,6 +61,8 @@ public class ForNode extends AbstractRenderableNode {
         iterable = toIterable(iterableEvaluation);
 
         Iterator<?> iterator = iterable.iterator();
+        
+        boolean newScope = false;
 
         if (iterator.hasNext()) {
 
@@ -72,6 +74,7 @@ public class ForNode extends AbstractRenderableNode {
              */
             if (context.currentScopeContainsVariable("loop") || context.currentScopeContainsVariable(variableName)) {
                 context.pushScope();
+                newScope = true;
             }
 
             int length = getIteratorSize(iterableEvaluation);
@@ -94,12 +97,15 @@ public class ForNode extends AbstractRenderableNode {
                 body.render(self, writer, context);
 
             }
+            
+            if(newScope){
+                context.popScope();
+            }
 
         } else if (elseBody != null) {
             elseBody.render(self, writer, context);
         }
 
-        context.popScope();
     }
 
     @Override

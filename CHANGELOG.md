@@ -1,3 +1,6 @@
+## v1.4.3
+- Bug fix for issue regarding multiple for loops only rendering first one
+
 ## v1.4.2
 - Performance improvements
 

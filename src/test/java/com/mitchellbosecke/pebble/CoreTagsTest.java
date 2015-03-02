@@ -318,7 +318,7 @@ public class CoreTagsTest extends AbstractTest {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        String source = "" + "{% for user in users %}{% endfor %}" + "{% for user in users %}{% endfor %}";
+        String source = "" + "{% for user in users %}{{ user.username }}{% endfor %}" + "{% for user in users %}{{ user.username }}{% endfor %}";
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
         List<User> users = new ArrayList<>();
@@ -328,6 +328,8 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
+        
+        assertEquals("AlexBobAlexBob", writer.toString());
     }
 
     @Test
