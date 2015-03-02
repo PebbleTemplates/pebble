@@ -39,18 +39,21 @@ public class ConcurrencyTest extends AbstractTest {
         final public int b;
 
         final public int c;
+        
+        final public String d;
 
-        private TestObject(int a, int b, int c) {
+        private TestObject(int a, int b, int c, String d) {
             this.a = a;
             this.b = b;
             this.c = c;
+            this.d = d;
         }
     }
 
     @Test
     public void testConcurrentEvaluation() throws InterruptedException, PebbleException {
 
-        String templateSource = "{{ test.a }}:{{ test.b }}:{{ test.c }}";
+        String templateSource = "{{ test.a }}:{{ test.b }}:{{ test.c }}:{{ test.d | upper }}";
         PebbleEngine engine = new PebbleEngine(new StringLoader());
         final PebbleTemplate template = engine.getTemplate(templateSource);
 
@@ -71,8 +74,9 @@ public class ConcurrencyTest extends AbstractTest {
                         int a = r.nextInt();
                         int b = r.nextInt();
                         int c = r.nextInt();
+                        int d = r.nextInt();
 
-                        TestObject testObject = new TestObject(a, b, c);
+                        TestObject testObject = new TestObject(a, b, c, "test"+d);
 
                         StringWriter writer = new StringWriter();
                         Map<String, Object> context = new HashMap<>();
@@ -80,7 +84,7 @@ public class ConcurrencyTest extends AbstractTest {
                         template.evaluate(writer, context);
 
                         String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-                                .append(c).toString();
+                                .append(c).append(":").append("TEST").append(d).toString();
 
                         String actualResult = writer.toString();
                         if (!expectedResult.equals(actualResult)) {
@@ -139,8 +143,9 @@ public class ConcurrencyTest extends AbstractTest {
                         int a = r.nextInt();
                         int b = r.nextInt();
                         int c = r.nextInt();
+                        int d = r.nextInt();
 
-                        TestObject testObject = new TestObject(a, b, c);
+                        TestObject testObject = new TestObject(a, b, c, "test" + d);
 
                         StringWriter writer = new StringWriter();
                         Map<String, Object> context = new HashMap<>();
@@ -175,8 +180,9 @@ public class ConcurrencyTest extends AbstractTest {
                         int a = r.nextInt();
                         int b = r.nextInt();
                         int c = r.nextInt();
+                        int d = r.nextInt();
 
-                        TestObject testObject = new TestObject(a, b, c);
+                        TestObject testObject = new TestObject(a, b, c, "test" + d);
 
                         StringWriter writer = new StringWriter();
                         Map<String, Object> context = new HashMap<>();
