@@ -3,6 +3,9 @@ package com.mitchellbosecke.pebble.extension;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
+
+@Ignore
 public class TestingExtension extends AbstractExtension {
 
 	private InvocationCountingFunction invocationCountingFunction = new InvocationCountingFunction();

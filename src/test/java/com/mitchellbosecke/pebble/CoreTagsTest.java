@@ -455,6 +455,53 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer);
         assertEquals("HELLO\n", writer.toString());
     }
+    
+    public static class A {
+        private String b;
+
+        public String getB() {
+            return b;
+        }
+
+        public void setB(String b) {
+            this.b = b;
+        }
+    }
+    
+    @Test
+    public void testMacroArgSubObject() throws PebbleException, IOException {
+        A a = new A();
+        a.setB("b value");
+        Map<String, Object> args = new HashMap<>();
+        args.put("aArg", a);
+
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleTemplate template = pebble
+                .getTemplate("{{ test(aArg) }}{% macro test(a) %}{{ a.b }}{% endmacro %}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, args);
+        assertEquals("b value", writer.toString());
+    }
+    
+    @Test
+    public void testMacroMemberCache() throws PebbleException, IOException {
+        A a = new A();
+        a.setB("b value");
+        Map<String, Object> args = new HashMap<>();
+        args.put("a1Arg", a);
+        args.put("a2Arg", null);
+
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleTemplate template = pebble
+                .getTemplate("{{ test(a1Arg) }}{{ test(a2Arg) }}{% macro test(a) %}{{ a.b }}{% endmacro %}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, args);
+        assertEquals("b value", writer.toString());
+    }
 
     @Test
     public void testImportWithinBlock() throws PebbleException, IOException {
