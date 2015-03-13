@@ -469,26 +469,9 @@ public class CoreTagsTest extends AbstractTest {
     }
     
     @Test
-    public void testMacroArgSubObject() throws PebbleException, IOException {
-        A a = new A();
-        a.setB("b value");
-        Map<String, Object> args = new HashMap<>();
-        args.put("aArg", a);
-
-        Loader loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        PebbleTemplate template = pebble
-                .getTemplate("{{ test(aArg) }}{% macro test(a) %}{{ a.b }}{% endmacro %}");
-
-        Writer writer = new StringWriter();
-        template.evaluate(writer, args);
-        assertEquals("b value", writer.toString());
-    }
-    
-    @Test
     public void testMacroMemberCache() throws PebbleException, IOException {
         A a = new A();
-        a.setB("b value");
+        a.setB("B");
         Map<String, Object> args = new HashMap<>();
         args.put("a1Arg", a);
         args.put("a2Arg", null);
@@ -500,7 +483,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, args);
-        assertEquals("b value", writer.toString());
+        assertEquals("B", writer.toString());
     }
 
     @Test

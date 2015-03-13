@@ -128,7 +128,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
         }
 
-        if (member != null) {
+        if (object != null && member != null) {
             if (argumentValues == null) {
                 argumentValues = getArgumentValues(self, context);
             }
