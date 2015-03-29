@@ -78,7 +78,7 @@ public class FileLoader implements Loader {
 
         // try to load File
         if (is == null) {
-            File file = new File(path.toString(), templateName);
+            File file = new File(path.toString(), templateName + (getSuffix() == null ? "" : getSuffix()));
             if (file.exists() && file.isFile()) {
                 try {
                     is = new FileInputStream(file);
