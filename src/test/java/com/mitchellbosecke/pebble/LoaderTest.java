@@ -54,10 +54,9 @@ public class LoaderTest extends AbstractTest {
 	@Test
 	public void testFileLoader() throws PebbleException, IOException {
 		Loader loader = new FileLoader();
-		loader.setPrefix("/templates/");
-		loader.setSuffix(".peb");
+		loader.setSuffix(".suffix");
 		PebbleEngine engine = new PebbleEngine(loader);
-		URL url = getClass().getResource("/templates/template.loaderTest");
+		URL url = getClass().getResource("/templates/template.loaderTest.peb");
 		PebbleTemplate template1 = engine.getTemplate(url.getPath());
 		Writer writer1 = new StringWriter();
 		template1.evaluate(writer1);
