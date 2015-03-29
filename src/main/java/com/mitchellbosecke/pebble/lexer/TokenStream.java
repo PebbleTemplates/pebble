@@ -52,8 +52,9 @@ public class TokenStream {
      * 
      * @param type
      *            The type of token that we expect
-     * @return The current token
+     * @return Token The current token
      * @throws ParserException
+     *             Throws exception if expectation fails
      */
     public Token expect(Token.Type type) throws ParserException {
         return expect(type, null);
@@ -66,8 +67,11 @@ public class TokenStream {
      * 
      * @param type
      *            The type of token that we expect
-     * @return The current token
+     * @param value
+     *            The expected value of the token
+     * @return Token The current token
      * @throws ParserException
+     *             Thrown if expectation fails
      */
     public Token expect(Token.Type type, String value) throws ParserException {
         Token token = tokens.get(current);
@@ -123,7 +127,7 @@ public class TokenStream {
     /**
      * Looks at the current token. Does not consume the token.
      * 
-     * @return
+     * @return Token The current token
      */
     public Token current() {
         return this.tokens.get(current);
@@ -136,7 +140,7 @@ public class TokenStream {
     /**
      * used for testing purposes
      * 
-     * @return
+     * @return List of tokens
      */
     public ArrayList<Token> getTokens() {
         return tokens;

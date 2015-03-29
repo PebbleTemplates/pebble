@@ -10,23 +10,10 @@ package com.mitchellbosecke.pebble.error;
 
 public class CompilationException extends PebbleException {
 
-    /**
-     * Syntax exception
-     * 
-     * @param message
-     *            Message to display
-     * @param lineNumber
-     *            Line number of where the exception occurred
-     * @param filename
-     *            Filename of the file in which the exception occurred
-     */
     public CompilationException(Throwable cause, String message) {
         super(cause, message);
     }
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = -3712498518512126529L;
 
 }

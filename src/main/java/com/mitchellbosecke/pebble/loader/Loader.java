@@ -27,8 +27,10 @@ public interface Loader {
      * template.
      * 
      * @param templateName
-     * @return
+     *            Name of the template
+     * @return A reader object
      * @throws LoaderException
+     *             If template can not be found
      */
     public Reader getReader(String templateName) throws LoaderException;
 
@@ -36,6 +38,7 @@ public interface Loader {
      * A method for end users to change the charset used by the loader.
      * 
      * @param charset
+     *            Character set used by the loader when building a reader object
      */
     public void setCharset(String charset);
 
@@ -44,6 +47,7 @@ public interface Loader {
      * "database_schema."
      * 
      * @param prefix
+     *            Prefix to help find templates
      */
     public void setPrefix(String prefix);
 
@@ -51,6 +55,7 @@ public interface Loader {
      * Optional suffix to help find templates, ex ".html", ".peb"
      * 
      * @param suffix
+     *            Suffix to attach to template names
      */
     public void setSuffix(String suffix);
 

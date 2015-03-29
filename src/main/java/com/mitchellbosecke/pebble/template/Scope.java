@@ -35,7 +35,7 @@ public class Scope {
      * because every new thread should have a "snapshot" of the scopes, i.e. one
      * thread should not affect rendering output of another.
      * 
-     * @return
+     * @return A copy of the scope
      */
     public Scope shallowCopy() {
 

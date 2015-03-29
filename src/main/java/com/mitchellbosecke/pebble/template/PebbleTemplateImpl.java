@@ -95,10 +95,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * NodeInclude will call this method on a template other than itself.
      * 
      * 
-     * @param writer
-     * @param context
-     * @throws PebbleException
-     * @throws IOException
+     * @param writer The writer used to write the final output of the template
+     * @param context The evaluation context
+     * @throws PebbleException Thrown if any sort of template error occurs
+     * @throws IOException Thrown from the writer object
      */
     public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
         if (context.getExecutorService() != null) {
@@ -111,8 +111,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     /**
      * Initializes the evaluation context with settings from the engine.
      * 
-     * @param locale
-     * @return
+     * @param locale The desired locale
+     * @return The evaluation context
      */
     private EvaluationContext initContext(Map<String, Object> map, Locale locale) {
         locale = locale == null ? engine.getDefaultLocale() : locale;
@@ -126,8 +126,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     /**
      * Imports a template.
      * 
-     * @param template
-     * @throws PebbleException
+     * @param context The evaluation context
+     * @param name The template name
+     * @throws PebbleException Thrown if an error occurs while rendering the imported template
      */
     public void importTemplate(EvaluationContext context, String name) throws PebbleException {
         context.addImportedTemplate((PebbleTemplateImpl) engine.getTemplate(name));
@@ -147,7 +148,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     /**
      * Registers a block.
      * 
-     * @param block
+     * @param block The block
      */
     public void registerBlock(Block block) {
         blocks.put(block.getName(), block);
@@ -168,12 +169,12 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * A typical block declaration will use this method which evaluates the
      * block using the regular user-provided writer.
      * 
-     * @param blockName
-     * @param context
-     * @param ignoreOverriden
-     * @param writer
-     * @throws PebbleException
-     * @throws IOException
+     * @param blockName The name of the block
+     * @param context The evaluation context
+     * @param ignoreOverriden Whether or not to ignore overriden blocks
+     * @param writer The writer
+     * @throws PebbleException Thrown if an error occurs
+     * @throws IOException Thrown from the writer object
      */
     public void block(Writer writer, EvaluationContext context, String blockName, boolean ignoreOverriden)
             throws PebbleException, IOException {

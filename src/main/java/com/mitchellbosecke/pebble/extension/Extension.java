@@ -65,14 +65,14 @@ public interface Extension {
     /**
      * Use this method to provide variables available to all templates
      * 
-     * @return Map<String,Object> global variables available to all templates
+     * @return Map of global variables available to all templates
      */
     public Map<String, Object> getGlobalVariables();
 
     /**
      * Node visitors will travel the AST tree during the compilation phase.
      * 
-     * @return
+     * @return a list of node visitors
      */
     public List<NodeVisitor> getNodeVisitors();
 }

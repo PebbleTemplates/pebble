@@ -91,7 +91,7 @@ public class LexerImpl implements Lexer {
     private Pattern regexVerbatimStart;
 
     private Pattern regexVerbatimEnd;
-    
+
     /**
      * Regular expression to find operators
      */
@@ -171,11 +171,12 @@ public class LexerImpl implements Lexer {
     /**
      * This is the main method used to tokenize the raw contents of a template.
      * 
-     * @param originalSource
-     *            The raw contents of the template
+     * @param reader
+     *            The reader provided from the Loader
      * @param name
      *            The name of the template (used for meaningful error messages)
      * @throws ParserException
+     *             Thrown from the Reader object
      */
     @Override
     public TokenStream tokenize(Reader reader, String name) throws ParserException {
@@ -401,11 +402,9 @@ public class LexerImpl implements Lexer {
         // whitespace
         source.advanceThroughWhitespace();
         /*
-        Matcher matcher = REGEX_WHITESPACE.matcher(source);
-        if (matcher.lookingAt()) {
-            source.advance(matcher.end());
-        }
-        */
+         * Matcher matcher = REGEX_WHITESPACE.matcher(source); if
+         * (matcher.lookingAt()) { source.advance(matcher.end()); }
+         */
 
         // operators
         Matcher matcher = regexOperators.matcher(source);
@@ -572,8 +571,8 @@ public class LexerImpl implements Lexer {
 
     /**
      * Create a Token of a certain type and value and push it into the list of
-     * tokens that we are maintaining.
-     * `
+     * tokens that we are maintaining. `
+     * 
      * @param type
      *            The type of token we are creating
      * @param value

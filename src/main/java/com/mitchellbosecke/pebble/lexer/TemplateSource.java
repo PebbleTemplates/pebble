@@ -54,8 +54,11 @@ public class TemplateSource implements CharSequence {
      * Constructor
      * 
      * @param reader
+     *            Reader provided by the Loader
      * @param filename
+     *            Filename of the template
      * @throws IOException
+     *             Exceptions thrown from the reader
      */
     public TemplateSource(Reader reader, String filename) throws IOException {
         this.filename = filename;
@@ -125,6 +128,9 @@ public class TemplateSource implements CharSequence {
     /**
      * Moves the start index a certain amount. While traversing this amount we
      * will count how many newlines have been encountered.
+     * 
+     * @param amount
+     *            Amount of characters to advance by
      */
     public void advance(int amount) {
 
@@ -166,6 +172,7 @@ public class TemplateSource implements CharSequence {
      * characters to represent one newline).
      * 
      * @param index
+     *            The index of the potential newline character
      * @return
      */
     private int advanceThroughNewline(int index) {

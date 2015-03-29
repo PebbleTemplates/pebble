@@ -48,7 +48,7 @@ public interface NodeVisitor {
      * Default method invoked with unknown nodes such as nodes provided by user
      * extensions.
      * 
-     * @param node
+     * @param node Node to visit
      */
     public abstract void visit(Node node);
 

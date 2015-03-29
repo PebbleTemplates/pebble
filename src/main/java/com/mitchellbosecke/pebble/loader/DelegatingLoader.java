@@ -42,6 +42,7 @@ public class DelegatingLoader implements Loader {
      * Constructor provided with a list of children loaders.
      * 
      * @param loaders
+     *            A list of loaders to delegate to
      */
     public DelegatingLoader(List<Loader> loaders) {
         this.loaders.addAll(loaders);

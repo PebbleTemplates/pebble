@@ -12,16 +12,6 @@ public class ParserException extends PebbleException {
 
     private static final long serialVersionUID = -3712498518512126529L;
 
-    /**
-     * Parser exception
-     * 
-     * @param message
-     *            Message to display
-     * @param lineNumber
-     *            Line number of where the exception occurred
-     * @param filename
-     *            Filename of the file in which the exception occurred
-     */
     public ParserException(Throwable cause, String message, int lineNumber, String filename) {
         super(cause, message, lineNumber, filename);
     }

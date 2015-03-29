@@ -55,7 +55,7 @@ public class EscaperExtension extends AbstractExtension {
     /**
      * Sets the default escaping strategy.
      * 
-     * @param strategy
+     * @param strategy Escaping strategy
      */
     public void setDefaultStrategy(String strategy) {
         filter.setDefaultStrategy(strategy);

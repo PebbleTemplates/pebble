@@ -31,9 +31,9 @@ public interface Parser {
      * Parses the existing TokenStream, starting at the current Token, and
      * ending when the stopCondition is fullfilled.
      * 
-     * @param stopCondition
-     * @return
-     * @throws ParserException
+     * @param stopCondition The condition to stop parsing a segment of the template.
+     * @return A node representing the parsed section
+     * @throws ParserException Thrown if a parsing error occurs.
      */
     public BodyNode subparse(StoppingCondition stopCondition) throws ParserException;
 

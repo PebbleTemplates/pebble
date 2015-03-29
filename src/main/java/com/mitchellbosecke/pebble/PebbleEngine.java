@@ -150,8 +150,10 @@ public class PebbleEngine {
      * and returns this instance.
      * 
      * @param templateName
-     * @return PebbleTemplate
+     *            The name of the template
+     * @return PebbleTemplate The compiled version of the template
      * @throws PebbleException
+     *             Thrown if an error occurs while parsing the template.
      */
     public PebbleTemplate getTemplate(final String templateName) throws PebbleException {
 
@@ -363,7 +365,7 @@ public class PebbleEngine {
      * become much more null-safe and type issues are handled in a much more
      * graceful manner.
      * 
-     * @param strictVariables
+     * @param strictVariables Whether or not strict variables is used
      */
     public void setStrictVariables(boolean strictVariables) {
         this.strictVariables = strictVariables;

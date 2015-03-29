@@ -20,8 +20,8 @@ import java.util.Locale;
  * 
  * The new and preferred manner of the function/test receiving the locale is for
  * the template to provide some extra variables in the arguments map directly to
- * {@link com.mitchellbosecke.pebble.extension.Function#execute()} or
- * {@link com.mitchellbosecke.pebble.extension.Test#apply()}. See <a href=
+ * {@link com.mitchellbosecke.pebble.extension.Function#execute} or
+ * {@link com.mitchellbosecke.pebble.extension.Test#apply}. See <a href=
  * "http://www.mitchellbosecke.com/pebble/documentation/guide/extending-pebble"
  * >the guide on extending pebble</a> for more information.
  * 

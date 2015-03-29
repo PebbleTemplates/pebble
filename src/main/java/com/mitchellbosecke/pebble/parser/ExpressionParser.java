@@ -62,6 +62,10 @@ public class ExpressionParser {
      * 
      * @param parser
      *            A reference to the main parser
+     * @param binaryOperators
+     *            All the binary operators
+     * @param unaryOperators
+     *            All the unary operators
      */
     public ExpressionParser(Parser parser, Map<String, BinaryOperator> binaryOperators,
             Map<String, UnaryOperator> unaryOperators) {
@@ -75,6 +79,7 @@ public class ExpressionParser {
      * 
      * @return NodeExpression the expression that has been parsed.
      * @throws ParserException
+     *             Thrown if a parsing error occurs
      */
     public Expression<?> parseExpression() throws ParserException {
         return parseExpression(0);
@@ -89,6 +94,7 @@ public class ExpressionParser {
      * 
      * @return The NodeExpression representing the parsed expression.
      * @throws ParserException
+     *             Thrown if a parsing error occurs.
      */
     private Expression<?> parseExpression(int minPrecedence) throws ParserException {
 
@@ -225,6 +231,7 @@ public class ExpressionParser {
      * 
      * @return NodeExpression The expression that it found.
      * @throws ParserException
+     *             Thrown if a parsing error occurs.
      */
     private Expression<?> subparseExpression() throws ParserException {
         final Token token = stream.current();
@@ -330,6 +337,7 @@ public class ExpressionParser {
      * @return Either the original expression that was passed in or a slightly
      *         modified version of it, depending on what was discovered.
      * @throws ParserException
+     *             Thrown if a parsing error occurs.
      */
     private Expression<?> parsePostfixExpression(Expression<?> node) throws ParserException {
         Token current;
@@ -413,6 +421,7 @@ public class ExpressionParser {
      *            The expression parsed so far
      * @return NodeExpression The parsed subscript expression
      * @throws ParserException
+     *             Thrown if a parsing error occurs.
      */
     private Expression<?> parseBeanAttributeExpression(Expression<?> node) throws ParserException {
         TokenStream stream = parser.getStream();
@@ -522,8 +531,9 @@ public class ExpressionParser {
      * 
      * This is used for the set tag, the for loop, and in named arguments.
      * 
-     * @return
+     * @return A variable name
      * @throws ParserException
+     *             Thrown if a parsing error occurs.
      */
     public String parseNewVariableName() throws ParserException {
 

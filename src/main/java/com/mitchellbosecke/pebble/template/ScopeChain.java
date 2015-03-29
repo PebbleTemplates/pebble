@@ -34,7 +34,7 @@ public class ScopeChain {
      * one thread adds a new object to a scope, it should not be available to
      * the other threads.
      * 
-     * @return
+     * @return A copy of the scope chain
      */
     public ScopeChain deepCopy() {
         ScopeChain copy = new ScopeChain();

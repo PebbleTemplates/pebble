@@ -40,6 +40,7 @@ public interface TokenParser {
      * require.
      * 
      * @param parser
+     *            The desired parser
      */
     public void setParser(Parser parser);
 
@@ -68,8 +69,10 @@ public interface TokenParser {
      * middle content: com.mitchellbosecke.pebble.tokenParser.BlockTokenParser
      * 
      * @param token
-     * @return
+     *            The token to parse
+     * @return A node representation of the token
      * @throws ParserException
+     *             Thrown if an error occurs while parsing the token
      */
     public RenderableNode parse(Token token) throws ParserException;
 

@@ -84,14 +84,23 @@ public class EvaluationContext {
      * Constructor used to provide all final variables.
      * 
      * @param self
+     *            The template implementation
      * @param strictVariables
+     *            Whether strict variables is to be used
      * @param locale
+     *            The locale of the template
      * @param filters
+     *            Available filters
      * @param tests
+     *            Available tests
      * @param functions
+     *            Available functions
      * @param executorService
-     * @param scopes
+     *            The optional executor service
+     * @param scopeChain
+     *            The scope chain
      * @param inheritanceChain
+     *            The inheritance chain
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
             Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
@@ -115,7 +124,9 @@ public class EvaluationContext {
      * Makes an exact copy of the evaluation context EXCEPT for the inheritance
      * chain. This is necessary for the "include" tag.
      * 
-     * @return
+     * @param self
+     *            The template implementation
+     * @return A copy of the evaluation context
      */
     public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
@@ -129,7 +140,8 @@ public class EvaluationContext {
      * used for the "parallel" tag.
      * 
      * @param self
-     * @return
+     *            The template implementation
+     * @return A copy of the evaluation context
      */
     public EvaluationContext deepCopy(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
@@ -143,7 +155,9 @@ public class EvaluationContext {
      * multiple threads evaluating the same template (via parallel tag).
      * 
      * @param key
+     *            Key
      * @param value
+     *            Value
      */
     public void put(String key, Object value) {
         scopeChain.put(key, value);
@@ -154,8 +168,10 @@ public class EvaluationContext {
      * it is found.
      * 
      * @param key
-     * @return
+     *            Key
+     * @return The object, if found
      * @throws AttributeNotFoundException
+     *             Thrown if the key is not found
      */
     public Object get(String key) throws AttributeNotFoundException {
         return scopeChain.get(key, isStrictVariables());

@@ -47,10 +47,15 @@ public class ArgumentsNode implements Node {
      * ArgumentMap (which holds both positional and named arguments) into a
      * regular Map that the filter/function/test/macro is expecting.
      * 
+     * @param self
+     *            The template implementation
+     * @param context
+     *            The evaluation context
      * @param invocableWithNamedArguments
-     * @param arguments
-     * @return
+     *            The named arguments object
+     * @return Returns a map representaion of the arguments
      * @throws PebbleException
+     *             Thrown if an expected name argument does not exist
      */
     public Map<String, Object> getArgumentMap(PebbleTemplateImpl self, EvaluationContext context,
             NamedArguments invocableWithNamedArguments) throws PebbleException {
@@ -65,11 +70,11 @@ public class ArgumentsNode implements Node {
                     result.put(String.valueOf(i), positionalArgs.get(i).getValueExpression().evaluate(self, context));
                 }
             }
-        } else {            
+        } else {
 
             if (positionalArgs != null) {
                 int nameIndex = 0;
-                
+
                 for (PositionalArgumentNode arg : positionalArgs) {
                     result.put(argumentNames.get(nameIndex), arg.getValueExpression().evaluate(self, context));
                     nameIndex++;
