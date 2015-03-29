@@ -1,3 +1,7 @@
+## v1.4.4
+- Bug fix regarding NPE with internal cache
+- Bug fix when using suffix with the file loader
+
 ## v1.4.3
 - Bug fix for issue regarding multiple for loops only rendering first one
 

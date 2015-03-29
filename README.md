@@ -11,7 +11,7 @@ First, add the following dependency to your pom.xml:
 <dependency>
 	<groupId>com.mitchellbosecke</groupId>
 	<artifactId>pebble</artifactId>
-	<version> 1.4.3 </version>
+	<version> 1.4.4 </version>
 </dependency>
 ```
 
