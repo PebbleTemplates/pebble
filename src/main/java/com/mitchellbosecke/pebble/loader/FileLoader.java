@@ -58,8 +58,9 @@ public class FileLoader implements Loader {
             }
         }
 
-        String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
-        logger.debug("Looking for template in {}.", location);
+        templateName = templateName + (getSuffix() == null ? "" : getSuffix());
+
+        logger.debug("Looking for template in {}.", path.toString() + templateName);
 
         /*
          * if template name contains path segments, move those segments into the
@@ -88,7 +89,7 @@ public class FileLoader implements Loader {
         }
 
         if (is == null) {
-            throw new LoaderException(null, "Could not find template \"" + location + "\"");
+            throw new LoaderException(null, "Could not find template \"" + path.toString() + templateName + "\"");
         }
 
         try {

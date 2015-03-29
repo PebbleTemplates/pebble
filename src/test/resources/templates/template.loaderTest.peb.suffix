@@ -1,0 +1,6 @@
+{#
+	Used by:
+		- LoaderTest.testClassLoaderLoader
+		- LoaderTest.testFileLoader
+#}
+SUCCESS
