@@ -8,8 +8,9 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,13 +24,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class CacheTest extends AbstractTest {
 
+	public static final String LINE_SEPARATOR = System.lineSeparator();
+	
 	/**
 	 * There was once an issue where the cache was unable to differentiate
 	 * between templates of the same name but under different directories.
@@ -105,11 +106,11 @@ public class CacheTest extends AbstractTest {
 		template1.evaluate(writer1);
 		template2.evaluate(writer2);
 
-		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tPARENT HEAD\n"
-				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
+		assertEquals("GRANDFATHER TEXT ABOVE HEAD" + LINE_SEPARATOR + LINE_SEPARATOR + "\tPARENT HEAD" + LINE_SEPARATOR 
+				+ LINE_SEPARATOR + "GRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT" + LINE_SEPARATOR + LINE_SEPARATOR + "\tGRANDFATHER FOOT" + LINE_SEPARATOR + LINE_SEPARATOR 
 				+ "GRANDFATHER TEXT BELOW FOOT", writer1.toString());
-		assertEquals("GRANDFATHER TEXT ABOVE HEAD\n" + "\n" + "\tPARENT HEAD\n"
-				+ "\nGRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT\n\n" + "\tGRANDFATHER FOOT\n\n"
+		assertEquals("GRANDFATHER TEXT ABOVE HEAD" + LINE_SEPARATOR + LINE_SEPARATOR + "\tPARENT HEAD" + LINE_SEPARATOR 
+				+ LINE_SEPARATOR + "GRANDFATHER TEXT BELOW HEAD AND ABOVE FOOT" + LINE_SEPARATOR + LINE_SEPARATOR + "\tGRANDFATHER FOOT" + LINE_SEPARATOR + LINE_SEPARATOR 
 				+ "GRANDFATHER TEXT BELOW FOOT", writer2.toString());
 	}
 

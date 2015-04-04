@@ -1,14 +1,22 @@
-/*******************************************************************************
-his file is part of Pebble.
- *
+/**
+ * ****************************************************************************
+ * his file is part of Pebble.
+ * <p/>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p/>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ * ****************************************************************************
+ */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,16 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
-import com.mitchellbosecke.pebble.extension.TestingExtension;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class CoreTagsTest extends AbstractTest {
+
+    public static final String LINE_SEPARATOR = System.lineSeparator();
 
     @Test
     public void testBlock() throws PebbleException, IOException {
@@ -54,7 +57,7 @@ public class CoreTagsTest extends AbstractTest {
 
     /**
      * The template used to fail if the user wrapped the block name in quotes.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -196,7 +199,7 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("[2]0Alex1Bob", writer.toString());
     }
-    
+
     @Test
     public void testFilterTag() throws PebbleException, IOException {
         Loader loader = new StringLoader();
@@ -209,7 +212,7 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer);
         assertEquals("HELLO", writer.toString());
     }
-    
+
     @Test
     public void testChainedFilterTag() throws PebbleException, IOException {
         Loader loader = new StringLoader();
@@ -328,7 +331,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        
+
         assertEquals("AlexBobAlexBob", writer.toString());
     }
 
@@ -354,7 +357,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
+        assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />" + LINE_SEPARATOR, writer.toString());
     }
 
     /**
@@ -381,7 +384,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />\n", writer.toString());
+        assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />" + LINE_SEPARATOR, writer.toString());
     }
 
     @Test
@@ -453,9 +456,9 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("HELLO\n", writer.toString());
+        assertEquals("HELLO" + LINE_SEPARATOR, writer.toString());
     }
-    
+
     public static class A {
         private String b;
 
@@ -467,7 +470,7 @@ public class CoreTagsTest extends AbstractTest {
             this.b = b;
         }
     }
-    
+
     @Test
     public void testMacroMemberCache() throws PebbleException, IOException {
         A a = new A();
@@ -492,7 +495,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("\t<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", writer.toString());
+        assertEquals("\t<input name=\"company\" value=\"forcorp\" type=\"text\" />" + LINE_SEPARATOR, writer.toString());
     }
 
     @Test
@@ -501,7 +504,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", writer.toString());
+        assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />" + LINE_SEPARATOR, writer.toString());
     }
 
     @Test
@@ -510,7 +513,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />\n", writer.toString());
+        assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />" + LINE_SEPARATOR, writer.toString());
     }
 
     @Test(expected = PebbleException.class)
@@ -529,13 +532,13 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("TEMPLATE2\nTEMPLATE1\nTEMPLATE2\n", writer.toString());
+        assertEquals("TEMPLATE2" + LINE_SEPARATOR + "TEMPLATE1" + LINE_SEPARATOR + "TEMPLATE2" + LINE_SEPARATOR, writer.toString());
     }
 
     /**
      * There was an issue when including a template that had it's own
      * inheritance chain.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -554,7 +557,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("TEMPLATE2\nTEMPLATE1\n", writer.toString());
+        assertEquals("TEMPLATE2" + LINE_SEPARATOR + "TEMPLATE1" + LINE_SEPARATOR, writer.toString());
     }
 
     /**
@@ -586,7 +589,7 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("TWO\nONE\nTWO\n", writer.toString());
+        assertEquals("TWO" + LINE_SEPARATOR + "ONE" + LINE_SEPARATOR + "TWO" + LINE_SEPARATOR, writer.toString());
     }
 
     @Test
@@ -647,7 +650,7 @@ public class CoreTagsTest extends AbstractTest {
      * The for loop will add variables into the evaluation context during
      * runtime and there was an issue where the evaluation context wasn't thread
      * safe.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -670,7 +673,7 @@ public class CoreTagsTest extends AbstractTest {
 
     /**
      * Nested parallel tags were throwing an error.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -709,7 +712,7 @@ public class CoreTagsTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
         context.put("slowObject", new SlowObject());
         template.evaluate(writer, context);
-        assertEquals("first\nTEMPLATE1\nfirst", writer.toString());
+        assertEquals("first" + LINE_SEPARATOR + "TEMPLATE1" + LINE_SEPARATOR + "first", writer.toString());
     }
 
     @Test

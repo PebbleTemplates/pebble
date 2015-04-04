@@ -8,7 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,18 +20,9 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class CoreFiltersTest extends AbstractTest {
 
@@ -116,12 +111,13 @@ public class CoreFiltersTest extends AbstractTest {
     public void testDate() throws ParseException, PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setDefaultLocale(Locale.ENGLISH);
 
         String source = "{{ realDate | date('MM/dd/yyyy') }}{{ realDate | date(format) }}{{ stringDate | date('yyyy/MMMM/d','yyyy-MMMM-d') }}";
 
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
-        DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
+        DateFormat format = new SimpleDateFormat("yyyy-MMMM-d", Locale.ENGLISH);
         Date realDate = format.parse("2012-July-01");
         context.put("realDate", realDate);
         context.put("stringDate", format.format(realDate));
@@ -136,12 +132,13 @@ public class CoreFiltersTest extends AbstractTest {
     public void testDateWithNamedArguments() throws ParseException, PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setDefaultLocale(Locale.ENGLISH);
 
         String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', format='yyyy/MMMM/d') }}";
 
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
-        DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
+        DateFormat format = new SimpleDateFormat("yyyy-MMMM-d", Locale.ENGLISH);
         Date realDate = format.parse("2012-July-01");
         context.put("stringDate", format.format(realDate));
 
@@ -190,6 +187,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testNumberFormatFilterWithFormat() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setDefaultLocale(Locale.ENGLISH);
 
         PebbleTemplate template = pebble.getTemplate("You owe me {{ 10000.235166 | numberformat(currencyFormat) }}.");
         Map<String, Object> context = new HashMap<>();
@@ -204,6 +202,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testNumberFormatFilterWithNamedArgument() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setDefaultLocale(Locale.US);
 
         PebbleTemplate template = pebble
                 .getTemplate("You owe me {{ 10000.235166 | numberformat(format=currencyFormat) }}.");
@@ -231,6 +230,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testNumberFormatFilterWithLocale() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setDefaultLocale(Locale.ENGLISH);
 
         PebbleTemplate template = pebble.getTemplate("{{ 1000000 | numberformat }}");
 
