@@ -43,7 +43,8 @@ public class CoreFunctionsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("parent text" + LINE_SEPARATOR + "\t\tparent head" + LINE_SEPARATOR + "\tchild head" + LINE_SEPARATOR, writer.toString());
+        assertEquals("parent text" + LINE_SEPARATOR + "\t\tparent head" + LINE_SEPARATOR + "\tchild head"
+                + LINE_SEPARATOR, writer.toString());
     }
 
     /**
@@ -68,6 +69,22 @@ public class CoreFunctionsTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("test", writer.toString());
+    }
+
+    /**
+     * Two levels of parent functions would cause a stack overflow error, #61.
+     * 
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testParentFunctionWithTwoLevels() throws PebbleException, IOException {
+        PebbleTemplate template = pebble.getTemplate("function/template.subchild.peb");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("parent text" + LINE_SEPARATOR + "\t\t\tparent head" + LINE_SEPARATOR + "\tchild head"
+                + LINE_SEPARATOR + "\tsub child head" + LINE_SEPARATOR, writer.toString());
     }
 
     @Test
@@ -103,7 +120,9 @@ public class CoreFunctionsTest extends AbstractTest {
     }
 
     public class SimpleObject {
+
         public int small = 1;
+
         public int large = 20;
     }
 

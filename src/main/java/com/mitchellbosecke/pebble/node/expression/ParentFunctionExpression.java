@@ -37,7 +37,11 @@ public class ParentFunctionExpression implements Expression<String> {
                         "Can not use parent function if template does not extend another template.", lineNumber,
                         self.getName());
             }
-            context.getParentTemplate().block(writer, context, blockName, true);
+            PebbleTemplateImpl parent = context.getParentTemplate();
+            
+            context.ascendInheritanceChain();
+            parent.block(writer, context, blockName, true);
+            context.descendInheritanceChain();
         } catch (IOException e) {
             throw new PebbleException(e, "Could not render block [" + blockName + "]");
         }
