@@ -1,3 +1,7 @@
+## v1.4.5-SNAPSHOT
+- Fixed stack overflow error when using multiple levels of the parent() function
+- Fixed platform dependent issues with junit tests
+
 ## v1.4.4
 - Bug fix regarding NPE with internal cache
 - Bug fix when using suffix with the file loader
