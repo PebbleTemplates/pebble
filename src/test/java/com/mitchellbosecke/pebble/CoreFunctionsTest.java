@@ -1,14 +1,20 @@
-/*******************************************************************************
+/**
+ * ****************************************************************************
  * This file is part of Pebble.
- * 
+ * <p/>
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ * <p/>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ * ****************************************************************************
+ */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,92 +22,89 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class CoreFunctionsTest extends AbstractTest {
 
-	@Test
-	public void testBlockFunction() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("function/template.block.peb");
+    public static final String LINE_SEPARATOR = System.lineSeparator();
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("Default Title\nDefault Title", writer.toString());
-	}
+    @Test
+    public void testBlockFunction() throws PebbleException, IOException {
+        PebbleTemplate template = pebble.getTemplate("function/template.block.peb");
 
-	@Test
-	public void testParentFunction() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("function/template.child.peb");
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("Default Title" + LINE_SEPARATOR + "Default Title", writer.toString());
+    }
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("parent text\n\t\tparent head\n\tchild head\n", writer.toString());
-	}
+    @Test
+    public void testParentFunction() throws PebbleException, IOException {
+        PebbleTemplate template = pebble.getTemplate("function/template.child.peb");
 
-	/**
-	 * Issue occurred where parent block didn't have access to the context when
-	 * invoked via the parent() function.
-	 * 
-	 * @throws PebbleException
-	 */
-	@Test
-	public void testParentBlockHasAccessToContext() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("function/template.childWithContext.peb");
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("parent text" + LINE_SEPARATOR + "\t\tparent head" + LINE_SEPARATOR + "\tchild head" + LINE_SEPARATOR, writer.toString());
+    }
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("bar", writer.toString());
-	}
+    /**
+     * Issue occurred where parent block didn't have access to the context when
+     * invoked via the parent() function.
+     *
+     * @throws PebbleException
+     */
+    @Test
+    public void testParentBlockHasAccessToContext() throws PebbleException, IOException {
+        PebbleTemplate template = pebble.getTemplate("function/template.childWithContext.peb");
 
-	@Test
-	public void testParentThenMacro() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("function/template.childThenParentThenMacro.peb");
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("bar", writer.toString());
+    }
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("test", writer.toString());
-	}
+    @Test
+    public void testParentThenMacro() throws PebbleException, IOException {
+        PebbleTemplate template = pebble.getTemplate("function/template.childThenParentThenMacro.peb");
 
-	@Test
-	public void testMinFunction() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("test", writer.toString());
+    }
 
-		String source = "{{ min(8.0, 1, 4, 5, object.large) }}";
-		PebbleTemplate template = pebble.getTemplate(source);
+    @Test
+    public void testMinFunction() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		Map<String, Object> context = new HashMap<>();
-		context.put("object", new SimpleObject());
+        String source = "{{ min(8.0, 1, 4, 5, object.large) }}";
+        PebbleTemplate template = pebble.getTemplate(source);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("1", writer.toString());
-	}
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new SimpleObject());
 
-	@Test
-	public void testMaxFunction() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("1", writer.toString());
+    }
 
-		String source = "{{ max(8.0, 1, 4, 5, object.large) }}";
-		PebbleTemplate template = pebble.getTemplate(source);
+    @Test
+    public void testMaxFunction() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		Map<String, Object> context = new HashMap<>();
-		context.put("object", new SimpleObject());
+        String source = "{{ max(8.0, 1, 4, 5, object.large) }}";
+        PebbleTemplate template = pebble.getTemplate(source);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("20", writer.toString());
-	}
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new SimpleObject());
 
-	public class SimpleObject {
-		public int small = 1;
-		public int large = 20;
-	}
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("20", writer.toString());
+    }
+
+    public class SimpleObject {
+        public int small = 1;
+        public int large = 20;
+    }
 
 }
