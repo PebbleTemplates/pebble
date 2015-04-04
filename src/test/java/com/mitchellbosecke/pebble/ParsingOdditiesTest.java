@@ -8,7 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,15 +23,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class ParsingOdditiesTest extends AbstractTest {
 
@@ -57,12 +57,13 @@ public class ParsingOdditiesTest extends AbstractTest {
 			IOException, ParseException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setDefaultLocale(Locale.ENGLISH);
 
 		String source = "{{ stringDate | date('yyyy/MMMM/d', existingFormat='yyyy-MMMM-d') }}";
 
 		PebbleTemplate template = pebble.getTemplate(source);
 		Map<String, Object> context = new HashMap<>();
-		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
+		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d", Locale.ENGLISH);
 		Date realDate = format.parse("2012-July-01");
 		context.put("stringDate", format.format(realDate));
 

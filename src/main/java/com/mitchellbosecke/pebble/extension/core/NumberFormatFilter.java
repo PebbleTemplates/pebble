@@ -8,16 +8,17 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class NumberFormatFilter implements Filter {
 
@@ -43,7 +44,7 @@ public class NumberFormatFilter implements Filter {
         Locale locale = context.getLocale();
 
         if (args.get("format") != null) {
-            Format format = new DecimalFormat((String) args.get("format"));
+            Format format = new DecimalFormat((String) args.get("format"), new DecimalFormatSymbols(locale));
             return format.format(number);
         } else {
             NumberFormat numberFormat = NumberFormat.getInstance(locale);
