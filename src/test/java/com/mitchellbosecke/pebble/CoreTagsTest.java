@@ -459,34 +459,73 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("HELLO" + LINE_SEPARATOR, writer.toString());
     }
 
-    public static class A {
-        private String b;
+    public static class SimpleObjectA {
+        private String value;
 
-        public String getB() {
-            return b;
+        public String getValue() {
+            return value;
         }
 
-        public void setB(String b) {
-            this.b = b;
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    public static class SimpleObjectB {
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
         }
     }
 
     @Test
     public void testMacroMemberCache() throws PebbleException, IOException {
-        A a = new A();
-        a.setB("B");
+        SimpleObjectA a = new SimpleObjectA();
+        a.setValue("A");
+
         Map<String, Object> args = new HashMap<>();
-        args.put("a1Arg", a);
-        args.put("a2Arg", null);
+        args.put("a1", a);
+        args.put("a2", null);
 
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble
-                .getTemplate("{{ test(a1Arg) }}{{ test(a2Arg) }}{% macro test(a) %}{{ a.b }}{% endmacro %}");
+                .getTemplate("{{ test(a1) }}{{ test(a2) }}{% macro test(a) %}{{ a.value }}{% endmacro %}");
 
         Writer writer = new StringWriter();
         template.evaluate(writer, args);
-        assertEquals("B", writer.toString());
+        assertEquals("A", writer.toString());
+    }
+
+    @Test
+    public void testMacroMemberCacheBetweenTemplateEvaluation()
+            throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine(new StringLoader());
+        // pebble.setTemplateCache(null);
+
+        PebbleTemplate templateA = pebble.getTemplate("{{ v.value }}");
+        SimpleObjectA a = new SimpleObjectA();
+        a.setValue("A");
+        Map<String, Object> argsA = new HashMap<>();
+        argsA.put("v", a);
+        Writer writerA = new StringWriter();
+        templateA.evaluate(writerA, argsA);
+        assertEquals("A", writerA.toString());
+
+        PebbleTemplate templateB = pebble.getTemplate("{{ v.value }}");
+        SimpleObjectB b = new SimpleObjectB();
+        b.setValue("B");
+        Map<String, Object> argsB = new HashMap<>();
+        argsB.put("v", b);
+
+        Writer writerB = new StringWriter();
+        templateB.evaluate(writerB, argsB);
+        assertEquals("B", writerB.toString());
     }
 
     @Test

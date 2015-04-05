@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class GetAttributeExpression implements Expression<Object> {
     /**
      * Potentially cached on first evaluation.
      */
-    private Member member;
+    private HashMap<Class<?>, Member> memberCache;
 
     /**
      * A lock to ensure that only one thread at a time will update the "member"
@@ -59,7 +60,7 @@ public class GetAttributeExpression implements Expression<Object> {
         this.node = node;
         this.attributeName = attributeName;
         this.args = args;
-        this.member = null;
+        this.memberCache = new HashMap<>();
     }
 
     @Override
@@ -69,7 +70,9 @@ public class GetAttributeExpression implements Expression<Object> {
         Object result = null;
 
         Object[] argumentValues = null;
-
+        
+        Member member = object == null ? null : memberCache.get(object.getClass());
+        
         if (object != null && member == null) {
 
             /*
@@ -123,6 +126,7 @@ public class GetAttributeExpression implements Expression<Object> {
                     }
 
                     member = reflect(object, attributeName, argumentTypes);
+                    memberCache.put(object.getClass(), member);
                 }
             }
 
