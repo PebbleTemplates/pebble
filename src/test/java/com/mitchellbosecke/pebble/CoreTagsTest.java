@@ -10,13 +10,7 @@
  */
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
-import com.mitchellbosecke.pebble.extension.TestingExtension;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,7 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreTagsTest extends AbstractTest {
 
@@ -321,7 +322,8 @@ public class CoreTagsTest extends AbstractTest {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        String source = "" + "{% for user in users %}{{ user.username }}{% endfor %}" + "{% for user in users %}{{ user.username }}{% endfor %}";
+        String source = "" + "{% for user in users %}{{ user.username }}{% endfor %}"
+                + "{% for user in users %}{{ user.username }}{% endfor %}";
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
         List<User> users = new ArrayList<>();
@@ -460,6 +462,7 @@ public class CoreTagsTest extends AbstractTest {
     }
 
     public static class SimpleObjectA {
+
         private String value;
 
         public String getValue() {
@@ -471,7 +474,15 @@ public class CoreTagsTest extends AbstractTest {
         }
     }
 
+    /**
+     * It is important that this object has an identical method signature as
+     * SimpleObjectA for the following tests.
+     * 
+     * @author mbosecke
+     *
+     */
     public static class SimpleObjectB {
+
         private String value;
 
         public String getValue() {
@@ -483,49 +494,74 @@ public class CoreTagsTest extends AbstractTest {
         }
     }
 
+    /**
+     * Gets the attribute of an object once so that the attribute is cached
+     * within the GetAttributeExpression then evaluates the exact same template
+     * but with a null object.
+     * 
+     * Issue #57
+     * 
+     * @throws PebbleException
+     * @throws IOException
+     */
     @Test
-    public void testMacroMemberCache() throws PebbleException, IOException {
+    public void testMemberCacheWithNullObject() throws PebbleException, IOException {
         SimpleObjectA a = new SimpleObjectA();
         a.setValue("A");
 
-        Map<String, Object> args = new HashMap<>();
-        args.put("a1", a);
-        args.put("a2", null);
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", a);
 
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
-        PebbleTemplate template = pebble
-                .getTemplate("{{ test(a1) }}{{ test(a2) }}{% macro test(a) %}{{ a.value }}{% endmacro %}");
+        PebbleTemplate template = pebble.getTemplate("{{ object.value }}");
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, args);
+        template.evaluate(writer, context);
         assertEquals("A", writer.toString());
+
+        context.put("object", null);
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
     }
 
+    /**
+     * Gets the attribute of an object once so that the attribute is cached
+     * within the GetAttributeExpression then evaluates the exact same template
+     * but with a new type of object that happens to have the same method
+     * signature.
+     * 
+     * Pull #62
+     * 
+     * @throws PebbleException
+     * @throws IOException
+     */
     @Test
-    public void testMacroMemberCacheBetweenTemplateEvaluation()
-            throws PebbleException, IOException {
+    public void testMemberCacheWithDifferingObjectTypes() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine(new StringLoader());
-        // pebble.setTemplateCache(null);
 
-        PebbleTemplate templateA = pebble.getTemplate("{{ v.value }}");
-        SimpleObjectA a = new SimpleObjectA();
-        a.setValue("A");
-        Map<String, Object> argsA = new HashMap<>();
-        argsA.put("v", a);
-        Writer writerA = new StringWriter();
-        templateA.evaluate(writerA, argsA);
-        assertEquals("A", writerA.toString());
+        PebbleTemplate template = pebble.getTemplate("{{ object.value }}");
 
-        PebbleTemplate templateB = pebble.getTemplate("{{ v.value }}");
-        SimpleObjectB b = new SimpleObjectB();
-        b.setValue("B");
-        Map<String, Object> argsB = new HashMap<>();
-        argsB.put("v", b);
+        SimpleObjectA objectA = new SimpleObjectA();
+        objectA.setValue("A");
 
-        Writer writerB = new StringWriter();
-        templateB.evaluate(writerB, argsB);
-        assertEquals("B", writerB.toString());
+        SimpleObjectB objectB = new SimpleObjectB();
+        objectB.setValue("B");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", objectA);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("A", writer.toString());
+
+        // swap out the object with similar one to try and break the cache
+        context.put("object", objectB);
+
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("B", writer.toString());
     }
 
     @Test
@@ -571,7 +607,8 @@ public class CoreTagsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("TEMPLATE2" + LINE_SEPARATOR + "TEMPLATE1" + LINE_SEPARATOR + "TEMPLATE2" + LINE_SEPARATOR, writer.toString());
+        assertEquals("TEMPLATE2" + LINE_SEPARATOR + "TEMPLATE1" + LINE_SEPARATOR + "TEMPLATE2" + LINE_SEPARATOR,
+                writer.toString());
     }
 
     /**
