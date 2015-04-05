@@ -59,7 +59,7 @@ public class GetAttributeExpression implements Expression<Object> {
          * I dont imagine that users will often give different types to the same
          * template so we will give this cache a pretty small initial capacity.
          */
-        this.memberCache = new ConcurrentHashMap<>(2);
+        this.memberCache = new ConcurrentHashMap<>(2, 0.9f, 1);
     }
 
     @Override
