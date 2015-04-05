@@ -54,7 +54,12 @@ public class GetAttributeExpression implements Expression<Object> {
         this.node = node;
         this.attributeName = attributeName;
         this.args = args;
-        this.memberCache = new ConcurrentHashMap<>();
+
+        /*
+         * I dont imagine that users will often give different types to the same
+         * template so we will give this cache a pretty small initial capacity.
+         */
+        this.memberCache = new ConcurrentHashMap<>(2);
     }
 
     @Override
