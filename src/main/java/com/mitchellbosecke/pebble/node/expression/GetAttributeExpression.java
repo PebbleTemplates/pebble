@@ -44,7 +44,7 @@ public class GetAttributeExpression implements Expression<Object> {
     /**
      * Potentially cached on first evaluation.
      */
-    private ConcurrentHashMap<Class<?>, Member> memberCache;
+    private final ConcurrentHashMap<Class<?>, Member> memberCache;
 
     public GetAttributeExpression(Expression<?> node, String attributeName) {
         this(node, attributeName, null);
