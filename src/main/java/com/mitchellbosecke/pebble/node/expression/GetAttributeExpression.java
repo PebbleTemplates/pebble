@@ -15,6 +15,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -43,13 +44,7 @@ public class GetAttributeExpression implements Expression<Object> {
     /**
      * Potentially cached on first evaluation.
      */
-    private Member member;
-
-    /**
-     * A lock to ensure that only one thread at a time will update the "member"
-     * field.
-     */
-    private Object memberLock = new Object();
+    private ConcurrentHashMap<Class<?>, Member> memberCache;
 
     public GetAttributeExpression(Expression<?> node, String attributeName) {
         this(node, attributeName, null);
@@ -59,7 +54,7 @@ public class GetAttributeExpression implements Expression<Object> {
         this.node = node;
         this.attributeName = attributeName;
         this.args = args;
-        this.member = null;
+        this.memberCache = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -69,6 +64,8 @@ public class GetAttributeExpression implements Expression<Object> {
         Object result = null;
 
         Object[] argumentValues = null;
+
+        Member member = object == null ? null : memberCache.get(object.getClass());
 
         if (object != null && member == null) {
 
@@ -106,24 +103,19 @@ public class GetAttributeExpression implements Expression<Object> {
             }
 
             /*
-             * Only one thread at a time should
+             * turn args into an array of types and an array of values in order
+             * to use them for our reflection calls
              */
-            synchronized (memberLock) {
+            argumentValues = getArgumentValues(self, context);
+            Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
 
-                if (member == null) {
-                    /*
-                     * turn args into an array of types and an array of values
-                     * in order to use them for our reflection calls
-                     */
-                    argumentValues = getArgumentValues(self, context);
-                    Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
+            for (int i = 0; i < argumentValues.length; i++) {
+                argumentTypes[i] = argumentValues[i].getClass();
+            }
 
-                    for (int i = 0; i < argumentValues.length; i++) {
-                        argumentTypes[i] = argumentValues[i].getClass();
-                    }
-
-                    member = reflect(object, attributeName, argumentTypes);
-                }
+            member = reflect(object, attributeName, argumentTypes);
+            if (member != null) {
+                memberCache.put(object.getClass(), member);
             }
 
         }
