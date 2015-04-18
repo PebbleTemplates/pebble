@@ -9,7 +9,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mitchellbosecke</groupId>
 	<artifactId>pebble</artifactId>
-	<version>1.4.5-SNAPSHOT</version>
+	<version>1.4.5</version>
 	<packaging>jar</packaging>
 
 	<name>Pebble</name>
