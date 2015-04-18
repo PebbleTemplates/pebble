@@ -1,4 +1,4 @@
-## v1.4.5-SNAPSHOT
+## v1.4.5
 - Fixed stack overflow error when using multiple levels of the parent() function
 - Fixed platform dependent issues with junit tests
 - Bug fix regarding the use of different data types passed to same template which broke an internal cache in the GetAttributeExpression
