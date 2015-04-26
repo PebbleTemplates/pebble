@@ -51,7 +51,7 @@ import com.mitchellbosecke.pebble.operator.UnaryOperator;
  */
 public class ExpressionParser {
 
-	private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList("true", "false", "null", "none"));
+    private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList("true", "false", "null", "none"));
 
     private final Parser parser;
 
