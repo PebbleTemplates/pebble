@@ -10,8 +10,10 @@ package com.mitchellbosecke.pebble.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
@@ -48,6 +50,8 @@ import com.mitchellbosecke.pebble.operator.UnaryOperator;
  * Parses expressions.
  */
 public class ExpressionParser {
+
+	private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList("true", "false", "null", "none"));
 
     private final Parser parser;
 
@@ -543,8 +547,7 @@ public class ExpressionParser {
         Token token = stream.current();
         token.test(Token.Type.NAME);
 
-        String[] reserved = new String[] { "true", "false", "null", "none" };
-        if (Arrays.asList(reserved).contains(token.getValue())) {
+        if (RESERVED_KEYWORDS.contains(token.getValue())) {
             throw new ParserException(null, String.format("Can not assign a value to %s", token.getValue()),
                     token.getLineNumber(), stream.getFilename());
         }
