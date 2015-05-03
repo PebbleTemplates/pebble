@@ -12,6 +12,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -616,6 +618,144 @@ public class CoreFiltersTest extends AbstractTest {
         public String getUsername() {
             return username;
         }
+    }
+
+    @Test
+    public void testSliceWithNullInput() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ null | slice }}");
+        
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSliceWithNoArgs() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ name | slice }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("name", "Alex");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSliceWithInvalidFirstArg() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ name | slice(-1) }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("name", "Alex");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,-1) }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("name", "Alex");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,1000) }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("name", "Alex");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test
+    public void testSliceWithString() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ name | slice(2,5) }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("name", "Alexander");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("exa", writer.toString());
+    }
+
+    @Test
+    public void testSliceWithList() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ names | slice(2,5) }}");
+        
+        List<String> names = new ArrayList<>();
+        names.add("Alex");
+        names.add("Joe");
+        names.add("Bob");
+        names.add("Sarah");
+        names.add("Mary");
+        names.add("Marge");
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("[Bob, Sarah, Mary]", writer.toString());
+    }
+
+    @Ignore
+    @Test
+    public void testSliceWithArray() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ names | slice(2,5) }}");
+        
+        String[] names = new String[] {"Alex", "Joe", "Bob", "Sarah", "Mary", "Marge"};
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("[Bob, Sarah, Mary]", writer.toString());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSliceWithInvalidInputType() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ names | slice(2,5) }}");
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", Long.valueOf(1));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
     }
 
 }

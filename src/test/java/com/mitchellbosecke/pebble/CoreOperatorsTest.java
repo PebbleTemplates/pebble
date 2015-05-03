@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -334,4 +336,131 @@ public class CoreOperatorsTest extends AbstractTest {
 		template.evaluate(writer);
 		assertEquals(" true ", writer.toString());
 	}
+	
+	@Test
+	public void testContainsOperator() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if names contains 'John' %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("names", Arrays.asList("Bob", "Maria", "John"));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
+	@Test
+	public void testContainsOperatorWithNull() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if null contains 'John' %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer);
+		assertEquals("no", writer.toString());
+	}
+	@SuppressWarnings("serial")
+	@Test
+	public void testContainsOperator2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if names contains 'Maria' %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("names", new HashMap<String,String>() {
+			{
+				put("Bob","Bob");
+				put("Maria","Maria");
+				put("John","John");
+			}
+		});
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
+	@Ignore
+	@Test
+	public void testContainsOperator3() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if values contains 1 %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("values", new int[] {1,2});
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
+	@Test
+	public void testContainsOperator4() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if names contains 'Cobra' %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("names", Arrays.asList("Bob", "Maria", "John"));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("no", writer.toString());
+	}
+	@Test
+	public void testContainsOperatorWithAnd() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if names contains 'Bob' and names contains 'Maria' %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("names", Arrays.asList("Bob", "Maria", "John"));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
+	@Test
+	public void testContainsOperatorWithOr() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if names contains 'John' or names contains 'Cobra' %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("names", Arrays.asList("Bob", "Maria", "John"));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
+	@Test
+	public void testContainsOperatorWithNot() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if not names contains 'Cobra' %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Map<String, Object> context = new HashMap<>();
+		context.put("names", Arrays.asList("Bob", "Maria", "John"));
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
+
 }

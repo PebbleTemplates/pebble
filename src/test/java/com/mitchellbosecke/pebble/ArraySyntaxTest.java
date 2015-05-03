@@ -1,0 +1,683 @@
+/*******************************************************************************
+ * This file is part of Pebble.
+ *
+ * Copyright (c) 2014 by Mitchell Bösecke
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ ******************************************************************************/
+package com.mitchellbosecke.pebble;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+public class ArraySyntaxTest extends AbstractTest {
+	
+	@Test
+	public void testArraySyntax() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ [] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[]", writer.toString());
+	}
+
+	@Test
+	public void testSimpleArray() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['first-name'] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[first-name]", writer.toString());
+	}
+
+	@Test
+	public void test2ElementArray() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['first-name','last-name'] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[first-name, last-name]", writer.toString());
+	}
+	@Test
+	public void test2ElementArray2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ [ 'first-name' ,   'last-name'    ] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[first-name, last-name]", writer.toString());
+	}
+	@Test
+	public void testNElementArray() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['repeated-name','repeated-name','repeated-name','repeated-name','repeated-name','repeated-name','repeated-name'] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[repeated-name, repeated-name, repeated-name, repeated-name, repeated-name, repeated-name, repeated-name]", writer.toString());
+	}
+	
+	@SuppressWarnings("serial")
+	@Test
+	public void testArrayWithExpressions() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['one', 2, three, numbers['four']] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("three", "3");
+		context.put("numbers", new HashMap<String, Object>() {
+			{
+				put("four", "4");
+			}
+		});
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("[one, 2, 3, 4]", writer.toString());
+	}
+	@SuppressWarnings({"serial","unused"})
+	@Test
+	public void testArrayWithComplexExpressions() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['one' + 'plus', 2 - 1, three.number, numbers['four'][0], numbers ['five'] .value ] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("three", new Object() { public Integer number = 3; });
+		context.put("numbers", new HashMap<String, Object>() {
+			{
+				put("four", new String[] {"4"});
+				put("five", new Object() { private String value = "five"; public String getValue() { return this.value; } });
+			}
+		});
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("[oneplus, 1, 3, 4, five]", writer.toString());
+	}
+	
+	@Test
+	public void testSetCommand() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = ['repeated-name',2*5] %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[repeated-name, 10]", writer.toString());
+	}
+	@Test
+	public void testSetCommand2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = ['repeated-name',2*5] %}{{ arr [1] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("10", writer.toString());
+	}
+	
+	@Test
+	public void testFirstFilter() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = ['name',2*5] %}{{ arr | first }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("name", writer.toString());
+	}
+	@Test
+	public void testFirstFilter2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['name',2*5] | first }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("name", writer.toString());
+	}
+	
+	@Test
+	public void testJoinFilter() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = ['name',2*5] %}{{ arr | join(':') }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("name:10", writer.toString());
+	}
+	@Test
+	public void testJoinFilter2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['name',2*5] | join(':') }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("name:10", writer.toString());
+	}
+	
+	@Test
+	public void testLastFilter() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = ['name',2*5] %}{{ arr | last }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("10", writer.toString());
+	}
+	@Test
+	public void testLastFilter2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['name',2*5] | last }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("10", writer.toString());
+	}
+	
+	@Test
+	public void testSliceFilter() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = ['name',2*5,'three',1.9] %}{{ arr | slice(1,3) }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[10, three]", writer.toString());
+	}
+	@Test
+	public void testSliceFilter2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ ['name',2*5,'three',1.9] | slice(1,3) }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[10, three]", writer.toString());
+	}
+	
+	@Test
+	public void testSortFilter() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [3,2,1,0] %}{{ arr | sort }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[0, 1, 2, 3]", writer.toString());
+	}
+	@Test
+	public void testSortFilter2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ [3,2,1,0] | sort }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[0, 1, 2, 3]", writer.toString());
+	}
+	
+	@Test
+	public void testForTag() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set names = ['Bob','Maria','John'] %}{% for name in names %}{{ name }}{% endfor %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("BobMariaJohn", writer.toString());
+	}
+	@Test
+	public void testForTag2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% for name in ['Bob','Maria','John'] %}{{ name }}{% endfor %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("BobMariaJohn", writer.toString());
+	}
+	@Test
+	public void testForElseTag() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% for name in [] %}{{ name }}{% else %}{{ 'no name' }}{% endfor %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("no name", writer.toString());
+	}
+	
+	@Test
+	public void testIfTag() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set names = ['Bob','Maria','John'] %}{% if names is null %}{{ 'it is' }}{% else %}{{ 'it is not' }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("it is not", writer.toString());
+	}
+	@Test
+	public void testIfTag2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if ['Bob','Maria','John'] is null %}{{ 'it is' }}{% else %}{{ 'it is not' }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("it is not", writer.toString());
+	}
+	
+	@Test
+	public void testMacroTag() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% macro firstname(names) %}{{ names | first }}{% endmacro %}{{ firstname(['Bob','Maria','John']) }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("Bob", writer.toString());
+	}
+	
+	@Test
+	public void testNamedArgumentsMacroTag() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% macro firstname(names) %}{{ names | first }}{% endmacro %}{{ firstname(names=['Bob','Maria','John']) }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("Bob", writer.toString());
+	}
+	
+	@Test
+	public void testAdditionOverloading() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [0,1] + 2 %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[0, 1, 2]", writer.toString());
+	}
+	@Test
+	public void testAdditionOverloading2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [0,1] + [2,3] %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[0, 1, 2, 3]", writer.toString());
+	}
+	@Test(expected=RuntimeException.class)
+	public void testAdditionOverloading3() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = 1 + [0,1] %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+	}
+	
+	@Test
+	public void testSubtractionOverloading() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [0,1,2] - 1 %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[0, 2]", writer.toString());
+	}
+	@Test
+	public void testSubtractionOverloading2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [0,1,2] - [0,2,3] %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[1]", writer.toString());
+	}
+	@Test(expected=RuntimeException.class)
+	public void testSubtractionOverloading3() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = 1 - [0,2] %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+	}
+	
+	@Test
+	public void testEmptyTest() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [0,1,2] %}{% if arr is empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("false", writer.toString());
+	}
+	@Test
+	public void testEmptyTest2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if [0,1,2] is empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("false", writer.toString());
+	}
+	@Test
+	public void testEmptyTest3() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if [] is not empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("false", writer.toString());
+	}
+	
+	@Test
+	public void testIterableTest() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [0,1,2] %}{% if arr is iterable %}{{ 'true' }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("true", writer.toString());
+	}
+	@Test
+	public void testIterableTest2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if [0,1,2] is iterable %}{{ 'true' }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("true", writer.toString());
+	}
+	
+	@Test
+	public void testContainsOperator() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [0,1,2] %}{% if arr contains 1 %}true{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("true", writer.toString());
+	}
+	@Test
+	public void testContainsOperator2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if [0,1,2] contains 1 %}true{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("true", writer.toString());
+	}
+	@Test
+	public void testContainsOperator3() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if [0,1,2] contains [1,2] %}true{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("true", writer.toString());
+	}
+	@Test
+	public void testContainsOperator4() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if not [0,1,2] contains 10 %}true{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("true", writer.toString());
+	}
+	@Test
+	public void testContainsOperator5() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if [0,1,2] contains 1 and not [0,1] contains 0 %}true{% else %}false{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("false", writer.toString());
+	}
+	
+	
+	
+	
+	// subscript syntax regression tests
+	
+	@SuppressWarnings("serial")
+	@Test
+	public void testProblematicSubscriptSyntax() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{{ person ['first-name'] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("person", new HashMap<String, Object>() {
+			{
+				put("first-name", "Bob");
+			}
+		});
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("Bob", writer.toString());
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void testProblematicSubscriptSyntax2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{{ person ['first-name'][0] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("person", new HashMap<String, Object>() {
+			{
+				put("first-name", new String[] {"Bob"});
+			}
+		});
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("Bob", writer.toString());
+	}
+
+	@SuppressWarnings({"serial","unused"})
+	@Test
+	public void testProblematicSubscriptSyntax3() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{{ person ['first-name'] .name }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("person", new HashMap<String, Object>() {
+			{
+				put("first-name", new Object() { private String name = "Bob"; public String getName() { return this.name; } });
+			}
+		});
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("Bob", writer.toString());
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void testProblematicSubscriptSyntax4() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{% if person ['first-name'] == 'Bob' %}{{ person ['first-name'] }}{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("person", new HashMap<String, Object>() {
+			{
+				put("first-name", "Bob");
+			}
+		});
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("Bob", writer.toString());
+	}
+	
+	@SuppressWarnings("serial")
+	@Test
+	public void testProblematicSubscriptSyntax5() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+		pebble.setStrictVariables(false);
+
+		String source = "{% set name = person ['first-name'] %}{{ name }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+
+		Map<String, Object> context = new HashMap<>();
+		context.put("person", new HashMap<String, Object>() {
+			{
+				put("first-name", "Bob");
+			}
+		});
+
+		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("Bob", writer.toString());
+	}
+	
+}

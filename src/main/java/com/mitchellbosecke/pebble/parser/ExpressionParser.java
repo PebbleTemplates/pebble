@@ -17,13 +17,14 @@ import java.util.Set;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
-import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
+import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.FunctionOrMacroNameNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.node.TestInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.ArrayExpression;
 import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
 import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.ContextVariableExpression;
@@ -133,6 +134,16 @@ public class ExpressionParser {
             expression = parseExpression();
             stream.expect(Token.Type.PUNCTUATION, ")");
             expression = parsePostfixExpression(expression);
+
+        }
+        // array definition syntax
+        else if (token.test(Token.Type.PUNCTUATION, "[")) {
+
+            // preserve [ token for array parsing
+            expression = parseArrayDefinitionExpression();
+            // don't expect ], because it has been already expected
+            // currently, postfix expressions are not supported for arrays
+            //expression = parsePostfixExpression(expression);
 
         } else {
             /*
@@ -554,5 +565,34 @@ public class ExpressionParser {
 
         stream.next();
         return token.getValue();
+    }
+    
+    private Expression<?> parseArrayDefinitionExpression() throws ParserException {
+        TokenStream stream = parser.getStream();
+
+        // expect the opening bracket and check for an empty array
+        stream.expect(Token.Type.PUNCTUATION, "[");
+        if (stream.current().test(Token.Type.PUNCTUATION, "]")) {
+        	stream.next();
+        	return new ArrayExpression();
+        }
+        
+        // there's at least one expression in the array
+        List<Expression<?>> elements = new ArrayList<Expression<?>>();
+        while (true) {
+            Expression<?> expr = parseExpression();
+            elements.add(expr);
+            if (stream.current().test(Token.Type.PUNCTUATION, "]")) {
+                // this seems to be the end of the array
+            	break;
+            }
+            // expect the comma separator, until we either find a closing bracket or fail the expect
+            stream.expect(Token.Type.PUNCTUATION, ",");
+        }
+
+        // expect the closing bracket
+        stream.expect(Token.Type.PUNCTUATION, "]");
+        
+        return new ArrayExpression(elements);
     }
 }
