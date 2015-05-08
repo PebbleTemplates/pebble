@@ -565,6 +565,43 @@ public class ArraySyntaxTest extends AbstractTest {
 		assertEquals("false", writer.toString());
 	}
 	
+	@Test
+	public void testNestedArrays() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [[]] %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[[]]", writer.toString());
+	}
+	@Test
+	public void testNestedArrays2() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% set arr = [[],['test'],[['nested'],['arrays']]] %}{{ arr }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[[], [test], [[nested], [arrays]]]", writer.toString());
+	}
+	@Test
+	public void testNestedArrays3() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ [[],['test'],[['nested'],['arrays']]] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[[], [test], [[nested], [arrays]]]", writer.toString());
+	}
+	
 	
 	
 	
