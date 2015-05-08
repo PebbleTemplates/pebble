@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -86,6 +87,18 @@ public class ArraySyntaxTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, new HashMap<String, Object>());
 		assertEquals("[repeated-name, repeated-name, repeated-name, repeated-name, repeated-name, repeated-name, repeated-name]", writer.toString());
+	}
+	
+	@Test(expected=ParserException.class)
+	public void testIncompleteArraySyntax() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ [,] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
 	}
 	
 	@SuppressWarnings("serial")
