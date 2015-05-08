@@ -38,7 +38,7 @@ public class OperatorUtils {
         if (op1 instanceof String || op2 instanceof String) {
             return concatenateStrings(String.valueOf(op1), String.valueOf(op2));
         } else if (op1 instanceof List) {
-        	//FIXME should we offer this?
+        	//FIXME should overloading be supported?
             return addToList((List<?>)op1, op2);
         }
         return wideningConversionBinaryOperation(op1, op2, Operation.ADD);
@@ -46,7 +46,7 @@ public class OperatorUtils {
 
     public static Object subtract(Object op1, Object op2) {
     	if (op1 instanceof List) {
-        	//FIXME should we offer this?
+        	//FIXME should overloading be supported?
             return subtractFromList((List<?>)op1, op2);
         }
         return wideningConversionBinaryOperation(op1, op2, Operation.SUBTRACT);
