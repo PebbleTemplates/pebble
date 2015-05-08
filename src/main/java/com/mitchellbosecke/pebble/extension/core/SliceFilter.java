@@ -50,6 +50,7 @@ public class SliceFilter implements Filter {
             //FIXME maybe sublist() is not the best option due to its implementation?
         	return value.subList(from, to);
         } else if (input.getClass().isArray()) {
+        	//TODO support for arrays
         	throw new UnsupportedOperationException("Pending implementation");
         } else if (input instanceof String) {
             String value = (String) input;
