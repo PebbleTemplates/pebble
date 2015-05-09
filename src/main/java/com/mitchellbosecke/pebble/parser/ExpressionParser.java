@@ -10,6 +10,7 @@ package com.mitchellbosecke.pebble.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.mitchellbosecke.pebble.node.expression.LiteralDoubleExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralLongExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralNullExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
+import com.mitchellbosecke.pebble.node.expression.MapExpression;
 import com.mitchellbosecke.pebble.node.expression.NegativeTestExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.PositiveTestExpression;
@@ -144,6 +146,15 @@ public class ExpressionParser {
             // don't expect ], because it has been already expected
             // currently, postfix expressions are not supported for arrays
             //expression = parsePostfixExpression(expression);
+        }
+        // map definition syntax
+        else if (token.test(Token.Type.PUNCTUATION, "{")) {
+
+                // preserve { token for map parsing
+                expression = parseMapDefinitionExpression();
+                // don't expect }, because it has been already expected
+                // currently, postfix expressions are not supported for maps
+                //expression = parsePostfixExpression(expression);
 
         } else {
             /*
@@ -595,4 +606,37 @@ public class ExpressionParser {
         
         return new ArrayExpression(elements);
     }
+    
+    private Expression<?> parseMapDefinitionExpression() throws ParserException {
+        TokenStream stream = parser.getStream();
+
+        // expect the opening brace and check for an empty map
+        stream.expect(Token.Type.PUNCTUATION, "{");
+        if (stream.current().test(Token.Type.PUNCTUATION, "}")) {
+        	stream.next();
+        	return new MapExpression();
+        }
+        
+        // there's at least one expression in the map
+        Map<Expression<?>,Expression<?>> elements = new HashMap<>();
+        while (true) {
+        	// key : value
+            Expression<?> keyExpr = parseExpression();
+            stream.expect(Token.Type.PUNCTUATION, ":");
+            Expression<?> valueExpr = parseExpression();
+            elements.put(keyExpr, valueExpr);
+            if (stream.current().test(Token.Type.PUNCTUATION, "}")) {
+                // this seems to be the end of the map
+            	break;
+            }
+            // expect the comma separator, until we either find a closing brace or fail the expect
+            stream.expect(Token.Type.PUNCTUATION, ",");
+        }
+
+        // expect the closing brace
+        stream.expect(Token.Type.PUNCTUATION, "}");
+        
+        return new MapExpression(elements);
+    }
+
 }

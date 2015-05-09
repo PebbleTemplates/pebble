@@ -139,6 +139,7 @@ public class CoreExtension extends AbstractExtension {
         tests.put("empty", new EmptyTest());
         tests.put("even", new EvenTest());
         tests.put("iterable", new IterableTest());
+        tests.put("map", new MapTest());
         tests.put("null", new NullTest());
         tests.put("odd", new OddTest());
         return tests;

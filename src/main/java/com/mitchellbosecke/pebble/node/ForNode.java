@@ -129,7 +129,7 @@ public class ForNode extends AbstractRenderableNode {
         return elseBody;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Iterable<Object> toIterable(final Object obj) {
 
         Iterable<Object> result = null;
@@ -137,6 +137,11 @@ public class ForNode extends AbstractRenderableNode {
         if (obj instanceof Iterable<?>) {
 
             result = (Iterable<Object>) obj;
+
+        } else if (obj instanceof Map) {
+        	
+        	// raw type
+            result = ((Map)obj).entrySet();
 
         } else if (obj.getClass().isArray()) {
 
@@ -182,8 +187,9 @@ public class ForNode extends AbstractRenderableNode {
         }
         if (iterable instanceof Collection) {
             return ((Collection<?>) iterable).size();
-        }
-        if (iterable.getClass().isArray()) {
+        } else if (iterable instanceof Map) {
+        	return ((Map<?,?>) iterable).size();
+        } else if (iterable.getClass().isArray()) {
             return Array.getLength(iterable);
         }
 

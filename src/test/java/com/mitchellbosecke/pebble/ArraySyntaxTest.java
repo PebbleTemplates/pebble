@@ -369,9 +369,8 @@ public class ArraySyntaxTest extends AbstractTest {
 		template.evaluate(writer, new HashMap<String, Object>());
 		assertEquals("Bob", writer.toString());
 	}
-	
 	@Test
-	public void testNamedArgumentsMacroTag() throws PebbleException, IOException {
+	public void testMacroTagNamedArguments() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -613,6 +612,19 @@ public class ArraySyntaxTest extends AbstractTest {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, new HashMap<String, Object>());
 		assertEquals("[[], [test], [[nested], [arrays]]]", writer.toString());
+	}
+	
+	@Test
+	public void testNestedMapInArray() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{{ [{1:1}] }}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		
+		Writer writer = new StringWriter();
+		template.evaluate(writer, new HashMap<String, Object>());
+		assertEquals("[{1=1}]", writer.toString());
 	}
 	
 	
