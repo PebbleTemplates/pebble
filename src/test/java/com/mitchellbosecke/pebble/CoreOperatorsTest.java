@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -386,22 +385,6 @@ public class CoreOperatorsTest extends AbstractTest {
 		template.evaluate(writer, context);
 		assertEquals("yes", writer.toString());
 	}
-	@Ignore
-	@Test
-	public void testContainsOperator3() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-
-		String source = "{% if values contains 1 %}yes{% else %}no{% endif %}";
-		PebbleTemplate template = pebble.getTemplate(source);
-		
-		Map<String, Object> context = new HashMap<>();
-		context.put("values", new int[] {1,2});
-		
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("yes", writer.toString());
-	}
 	@Test
 	public void testContainsOperator4() throws PebbleException, IOException {
 		Loader loader = new StringLoader();
@@ -459,6 +442,79 @@ public class CoreOperatorsTest extends AbstractTest {
 		context.put("names", Arrays.asList("Bob", "Maria", "John"));
 
 		Writer writer = new StringWriter();
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+	}
+	@Test
+	public void testContainsWithArrays() throws PebbleException, IOException {
+		Loader loader = new StringLoader();
+		PebbleEngine pebble = new PebbleEngine(loader);
+
+		String source = "{% if values contains value %}yes{% else %}no{% endif %}";
+		PebbleTemplate template = pebble.getTemplate(source);
+		Map<String, Object> context = new HashMap<>();
+		Writer writer;
+
+		// Objects
+		writer = new StringWriter();
+		context.put("values", new String[] {"Bob","Marley"});
+		context.put("value", "Bob");
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// boolean
+		writer = new StringWriter();
+		context.put("values", new boolean[] {true,false});
+		context.put("value", Boolean.TRUE);
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// byte
+		writer = new StringWriter();
+		context.put("values", new byte[] {1,2});
+		context.put("value", Byte.valueOf("1"));
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// char
+		writer = new StringWriter();
+		context.put("values", new char[] {'a','b'});
+		context.put("value", new Character('a'));
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// double
+		writer = new StringWriter();
+		context.put("values", new double[] {1.0d,2.0d});
+		context.put("value", new Double(1.0d));
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// float
+		writer = new StringWriter();
+		context.put("values", new float[] {1.0f,2.0f});
+		context.put("value", new Float(1.0f));
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// int
+		writer = new StringWriter();
+		context.put("values", new int[] {1,2});
+		context.put("value", new Integer(1));
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// long
+		writer = new StringWriter();
+		context.put("values", new long[] {1,2});
+		context.put("value", new Long(1));
+		template.evaluate(writer, context);
+		assertEquals("yes", writer.toString());
+
+		// short
+		writer = new StringWriter();
+		context.put("values", new short[] {1,2});
+		context.put("value", Short.valueOf("1"));
 		template.evaluate(writer, context);
 		assertEquals("yes", writer.toString());
 	}
