@@ -8,13 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,9 +16,20 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreFiltersTest extends AbstractTest {
 
@@ -634,8 +639,8 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("", writer.toString());
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testSliceWithNoArgs() throws PebbleException, IOException {
+    @Test
+    public void testSliceWithDefaultArgs() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
@@ -646,6 +651,7 @@ public class CoreFiltersTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
+        assertEquals("Alex", writer.toString());
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -727,13 +733,12 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("[Bob, Sarah, Mary]", writer.toString());
     }
 
-    @Ignore
     @Test
-    public void testSliceWithArray() throws PebbleException, IOException {
+    public void testSliceWithStringArray() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        PebbleTemplate template = pebble.getTemplate("{{ names | slice(2,5) }}");
+        PebbleTemplate template = pebble.getTemplate("{% set n = names | slice(2,5) %}{{ n[0] }}");
         
         String[] names = new String[] {"Alex", "Joe", "Bob", "Sarah", "Mary", "Marge"};
         Map<String, Object> context = new HashMap<>();
@@ -741,7 +746,67 @@ public class CoreFiltersTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("[Bob, Sarah, Mary]", writer.toString());
+        assertEquals("Bob", writer.toString());
+    }
+    //FIXME primitive values are not printed to output
+    // maybe test with contains test?
+    @Ignore
+    @Test
+    public void testSliceWithPrimitivesArray() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{% set p = primitives | slice(2,5) %}{{ p[0] }}");
+        Map<String, Object> context = new HashMap<>();
+        Writer writer = new StringWriter();
+
+        // boolean
+        boolean[] booleans = new boolean[] {true, false, true, false, true, false};
+        context.put("primitives", booleans);
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
+
+        // byte
+        byte[] bytes = new byte[] {0, 1, 2, 3, 4, 5};
+        context.put("primitives", bytes);
+        template.evaluate(writer, context);
+        assertEquals("2", writer.toString());
+
+        // char
+        char[] chars = new char[] {'a', 'b', 'c', 'd', 'e', 'f'};
+        context.put("primitives", chars);
+        template.evaluate(writer, context);
+        assertEquals("c", writer.toString());
+
+        // double
+        double[] doubles = new double[] {0.0d, 1.0d, 2.0d, 3.0d, 4.0d, 5.0d};
+        context.put("primitives", doubles);
+        template.evaluate(writer, context);
+        assertEquals("2.0", writer.toString());
+
+        // float
+        float[] floats = new float[] {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+        context.put("primitives", floats);
+        template.evaluate(writer, context);
+        assertEquals("2.0", writer.toString());
+
+        // int
+        int[] ints = new int[] {0, 1, 2, 3, 4, 5};
+        context.put("primitives", ints);
+        template.evaluate(writer, context);
+        assertEquals("2", writer.toString());
+
+        // long
+        long[] longs = new long[] {0, 1, 2, 3, 4, 5};
+        context.put("primitives", longs);
+        template.evaluate(writer, context);
+        assertEquals("2", writer.toString());
+
+        // short
+        short[] shorts = new short[] {0, 1, 2, 3, 4, 5};
+        context.put("primitives", shorts);
+        template.evaluate(writer, context);
+        assertEquals("2", writer.toString());
     }
 
     @Test(expected=IllegalArgumentException.class)
