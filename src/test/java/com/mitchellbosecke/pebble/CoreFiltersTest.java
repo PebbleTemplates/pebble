@@ -758,51 +758,59 @@ public class CoreFiltersTest extends AbstractTest {
 
         PebbleTemplate template = pebble.getTemplate("{% set p = primitives | slice(2,5) %}{{ p[0] }}");
         Map<String, Object> context = new HashMap<>();
-        Writer writer = new StringWriter();
+        Writer writer;
 
         // boolean
+        writer = new StringWriter();
         boolean[] booleans = new boolean[] {true, false, true, false, true, false};
         context.put("primitives", booleans);
         template.evaluate(writer, context);
         assertEquals("true", writer.toString());
 
         // byte
+        writer = new StringWriter();
         byte[] bytes = new byte[] {0, 1, 2, 3, 4, 5};
         context.put("primitives", bytes);
         template.evaluate(writer, context);
         assertEquals("2", writer.toString());
 
         // char
+        writer = new StringWriter();
         char[] chars = new char[] {'a', 'b', 'c', 'd', 'e', 'f'};
         context.put("primitives", chars);
         template.evaluate(writer, context);
         assertEquals("c", writer.toString());
 
         // double
+        writer = new StringWriter();
         double[] doubles = new double[] {0.0d, 1.0d, 2.0d, 3.0d, 4.0d, 5.0d};
         context.put("primitives", doubles);
         template.evaluate(writer, context);
         assertEquals("2.0", writer.toString());
 
         // float
+        writer = new StringWriter();
         float[] floats = new float[] {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
         context.put("primitives", floats);
         template.evaluate(writer, context);
         assertEquals("2.0", writer.toString());
 
         // int
+        writer = new StringWriter();
         int[] ints = new int[] {0, 1, 2, 3, 4, 5};
         context.put("primitives", ints);
         template.evaluate(writer, context);
         assertEquals("2", writer.toString());
 
         // long
+        writer = new StringWriter();
         long[] longs = new long[] {0, 1, 2, 3, 4, 5};
         context.put("primitives", longs);
         template.evaluate(writer, context);
         assertEquals("2", writer.toString());
 
         // short
+        writer = new StringWriter();
         short[] shorts = new short[] {0, 1, 2, 3, 4, 5};
         context.put("primitives", shorts);
         template.evaluate(writer, context);
