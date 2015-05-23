@@ -20,6 +20,7 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.expression.AddExpression;
 import com.mitchellbosecke.pebble.node.expression.AndExpression;
+import com.mitchellbosecke.pebble.node.expression.ContainsExpression;
 import com.mitchellbosecke.pebble.node.expression.DivideExpression;
 import com.mitchellbosecke.pebble.node.expression.EqualsExpression;
 import com.mitchellbosecke.pebble.node.expression.FilterExpression;
@@ -92,6 +93,7 @@ public class CoreExtension extends AbstractExtension {
         operators.add(new BinaryOperatorImpl("and", 15, AndExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("is", 20, PositiveTestExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("is not", 20, NegativeTestExpression.class, Associativity.LEFT));
+        operators.add(new BinaryOperatorImpl("contains", 20, ContainsExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("==", 30, EqualsExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("equals", 30, EqualsExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("!=", 30, NotEqualsExpression.class, Associativity.LEFT));
@@ -122,6 +124,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("last", new LastFilter());
         filters.put("lower", new LowerFilter());
         filters.put("numberformat", new NumberFormatFilter());
+        filters.put("slice", new SliceFilter());
         filters.put("sort", new SortFilter());
         filters.put("title", new TitleFilter());
         filters.put("trim", new TrimFilter());
@@ -136,6 +139,7 @@ public class CoreExtension extends AbstractExtension {
         tests.put("empty", new EmptyTest());
         tests.put("even", new EvenTest());
         tests.put("iterable", new IterableTest());
+        tests.put("map", new MapTest());
         tests.put("null", new NullTest());
         tests.put("odd", new OddTest());
         return tests;
