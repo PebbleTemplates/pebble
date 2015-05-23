@@ -61,7 +61,7 @@ public class ForNode extends AbstractRenderableNode {
         iterable = toIterable(iterableEvaluation);
 
         Iterator<?> iterator = iterable.iterator();
-        
+
         boolean newScope = false;
 
         if (iterator.hasNext()) {
@@ -97,8 +97,8 @@ public class ForNode extends AbstractRenderableNode {
                 body.render(self, writer, context);
 
             }
-            
-            if(newScope){
+
+            if (newScope) {
                 context.popScope();
             }
 
@@ -139,9 +139,9 @@ public class ForNode extends AbstractRenderableNode {
             result = (Iterable<Object>) obj;
 
         } else if (obj instanceof Map) {
-        	
-        	// raw type
-            result = ((Map)obj).entrySet();
+
+            // raw type
+            result = ((Map) obj).entrySet();
 
         } else if (obj.getClass().isArray()) {
 
@@ -188,7 +188,7 @@ public class ForNode extends AbstractRenderableNode {
         if (iterable instanceof Collection) {
             return ((Collection<?>) iterable).size();
         } else if (iterable instanceof Map) {
-        	return ((Map<?,?>) iterable).size();
+            return ((Map<?, ?>) iterable).size();
         } else if (iterable.getClass().isArray()) {
             return Array.getLength(iterable);
         }
