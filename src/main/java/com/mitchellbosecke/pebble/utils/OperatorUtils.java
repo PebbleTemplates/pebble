@@ -38,16 +38,14 @@ public class OperatorUtils {
         if (op1 instanceof String || op2 instanceof String) {
             return concatenateStrings(String.valueOf(op1), String.valueOf(op2));
         } else if (op1 instanceof List) {
-        	//FIXME should overloading be supported?
-            return addToList((List<?>)op1, op2);
+            return addToList((List<?>) op1, op2);
         }
         return wideningConversionBinaryOperation(op1, op2, Operation.ADD);
     }
 
     public static Object subtract(Object op1, Object op2) {
-    	if (op1 instanceof List) {
-        	//FIXME should overloading be supported?
-            return subtractFromList((List<?>)op1, op2);
+        if (op1 instanceof List) {
+            return subtractFromList((List<?>) op1, op2);
         }
         return wideningConversionBinaryOperation(op1, op2, Operation.SUBTRACT);
     }
@@ -100,22 +98,39 @@ public class OperatorUtils {
         return op1 + op2;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
-	private static Object addToList(List<?> op1, Object op2) {
-    	if (op2 instanceof Collection) {
-    		op1.addAll((Collection)op2);
-    	} else {
-    		((List<Object>)op1).add(op2);
-    	}
+    /**
+     * This is not a documented feature but we are leaving this in for now. I'm
+     * unsure if there is demand for this feature.
+     * 
+     * @param op1
+     * @param op2
+     * @return
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Object addToList(List<?> op1, Object op2) {
+        if (op2 instanceof Collection) {
+            op1.addAll((Collection) op2);
+        } else {
+            ((List<Object>) op1).add(op2);
+        }
         return op1;
     }
-    @SuppressWarnings({"unchecked","rawtypes"})
-	private static Object subtractFromList(List<?> op1, Object op2) {
-    	if (op2 instanceof Collection) {
-    		op1.removeAll((Collection)op2);
-    	} else {
-    		((List<Object>)op1).remove(op2);
-    	}
+
+    /**
+     * This is not a documented feature but we are leaving this in for now. I'm
+     * unsure if there is demand for this feature.
+     * 
+     * @param op1
+     * @param op2
+     * @return
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Object subtractFromList(List<?> op1, Object op2) {
+        if (op2 instanceof Collection) {
+            op1.removeAll((Collection) op2);
+        } else {
+            ((List<Object>) op1).remove(op2);
+        }
         return op1;
     }
 
@@ -253,7 +268,7 @@ public class OperatorUtils {
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
-    
+
     private static boolean longComparison(long op1, long op2, Comparison comparison) {
         switch (comparison) {
         case GREATER_THAN:
@@ -287,7 +302,7 @@ public class OperatorUtils {
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
-    
+
     private static boolean integerComparison(int op1, int op2, Comparison comparison) {
         switch (comparison) {
         case GREATER_THAN:

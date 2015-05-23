@@ -22,12 +22,15 @@ public class ArrayExpression implements Expression<List<?>> {
     private final List<Expression<?>> values;
 
     public ArrayExpression() {
-    	this.values = Collections.emptyList();
+        this.values = Collections.emptyList();
     }
 
     public ArrayExpression(List<Expression<?>> values) {
-    	if (values == null) this.values = Collections.emptyList();
-    	else this.values = values;
+        if (values == null) {
+            this.values = Collections.emptyList();
+        } else {
+            this.values = values;
+        }
     }
 
     @Override
@@ -37,12 +40,12 @@ public class ArrayExpression implements Expression<List<?>> {
 
     @Override
     public List<?> evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-    	List<Object> returnValues = new ArrayList<>(values.size());
-    	for (int i = 0; i < values.size(); i++) {
-    		Expression<?> expr = values.get(i);
-    		Object value = expr == null ? null : expr.evaluate(self, context);
-    		returnValues.add(value);
-    	}
+        List<Object> returnValues = new ArrayList<>(values.size());
+        for (int i = 0; i < values.size(); i++) {
+            Expression<?> expr = values.get(i);
+            Object value = expr == null ? null : expr.evaluate(self, context);
+            returnValues.add(value);
+        }
         return returnValues;
     }
 

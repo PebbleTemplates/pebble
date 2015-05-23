@@ -145,16 +145,16 @@ public class ExpressionParser {
             expression = parseArrayDefinitionExpression();
             // don't expect ], because it has been already expected
             // currently, postfix expressions are not supported for arrays
-            //expression = parsePostfixExpression(expression);
+            // expression = parsePostfixExpression(expression);
         }
         // map definition syntax
         else if (token.test(Token.Type.PUNCTUATION, "{")) {
 
-                // preserve { token for map parsing
-                expression = parseMapDefinitionExpression();
-                // don't expect }, because it has been already expected
-                // currently, postfix expressions are not supported for maps
-                //expression = parsePostfixExpression(expression);
+            // preserve { token for map parsing
+            expression = parseMapDefinitionExpression();
+            // don't expect }, because it has been already expected
+            // currently, postfix expressions are not supported for maps
+            // expression = parsePostfixExpression(expression);
 
         } else {
             /*
@@ -577,17 +577,17 @@ public class ExpressionParser {
         stream.next();
         return token.getValue();
     }
-    
+
     private Expression<?> parseArrayDefinitionExpression() throws ParserException {
         TokenStream stream = parser.getStream();
 
         // expect the opening bracket and check for an empty array
         stream.expect(Token.Type.PUNCTUATION, "[");
         if (stream.current().test(Token.Type.PUNCTUATION, "]")) {
-        	stream.next();
-        	return new ArrayExpression();
+            stream.next();
+            return new ArrayExpression();
         }
-        
+
         // there's at least one expression in the array
         List<Expression<?>> elements = new ArrayList<Expression<?>>();
         while (true) {
@@ -595,47 +595,49 @@ public class ExpressionParser {
             elements.add(expr);
             if (stream.current().test(Token.Type.PUNCTUATION, "]")) {
                 // this seems to be the end of the array
-            	break;
+                break;
             }
-            // expect the comma separator, until we either find a closing bracket or fail the expect
+            // expect the comma separator, until we either find a closing
+            // bracket or fail the expect
             stream.expect(Token.Type.PUNCTUATION, ",");
         }
 
         // expect the closing bracket
         stream.expect(Token.Type.PUNCTUATION, "]");
-        
+
         return new ArrayExpression(elements);
     }
-    
+
     private Expression<?> parseMapDefinitionExpression() throws ParserException {
         TokenStream stream = parser.getStream();
 
         // expect the opening brace and check for an empty map
         stream.expect(Token.Type.PUNCTUATION, "{");
         if (stream.current().test(Token.Type.PUNCTUATION, "}")) {
-        	stream.next();
-        	return new MapExpression();
+            stream.next();
+            return new MapExpression();
         }
-        
+
         // there's at least one expression in the map
-        Map<Expression<?>,Expression<?>> elements = new HashMap<>();
+        Map<Expression<?>, Expression<?>> elements = new HashMap<>();
         while (true) {
-        	// key : value
+            // key : value
             Expression<?> keyExpr = parseExpression();
             stream.expect(Token.Type.PUNCTUATION, ":");
             Expression<?> valueExpr = parseExpression();
             elements.put(keyExpr, valueExpr);
             if (stream.current().test(Token.Type.PUNCTUATION, "}")) {
                 // this seems to be the end of the map
-            	break;
+                break;
             }
-            // expect the comma separator, until we either find a closing brace or fail the expect
+            // expect the comma separator, until we either find a closing brace
+            // or fail the expect
             stream.expect(Token.Type.PUNCTUATION, ",");
         }
 
         // expect the closing brace
         stream.expect(Token.Type.PUNCTUATION, "}");
-        
+
         return new MapExpression(elements);
     }
 
