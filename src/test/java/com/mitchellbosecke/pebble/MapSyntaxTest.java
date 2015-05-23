@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -57,8 +58,9 @@ public class MapSyntaxTest extends AbstractTest {
     public void test2ElementMap() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.addExtension(new TestingExtension());
 
-        String source = "{{ {'key1':'value1','key2':'value2'} }}";
+        String source = "{{ {'key1':'value1','key2':'value2'} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -70,8 +72,9 @@ public class MapSyntaxTest extends AbstractTest {
     public void test2ElementMap2() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.addExtension(new TestingExtension());
 
-        String source = "{{ {'key1' :  'value1'   ,    'key2'      :       'value2' } }}";
+        String source = "{{ {'key1' :  'value1'   ,    'key2'      :       'value2' } | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -83,13 +86,14 @@ public class MapSyntaxTest extends AbstractTest {
     public void testNElementMap() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.addExtension(new TestingExtension());
 
-        String source = "{{ {'key1':'value1','key2':'value2','key3':'value3','key4':'value4','key5':'value5'} }}";
+        String source = "{{ {'key1':'value1','key2':'value2','key3':'value3','key4':'value4','key5':'value5'} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
         template.evaluate(writer, new HashMap<String, Object>());
-        assertEquals("{key1=value1, key2=value2, key5=value5, key3=value3, key4=value4}", writer.toString());
+        assertEquals("{key1=value1, key2=value2, key3=value3, key4=value4, key5=value5}", writer.toString());
     }
 
     @Test(expected = ParserException.class)
@@ -157,8 +161,9 @@ public class MapSyntaxTest extends AbstractTest {
     public void testMapWithExpressions() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.addExtension(new TestingExtension());
 
-        String source = "{{ {1:'one', 'two':2, three:'three', numbers['four']:4} }}";
+        String source = "{{ {1:'one', 'two':2, three:'three', numbers['four']:4} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Map<String, Object> context = new HashMap<>();
@@ -180,8 +185,9 @@ public class MapSyntaxTest extends AbstractTest {
     public void testMapWithComplexExpressions() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.addExtension(new TestingExtension());
 
-        String source = "{{ {'one' + 'plus':'oneplus', 2 - 1:3, three.number:(2+1), 0:numbers['four'][0], numbers ['five'] .value:'five'} }}";
+        String source = "{{ {'one' + 'plus':'oneplus', 2 - 1:3, three.number:(2+1), 0:numbers['four'][0], numbers ['five'] .value:'five'} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Map<String, Object> context = new HashMap<>();
@@ -206,7 +212,7 @@ public class MapSyntaxTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("{0=4, 1=3, 3=3, oneplus=oneplus, five=five}", writer.toString());
+        assertEquals("{0=4, 1=3, 3=3, five=five, oneplus=oneplus}", writer.toString());
     }
 
     @Test
