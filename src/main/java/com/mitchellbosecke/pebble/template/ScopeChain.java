@@ -13,8 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-
 public class ScopeChain {
 
     private LinkedList<Scope> stack = new LinkedList<>();
@@ -63,7 +61,7 @@ public class ScopeChain {
         stack.peek().put(key, value);
     }
 
-    public Object get(String key, boolean isStrictVariables) throws AttributeNotFoundException {
+    public Object get(String key, boolean isStrictVariables) {
         Object result = null;
 
         /*
