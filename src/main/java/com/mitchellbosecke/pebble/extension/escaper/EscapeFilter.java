@@ -56,6 +56,7 @@ public class EscapeFilter implements Filter {
             break;
         case "url_param":
             input = Escape.uriParam(input);
+            break;
         default:
             throw new RuntimeException("Unknown escaping strategy");
 
