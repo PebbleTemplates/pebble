@@ -51,8 +51,8 @@ public class ClasspathLoader implements Loader {
 
             path.append(getPrefix());
 
-            if (!getPrefix().endsWith(String.valueOf(File.separatorChar))) {
-                path.append(File.separatorChar);
+            if (!getPrefix().endsWith("/") {
+                path.append("/");
             }
         }
 
