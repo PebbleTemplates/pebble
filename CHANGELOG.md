@@ -1,3 +1,6 @@
+## v1.5.0
+- Added array and map syntax 
+
 ## v1.4.5
 - Fixed stack overflow error when using multiple levels of the parent() function
 - Fixed platform dependent issues with junit tests
