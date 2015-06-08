@@ -8,12 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +30,15 @@ public class ClasspathLoader implements Loader {
     private String suffix;
 
     private String charset = "UTF-8";
+    private final ClassLoader rcl;
+
+    public ClasspathLoader(ClassLoader classLoader) {
+        rcl = classLoader;
+    }
+
+    public ClasspathLoader() {
+        this(ClasspathLoader.class.getClassLoader());
+    }
 
     @Override
     public Reader getReader(String templateName) throws LoaderException {
@@ -51,7 +55,7 @@ public class ClasspathLoader implements Loader {
 
             path.append(getPrefix());
 
-            if (!getPrefix().endsWith("/") {
+            if (!getPrefix().endsWith("/")) {
                 path.append("/");
             }
         }
@@ -60,7 +64,6 @@ public class ClasspathLoader implements Loader {
         logger.debug("Looking for template in {}.", location);
 
         // perform the lookup
-        ClassLoader rcl = ClasspathLoader.class.getClassLoader();
         is = rcl.getResourceAsStream(location);
 
         if (is == null) {
