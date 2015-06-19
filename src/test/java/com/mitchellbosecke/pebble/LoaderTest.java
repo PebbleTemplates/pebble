@@ -17,7 +17,6 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
