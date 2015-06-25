@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -61,6 +62,23 @@ public class ErrorReportingTest extends AbstractTest {
             String message = ex.getMessage();
             assertEquals(":8)", message.substring(message.length() - 3, message.length()));
             throw ex;
+        }
+    }
+    
+    @Test(expected = RootAttributeNotFoundException.class)
+    public void testMissingRootPropertyInStrictMode() throws PebbleException, IOException {
+        try {
+        	pebble.setStrictVariables(true);
+            PebbleTemplate template = pebble.getTemplate("template.errorReportingMissingRootProperty.peb");
+            template.evaluate(new StringWriter());
+        } catch (PebbleException ex) {
+            String message = ex.getMessage();
+            assertEquals(message, "Root attribute [root] does not exist or can not be accessed and strict variables is set to true. (?:?)");
+            throw ex;
+        }
+        finally
+        {
+        	pebble.setStrictVariables(false);
         }
     }
 

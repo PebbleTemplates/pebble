@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
@@ -131,11 +132,20 @@ public class GetAttributeExpression implements Expression<Object> {
             }
             result = invokeMember(object, member, argumentValues);
         } else if (context.isStrictVariables()) {
-            throw new AttributeNotFoundException(
+        	if (object == null) {
+        		final String rootPropertyName = ((ContextVariableExpression)node).getName();
+        		throw new RootAttributeNotFoundException(
+                        null,
+                        String.format(
+                                "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
+                                rootPropertyName));
+        	} else {
+        		throw new AttributeNotFoundException(
                     null,
                     String.format(
                             "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
                             attributeName, object.getClass().getName()));
+        	}
         }
         return result;
 
