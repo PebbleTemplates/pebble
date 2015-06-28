@@ -1,0 +1,2 @@
+{# used by ErrorReportingTest.testMissingRootPropertyInStrictMode #}
+{{root.foo}}

@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -250,7 +251,7 @@ public class GetAttributeTest extends AbstractTest {
 		assertEquals("hello Steve. My name is Steve.", writer.toString());
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = RootAttributeNotFoundException.class)
 	public void testAttributeOfNullObjectWithStrictVariables() throws PebbleException, IOException {
 		Loader stringLoader = new StringLoader();
 		PebbleEngine pebble = new PebbleEngine(stringLoader);
