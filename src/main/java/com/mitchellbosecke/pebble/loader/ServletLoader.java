@@ -22,82 +22,84 @@ import com.mitchellbosecke.pebble.error.LoaderException;
  */
 public class ServletLoader implements Loader {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServletLoader.class);
+	private static final Logger logger = LoggerFactory.getLogger(ServletLoader.class);
 
-    private String prefix;
+	private String prefix;
 
-    private String suffix;
+	private String suffix;
 
-    private String charset = "UTF-8";
+	private String charset = "UTF-8";
 
-    private final ServletContext context;
+	private final ServletContext context;
 
-    public ServletLoader(ServletContext context) {
-        this.context = context;
-    }
+	public ServletLoader(ServletContext context) {
+		this.context = context;
+	}
 
-    @Override
-    public Reader getReader(String templateName) throws LoaderException {
+	@Override
+	public Reader getReader(String templateName) throws LoaderException {
 
-        InputStreamReader isr = null;
-        Reader reader = null;
+		InputStreamReader isr = null;
+		Reader reader = null;
 
-        InputStream is = null;
+		InputStream is = null;
 
-        // Add the prefix and make sure that it ends with a separater character
-        StringBuilder path = new StringBuilder("");
-        if (getPrefix() != null) {
+		// Add the prefix and make sure that it ends with a separator character
+		StringBuilder path = new StringBuilder("");
+		if (getPrefix() != null) {
 
-            path.append(getPrefix());
+			path.append(getPrefix());
 
-            if (!getPrefix().endsWith(String.valueOf(File.separatorChar))) {
-                path.append(File.separatorChar);
-            }
-        }
+			// we do NOT use OS dependent separators here; getResourceAsStream
+			// explicitly requires forward slashes.
+			if (!getPrefix().endsWith("/")) {
+				path.append("/");
+			}
+		}
 
-        String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
-        logger.debug("Looking for template in {}.", location);
+		String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
+		logger.debug("Looking for template in {}.", location);
 
-        is = context.getResourceAsStream(location);
+		is = context.getResourceAsStream(location);
 
-        if (is == null) {
-            throw new LoaderException(null, "Could not find template \"" + location + "\"");
-        }
+		if (is == null) {
+			throw new LoaderException(null, "Could not find template \"" + location + "\"");
+		}
 
-        try {
-            isr = new InputStreamReader(is, charset);
-            reader = new BufferedReader(isr);
-        } catch (UnsupportedEncodingException e) {
-        }
+		try {
+			isr = new InputStreamReader(is, charset);
+			reader = new BufferedReader(isr);
+		} catch (UnsupportedEncodingException e) {
+		}
 
-        return reader;
-    }
+		return reader;
+	}
 
-    public String getSuffix() {
-        return suffix;
-    }
+	public String getSuffix() {
+		return suffix;
+	}
 
-    @Override
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
-    }
+	@Override
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
 
-    public String getPrefix() {
-        return prefix;
-    }
+	public String getPrefix() {
+		return prefix;
+	}
 
-    @Override
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
+	@Override
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
 
-    public String getCharset() {
-        return charset;
-    }
+	public String getCharset() {
+		return charset;
+	}
 
-    @Override
-    public void setCharset(String charset) {
-        this.charset = charset;
-    }
+	@Override
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
 
 }
