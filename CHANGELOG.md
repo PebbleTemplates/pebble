@@ -1,3 +1,8 @@
+## v1.5.1
+- New constructor in ClasspathLoader that accepts a custom classloader.
+- Bug fix: Fixed path separator used in ClasspathLoader to work on Windows
+- Bug fix: Fixed path separator used in ServletLoader to work on Windows 
+
 ## v1.5.0
 - Added array and map syntax 
 
