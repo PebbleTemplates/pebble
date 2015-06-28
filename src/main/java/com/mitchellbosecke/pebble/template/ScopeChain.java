@@ -61,7 +61,7 @@ public class ScopeChain {
         stack.peek().put(key, value);
     }
 
-    public Object get(String key, boolean isStrictVariables) {
+    public Object get(String key) {
         Object result = null;
 
         /*

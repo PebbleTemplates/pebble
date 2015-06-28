@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.Test;
@@ -170,11 +169,9 @@ public class EvaluationContext {
      * @param key
      *            Key
      * @return The object, if found
-     * @throws AttributeNotFoundException
-     *             Thrown if the key is not found
      */
-    public Object get(String key) throws AttributeNotFoundException {
-        return scopeChain.get(key, isStrictVariables());
+    public Object get(String key) {
+        return scopeChain.get(key);
     }
 
     public void ascendInheritanceChain() {

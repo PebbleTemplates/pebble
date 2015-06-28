@@ -34,10 +34,12 @@ public class ContextTest extends AbstractTest {
 
         PebbleTemplate template = pebble.getTemplate("{{ eager_key }} {{ lazy_key }}");
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>(){
+        template.evaluate(writer, new HashMap<String, Object>() {
+
             {
                 put("eager_key", "eager_value");
             }
+
             @Override
             public Object get(final Object key) {
                 if ("lazy_key".equals(key)) {
@@ -45,10 +47,10 @@ public class ContextTest extends AbstractTest {
                 }
                 return super.get(key);
             }
-            
+
             @Override
             public boolean containsKey(Object key) {
-                if ("lazy_key".equals(key)){
+                if ("lazy_key".equals(key)) {
                     return true;
                 }
                 return super.containsKey(key);
@@ -56,6 +58,7 @@ public class ContextTest extends AbstractTest {
         });
         assertEquals("eager_value lazy_value", writer.toString());
     }
+
     @Test
     public void testMissingContextVariableWithoutStrictVariables() throws PebbleException, IOException {
         Loader loader = new StringLoader();
@@ -79,7 +82,7 @@ public class ContextTest extends AbstractTest {
         template.evaluate(writer);
         assertEquals("", writer.toString());
     }
-    
+
     @Test
     public void testExistingButNullContextVariableWithStrictVariables() throws PebbleException, IOException {
         Loader loader = new StringLoader();
@@ -87,10 +90,10 @@ public class ContextTest extends AbstractTest {
         pebble.setStrictVariables(true);
 
         PebbleTemplate template = pebble.getTemplate("{% if foo == null %}YES{% endif %}");
-        
+
         Map<String, Object> context = new HashMap<>();
         context.put("foo", null);
-        
+
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("YES", writer.toString());
