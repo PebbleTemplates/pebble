@@ -12,8 +12,15 @@ public class AttributeNotFoundException extends PebbleException {
 
     private static final long serialVersionUID = 3863732457312917327L;
 
-    public AttributeNotFoundException(Throwable cause, String message) {
+    private final String attributeName;
+
+    public AttributeNotFoundException(Throwable cause, String message, String attributeName) {
         super(cause, message);
+        this.attributeName = attributeName;
+    }
+
+    public String getAttributeName() {
+        return attributeName;
     }
 
 }

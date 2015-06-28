@@ -64,21 +64,21 @@ public class ErrorReportingTest extends AbstractTest {
             throw ex;
         }
     }
-    
+
     @Test(expected = RootAttributeNotFoundException.class)
     public void testMissingRootPropertyInStrictMode() throws PebbleException, IOException {
         try {
-        	pebble.setStrictVariables(true);
+            pebble.setStrictVariables(true);
             PebbleTemplate template = pebble.getTemplate("template.errorReportingMissingRootProperty.peb");
             template.evaluate(new StringWriter());
         } catch (PebbleException ex) {
             String message = ex.getMessage();
-            assertEquals(message, "Root attribute [root] does not exist or can not be accessed and strict variables is set to true. (?:?)");
+            assertEquals("root", ((RootAttributeNotFoundException) ex).getAttributeName());
+            assertEquals(message,
+                    "Root attribute [root] does not exist or can not be accessed and strict variables is set to true. (?:?)");
             throw ex;
-        }
-        finally
-        {
-        	pebble.setStrictVariables(false);
+        } finally {
+            pebble.setStrictVariables(false);
         }
     }
 
