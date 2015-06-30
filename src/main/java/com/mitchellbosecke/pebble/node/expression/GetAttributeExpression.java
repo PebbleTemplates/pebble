@@ -171,8 +171,7 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
             }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            e.printStackTrace();
-
+            throw new RuntimeException(e);
         }
         return result;
     }
