@@ -1,5 +1,6 @@
 ## v1.5.1
-- New constructor in ClasspathLoader that accepts a custom classloader.
+- New runtime exception thrown if there's an error invoking a member found via reflection
+- New constructor in ClasspathLoader that accepts a custom classloader
 - Bug fix: Fixed path separator used in ClasspathLoader to work on Windows
 - Bug fix: Fixed path separator used in ServletLoader to work on Windows 
 
