@@ -22,7 +22,7 @@ public class ScopeChain {
     }
 
     public ScopeChain(Map<String, Object> map) {
-        Scope scope = new Scope(new HashMap<String, Object>(), false);
+        Scope scope = new Scope(new HashMap<String, Object>(map), false);
         stack.push(scope);
     }
 
