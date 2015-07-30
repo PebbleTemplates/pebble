@@ -769,9 +769,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("Bob", writer.toString());
     }
-    //FIXME primitive values are not printed to output
-    // maybe test with contains test?
-    @Ignore
+
     @Test
     public void testSliceWithPrimitivesArray() throws PebbleException, IOException {
         Loader loader = new StringLoader();
