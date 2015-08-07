@@ -354,6 +354,27 @@ public class CoreFiltersTest extends AbstractTest {
     }
 
     @Test
+    public void testRsortFilter() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{% for word in words|rsort %}{{ word }} {% endfor %}");
+        List<String> words = new ArrayList<>();
+        words.add("zebra");
+        words.add("apple");
+        words.add(" cat");
+        words.add("123");
+        words.add("Apple");
+        words.add("cat");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("words", words);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("zebra cat apple Apple 123  cat ", writer.toString());
+    }
+
+    @Test
     public void testTitle() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
@@ -748,9 +769,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("Bob", writer.toString());
     }
-    //FIXME primitive values are not printed to output
-    // maybe test with contains test?
-    @Ignore
+
     @Test
     public void testSliceWithPrimitivesArray() throws PebbleException, IOException {
         Loader loader = new StringLoader();
