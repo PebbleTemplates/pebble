@@ -144,10 +144,10 @@ public class LexerImpl implements Lexer {
         String possibleNewline = "(\r\n|\n\r|\r|\n|\u0085|\u2028|\u2029)?";
 
         // regexes used to find the individual delimiters
-        this.regexPrintClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?"
-                + Pattern.quote(delimiterPrintClose) + possibleNewline);
-        this.regexExecuteClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?"
-                + Pattern.quote(delimiterExecuteClose) + possibleNewline);
+        this.regexPrintClose = Pattern.compile(
+                "^\\s*" + Pattern.quote(whitespaceTrim) + "?" + Pattern.quote(delimiterPrintClose) + possibleNewline);
+        this.regexExecuteClose = Pattern.compile(
+                "^\\s*" + Pattern.quote(whitespaceTrim) + "?" + Pattern.quote(delimiterExecuteClose) + possibleNewline);
         this.regexCommentClose = Pattern.compile(Pattern.quote(delimiterCommentClose) + possibleNewline);
 
         // combination regex used to find the next START delimiter of any kind
@@ -163,9 +163,9 @@ public class LexerImpl implements Lexer {
 
         // regex for the whitespace trim character
         this.regexLeadingWhitespaceTrim = Pattern.compile(Pattern.quote(whitespaceTrim) + "\\s+");
-        this.regexTrailingWhitespaceTrim = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "("
-                + Pattern.quote(delimiterPrintClose) + "|" + Pattern.quote(delimiterExecuteClose) + "|"
-                + Pattern.quote(delimiterCommentClose) + ")");
+        this.regexTrailingWhitespaceTrim = Pattern
+                .compile("^\\s*" + Pattern.quote(whitespaceTrim) + "(" + Pattern.quote(delimiterPrintClose) + "|"
+                        + Pattern.quote(delimiterExecuteClose) + "|" + Pattern.quote(delimiterCommentClose) + ")");
     }
 
     /**
@@ -742,7 +742,8 @@ public class LexerImpl implements Lexer {
              * is NOT an alpha character. This ensures user can type
              * "organization" without the "or" being parsed as an operator.
              */
-            if (Character.isAlphabetic(operator.charAt(operator.length() - 1))) {
+            char nextChar = operator.charAt(operator.length() - 1);
+            if (Character.isLetter(nextChar) || Character.getType(nextChar) == Character.LETTER_NUMBER) {
                 regex.append("(?![a-zA-Z])");
             }
         }
