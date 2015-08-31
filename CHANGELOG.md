@@ -1,3 +1,9 @@
+## v1.5.2
+- i18n extension now supports dynamic variables
+- Bug fix: Failure to subscript an array of primitive type
+- Bug fix: Global variables were not accessible in template
+- Bug fix: Removed invocation of Character.isAlphabetic which is not supported on older android APIs
+
 ## v1.5.1
 - New runtime exception thrown if there's an error invoking a member found via reflection
 - New constructor in ClasspathLoader that accepts a custom classloader
