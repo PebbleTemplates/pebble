@@ -394,6 +394,22 @@ public class GetAttributeTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("Two", writer.toString());
     }
+    
+    @Test()
+    public void testInheritedAttribute() throws PebbleException, IOException {
+        Loader stringLoader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        pebble.setStrictVariables(true);
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new ChildObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello parent", writer.toString());
+    }
+
 
     public class SimpleObject {
 
@@ -487,6 +503,17 @@ public class GetAttributeTest extends AbstractTest {
 
         public String getName() {
             return this.name;
+        }
+    }
+
+    public class ChildObject extends ParentObject {
+
+    }
+
+    public class ParentObject {
+
+        public String getName(){
+            return "parent";
         }
     }
 }
