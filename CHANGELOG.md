@@ -1,4 +1,5 @@
 ## v1.5.2
+- Added rsort filter
 - i18n extension now supports dynamic variables
 - Bug fix: Failure to subscript an array of primitive type
 - Bug fix: Global variables were not accessible in template
