@@ -217,55 +217,33 @@ public class GetAttributeExpression implements Expression<Object> {
 
         Class<?> clazz = object.getClass();
 
-        boolean found = false;
         Member result = null;
 
         // capitalize first letter of attribute for the following attempts
         String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
-        // try {
-
         // check get method
-        if (!found) {
-            try {
-                result = clazz.getMethod("get" + attributeCapitalized, parameterTypes);
-                found = true;
-            } catch (NoSuchMethodException | SecurityException e) {
-            }
-        }
+        result = findMethod(clazz, "get" + attributeCapitalized, parameterTypes);
 
         // check is method
-        if (!found) {
-            try {
-                result = clazz.getMethod("is" + attributeCapitalized, parameterTypes);
-                found = true;
-            } catch (NoSuchMethodException | SecurityException e) {
-            }
+        if (result == null) {
+            result = findMethod(clazz, "is" + attributeCapitalized, parameterTypes);
         }
 
         // check has method
-        if (!found) {
-            try {
-                result = clazz.getMethod("has" + attributeCapitalized, parameterTypes);
-                found = true;
-            } catch (NoSuchMethodException | SecurityException e) {
-            }
+        if (result == null) {
+            result = findMethod(clazz, "has" + attributeCapitalized, parameterTypes);
         }
 
         // check if attribute is a public method
-        if (!found) {
-            try {
-                result = clazz.getMethod(attributeName, parameterTypes);
-                found = true;
-            } catch (NoSuchMethodException | SecurityException e) {
-            }
+        if (result == null) {
+            result = findMethod(clazz, attributeName, parameterTypes);
         }
 
         // public field
-        if (!found) {
+        if (result == null) {
             try {
                 result = clazz.getField(attributeName);
-                found = true;
             } catch (NoSuchFieldException | SecurityException e) {
             }
         }
@@ -274,6 +252,71 @@ public class GetAttributeExpression implements Expression<Object> {
             ((AccessibleObject) result).setAccessible(true);
         }
 
+        return result;
+    }
+
+    /**
+     * Finds an appropriate method by comparing if parameter types are
+     * compatible. This is more relaxed than class.getMethod.
+     * 
+     * @param clazz
+     * @param name
+     * @param requiredTypes
+     * @return
+     */
+    private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes) {
+        Method result = null;
+
+        Method[] candidates = clazz.getMethods();
+
+        for (Method candidate : candidates) {
+            if (!candidate.getName().equals(name)) {
+                continue;
+            }
+
+            Class<?>[] types = candidate.getParameterTypes();
+
+            if (types.length != requiredTypes.length) {
+                continue;
+            }
+
+            boolean compatibleTypes = true;
+            for (int i = 0; i < types.length; i++) {
+                if (!widen(types[i]).isAssignableFrom(requiredTypes[i])) {
+                    compatibleTypes = false;
+                    break;
+                }
+            }
+
+            if (compatibleTypes) {
+                result = candidate;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Performs a widening conversion (primitive to boxed type)
+     * 
+     * @param clazz
+     * @return
+     */
+    private Class<?> widen(Class<?> clazz) {
+        Class<?> result = clazz;
+        if (clazz == int.class) {
+            result = Integer.class;
+        } else if (clazz == long.class) {
+            result = Long.class;
+        } else if (clazz == double.class) {
+            result = Double.class;
+        } else if (clazz == float.class) {
+            result = Float.class;
+        } else if (clazz == short.class) {
+            result = Short.class;
+        } else if (clazz == byte.class) {
+            result = Byte.class;
+        }
         return result;
     }
 
