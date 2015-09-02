@@ -43,7 +43,7 @@ public class i18nFunction implements Function {
 
         if (phraseObject != null && params != null) {
             if (params instanceof List) {
-                List list = (List) params;
+                List<?> list = (List<?>) params;
                 return MessageFormat.format(phraseObject.toString(), list.toArray());
             } else {
                 return MessageFormat.format(phraseObject.toString(), params);
