@@ -55,7 +55,8 @@ public class EscaperExtension extends AbstractExtension {
     /**
      * Sets the default escaping strategy.
      * 
-     * @param strategy Escaping strategy
+     * @param strategy
+     *            Escaping strategy
      */
     public void setDefaultStrategy(String strategy) {
         filter.setDefaultStrategy(strategy);
@@ -67,6 +68,16 @@ public class EscaperExtension extends AbstractExtension {
 
     public void addSafeFilter(String filter) {
         visitor.addSafeFilter(filter);
+    }
+
+    /**
+     * Adds a custom escaping strategy to the filter.
+     * 
+     * @param name
+     * @param strategy
+     */
+    public void addEscapingStrategy(String name, EscapingStrategy strategy) {
+        filter.addEscapingStrategy(name, strategy);
     }
 
 }
