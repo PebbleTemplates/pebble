@@ -23,88 +23,89 @@ import com.mitchellbosecke.pebble.error.LoaderException;
  */
 public class ClasspathLoader implements Loader {
 
-	private static final Logger logger = LoggerFactory.getLogger(ClasspathLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClasspathLoader.class);
 
-	private String prefix;
+    private String prefix;
 
-	private String suffix;
+    private String suffix;
 
-	private String charset = "UTF-8";
-	private final ClassLoader rcl;
+    private String charset = "UTF-8";
 
-	public ClasspathLoader(ClassLoader classLoader) {
-		rcl = classLoader;
-	}
+    private final ClassLoader rcl;
 
-	public ClasspathLoader() {
-		this(ClasspathLoader.class.getClassLoader());
-	}
+    public ClasspathLoader(ClassLoader classLoader) {
+        rcl = classLoader;
+    }
 
-	@Override
-	public Reader getReader(String templateName) throws LoaderException {
+    public ClasspathLoader() {
+        this(ClasspathLoader.class.getClassLoader());
+    }
 
-		InputStreamReader isr = null;
-		Reader reader = null;
+    @Override
+    public Reader getReader(String templateName) throws LoaderException {
 
-		InputStream is = null;
+        InputStreamReader isr = null;
+        Reader reader = null;
 
-		// append the prefix and make sure prefix ends with a separator
-		// character
-		StringBuilder path = new StringBuilder("");
-		if (getPrefix() != null) {
+        InputStream is = null;
 
-			path.append(getPrefix());
+        // append the prefix and make sure prefix ends with a separator
+        // character
+        StringBuilder path = new StringBuilder("");
+        if (getPrefix() != null) {
 
-			// we do NOT use OS dependent separators here; getResourceAsStream
-			// explicitly requires forward slashes.
-			if (!getPrefix().endsWith("/")) {
-				path.append("/");
-			}
-		}
+            path.append(getPrefix());
 
-		String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
-		logger.debug("Looking for template in {}.", location);
+            // we do NOT use OS dependent separators here; getResourceAsStream
+            // explicitly requires forward slashes.
+            if (!getPrefix().endsWith("/")) {
+                path.append("/");
+            }
+        }
 
-		// perform the lookup
-		is = rcl.getResourceAsStream(location);
+        String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
+        logger.debug("Looking for template in {}.", location);
 
-		if (is == null) {
-			throw new LoaderException(null, "Could not find template \"" + location + "\"");
-		}
+        // perform the lookup
+        is = rcl.getResourceAsStream(location);
 
-		try {
-			isr = new InputStreamReader(is, charset);
-			reader = new BufferedReader(isr);
-		} catch (UnsupportedEncodingException e) {
-		}
+        if (is == null) {
+            throw new LoaderException(null, "Could not find template \"" + location + "\"");
+        }
 
-		return reader;
-	}
+        try {
+            isr = new InputStreamReader(is, charset);
+            reader = new BufferedReader(isr);
+        } catch (UnsupportedEncodingException e) {
+        }
 
-	public String getSuffix() {
-		return suffix;
-	}
+        return reader;
+    }
 
-	@Override
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
+    public String getSuffix() {
+        return suffix;
+    }
 
-	public String getPrefix() {
-		return prefix;
-	}
+    @Override
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
 
-	@Override
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    public String getPrefix() {
+        return prefix;
+    }
 
-	public String getCharset() {
-		return charset;
-	}
+    @Override
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	@Override
-	public void setCharset(String charset) {
-		this.charset = charset;
-	}
+    public String getCharset() {
+        return charset;
+    }
+
+    @Override
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
 }

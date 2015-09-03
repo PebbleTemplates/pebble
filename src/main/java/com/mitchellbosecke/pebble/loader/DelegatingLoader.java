@@ -56,6 +56,10 @@ public class DelegatingLoader implements Loader {
         for (Loader loader : this.loaders) {
             try {
                 reader = loader.getReader(templateName);
+
+                if (reader != null) {
+                    break;
+                }
             } catch (LoaderException e) {
                 // do nothing
             }
