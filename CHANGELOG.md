@@ -1,6 +1,7 @@
-## v1.6.0 (coming soon)
+## v1.6.0 (2015-09-06)
 - Support for custom escaping strategies
 - Support for calling bean methods with primitive argument types
+- Bug fix: Fixed issue with delegating loader where it would only use last loader in list of children loaders.
 
 ## v1.5.2 (2015-08-30)
 - Added rsort filter
