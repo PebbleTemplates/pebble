@@ -160,12 +160,26 @@ public class CoreOperatorsTest extends AbstractTest {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        String source = "{% if 3 > 2 %}yes{% endif %}{% if 2 > 3 %}no{% endif %}{% if 2 < 3 %}yes{% endif %}{% if 3 >= 3 %}yes{% endif %}{% if 100 <= 100 %}yes{% endif %}{% if 2 == 2 %}yes{% endif %}";
+        String source = "{% if 3 > 2 %}yes{% endif %}" +
+        		"{% if 2 > 3 %}no{% endif %}" +
+        		"{% if 2 > 2 %}no{% endif %}" +
+        		"{% if 2 < 3 %}yes{% endif %}" +
+        		"{% if 3 < 2 %}no{% endif %}" +
+        		"{% if 2 < 2 %}no{% endif %}" +
+        		"{% if 3 >= 3 %}yes{% endif %}" +
+        		"{% if 3 >= 2 %}yes{% endif %}" +
+        		"{% if 2 >= 3 %}no{% endif %}" +
+        		"{% if 3 <= 3 %}yes{% endif %}" +
+        		"{% if 3 <= 2 %}no{% endif %}" +
+        		"{% if 2 <= 3 %}yes{% endif %}" +
+        		"{% if 100 <= 100 %}yes{% endif %}" +
+        		"{% if 2 == 2 %}yes{% endif %}" +
+        		"{% if 2 == 3 %}no{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("yesyesyesyesyes", writer.toString());
+        assertEquals("yesyesyesyesyesyesyesyes", writer.toString());
     }
 
     @Test
