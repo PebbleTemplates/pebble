@@ -10,7 +10,13 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,14 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
-import com.mitchellbosecke.pebble.extension.TestingExtension;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class CoreTagsTest extends AbstractTest {
 
@@ -188,17 +187,18 @@ public class CoreTagsTest extends AbstractTest {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        String source = "{% for user in users %}{% if loop.index == 0 %}[{{ loop.length }}]{% endif %}{{ loop.index }}{{ user.username }}{% endfor %}";
+        String source = "{% for user in users %}{% if loop.first %}[{{ loop.length }}]{% endif %}{% if loop.last %}[{{ loop.length }}]{% endif %}{{ loop.index }}{{ loop.revindex }}{{ user.username }}{% endfor %}";
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
         List<User> users = new ArrayList<>();
         users.add(new User("Alex"));
         users.add(new User("Bob"));
+        users.add(new User("John"));
         context.put("users", users);
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("[2]0Alex1Bob", writer.toString());
+        assertEquals("[3]02Alex11Bob[3]20John", writer.toString());
     }
 
     @Test
