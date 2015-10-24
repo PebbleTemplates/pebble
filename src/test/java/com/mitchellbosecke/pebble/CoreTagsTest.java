@@ -93,6 +93,24 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("no", writer.toString());
     }
 
+    @Test(expected = PebbleException.class)
+    public void testExceptionWithIfStatement() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
+
+        String source = "{% if 'string' %}yes{% else %}no{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("yes", true);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("no", writer.toString());
+    }
+
+
     /**
      * Issue #34
      *

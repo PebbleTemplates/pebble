@@ -42,9 +42,15 @@ public class IfNode extends AbstractRenderableNode {
         boolean satisfied = false;
         for (Pair<Expression<?>, BodyNode> ifStatement : conditionsWithBodies) {
 
-            Object result = ifStatement.getLeft().evaluate(self, context);
-            if (result != null)
-                satisfied = (Boolean) result;
+            Expression<?> conditionalExpression = ifStatement.getLeft();
+            Object result = conditionalExpression.evaluate(self, context);
+            if (result != null) {
+                try {
+                    satisfied = (Boolean) result;
+                } catch (ClassCastException ex){
+                    throw new PebbleException(ex, "Expected a Boolean in \"if\" statement", getLineNumber(), self.getName());
+                }
+            }
 
             if (satisfied) {
                 ifStatement.getRight().render(self, writer, context);
