@@ -8,20 +8,16 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Represents a "for" loop within the template.
@@ -89,8 +85,13 @@ public class ForNode extends AbstractRenderableNode {
                  * get it's own distinct copy of the context.
                  */
                 Map<String, Object> loop = new HashMap<>();
+                loop.put("last", index == length - 1);
+                loop.put("first", index == 0);
+                loop.put("revindex", length - index - 1);
                 loop.put("index", index++);
                 loop.put("length", length);
+                loop.put("length", length);
+
                 context.put("loop", loop);
 
                 context.put(variableName, iterator.next());
