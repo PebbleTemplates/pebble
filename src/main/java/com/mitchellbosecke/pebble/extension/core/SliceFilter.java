@@ -1,20 +1,20 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
+
+import com.mitchellbosecke.pebble.extension.Filter;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
 
 public class SliceFilter implements Filter {
 
@@ -79,7 +79,9 @@ public class SliceFilter implements Filter {
         if (argTo != null) {
             to = ((Long) argTo).intValue();
             if (to > length)
-                throw new IllegalArgumentException("toIndex must be smaller than input size: " + length);
+                // Set the "to" var to the length value to allow using higher than length values.
+                // This allows avoiding checking list length inside the templates before calling slice
+                to = length;
             else if (from >= to)
                 throw new IllegalArgumentException("toIndex must be greater than fromIndex");
         } else {
