@@ -8,7 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,12 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class CoreTestsTest extends AbstractTest {
 
@@ -62,7 +61,7 @@ public class CoreTestsTest extends AbstractTest {
         assertEquals("yes", writer.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testNullEven() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
@@ -109,7 +108,7 @@ public class CoreTestsTest extends AbstractTest {
         assertEquals("yes", writer.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testNullOdd() throws PebbleException, IOException {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
