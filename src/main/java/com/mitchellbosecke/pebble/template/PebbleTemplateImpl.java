@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -93,12 +93,16 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * the end user and is therefore not included in the PebbleTemplate
      * interface. I can't, however, make it "private" due to the fact that
      * NodeInclude will call this method on a template other than itself.
-     * 
-     * 
-     * @param writer The writer used to write the final output of the template
-     * @param context The evaluation context
-     * @throws PebbleException Thrown if any sort of template error occurs
-     * @throws IOException Thrown from the writer object
+     *
+     *
+     * @param writer
+     *            The writer used to write the final output of the template
+     * @param context
+     *            The evaluation context
+     * @throws PebbleException
+     *             Thrown if any sort of template error occurs
+     * @throws IOException
+     *             Thrown from the writer object
      */
     public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
         if (context.getExecutorService() != null) {
@@ -110,8 +114,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
     /**
      * Initializes the evaluation context with settings from the engine.
-     * 
-     * @param locale The desired locale
+     *
+     * @param locale
+     *            The desired locale
      * @return The evaluation context
      */
     private EvaluationContext initContext(Map<String, Object> map, Locale locale) {
@@ -125,18 +130,22 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
     /**
      * Imports a template.
-     * 
-     * @param context The evaluation context
-     * @param name The template name
-     * @throws PebbleException Thrown if an error occurs while rendering the imported template
+     *
+     * @param context
+     *            The evaluation context
+     * @param name
+     *            The template name
+     * @throws PebbleException
+     *             Thrown if an error occurs while rendering the imported
+     *             template
      */
     public void importTemplate(EvaluationContext context, String name) throws PebbleException {
-        context.addImportedTemplate((PebbleTemplateImpl) engine.getTemplate(name));
+        context.addImportedTemplate((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name)));
     }
 
     public void includeTemplate(Writer writer, EvaluationContext context, String name) throws PebbleException,
             IOException {
-        PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(name);
+        PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name));
         EvaluationContext newContext = context.shallowCopyWithoutInheritanceChain(template);
         template.evaluate(writer, newContext);
     }
@@ -146,9 +155,22 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     /**
+     * This method resolves the given relative path based on this template file
+     * path.
+     *
+     * @param relativePath
+     *            the path which should be resolved.
+     * @return the resolved path.
+     */
+    public String resolveRelativePath(String relativePath) {
+        return this.engine.getLoader().resolveRelativePath(relativePath, this.name);
+    }
+
+    /**
      * Registers a block.
-     * 
-     * @param block The block
+     *
+     * @param block
+     *            The block
      */
     public void registerBlock(Block block) {
         blocks.put(block.getName(), block);
@@ -168,13 +190,19 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     /**
      * A typical block declaration will use this method which evaluates the
      * block using the regular user-provided writer.
-     * 
-     * @param blockName The name of the block
-     * @param context The evaluation context
-     * @param ignoreOverriden Whether or not to ignore overriden blocks
-     * @param writer The writer
-     * @throws PebbleException Thrown if an error occurs
-     * @throws IOException Thrown from the writer object
+     *
+     * @param blockName
+     *            The name of the block
+     * @param context
+     *            The evaluation context
+     * @param ignoreOverriden
+     *            Whether or not to ignore overriden blocks
+     * @param writer
+     *            The writer
+     * @throws PebbleException
+     *             Thrown if an error occurs
+     * @throws IOException
+     *             Thrown from the writer object
      */
     public void block(Writer writer, EvaluationContext context, String blockName, boolean ignoreOverriden)
             throws PebbleException, IOException {
@@ -253,7 +281,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     public void setParent(EvaluationContext context, String parentName) throws PebbleException {
-        context.setParent((PebbleTemplateImpl) engine.getTemplate(parentName));
+        context.setParent((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(parentName)));
     }
 
     public String getName() {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -14,10 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
+import com.mitchellbosecke.pebble.utils.PathUtils;
 
 /**
  * Uses a classloader to find templates located on the classpath.
- * 
+ *
  * @author mbosecke
  *
  */
@@ -107,5 +108,10 @@ public class ClasspathLoader implements Loader {
     @Override
     public void setCharset(String charset) {
         this.charset = charset;
+    }
+
+    @Override
+    public String resolveRelativePath(String relativePath, String anchorPath) {
+        return PathUtils.resolveRelativePath(relativePath, anchorPath);
     }
 }
