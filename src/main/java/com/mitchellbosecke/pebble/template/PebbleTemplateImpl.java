@@ -13,6 +13,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -143,10 +144,28 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         context.addImportedTemplate((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name)));
     }
 
-    public void includeTemplate(Writer writer, EvaluationContext context, String name) throws PebbleException,
-            IOException {
+    /**
+     * Includes a template with {@code name} into this template.
+     *
+     * @param writer
+     *            the writer to which the output should be written to.
+     * @param context
+     *            the context within which the template is rendered in.
+     * @param name
+     *            the name of the template to include.
+     * @param additionalVariables
+     *            the map with additional variables provided with the include
+     *            tag to add within the include tag.
+     * @throws PebbleException
+     * @throws IOException
+     */
+    public void includeTemplate(Writer writer, EvaluationContext context, String name, Map<?, ?> additionalVariables)
+            throws PebbleException, IOException {
         PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name));
         EvaluationContext newContext = context.shallowCopyWithoutInheritanceChain(template);
+        for (Entry<?, ?> entry : additionalVariables.entrySet()) {
+            newContext.put((String) entry.getKey(), entry.getValue());
+        }
         template.evaluate(writer, newContext);
     }
 

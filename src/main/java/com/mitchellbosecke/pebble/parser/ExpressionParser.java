@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -66,7 +66,7 @@ public class ExpressionParser {
 
     /**
      * Constructor
-     * 
+     *
      * @param parser
      *            A reference to the main parser
      * @param binaryOperators
@@ -83,7 +83,7 @@ public class ExpressionParser {
 
     /**
      * The public entry point for parsing an expression.
-     * 
+     *
      * @return NodeExpression the expression that has been parsed.
      * @throws ParserException
      *             Thrown if a parsing error occurs
@@ -96,9 +96,9 @@ public class ExpressionParser {
      * A private entry point for parsing an expression. This method takes in the
      * precedence required to operate a "precedence climbing" parsing algorithm.
      * It is a recursive method.
-     * 
+     *
      * @see http://en.wikipedia.org/wiki/Operator-precedence_parser
-     * 
+     *
      * @return The NodeExpression representing the parsed expression.
      * @throws ParserException
      *             Thrown if a parsing error occurs.
@@ -123,8 +123,7 @@ public class ExpressionParser {
             try {
                 unaryExpression = operatorNodeClass.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+               throw new RuntimeException(e);
             }
             unaryExpression.setChildExpression(expression);
 
@@ -230,7 +229,7 @@ public class ExpressionParser {
 
     /**
      * Checks if a token is a unary operator.
-     * 
+     *
      * @param token
      *            The token that we are checking
      * @return boolean Whether the token is a unary operator or not
@@ -241,7 +240,7 @@ public class ExpressionParser {
 
     /**
      * Checks if a token is a binary operator.
-     * 
+     *
      * @param token
      *            The token that we are checking
      * @return boolean Whether the token is a binary operator or not
@@ -254,7 +253,7 @@ public class ExpressionParser {
      * Finds and returns the next "simple" expression; an expression of which
      * can be found on either side of a binary operator but does not contain a
      * binary operator. Ex. "var.field", "true", "12", etc.
-     * 
+     *
      * @return NodeExpression The expression that it found.
      * @throws ParserException
      *             Thrown if a parsing error occurs.
@@ -357,7 +356,7 @@ public class ExpressionParser {
      * thought. We will look for the filter operator or perhaps we are getting
      * an attribute from a variable (ex. var.attribute or var['attribute'] or
      * var.attribute(bar)).
-     * 
+     *
      * @param node
      *            The expression that we have already discovered
      * @return Either the original expression that was passed in or a slightly
@@ -440,9 +439,9 @@ public class ExpressionParser {
      * A bean attribute expression can either be an expression getting an
      * attribute from a variable in the context, or calling a method from a
      * variable.
-     * 
+     *
      * Ex. foo.bar or foo['bar'] or foo.bar('baz')
-     * 
+     *
      * @param node
      *            The expression parsed so far
      * @return NodeExpression The parsed subscript expression
@@ -554,9 +553,9 @@ public class ExpressionParser {
 
     /**
      * Parses a new variable that will need to be initialized in the Java code.
-     * 
+     *
      * This is used for the set tag, the for loop, and in named arguments.
-     * 
+     *
      * @return A variable name
      * @throws ParserException
      *             Thrown if a parsing error occurs.
