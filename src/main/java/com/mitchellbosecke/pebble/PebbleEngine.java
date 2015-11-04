@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -10,6 +10,8 @@ package com.mitchellbosecke.pebble;
 
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -51,9 +53,9 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
  * The main class used for compiling templates. The PebbleEngine is responsible
  * for delegating responsibility to the lexer, parser, compiler, and template
  * cache.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class PebbleEngine {
 
@@ -115,12 +117,39 @@ public class PebbleEngine {
     }
 
     /**
-     * Constructor for the Pebble Engine given an instantiated Loader.
-     * 
+     * Constructor for the Pebble Engine given an instantiated Loader with all
+     * default extensions loaded.
+     *
      * @param loader
      *            The template loader for this engine
      */
     public PebbleEngine(Loader loader) {
+        this(loader, new CoreExtension(), new EscaperExtension(), new I18nExtension());
+    }
+
+    /**
+     * Constructor for the Pebble Engine given an instantiated Loader. This
+     * method does only load those extensions listed here.
+     *
+     * @param loader
+     *            The template loader for this engine
+     * @param extensions
+     *            The extensions which should be loaded.
+     */
+    public PebbleEngine(Loader loader, Extension... extensions) {
+        this(loader, Arrays.asList(extensions));
+    }
+
+    /**
+     * Constructor for the Pebble Engine given an instantiated Loader. This
+     * method does only load those extensions listed here.
+     *
+     * @param loader
+     *            The template loader for this engine
+     * @param extensions
+     *            The extensions which should be loaded.
+     */
+    public PebbleEngine(Loader loader, Collection<? extends Extension> extensions) {
 
         // set up a default loader if necessary
         if (loader == null) {
@@ -138,17 +167,17 @@ public class PebbleEngine {
         parser = new ParserImpl(this);
 
         // register default extensions
-        this.addExtension(new CoreExtension());
-        this.addExtension(new EscaperExtension());
-        this.addExtension(new I18nExtension());
+        for (Extension extension : extensions) {
+            this.addExtension(extension);
+        }
 
     }
 
     /**
-     * 
+     *
      * Loads, parses, and compiles a template into an instance of PebbleTemplate
      * and returns this instance.
-     * 
+     *
      * @param templateName
      *            The name of the template
      * @return PebbleTemplate The compiled version of the template
@@ -343,7 +372,7 @@ public class PebbleEngine {
 
     /**
      * Sets the cache to be used for storing compiled PebbleTemplate instances.
-     * 
+     *
      * @param cache
      *            The cache to be used
      */
@@ -364,8 +393,9 @@ public class PebbleEngine {
      * strictVariables is equal to false (which is the default) then expressions
      * become much more null-safe and type issues are handled in a much more
      * graceful manner.
-     * 
-     * @param strictVariables Whether or not strict variables is used
+     *
+     * @param strictVariables
+     *            Whether or not strict variables is used
      */
     public void setStrictVariables(boolean strictVariables) {
         this.strictVariables = strictVariables;
@@ -378,7 +408,7 @@ public class PebbleEngine {
     /**
      * The default locale that will be passed to each template upon compilation.
      * An individual template can be given a new locale on evaluation.
-     * 
+     *
      * @param locale
      *            The default locale to pass to all newly compiled templates.
      */
@@ -393,7 +423,7 @@ public class PebbleEngine {
     /**
      * Providing an ExecutorService will enable some advanced multithreading
      * features such as the parallel tag.
-     * 
+     *
      * @param executorService
      *            The ExecutorService to enable multithreading features.
      */
