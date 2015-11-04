@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -42,7 +42,7 @@ public class CoreTestsTest extends AbstractTest {
     /**
      * Pebble parses numbers as longs so we want to make sure our numerical
      * tests will work even if we force it to take an int as an input.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -89,7 +89,7 @@ public class CoreTestsTest extends AbstractTest {
     /**
      * Pebble parses numbers as longs so we want to make sure our numerical
      * tests will work even if we force it to take an int as an input.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -181,9 +181,9 @@ public class CoreTestsTest extends AbstractTest {
 
     /**
      * Using the unary "not" operator before a test.
-     * 
+     *
      * Issue #27
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -203,9 +203,9 @@ public class CoreTestsTest extends AbstractTest {
     /**
      * Similar to the testNegativeTest() except with an attribute of an object
      * in the context.
-     * 
+     *
      * Issue #27
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -235,6 +235,27 @@ public class CoreTestsTest extends AbstractTest {
         template.evaluate(writer, new HashMap<String, Object>());
         assertEquals("true", writer.toString());
     }
+
+
+    /**
+     * Tests if the test function 'defined' is working.
+     */
+    @Test
+    public void testDefined() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% if test is defined %}yes{% else %}no{% endif %}{% if test2 is defined %}no{% else %}yes{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        Map<String, Object> context = new HashMap<>();
+        context.put("test", "yes");
+        template.evaluate(writer, context);
+        assertEquals("yesyes", writer.toString());
+    }
+
+
 
     public static class Classroom {
 
