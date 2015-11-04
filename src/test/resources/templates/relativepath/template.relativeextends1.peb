@@ -1,0 +1,9 @@
+{#
+	used by:
+		TestRelativePath.testRelativeExtends
+#}
+{% extends './template.relativeextends2.peb' %}
+
+{% block test %}
+	overridden
+{% endblock %}

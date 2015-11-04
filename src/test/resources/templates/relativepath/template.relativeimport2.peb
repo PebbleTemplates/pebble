@@ -1,0 +1,7 @@
+{#
+	used by:
+		TestRelativePath.testRelativeImports
+#}
+{% macro input(name, value, type) %}
+	<input name="{{ name }}" value="{{ value }}" type="{{ type }}" />
+{% endmacro %}
