@@ -37,7 +37,7 @@ public class StringLoader implements Loader {
 
     @Override
     public String resolveRelativePath(String relativePath, String anchorPath) {
-        return relativePath;
+        return null;
     }
 
 }

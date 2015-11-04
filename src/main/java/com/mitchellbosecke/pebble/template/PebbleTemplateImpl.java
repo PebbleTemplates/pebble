@@ -163,7 +163,12 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @return the resolved path.
      */
     public String resolveRelativePath(String relativePath) {
-        return this.engine.getLoader().resolveRelativePath(relativePath, this.name);
+        String resolved = this.engine.getLoader().resolveRelativePath(relativePath, this.name);
+        if (resolved == null) {
+            return relativePath;
+        } else {
+            return resolved;
+        }
     }
 
     /**

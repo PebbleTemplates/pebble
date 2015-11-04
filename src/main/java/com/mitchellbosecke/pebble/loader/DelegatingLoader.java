@@ -114,7 +114,7 @@ public class DelegatingLoader implements Loader {
         }
         for (Loader loader : this.loaders) {
             String path = loader.resolveRelativePath(relativePath, anchorPath);
-            if (!path.equals(relativePath)) {
+            if (path != null) {
                 return path;
             }
         }

@@ -12,20 +12,18 @@ import org.junit.Test;
 public class PathUtilsTest {
 
     /**
-     * Tests if {@link PathUtils#resolveRelativePath(String, String, String)} is working.
+     * Tests if {@link PathUtils#resolveRelativePath(String, String, String)} is
+     * working.
      */
     @Test
     public void testRelativePathResolution() {
-        Assert.assertEquals("test/test/sample.peb",
-                PathUtils.resolveRelativePath("./sample.peb", "test/test/", "/"));
+        Assert.assertEquals("test/test/sample.peb", PathUtils.resolveRelativePath("./sample.peb", "test/test/", "/"));
         Assert.assertEquals("test/test/sample.peb",
                 PathUtils.resolveRelativePath("./sample.peb", "test/test/other.peb", "/"));
-        Assert.assertEquals("test/sample.peb",
-                PathUtils.resolveRelativePath("../sample.peb", "test/test/", "/"));
+        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/", "/"));
         Assert.assertEquals("test/sample.peb",
                 PathUtils.resolveRelativePath("../sample.peb", "test/test/other.peb", "/"));
-        Assert.assertEquals("test/sample.peb",
-                PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb", "/"));
+        Assert.assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb", "/"));
 
     }
 

@@ -73,7 +73,7 @@ public interface Loader {
      * @param anchorPath
      *            the anchor path based on which the relative path should be
      *            resolved on.
-     * @return the resolved path or the original relativePath when the path could not be resolved.
+     * @return the resolved path or {@code null} when the path could not be resolved.
      */
     public String resolveRelativePath(String relativePath, String anchorPath);
 

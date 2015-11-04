@@ -23,7 +23,7 @@ public final class PathUtils {
      * @param anchorPath
      *            the anchor path based on which the relative path should be
      *            resolved on.
-     * @return the resolved path or the original provided relativePath
+     * @return the resolved path or {@code null} when the path could not be resolved.
      */
     public static String resolveRelativePath(String relativePath, String anchorPath) {
         return resolveRelativePath(relativePath, anchorPath, File.separator);
@@ -40,11 +40,11 @@ public final class PathUtils {
      *            resolved on.
      * @param separator
      *            the path separator to use to resolve the path.
-     * @return the resolved path or the original provided relativePath
+     * @return the resolved path or {@code null} when the path could not be resolved.
      */
     public static String resolveRelativePath(String relativePath, String anchorPath, String separator) {
         if (relativePath == null || relativePath.isEmpty()) {
-            return relativePath;
+            return null;
         }
         if (separator == null) {
             throw new IllegalArgumentException("The separator cannot be NULL.");
@@ -60,7 +60,7 @@ public final class PathUtils {
             return resultingPath.substring(0, resultingPath.length() - separator.length());
         }
 
-        return relativePath;
+        return null;
     }
 
     private static Collection<String> determineAnchorPathSegments(String anchorPath, String separator) {
