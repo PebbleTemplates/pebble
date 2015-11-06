@@ -104,7 +104,7 @@ public class ServletLoader implements Loader {
 
     @Override
     public String resolveRelativePath(String relativePath, String anchorPath) {
-        return PathUtils.resolveRelativePath(relativePath, anchorPath, "/");
+        return PathUtils.resolveRelativePath(relativePath, anchorPath);
     }
 
 }
