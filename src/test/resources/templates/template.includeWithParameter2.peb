@@ -1,0 +1,4 @@
+simple:{{ simple }}
+contextVariable:{{ contextVariable }}
+map.position:{{ map.position }}
+map.contextVariable:{{ map.contextVariable }}

@@ -1,0 +1,9 @@
+{# used by IncludeWithParameterTest.testIncludeWithMapParameters #}
+{% include 'template.includeWithParameter2.peb' with {
+        'simple': 'simple-value',
+        'contextVariable': contextVariable,
+        'map': {
+            'position': 'left',
+            'contextVariable': contextVariable
+        }}
+   %}

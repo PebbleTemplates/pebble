@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.error.LoaderException;
  * default implementation used by Pebble; it delegates to a classpath loader and
  * a file loader to increase the chances of finding templates with varying
  * setups.
- * 
+ *
  * @author mbosecke
  *
  */
@@ -40,7 +40,7 @@ public class DelegatingLoader implements Loader {
 
     /**
      * Constructor provided with a list of children loaders.
-     * 
+     *
      * @param loaders
      *            A list of loaders to delegate to
      */
@@ -105,5 +105,19 @@ public class DelegatingLoader implements Loader {
         for (Loader loader : loaders) {
             loader.setCharset(charset);
         }
+    }
+
+    @Override
+    public String resolveRelativePath(String relativePath, String anchorPath) {
+        if (relativePath == null) {
+            return relativePath;
+        }
+        for (Loader loader : this.loaders) {
+            String path = loader.resolveRelativePath(relativePath, anchorPath);
+            if (path != null) {
+                return path;
+            }
+        }
+        return null;
     }
 }
