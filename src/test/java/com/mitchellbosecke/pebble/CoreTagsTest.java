@@ -21,10 +21,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 import static org.junit.Assert.assertEquals;
@@ -224,7 +221,7 @@ public class CoreTagsTest extends AbstractTest {
         Loader loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        Map<String, Integer> data = new HashMap<>();
+        Map<String, Integer> data = new LinkedHashMap<>();
         data.put("One", 1);
         data.put("Two", 2);
         data.put("Three", 3);
