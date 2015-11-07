@@ -545,4 +545,26 @@ public class CoreOperatorsTest extends AbstractTest {
         assertEquals("yes", writer.toString());
     }
 
+    /**
+     * Tests if the string concatenation is working.
+     */
+    @Test
+    public void testStringConcatenation() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{{ name1 ~ name2 ~ name3 | lower }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("name1", "Bob");
+        context.put("name2", "Maria");
+        context.put("name3", "John");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("bobmariajohn", writer.toString());
+
+    }
+
 }

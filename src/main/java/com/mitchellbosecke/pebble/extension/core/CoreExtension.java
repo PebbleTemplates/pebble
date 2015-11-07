@@ -20,6 +20,7 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.expression.AddExpression;
 import com.mitchellbosecke.pebble.node.expression.AndExpression;
+import com.mitchellbosecke.pebble.node.expression.ConcatenateExpression;
 import com.mitchellbosecke.pebble.node.expression.ContainsExpression;
 import com.mitchellbosecke.pebble.node.expression.DivideExpression;
 import com.mitchellbosecke.pebble.node.expression.EqualsExpression;
@@ -107,6 +108,7 @@ public class CoreExtension extends AbstractExtension {
         operators.add(new BinaryOperatorImpl("/", 60, DivideExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("%", 60, ModulusExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("|", 100, FilterExpression.class, Associativity.LEFT));
+        operators.add(new BinaryOperatorImpl("~", 110, ConcatenateExpression.class, Associativity.LEFT));
 
         return operators;
     }
