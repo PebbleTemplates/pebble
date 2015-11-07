@@ -13,17 +13,32 @@ public class PathUtilsTest {
 
     /**
      * Tests if {@link PathUtils#resolveRelativePath(String, String, String)} is
-     * working.
+     * working with Unix systems.
      */
     @Test
-    public void testRelativePathResolution() {
-        Assert.assertEquals("test/test/sample.peb", PathUtils.resolveRelativePath("./sample.peb", "test/test/", "/"));
+    public void testRelativePathResolutionUnixStyle() {
+        Assert.assertEquals("test/test/sample.peb", PathUtils.resolveRelativePath("./sample.peb", "test/test/"));
         Assert.assertEquals("test/test/sample.peb",
-                PathUtils.resolveRelativePath("./sample.peb", "test/test/other.peb", "/"));
-        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/", "/"));
-        Assert.assertEquals("test/sample.peb",
-                PathUtils.resolveRelativePath("../sample.peb", "test/test/other.peb", "/"));
-        Assert.assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb", "/"));
+                PathUtils.resolveRelativePath("./sample.peb", "test/test/other.peb"));
+        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/"));
+        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/other.peb"));
+        Assert.assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb"));
+
+    }
+
+    /**
+     * Tests if {@link PathUtils#resolveRelativePath(String, String, String)} is
+     * working with Windows.
+     */
+    @Test
+    public void testRelativePathResolutionWindowsStyle() {
+        Assert.assertEquals("test\\test\\sample.peb", PathUtils.resolveRelativePath(".\\sample.peb", "test\\test\\"));
+        Assert.assertEquals("test\\test\\sample.peb",
+                PathUtils.resolveRelativePath(".\\sample.peb", "test\\test\\other.peb"));
+        Assert.assertEquals("test\\sample.peb", PathUtils.resolveRelativePath("..\\sample.peb", "test\\test\\"));
+        Assert.assertEquals("test\\sample.peb",
+                PathUtils.resolveRelativePath("..\\sample.peb", "test\\test\\other.peb"));
+        Assert.assertEquals(null, PathUtils.resolveRelativePath("test\\sample.peb", "test\\test\\other.peb"));
 
     }
 
