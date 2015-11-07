@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -31,7 +31,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testUnaryOperators() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if -2 == -+(5 - 3) %}yes{% else %}no{% endif %}";
@@ -44,7 +44,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testNotUnaryOperator() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if not (true) %}yes{% else %}no{% endif %}";
@@ -57,7 +57,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testBinaryOperators() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ 8 + 5 * 4 - (6 + 10 / 2)  + 44 }}-{{ 10%3 }}";
@@ -71,12 +71,12 @@ public class CoreOperatorsTest extends AbstractTest {
     /**
      * Problem existed where getAttribute would return an Object type which was
      * an invalid operand for java's algebraic operators.
-     * 
+     *
      * @throws PebbleException
      */
     @Test
     public void testBinaryOperatorOnAttribute() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ 1 + item.changeInt }} " + "{{ 1 - item.changeInt }} " + "{{ 2 * item.changeInt }} "
@@ -93,12 +93,12 @@ public class CoreOperatorsTest extends AbstractTest {
     /**
      * Problem existed where getAttribute would return an Object type which was
      * an invalid operand for java's algebraic operators.
-     * 
+     *
      * @throws PebbleException
      */
     @Test
     public void testUnaryOperatorOnAttribute() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if -5 > -item.changeInt %}yes{% else %}no{% endif %}";
@@ -113,7 +113,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testNotUnaryOperatorOnAttribute() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if not(item.truthy) %}yes{% else %}no{% endif %}";
@@ -128,7 +128,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testLogicOperatorOnAttributes() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if item.truthy and item.falsy %}yes{% else %}no{% endif %}"
@@ -144,7 +144,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testTernary() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ true ? 1 : 2 }}-{{ 1 + 4 == 5 ?(2-1) : 2 }}";
@@ -157,7 +157,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testComparisons() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 3 > 2 %}yes{% endif %}" +
@@ -184,7 +184,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testComparisonsOnDifferingOperands() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 3 > 2.0 %}yes{% endif %}";
@@ -197,7 +197,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test()
     public void testEqualsOperator() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 'test' equals obj2 %}yes{% endif %}{% if 'blue' equals 'red' %}no{% else %}yes{% endif %}";
@@ -212,7 +212,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test()
     public void testEqualsOperatorWithNulls() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if null equals null %}yes{% endif %}{% if null equals obj %}yes{% else %}no{% endif %}";
@@ -227,7 +227,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test()
     public void testNotEqualsOperator() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 'Mitchell' != name %}no{% else %}yes{% endif %}";
@@ -242,7 +242,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test()
     public void testEqualsOperatorWithPrimitives() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 1 equals 1 %}yes{% endif %}{% if 3 equals item.changeInt %}yes{% else %}no{% endif %}";
@@ -264,7 +264,7 @@ public class CoreOperatorsTest extends AbstractTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test()
     public void testEqualsOperatorWithNumberObjects() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if (v == 1) %}num1{% elseif (v == 999999) %}num999999{% else %}no{% endif %}";
@@ -296,12 +296,12 @@ public class CoreOperatorsTest extends AbstractTest {
      * variable object, the template could not be compiled. This is because the
      * getAttribute() method of the AbstractPebbleTemplate returns Objects and
      * Objects can not be compared to primitives.
-     * 
+     *
      * @throws PebbleException
      */
     @Test()
     public void testComparisonWithAttributeOperand() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if item.change < 2.0 %}yes{% else %}no{% endif %}"
@@ -330,7 +330,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test()
     public void testIsOperatorPrecedence() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 1 + 2 is odd %} true {% else %} false {% endif %}";
@@ -343,7 +343,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test()
     public void testIsOperatorPrecedenceWithAnd() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 3 is odd and 5 is odd %} true {% else %} false {% endif %}";
@@ -356,7 +356,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testContainsOperator() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if names contains 'John' %}yes{% else %}no{% endif %}";
@@ -372,7 +372,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testContainsOperatorWithNull() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if null contains 'John' %}yes{% else %}no{% endif %}";
@@ -386,7 +386,7 @@ public class CoreOperatorsTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testContainsOperator2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if names contains 'Maria' %}yes{% else %}no{% endif %}";
@@ -409,7 +409,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testContainsOperator4() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if names contains 'Cobra' %}yes{% else %}no{% endif %}";
@@ -425,7 +425,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testContainsOperatorWithAnd() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if names contains 'Bob' and names contains 'Maria' %}yes{% else %}no{% endif %}";
@@ -441,7 +441,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testContainsOperatorWithOr() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if names contains 'John' or names contains 'Cobra' %}yes{% else %}no{% endif %}";
@@ -457,7 +457,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testContainsOperatorWithNot() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if not names contains 'Cobra' %}yes{% else %}no{% endif %}";
@@ -473,7 +473,7 @@ public class CoreOperatorsTest extends AbstractTest {
 
     @Test
     public void testContainsWithArrays() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if values contains value %}yes{% else %}no{% endif %}";
@@ -543,6 +543,28 @@ public class CoreOperatorsTest extends AbstractTest {
         context.put("value", Short.valueOf("1"));
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
+    }
+
+    /**
+     * Tests if the string concatenation is working.
+     */
+    @Test
+    public void testStringConcatenation() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{{ name1 ~ name2 ~ name3 | lower }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("name1", "Bob");
+        context.put("name2", "Maria");
+        context.put("name3", "John");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("bobmariajohn", writer.toString());
+
     }
 
 }

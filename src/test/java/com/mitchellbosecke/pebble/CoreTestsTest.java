@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -28,7 +28,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test
     public void testEven() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 2 is even %}yes{% else %}no{% endif %}{% if 3 is even %}no{% else %}yes{% endif %}";
@@ -42,13 +42,13 @@ public class CoreTestsTest extends AbstractTest {
     /**
      * Pebble parses numbers as longs so we want to make sure our numerical
      * tests will work even if we force it to take an int as an input.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
     @Test
     public void testEvenWithInteger() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if num is even %}yes{% else %}no{% endif %}";
@@ -63,7 +63,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test(expected = PebbleException.class)
     public void testNullEven() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if null is even %}yes{% else %}no{% endif %}";
@@ -75,7 +75,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test
     public void testOdd() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 2 is odd %}no{% else %}yes{% endif %}{% if 3 is odd %}yes{% else %}no{% endif %}";
@@ -89,13 +89,13 @@ public class CoreTestsTest extends AbstractTest {
     /**
      * Pebble parses numbers as longs so we want to make sure our numerical
      * tests will work even if we force it to take an int as an input.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
     @Test
     public void testOddWithInteger() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if num is odd %}yes{% else %}no{% endif %}";
@@ -110,7 +110,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test(expected = PebbleException.class)
     public void testNullOdd() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if null is odd %}yes{% else %}no{% endif %}";
@@ -122,7 +122,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test
     public void testNull() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if null is null %}yes{% endif %}{% if obj is null %}yes{% endif %}{% if 2 is null %}no{% else %}yes{% endif %}";
@@ -137,7 +137,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test
     public void testEmpty() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if null is empty() %}yes{% endif %}{% if '  ' is empty() %}yes{% endif %}{% if obj is empty() %}yes{% endif %}";
@@ -152,7 +152,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test
     public void testIterables() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if null is iterable() %}no{% else %}yes{% endif %}{% if obj1 is iterable() %}yes{% else %}no{% endif %}{% if obj2 is iterable() %}no{% else %}yes{% endif %}";
@@ -168,7 +168,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test
     public void testIsnt() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if 2 is not odd %}yes{% else %}no{% endif %}{% if null is not iterable() %}yes{% else %}no{% endif %}";
@@ -181,15 +181,15 @@ public class CoreTestsTest extends AbstractTest {
 
     /**
      * Using the unary "not" operator before a test.
-     * 
+     *
      * Issue #27
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
     @Test
     public void testNegativeTest() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if not 2 is odd %}yes{% else %}no{% endif %}";
@@ -203,15 +203,15 @@ public class CoreTestsTest extends AbstractTest {
     /**
      * Similar to the testNegativeTest() except with an attribute of an object
      * in the context.
-     * 
+     *
      * Issue #27
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
     @Test
     public void testNegativeTestOnAttribute() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if not classroom.students is empty %}yes{% else %}no{% endif %}";
@@ -225,7 +225,7 @@ public class CoreTestsTest extends AbstractTest {
 
     @Test
     public void testMapTest() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if {} is map %}true{% else %}false{% endif %}";
@@ -235,6 +235,27 @@ public class CoreTestsTest extends AbstractTest {
         template.evaluate(writer, new HashMap<String, Object>());
         assertEquals("true", writer.toString());
     }
+
+
+    /**
+     * Tests if the test function 'defined' is working.
+     */
+    @Test
+    public void testDefined() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% if test is defined %}yes{% else %}no{% endif %}{% if test2 is defined %}no{% else %}yes{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        Map<String, Object> context = new HashMap<>();
+        context.put("test", "yes");
+        template.evaluate(writer, context);
+        assertEquals("yesyes", writer.toString());
+    }
+
+
 
     public static class Classroom {
 

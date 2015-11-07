@@ -73,7 +73,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
     /**
      * Two levels of parent functions would cause a stack overflow error, #61.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -89,7 +89,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
     @Test
     public void testMinFunction() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ min(8.0, 1, 4, 5, object.large) }}";
@@ -105,7 +105,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
     @Test
     public void testMaxFunction() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ max(8.0, 1, 4, 5, object.large) }}";

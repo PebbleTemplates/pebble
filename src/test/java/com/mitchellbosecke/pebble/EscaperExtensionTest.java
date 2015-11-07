@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -29,7 +29,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testEscapeHtml() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         PebbleTemplate template = pebble.getTemplate("{{ '&<>\"\\'' | escape }}");
@@ -41,7 +41,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testEscapeContextVariable() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         PebbleTemplate template = pebble.getTemplate("{{ text | escape(strategy='html') }}");
@@ -55,7 +55,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testEscapeWithNamedArguments() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         PebbleTemplate template = pebble.getTemplate("{{ '&<>\"\\'' | escape(strategy='html') }}");
@@ -67,7 +67,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testAutoescapeLiteral() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{{ '<br />' }}");
         Writer writer = new StringWriter();
@@ -77,7 +77,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testAutoescapePrintExpression() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{{ text }}");
         Map<String, Object> context = new HashMap<>();
@@ -89,7 +89,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testDisableAutoEscaping() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         EscaperExtension escaper = pebble.getExtension(EscaperExtension.class);
         escaper.setAutoEscaping(false);
@@ -103,7 +103,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testRawFilter() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{{ text | upper | raw }}");
         Map<String, Object> context = new HashMap<>();
@@ -115,7 +115,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testRawFilterNotBeingLast() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{{ text | raw | upper}}");
         Map<String, Object> context = new HashMap<>();
@@ -127,7 +127,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testDoubleEscaping() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{{ text | escape }}");
         Map<String, Object> context = new HashMap<>();
@@ -139,7 +139,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testAutoescapeToken() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         EscaperExtension escaper = pebble.getExtension(EscaperExtension.class);
         escaper.setAutoEscaping(false);
@@ -155,7 +155,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testAutoEscapingMacroOutput() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble
                 .getTemplate("{{ test(danger) }}{% macro test(input) %}<{{ input }}>{% endmacro %}");
@@ -178,7 +178,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testRawFilterWithinAutoescapeToken() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         EscaperExtension escaper = pebble.getExtension(EscaperExtension.class);
         escaper.setAutoEscaping(false);
@@ -202,7 +202,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testAutoEscapingBlockFunction() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble
                 .getTemplate("{% block header %}<{{ text }}>{% endblock %}{{ block('header') }}");
@@ -215,7 +215,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
     @Test
     public void testCustomEscapingStrategy() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         EscaperExtension extension = pebble.getExtension(EscaperExtension.class);
         extension.setDefaultStrategy("custom");

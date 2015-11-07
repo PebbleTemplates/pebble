@@ -28,7 +28,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testArraySyntax() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ [] }}";
@@ -41,7 +41,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSimpleArray() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['first-name'] }}";
@@ -54,7 +54,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void test2ElementArray() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['first-name','last-name'] }}";
@@ -67,7 +67,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void test2ElementArray2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ [ 'first-name' ,   'last-name'    ] }}";
@@ -80,7 +80,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testNElementArray() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['repeated-name','repeated-name','repeated-name','repeated-name','repeated-name','repeated-name','repeated-name'] }}";
@@ -95,7 +95,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testIncompleteArraySyntax() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ [,] }}";
@@ -108,7 +108,7 @@ public class ArraySyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testArrayWithExpressions() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['one', 2, three, numbers['four']] }}";
@@ -131,7 +131,7 @@ public class ArraySyntaxTest extends AbstractTest {
     @SuppressWarnings({ "serial", "unused" })
     @Test
     public void testArrayWithComplexExpressions() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['one' + 'plus', 2 - 1, three.number, numbers['four'][0], numbers ['five'] .value ] }}";
@@ -164,7 +164,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSetCommand() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = ['repeated-name',2*5] %}{{ arr }}";
@@ -177,7 +177,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSetCommand2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = ['repeated-name',2*5] %}{{ arr [1] }}";
@@ -190,7 +190,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testFirstFilter() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = ['name',2*5] %}{{ arr | first }}";
@@ -203,7 +203,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testFirstFilter2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['name',2*5] | first }}";
@@ -216,7 +216,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testJoinFilter() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = ['name',2*5] %}{{ arr | join(':') }}";
@@ -229,7 +229,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testJoinFilter2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['name',2*5] | join(':') }}";
@@ -242,7 +242,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testLastFilter() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = ['name',2*5] %}{{ arr | last }}";
@@ -255,7 +255,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testLastFilter2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['name',2*5] | last }}";
@@ -268,7 +268,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSliceFilter() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = ['name',2*5,'three',1.9] %}{{ arr | slice(1,3) }}";
@@ -281,7 +281,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSliceFilter2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ ['name',2*5,'three',1.9] | slice(1,3) }}";
@@ -294,7 +294,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSortFilter() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [3,2,1,0] %}{{ arr | sort }}";
@@ -307,7 +307,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSortFilter2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ [3,2,1,0] | sort }}";
@@ -320,7 +320,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testForTag() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set names = ['Bob','Maria','John'] %}{% for name in names %}{{ name }}{% endfor %}";
@@ -333,7 +333,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testForTag2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for name in ['Bob','Maria','John'] %}{{ name }}{% endfor %}";
@@ -346,7 +346,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testForElseTag() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for name in [] %}{{ name }}{% else %}{{ 'no name' }}{% endfor %}";
@@ -359,7 +359,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testIfTag() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set names = ['Bob','Maria','John'] %}{% if names is null %}{{ 'it is' }}{% else %}{{ 'it is not' }}{% endif %}";
@@ -372,7 +372,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testIfTag2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if ['Bob','Maria','John'] is null %}{{ 'it is' }}{% else %}{{ 'it is not' }}{% endif %}";
@@ -385,7 +385,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testMacroTag() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% macro firstname(names) %}{{ names | first }}{% endmacro %}{{ firstname(['Bob','Maria','John']) }}";
@@ -398,7 +398,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testMacroTagNamedArguments() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% macro firstname(names) %}{{ names | first }}{% endmacro %}{{ firstname(names=['Bob','Maria','John']) }}";
@@ -411,7 +411,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testAdditionOverloading() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [0,1] + 2 %}{{ arr }}";
@@ -424,7 +424,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testAdditionOverloading2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [0,1] + [2,3] %}{{ arr }}";
@@ -437,7 +437,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test(expected = RuntimeException.class)
     public void testAdditionOverloading3() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = 1 + [0,1] %}{{ arr }}";
@@ -449,7 +449,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSubtractionOverloading() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [0,1,2] - 1 %}{{ arr }}";
@@ -462,7 +462,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testSubtractionOverloading2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [0,1,2] - [0,2,3] %}{{ arr }}";
@@ -475,7 +475,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test(expected = RuntimeException.class)
     public void testSubtractionOverloading3() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = 1 - [0,2] %}{{ arr }}";
@@ -487,7 +487,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testEmptyTest() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [0,1,2] %}{% if arr is empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
@@ -500,7 +500,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testEmptyTest2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if [0,1,2] is empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
@@ -513,7 +513,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testEmptyTest3() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if [] is not empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
@@ -526,7 +526,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testIterableTest() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [0,1,2] %}{% if arr is iterable %}{{ 'true' }}{% endif %}";
@@ -539,7 +539,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testIterableTest2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if [0,1,2] is iterable %}{{ 'true' }}{% endif %}";
@@ -552,7 +552,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [0,1,2] %}{% if arr contains 1 %}true{% endif %}";
@@ -565,7 +565,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if [0,1,2] contains 1 %}true{% endif %}";
@@ -578,7 +578,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator3() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if [0,1,2] contains [1,2] %}true{% endif %}";
@@ -591,7 +591,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator4() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if not [0,1,2] contains 10 %}true{% endif %}";
@@ -604,7 +604,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator5() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% if [0,1,2] contains 1 and not [0,1] contains 0 %}true{% else %}false{% endif %}";
@@ -617,7 +617,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testNestedArrays() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [[]] %}{{ arr }}";
@@ -630,7 +630,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testNestedArrays2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set arr = [[],['test'],[['nested'],['arrays']]] %}{{ arr }}";
@@ -643,7 +643,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testNestedArrays3() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ [[],['test'],[['nested'],['arrays']]] }}";
@@ -656,7 +656,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
     @Test
     public void testNestedMapInArray() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ [{1:1}] }}";
@@ -672,7 +672,7 @@ public class ArraySyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testProblematicSubscriptSyntax() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -695,7 +695,7 @@ public class ArraySyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testProblematicSubscriptSyntax2() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -718,7 +718,7 @@ public class ArraySyntaxTest extends AbstractTest {
     @SuppressWarnings({ "serial", "unused" })
     @Test
     public void testProblematicSubscriptSyntax3() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -748,7 +748,7 @@ public class ArraySyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testProblematicSubscriptSyntax4() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -771,7 +771,7 @@ public class ArraySyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testProblematicSubscriptSyntax5() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 

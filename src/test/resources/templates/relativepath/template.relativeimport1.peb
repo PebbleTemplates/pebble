@@ -1,0 +1,6 @@
+{#
+	used by:
+		TestRelativePath.testRelativeImports
+#}
+{% import "./template.relativeimport2.peb" %}
+{{ input("company", "forcorp", "text") }}

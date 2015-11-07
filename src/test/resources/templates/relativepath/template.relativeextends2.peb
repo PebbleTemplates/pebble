@@ -1,0 +1,9 @@
+{#
+	used by:
+		TestRelativePath.testRelativeExtends
+#}
+<div>
+{% block test %}
+	my test
+{% endblock %}
+</div>
