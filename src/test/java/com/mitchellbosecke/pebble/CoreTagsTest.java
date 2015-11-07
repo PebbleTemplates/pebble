@@ -21,10 +21,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 import static org.junit.Assert.assertEquals;
@@ -217,6 +214,26 @@ public class CoreTagsTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("[3]02Alex11Bob[3]20John", writer.toString());
+    }
+
+    @Test
+    public void testForWithMap() throws PebbleException, IOException {
+        Loader loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        Map<String, Integer> data = new LinkedHashMap<>();
+        data.put("One", 1);
+        data.put("Two", 2);
+        data.put("Three", 3);
+
+        String source = "{% for entry in data %}{{ entry.key }} {{ entry.value }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("data", data);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("One 1Two 2Three 3", writer.toString());
     }
 
     @Test
