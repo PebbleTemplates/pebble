@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -30,13 +30,13 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 
 public class ExtendingPebbleTest extends AbstractTest {
-    
+
     private final class CustomExtension extends AbstractExtension {
         @Override
         public Map<String, Filter> getFilters() {
-           
+
             Map<String, Filter> filters= new HashMap<>();
-            
+
             filters.put("noArgumentsButCanAccessContext", new Filter(){
 
                 @Override
@@ -54,7 +54,7 @@ public class ExtendingPebbleTest extends AbstractTest {
                         return "failure";
                     }
                 }
-                
+
             });
             return filters;
         }
@@ -65,7 +65,7 @@ public class ExtendingPebbleTest extends AbstractTest {
      */
     @Test
     public void testFilterWithoutArgumentsCanAccessEvaluationContext() throws PebbleException, IOException {
-            Loader loader = new StringLoader();
+            Loader<?> loader = new StringLoader();
             PebbleEngine pebble = new PebbleEngine(loader);
             pebble.addExtension(new CustomExtension());
 

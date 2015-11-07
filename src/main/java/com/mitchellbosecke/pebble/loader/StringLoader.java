@@ -13,7 +13,7 @@ import java.io.StringReader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 
-public class StringLoader implements Loader {
+public class StringLoader implements Loader<String> {
 
     @Override
     public Reader getReader(String templateName) throws LoaderException {
@@ -38,6 +38,11 @@ public class StringLoader implements Loader {
     @Override
     public String resolveRelativePath(String relativePath, String anchorPath) {
         return null;
+    }
+
+    @Override
+    public String createCacheKey(String templateName) {
+        return templateName;
     }
 
 }

@@ -60,7 +60,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testBlockWithStringLiteralName() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -74,7 +74,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testIf() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -91,7 +91,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test(expected = PebbleException.class)
     public void testExceptionWithIfStatement() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -115,7 +115,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testIfThenElse() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -133,7 +133,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testIfWithDirectProperty() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -155,7 +155,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testIfTestAgainstNullVar() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setStrictVariables(false);
 
@@ -183,7 +183,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testFlush() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "start{% flush %}end";
@@ -199,7 +199,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testFor() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for user in users %}{% if loop.first %}[{{ loop.length }}]{% endif %}{% if loop.last %}[{{ loop.length }}]{% endif %}{{ loop.index }}{{ loop.revindex }}{{ user.username }}{% endfor %}";
@@ -238,7 +238,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testFilterTag() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% filter upper %}hello{% endfilter %}";
@@ -251,7 +251,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testChainedFilterTag() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% filter lower | escape %}HELLO<br>{% endfilter %}";
@@ -270,7 +270,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testForIteratingOverProperty() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for user in classroom.users %}{{ user.username }}{% endfor %}";
@@ -290,7 +290,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testForWithNullIterable() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for user in users %}{{ loop.index }}{% endfor %}";
@@ -306,7 +306,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testForWithArray() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for user in users %}{{ user }}{% endfor %}";
@@ -327,7 +327,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testForWithArrayOfPrimitives() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for num in ints %}{{ num }}{% endfor %}";
@@ -354,7 +354,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void multipleForLoops() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "" + "{% for user in users %}{{ user.username }}{% endfor %}"
@@ -374,7 +374,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testForElse() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% for user in users %}{{ user.username }}{% else %}yes{% endfor %}";
@@ -414,7 +414,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test(expected = RuntimeException.class)
     public void testMacrosWithSameName() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble
                 .getTemplate("{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}");
@@ -426,7 +426,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testMacroWithDefaultArgument() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble
                 .getTemplate("{{ input(name='country') }}{% macro input(type='text', name) %}{{ type }} {{ name }}{% endmacro %}");
@@ -454,7 +454,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testFunctionInMacroInvokedTwice() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         TestingExtension extension = new TestingExtension();
@@ -471,7 +471,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testMacroInvocationWithoutAllArguments() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble
                 .getTemplate("{{ test('1') }}{% macro test(one,two) %}{{ one }}{{ two }}{% endmacro %}");
@@ -512,7 +512,7 @@ public class CoreTagsTest extends AbstractTest {
     /**
      * It is important that this object has an identical method signature as
      * SimpleObjectA for the following tests.
-     * 
+     *
      * @author mbosecke
      *
      */
@@ -533,9 +533,9 @@ public class CoreTagsTest extends AbstractTest {
      * Gets the attribute of an object once so that the attribute is cached
      * within the GetAttributeExpression then evaluates the exact same template
      * but with a null object.
-     * 
+     *
      * Issue #57
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -547,7 +547,7 @@ public class CoreTagsTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
         context.put("object", a);
 
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{{ object.value }}");
 
@@ -566,9 +566,9 @@ public class CoreTagsTest extends AbstractTest {
      * within the GetAttributeExpression then evaluates the exact same template
      * but with a new type of object that happens to have the same method
      * signature.
-     * 
+     *
      * Pull #62
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
@@ -628,7 +628,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test(expected = PebbleException.class)
     public void testNonExistingMacroOrFunction() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{{ nonExisting('test') }}");
 
@@ -705,7 +705,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testSet() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{% set name = 'alex'  %}{{ name }}";
@@ -729,7 +729,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testVerbatim() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         PebbleTemplate template = pebble.getTemplate("{% verbatim %}{{ foo }}{{ bar }}{% endverbatim %}");
         Map<String, Object> context = new HashMap<>();
@@ -742,7 +742,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test(timeout = 300)
     public void testParallel() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setExecutorService(Executors.newCachedThreadPool());
         String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end {% parallel %}{{ slowObject.third }}{% endparallel %}";
@@ -767,7 +767,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testParallelTagWhileEvaluationContextIsChanging() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setExecutorService(Executors.newCachedThreadPool());
         String source = "{% for num in array %}{% parallel %}{{ loop.index }}{% endparallel %}{% endfor%}";
@@ -790,7 +790,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test(timeout = 500)
     public void testNestedParallel() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         pebble.setExecutorService(Executors.newCachedThreadPool());
         // @formatter:off
@@ -828,7 +828,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testParallelWithoutExecutorService() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %}";
         PebbleTemplate template = pebble.getTemplate(source);

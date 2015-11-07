@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -30,170 +30,161 @@ import static org.junit.Assert.assertEquals;
 
 public class ParsingOdditiesTest extends AbstractTest {
 
-	@Test
-	public void testEscapeCharactersText() throws PebbleException, IOException {
-		PebbleTemplate template = pebble
-				.getTemplate("template.escapeCharactersInText.peb");
-		Map<String, Object> context = new HashMap<>();
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-	}
+    @Test
+    public void testEscapeCharactersText() throws PebbleException, IOException {
+        PebbleTemplate template = pebble.getTemplate("template.escapeCharactersInText.peb");
+        Map<String, Object> context = new HashMap<>();
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
 
-	@Test
-	public void testExpressionInArguments() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+    @Test
+    public void testExpressionInArguments() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble
-				.getTemplate("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
+        PebbleTemplate template = pebble
+                .getTemplate("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("2", writer.toString());
-	}
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("2", writer.toString());
+    }
 
-	@Test
-	public void testPositionalAndNamedArguments() throws PebbleException,
-			IOException, ParseException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setDefaultLocale(Locale.ENGLISH);
+    @Test
+    public void testPositionalAndNamedArguments() throws PebbleException, IOException, ParseException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setDefaultLocale(Locale.ENGLISH);
 
-		String source = "{{ stringDate | date('yyyy/MMMM/d', existingFormat='yyyy-MMMM-d') }}";
+        String source = "{{ stringDate | date('yyyy/MMMM/d', existingFormat='yyyy-MMMM-d') }}";
 
-		PebbleTemplate template = pebble.getTemplate(source);
-		Map<String, Object> context = new HashMap<>();
-		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d", Locale.ENGLISH);
-		Date realDate = format.parse("2012-July-01");
-		context.put("stringDate", format.format(realDate));
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        DateFormat format = new SimpleDateFormat("yyyy-MMMM-d", Locale.ENGLISH);
+        Date realDate = format.parse("2012-July-01");
+        context.put("stringDate", format.format(realDate));
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("2012/July/1", writer.toString());
-	}
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("2012/July/1", writer.toString());
+    }
 
-	@Test(expected = PebbleException.class)
-	public void testPositionalArgumentAfterNamedArguments()
-			throws PebbleException, IOException, ParseException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+    @Test(expected = PebbleException.class)
+    public void testPositionalArgumentAfterNamedArguments() throws PebbleException, IOException, ParseException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
+        String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
-		PebbleTemplate template = pebble.getTemplate(source);
-		Map<String, Object> context = new HashMap<>();
-		DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
-		Date realDate = format.parse("2012-July-01");
-		context.put("stringDate", format.format(realDate));
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
+        Date realDate = format.parse("2012-July-01");
+        context.put("stringDate", format.format(realDate));
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("2012/July/1", writer.toString());
-	}
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("2012/July/1", writer.toString());
+    }
 
-	@Test
-	public void testVariableNamePrefixedWithOperatorName()
-			throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+    @Test
+    public void testVariableNamePrefixedWithOperatorName() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble
-				.getTemplate("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("organization", "organization");
-		context.put("nothing", "nothing");
-		context.put("andy", "andy");
-		context.put("equalsy", "equalsy");
-		context.put("istanbul", "istanbul");
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("organization nothing andy equalsy istanbul",
-				writer.toString());
-	}
+        PebbleTemplate template = pebble
+                .getTemplate("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("organization", "organization");
+        context.put("nothing", "nothing");
+        context.put("andy", "andy");
+        context.put("equalsy", "equalsy");
+        context.put("istanbul", "istanbul");
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("organization nothing andy equalsy istanbul", writer.toString());
+    }
 
-	@Test
-	public void testAttributeNamePrefixedWithOperatorName()
-			throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+    @Test
+    public void testAttributeNamePrefixedWithOperatorName() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.getTemplate("{{ foo.org }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("foo", new Foo("success"));
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("success", writer.toString());
-	}
+        PebbleTemplate template = pebble.getTemplate("{{ foo.org }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("foo", new Foo("success"));
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("success", writer.toString());
+    }
 
-	public static class Foo {
-		public String org;
+    public static class Foo {
 
-		public Foo(String org) {
-			this.org = org;
-		}
-	}
+        public String org;
 
-	@Test(expected = PebbleException.class)
-	public void testIncorrectlyNamedArgument() throws PebbleException,
-			IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+        public Foo(String org) {
+            this.org = org;
+        }
+    }
 
-		PebbleTemplate template = pebble
-				.getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
+    @Test(expected = PebbleException.class)
+    public void testIncorrectlyNamedArgument() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("This is a tes...", writer.toString());
-	}
+        PebbleTemplate template = pebble
+                .getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
 
-	@Test
-	public void testStringConstantWithLinebreak() throws PebbleException,
-			IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("This is a tes...", writer.toString());
+    }
 
-		PebbleTemplate template = pebble.getTemplate("{{ 'test\ntest' }}");
+    @Test
+    public void testStringConstantWithLinebreak() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("test\ntest", writer.toString());
-	}
+        PebbleTemplate template = pebble.getTemplate("{{ 'test\ntest' }}");
 
-	@Test(expected = ParserException.class)
-	public void testStringWithDifferentQuotationMarks() throws PebbleException,
-			IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("test\ntest", writer.toString());
+    }
 
-		PebbleTemplate template = pebble.getTemplate("{{'test\"}}");
+    @Test(expected = ParserException.class)
+    public void testStringWithDifferentQuotationMarks() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("test", writer.toString());
-	}
+        PebbleTemplate template = pebble.getTemplate("{{'test\"}}");
 
-	@Test
-	public void testSingleQuoteWithinDoubleQuotes() throws PebbleException,
-			IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("test", writer.toString());
+    }
 
-		PebbleTemplate template = pebble.getTemplate("{{\"te'st\"}}");
+    @Test
+    public void testSingleQuoteWithinDoubleQuotes() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("te'st", writer.toString());
+        PebbleTemplate template = pebble.getTemplate("{{\"te'st\"}}");
 
-		template = pebble.getTemplate("{{\"te\\'st\"}}");
-		writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("te\\'st", writer.toString());
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("te'st", writer.toString());
 
-		template = pebble.getTemplate("{{'te\\'st'}}");
-		writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("te'st", writer.toString());
-	}
+        template = pebble.getTemplate("{{\"te\\'st\"}}");
+        writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("te\\'st", writer.toString());
+
+        template = pebble.getTemplate("{{'te\\'st'}}");
+        writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("te'st", writer.toString());
+    }
 
 }

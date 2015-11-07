@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -26,7 +26,7 @@ public class ErrorReportingTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testLineNumberErrorReportingWithUnixNewlines() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         try {
             @SuppressWarnings("unused")
@@ -41,7 +41,7 @@ public class ErrorReportingTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testLineNumberErrorReportingWithWindowsNewlines() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
         try {
             @SuppressWarnings("unused")

@@ -24,86 +24,90 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class AttributeSubscriptSyntaxTest extends AbstractTest {
-	
-	@SuppressWarnings("serial")
-	@Test
-	public void testAccessingValueWithSubscript() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(false);
 
-		String source = "{{ person['first-name'] }}";
-		PebbleTemplate template = pebble.getTemplate(source);
+    @SuppressWarnings("serial")
+    @Test
+    public void testAccessingValueWithSubscript() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
 
-		Map<String, Object> context = new HashMap<>();
-		context.put("person", new HashMap<String, Object>() {
-			{
-				put("first-name", "Bob");
-			}
-		});
+        String source = "{{ person['first-name'] }}";
+        PebbleTemplate template = pebble.getTemplate(source);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("Bob", writer.toString());
-	}
+        Map<String, Object> context = new HashMap<>();
+        context.put("person", new HashMap<String, Object>() {
 
-	@SuppressWarnings("serial")
-	@Test
-	public void testAccessingNestedValuesWithSubscript() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(false);
+            {
+                put("first-name", "Bob");
+            }
+        });
 
-		String source = "{{ person['name']['first'] }}";
-		PebbleTemplate template = pebble.getTemplate(source);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Bob", writer.toString());
+    }
 
-		Map<String, Object> context = new HashMap<>();
-		context.put("person", new HashMap<String, Object>() {
-			{
-				put("name", new HashMap<String, Object>() {
-					{
-						put("first", "Bob");
-					}
-				});
-			}
-		});
+    @SuppressWarnings("serial")
+    @Test
+    public void testAccessingNestedValuesWithSubscript() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("Bob", writer.toString());
-	}
+        String source = "{{ person['name']['first'] }}";
+        PebbleTemplate template = pebble.getTemplate(source);
 
-	@SuppressWarnings("serial")
-	@Test
-	public void testMixAndMatchingAttributeSyntax() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
-		pebble.setStrictVariables(false);
+        Map<String, Object> context = new HashMap<>();
+        context.put("person", new HashMap<String, Object>() {
 
-		String source = "{{ person['name'].first }}";
-		PebbleTemplate template = pebble.getTemplate(source);
+            {
+                put("name", new HashMap<String, Object>() {
 
-		Map<String, Object> context = new HashMap<>();
-		context.put("person", new HashMap<String, Object>() {
-			{
-				put("name", new HashMap<String, Object>() {
-					{
-						put("first", "Bob");
-					}
-				});
-			}
-		});
+                    {
+                        put("first", "Bob");
+                    }
+                });
+            }
+        });
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("Bob", writer.toString());
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Bob", writer.toString());
+    }
 
+    @SuppressWarnings("serial")
+    @Test
+    public void testMixAndMatchingAttributeSyntax() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
 
-		source = "{{ person.name['first'] }}";
-		template = pebble.getTemplate(source);
+        String source = "{{ person['name'].first }}";
+        PebbleTemplate template = pebble.getTemplate(source);
 
-		writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("Bob", writer.toString());
-	}
+        Map<String, Object> context = new HashMap<>();
+        context.put("person", new HashMap<String, Object>() {
+
+            {
+                put("name", new HashMap<String, Object>() {
+
+                    {
+                        put("first", "Bob");
+                    }
+                });
+            }
+        });
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Bob", writer.toString());
+
+        source = "{{ person.name['first'] }}";
+        template = pebble.getTemplate(source);
+
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Bob", writer.toString());
+    }
 }

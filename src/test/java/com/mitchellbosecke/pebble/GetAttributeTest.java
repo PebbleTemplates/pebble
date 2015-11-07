@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -31,7 +31,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testOneLayerAttributeNesting() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -46,7 +46,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testAttributeCacheHitting() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -60,7 +60,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testMultiLayerAttributeNesting() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -75,7 +75,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testHashmapAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -92,7 +92,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testMethodAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -109,13 +109,13 @@ public class GetAttributeTest extends AbstractTest {
      * The GetAttribute expression involves caching, we test with different
      * objects to make sure that the caching doesnt have any negative side
      * effects.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
     @Test
     public void testMethodAttributeWithDifferentObjects() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -135,7 +135,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithArgument() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -150,7 +150,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithLongArgument() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -165,7 +165,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithOverloadedArgument() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -180,7 +180,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithTwoArguments() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -195,7 +195,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testGetMethodAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -209,7 +209,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testHasMethodAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -223,7 +223,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testIsMethodAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -237,7 +237,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testComplexNestedAttributes() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         String source = "hello {{ object.map.SimpleObject2.simpleObject.name }}. My name is {{ object.map.SimpleObject6.name }}.";
@@ -252,7 +252,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test(expected = RootAttributeNotFoundException.class)
     public void testAttributeOfNullObjectWithStrictVariables() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -264,7 +264,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testAttributeOfNullObjectWithoutStrictVariables() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(false);
 
@@ -280,7 +280,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testNonExistingAttributeWithoutStrictVariables() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(false);
 
@@ -295,7 +295,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test(expected = AttributeNotFoundException.class)
     public void testNonExistingAttributeWithStrictVariables() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -310,7 +310,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testNullAttributeWithoutStrictVariables() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -325,13 +325,13 @@ public class GetAttributeTest extends AbstractTest {
 
     /**
      * Should behave the same as it does with strictVariables = false.
-     * 
+     *
      * @throws PebbleException
      * @throws IOException
      */
     @Test
     public void testNullAttributeWithStrictVariables() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -347,7 +347,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test()
     public void testPrimitiveAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -361,7 +361,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testArrayIndexAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         PebbleTemplate template = pebble.getTemplate("{{ arr[2] }}");
@@ -379,7 +379,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testListIndexAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
 
         PebbleTemplate template = pebble.getTemplate("{{ arr[2] }}");
@@ -397,7 +397,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test()
     public void testInheritedAttribute() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -518,7 +518,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test()
     public void testPrimitiveArgument() throws PebbleException, IOException {
-        Loader stringLoader = new StringLoader();
+         Loader<?> stringLoader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(stringLoader);
         pebble.setStrictVariables(true);
 
@@ -538,7 +538,7 @@ public class GetAttributeTest extends AbstractTest {
         public String getStringFromLong(long id) {
             return String.valueOf(id);
         }
-        
+
         public String getStringFromLongs(Long first, long second) {
             return String.valueOf(first) + " " + String.valueOf(second);
         }
