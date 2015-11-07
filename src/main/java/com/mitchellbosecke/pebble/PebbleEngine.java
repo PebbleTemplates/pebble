@@ -62,7 +62,7 @@ public class PebbleEngine {
     /*
      * Major components
      */
-    private Loader loader;
+    private Loader<?> loader;
 
     private final Parser parser;
 
@@ -80,7 +80,7 @@ public class PebbleEngine {
     /**
      * Template cache
      */
-    private Cache<String, PebbleTemplate> templateCache;
+    private Cache<Object, PebbleTemplate> templateCache;
 
     /*
      * Extensions
@@ -123,7 +123,7 @@ public class PebbleEngine {
      * @param loader
      *            The template loader for this engine
      */
-    public PebbleEngine(Loader loader) {
+    public PebbleEngine(Loader<?> loader) {
         this(loader, new CoreExtension(), new EscaperExtension(), new I18nExtension());
     }
 
@@ -136,7 +136,7 @@ public class PebbleEngine {
      * @param extensions
      *            The extensions which should be loaded.
      */
-    public PebbleEngine(Loader loader, Extension... extensions) {
+    public PebbleEngine(Loader<?> loader, Extension... extensions) {
         this(loader, Arrays.asList(extensions));
     }
 
@@ -149,11 +149,11 @@ public class PebbleEngine {
      * @param extensions
      *            The extensions which should be loaded.
      */
-    public PebbleEngine(Loader loader, Collection<? extends Extension> extensions) {
+    public PebbleEngine(Loader<?> loader, Collection<? extends Extension> extensions) {
 
         // set up a default loader if necessary
         if (loader == null) {
-            List<Loader> defaultLoadingStrategies = new ArrayList<>();
+            List<Loader<?>> defaultLoadingStrategies = new ArrayList<>();
             defaultLoadingStrategies.add(new FileLoader());
             defaultLoadingStrategies.add(new ClasspathLoader());
             loader = new DelegatingLoader(defaultLoadingStrategies);
@@ -202,8 +202,9 @@ public class PebbleEngine {
         PebbleTemplate result = null;
 
         try {
+            final Object cacheKey = this.loader.createCacheKey(templateName);
 
-            result = templateCache.get(templateName, new Callable<PebbleTemplate>() {
+            result = templateCache.get(cacheKey, new Callable<PebbleTemplate>() {
 
                 public PebbleTemplateImpl call() throws Exception {
 
@@ -213,9 +214,7 @@ public class PebbleEngine {
                     RootNode root = null;
 
                     try {
-
-                        Reader templateReader = loader.getReader(templateName);
-
+                        Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
                         TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
                         root = parser.parse(tokenStream);
 
@@ -250,11 +249,38 @@ public class PebbleEngine {
         return result;
     }
 
-    public void setLoader(Loader loader) {
+    /**
+     * This method calls the loader and fetches the reader. We use this method
+     * to handle the generic cast.
+     *
+     * @param loader
+     *            the loader to use fetch the reader.
+     * @param cacheKey
+     *            the cache key to use.
+     * @return the reader object.
+     * @throws LoaderException
+     *             thrown when the template could not be loaded.
+     */
+    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, Object cacheKey) throws LoaderException {
+        // We make sure within getTemplate() that we use only the same key for
+        // the same loader and hence we can be sure that the cast is safe.
+        @SuppressWarnings("unchecked")
+        T casted = (T) cacheKey;
+        return loader.getReader(casted);
+    }
+
+    public void setLoader(Loader<?> loader) {
+
+        if (this.loader != loader) {
+            // When we change the loader we need to reset the cache otherwise we
+            // keep eventually wrong templates in the cache.
+            this.templateCache.invalidateAll();
+        }
+
         this.loader = loader;
     }
 
-    public Loader getLoader() {
+    public Loader<?> getLoader() {
         return loader;
     }
 
@@ -366,7 +392,7 @@ public class PebbleEngine {
         return this.nodeVisitors;
     }
 
-    public Cache<String, PebbleTemplate> getTemplateCache() {
+    public Cache<Object, PebbleTemplate> getTemplateCache() {
         return templateCache;
     }
 
@@ -376,7 +402,7 @@ public class PebbleEngine {
      * @param cache
      *            The cache to be used
      */
-    public void setTemplateCache(Cache<String, PebbleTemplate> cache) {
+    public void setTemplateCache(Cache<Object, PebbleTemplate> cache) {
         if (cache == null) {
             templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
         } else {

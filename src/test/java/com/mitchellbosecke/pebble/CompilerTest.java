@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -25,39 +25,38 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CompilerTest extends AbstractTest {
 
-	@Test
-	public void testCompile() throws PebbleException, IOException {
-		Loader loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+    @Test
+    public void testCompile() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
-		PebbleTemplate template = pebble.getTemplate("hello {{ foo }}");
-		Map<String, Object> context = new HashMap<>();
-		context.put("foo", "BAR");
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
-		assertEquals("hello BAR", writer.toString());
-	}
+        PebbleTemplate template = pebble.getTemplate("hello {{ foo }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("foo", "BAR");
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello BAR", writer.toString());
+    }
 
-	/**
-	 * There was an issue where one failed template would prevent future
-	 * templates from being compiled.
-	 * 
-	 * @throws PebbleException
-	 * @throws IOException
-	 */
-	@Test(timeout = 3000)
-	public void testCompilationMutexIsAlwaysReleased() throws PebbleException, IOException {
+    /**
+     * There was an issue where one failed template would prevent future
+     * templates from being compiled.
+     *
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test(timeout = 3000)
+    public void testCompilationMutexIsAlwaysReleased() throws PebbleException, IOException {
 
-		try {
-			pebble.getTemplate("non-existing");
-		} catch (Exception e) {
+        try {
+            pebble.getTemplate("non-existing");
+        } catch (Exception e) {
 
-		}
-		PebbleTemplate template = pebble.getTemplate("template.general.peb");
-		Writer writer = new StringWriter();
-		template.evaluate(writer);
-		assertEquals("test", writer.toString());
-	}
-
+        }
+        PebbleTemplate template = pebble.getTemplate("template.general.peb");
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("test", writer.toString());
+    }
 
 }

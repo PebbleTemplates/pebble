@@ -22,7 +22,7 @@ import com.mitchellbosecke.pebble.utils.PathUtils;
  * @author mbosecke
  *
  */
-public class ClasspathLoader implements Loader {
+public class ClasspathLoader implements Loader<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(ClasspathLoader.class);
 
@@ -113,5 +113,10 @@ public class ClasspathLoader implements Loader {
     @Override
     public String resolveRelativePath(String relativePath, String anchorPath) {
         return PathUtils.resolveRelativePath(relativePath, anchorPath);
+    }
+
+    @Override
+    public String createCacheKey(String templateName) {
+       return templateName;
     }
 }

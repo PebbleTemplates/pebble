@@ -30,7 +30,7 @@ import com.mitchellbosecke.pebble.utils.PathUtils;
  * @author mbosecke
  *
  */
-public class FileLoader implements Loader {
+public class FileLoader implements Loader<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
@@ -132,5 +132,10 @@ public class FileLoader implements Loader {
     @Override
     public String resolveRelativePath(String relativePath, String anchorPath) {
         return PathUtils.resolveRelativePath(relativePath, anchorPath);
+    }
+
+    @Override
+    public String createCacheKey(String templateName) {
+       return templateName;
     }
 }

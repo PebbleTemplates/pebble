@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -16,7 +16,7 @@ public abstract class AbstractTest {
 
 	protected final PebbleEngine pebble;
 	protected final Lexer lexer;
-	protected final Loader loader;
+	protected final Loader<?> loader;
 	protected final Parser parser;
 
 	public AbstractTest() {
