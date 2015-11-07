@@ -40,7 +40,7 @@ public class TestRelativePath extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("<div>overridden</div>", writer.toString().replace("\\r?\\n", "").replace("\t", "").replace(" ", ""));
+        assertEquals("<div>overridden</div>", writer.toString().replaceAll("\\r?\\n", "").replace("\t", "").replace(" ", ""));
     }
 
     /**
