@@ -73,8 +73,8 @@ public class EscaperExtension extends AbstractExtension {
     /**
      * Adds a custom escaping strategy to the filter.
      * 
-     * @param name
-     * @param strategy
+     * @param name Name of the escaping strategy
+     * @param strategy The implementation of the escaping strategy
      */
     public void addEscapingStrategy(String name, EscapingStrategy strategy) {
         filter.addEscapingStrategy(name, strategy);

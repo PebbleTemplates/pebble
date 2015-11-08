@@ -156,8 +156,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param additionalVariables
      *            the map with additional variables provided with the include
      *            tag to add within the include tag.
-     * @throws PebbleException
-     * @throws IOException
+     * @throws PebbleException Any error occurring during the compilation of the template
+     * @throws IOException Any error during the loading of the template
      */
     public void includeTemplate(Writer writer, EvaluationContext context, String name, Map<?, ?> additionalVariables)
             throws PebbleException, IOException {
