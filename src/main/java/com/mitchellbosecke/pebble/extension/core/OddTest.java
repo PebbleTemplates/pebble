@@ -26,6 +26,6 @@ public class OddTest implements Test {
             throw new IllegalArgumentException("Can not pass null value to \"odd\" test.");
         }
         EvenTest evenTest = new EvenTest();
-        return evenTest.apply(input, args) == false;
+        return !evenTest.apply(input, args);
     }
 }

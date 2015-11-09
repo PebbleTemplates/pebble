@@ -42,7 +42,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
  */
 public interface NodeVisitor {
 
-    public abstract void setTemplate(PebbleTemplateImpl template);
+    void setTemplate(PebbleTemplateImpl template);
 
     /**
      * Default method invoked with unknown nodes such as nodes provided by user
@@ -50,45 +50,45 @@ public interface NodeVisitor {
      * 
      * @param node Node to visit
      */
-    public abstract void visit(Node node);
+    void visit(Node node);
 
     /*
      * OVERLOADED NODES (keep alphabetized)
      */
-    public abstract void visit(ArgumentsNode node);
+    void visit(ArgumentsNode node);
 
-    public abstract void visit(AutoEscapeNode node);
+    void visit(AutoEscapeNode node);
 
-    public abstract void visit(BlockNode node);
+    void visit(BlockNode node);
 
-    public abstract void visit(BodyNode node);
+    void visit(BodyNode node);
 
-    public abstract void visit(ExtendsNode node);
+    void visit(ExtendsNode node);
 
-    public abstract void visit(FlushNode node);
+    void visit(FlushNode node);
 
-    public abstract void visit(ForNode node);
+    void visit(ForNode node);
 
-    public abstract void visit(IfNode node);
+    void visit(IfNode node);
 
-    public abstract void visit(ImportNode node);
+    void visit(ImportNode node);
 
-    public abstract void visit(IncludeNode node);
+    void visit(IncludeNode node);
 
-    public abstract void visit(MacroNode node);
+    void visit(MacroNode node);
 
-    public abstract void visit(NamedArgumentNode node);
+    void visit(NamedArgumentNode node);
 
-    public abstract void visit(ParallelNode node);
+    void visit(ParallelNode node);
 
-    public abstract void visit(PositionalArgumentNode node);
+    void visit(PositionalArgumentNode node);
 
-    public abstract void visit(PrintNode node);
+    void visit(PrintNode node);
 
-    public abstract void visit(RootNode node);
+    void visit(RootNode node);
 
-    public abstract void visit(SetNode node);
+    void visit(SetNode node);
 
-    public abstract void visit(TextNode node);
+    void visit(TextNode node);
 
 }

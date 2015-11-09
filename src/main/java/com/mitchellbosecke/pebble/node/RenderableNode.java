@@ -17,6 +17,6 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public interface RenderableNode extends Node {
 
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
+    void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
             IOException;
 }

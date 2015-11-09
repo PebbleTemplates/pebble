@@ -12,5 +12,5 @@ import java.util.Map;
 
 public interface Filter extends NamedArguments {
 
-    public Object apply(Object input, Map<String, Object> args);
+    Object apply(Object input, Map<String, Object> args);
 }

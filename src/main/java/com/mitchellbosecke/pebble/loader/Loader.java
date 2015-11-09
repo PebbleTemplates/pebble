@@ -33,7 +33,7 @@ public interface Loader<T> {
      * @throws LoaderException
      *             If template can not be found
      */
-    public Reader getReader(T cacheKey) throws LoaderException;
+    Reader getReader(T cacheKey) throws LoaderException;
 
     /**
      * A method for end users to change the charset used by the loader.
@@ -41,7 +41,7 @@ public interface Loader<T> {
      * @param charset
      *            Character set used by the loader when building a reader object
      */
-    public void setCharset(String charset);
+    void setCharset(String charset);
 
     /**
      * Optional prefix to help find templates, ex "/WEB-INF/templates/" or
@@ -50,7 +50,7 @@ public interface Loader<T> {
      * @param prefix
      *            Prefix to help find templates
      */
-    public void setPrefix(String prefix);
+    void setPrefix(String prefix);
 
     /**
      * Optional suffix to help find templates, ex ".html", ".peb"
@@ -58,7 +58,7 @@ public interface Loader<T> {
      * @param suffix
      *            Suffix to attach to template names
      */
-    public void setSuffix(String suffix);
+    void setSuffix(String suffix);
 
     /**
      * Resolves the given {@code relativePath} based on the given
@@ -77,7 +77,7 @@ public interface Loader<T> {
      * @return the resolved path or {@code null} when the path could not be
      *         resolved.
      */
-    public String resolveRelativePath(String relativePath, String anchorPath);
+    String resolveRelativePath(String relativePath, String anchorPath);
 
     /**
      * This method resolves the given template name to a unique object which can
@@ -120,6 +120,6 @@ public interface Loader<T> {
      * @param templateName
      * @return
      */
-    public T createCacheKey(String templateName);
+    T createCacheKey(String templateName);
 
 }

@@ -30,7 +30,7 @@ public interface TokenParser {
      * 
      * @return The tag used to define this TokenParser.
      */
-    public String getTag();
+    String getTag();
 
     /**
      * Each TokenParser instance will have access to the primary Pebble Parser
@@ -42,7 +42,7 @@ public interface TokenParser {
      * @param parser
      *            The desired parser
      */
-    public void setParser(Parser parser);
+    void setParser(Parser parser);
 
     /**
      * The TokenParser is responsible to convert all the necessary tokens into
@@ -74,6 +74,6 @@ public interface TokenParser {
      * @throws ParserException
      *             Thrown if an error occurs while parsing the token
      */
-    public RenderableNode parse(Token token) throws ParserException;
+    RenderableNode parse(Token token) throws ParserException;
 
 }

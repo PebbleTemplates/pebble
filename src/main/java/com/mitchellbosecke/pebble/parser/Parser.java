@@ -15,9 +15,9 @@ import com.mitchellbosecke.pebble.node.RootNode;
 
 public interface Parser {
 
-    public RootNode parse(TokenStream stream) throws ParserException;
+    RootNode parse(TokenStream stream) throws ParserException;
 
-    public BodyNode subparse() throws ParserException;
+    BodyNode subparse() throws ParserException;
 
     /**
      * Provides the stream of tokens which ultimately need to be "parsed" into
@@ -25,7 +25,7 @@ public interface Parser {
      * 
      * @return TokenStream
      */
-    public TokenStream getStream();
+    TokenStream getStream();
 
     /**
      * Parses the existing TokenStream, starting at the current Token, and
@@ -35,14 +35,14 @@ public interface Parser {
      * @return A node representing the parsed section
      * @throws ParserException Thrown if a parsing error occurs.
      */
-    public BodyNode subparse(StoppingCondition stopCondition) throws ParserException;
+    BodyNode subparse(StoppingCondition stopCondition) throws ParserException;
 
-    public ExpressionParser getExpressionParser();
+    ExpressionParser getExpressionParser();
 
-    public String peekBlockStack();
+    String peekBlockStack();
 
-    public String popBlockStack();
+    String popBlockStack();
 
-    public void pushBlockStack(String blockName);
+    void pushBlockStack(String blockName);
 
 }

@@ -12,6 +12,6 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 
 public interface Node {
 
-    public void accept(NodeVisitor visitor);
+    void accept(NodeVisitor visitor);
 
 }

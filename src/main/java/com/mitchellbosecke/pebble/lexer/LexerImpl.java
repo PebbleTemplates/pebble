@@ -105,9 +105,9 @@ public class LexerImpl implements Lexer {
 
     private LinkedList<State> states;
 
-    private static enum State {
+    private enum State {
         DATA, EXECUTE, PRINT, COMMENT
-    };
+    }
 
     /**
      * If we encountered an END delimiter that was preceded with a whitespace
