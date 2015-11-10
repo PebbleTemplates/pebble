@@ -103,7 +103,7 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
     private boolean isSafe(Expression<?> expression) {
 
         // check whether the autoescaper is even active
-        if (!active.isEmpty() && active.peek() == false) {
+        if (!active.isEmpty() && !active.peek()) {
             return true;
         }
 

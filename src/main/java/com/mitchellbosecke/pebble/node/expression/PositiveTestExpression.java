@@ -20,23 +20,29 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class PositiveTestExpression extends BinaryExpression<Object> {
 
+    private Test cachedTest;
+
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
 
         TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
         ArgumentsNode args = testInvocation.getArgs();
-        String testName = testInvocation.getTestName();
 
-        Map<String, Test> tests = context.getTests();
-        Test test = tests.get(testInvocation.getTestName());
+        if(cachedTest == null) {
+            String testName = testInvocation.getTestName();
 
-        if (test == null) {
-            throw new PebbleException(null, String.format("Test [%s] does not exist.", testName));
+            Map<String, Test> tests = context.getTests();
+            cachedTest = tests.get(testInvocation.getTestName());
+
+            if (cachedTest == null) {
+                throw new PebbleException(null, String.format("Test [%s] does not exist.", testName));
+            }
+
+            if (cachedTest instanceof LocaleAware) {
+                ((LocaleAware) cachedTest).setLocale(context.getLocale());
+            }
         }
-
-        if (test instanceof LocaleAware) {
-            ((LocaleAware) test).setLocale(context.getLocale());
-        }
+        Test test = cachedTest;
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, test);
 

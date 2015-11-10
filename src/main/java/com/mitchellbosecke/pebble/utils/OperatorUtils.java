@@ -28,11 +28,11 @@ public class OperatorUtils {
 
     private enum Operation {
         ADD, SUBTRACT, MULTIPLICATION, DIVISION, MODULUS
-    };
+    }
 
     private enum Comparison {
         GREATER_THAN, GREATER_THAN_EQUALS, LESS_THAN, LESS_THAN_EQUALS, EQUALS
-    };
+    }
 
     public static Object add(Object op1, Object op2) {
         if (op1 instanceof String || op2 instanceof String) {

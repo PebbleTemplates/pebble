@@ -22,21 +22,21 @@ public interface Extension {
      * 
      * @return A list of filters. It is okay to return null.
      */
-    public Map<String, Filter> getFilters();
+    Map<String, Filter> getFilters();
 
     /**
      * Use this method to provide custom tests.
      * 
      * @return A list of tests. It is okay to return null.
      */
-    public Map<String, Test> getTests();
+    Map<String, Test> getTests();
 
     /**
      * Use this method to provide custom functions.
      * 
      * @return A list of functions. It is okay to return null.
      */
-    public Map<String, Function> getFunctions();
+    Map<String, Function> getFunctions();
 
     /**
      * Use this method to provide custom tags.
@@ -46,33 +46,33 @@ public interface Extension {
      * 
      * @return A list of TokenParsers. It is okay to return null.
      */
-    public List<TokenParser> getTokenParsers();
+    List<TokenParser> getTokenParsers();
 
     /**
      * Use this method to provide custom binary operators.
      * 
      * @return A list of Operators. It is okay to return null;
      */
-    public List<BinaryOperator> getBinaryOperators();
+    List<BinaryOperator> getBinaryOperators();
 
     /**
      * Use this method to provide custom unary operators.
      * 
      * @return A list of Operators. It is okay to return null;
      */
-    public List<UnaryOperator> getUnaryOperators();
+    List<UnaryOperator> getUnaryOperators();
 
     /**
      * Use this method to provide variables available to all templates
      * 
      * @return Map of global variables available to all templates
      */
-    public Map<String, Object> getGlobalVariables();
+    Map<String, Object> getGlobalVariables();
 
     /**
      * Node visitors will travel the AST tree during the compilation phase.
      * 
      * @return a list of node visitors
      */
-    public List<NodeVisitor> getNodeVisitors();
+    List<NodeVisitor> getNodeVisitors();
 }

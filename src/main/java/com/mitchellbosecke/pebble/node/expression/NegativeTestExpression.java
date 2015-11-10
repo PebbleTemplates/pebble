@@ -40,6 +40,6 @@ public class NegativeTestExpression extends BinaryExpression<Object> {
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, test);
 
-        return test.apply(getLeftExpression().evaluate(self, context), namedArguments) == false;
+        return !test.apply(getLeftExpression().evaluate(self, context), namedArguments);
     }
 }

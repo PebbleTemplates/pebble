@@ -12,12 +12,12 @@ import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
 
 public interface BinaryOperator {
 
-    public abstract int getPrecedence();
+    int getPrecedence();
 
-    public abstract String getSymbol();
+    String getSymbol();
 
-    public abstract Class<? extends BinaryExpression<?>> getNodeClass();
+    Class<? extends BinaryExpression<?>> getNodeClass();
 
-    public abstract Associativity getAssociativity();
+    Associativity getAssociativity();
 
 }

@@ -12,10 +12,10 @@ import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 
 public interface UnaryOperator {
 
-    public abstract int getPrecedence();
+    int getPrecedence();
 
-    public abstract String getSymbol();
+    String getSymbol();
 
-    public abstract Class<? extends UnaryExpression> getNodeClass();
+    Class<? extends UnaryExpression> getNodeClass();
 
 }

@@ -14,71 +14,71 @@ import com.mitchellbosecke.pebble.error.ParserException;
 
 public interface Lexer {
 
-    public TokenStream tokenize(Reader templateReader, String name) throws ParserException;
+    TokenStream tokenize(Reader templateReader, String name) throws ParserException;
 
     /**
      * @return the commentOpenDelimiter
      */
-    public String getCommentOpenDelimiter();
+    String getCommentOpenDelimiter();
 
     /**
      * @param commentOpenDelimiter
      *            the commentOpenDelimiter to set
      */
-    public void setCommentOpenDelimiter(String commentOpenDelimiter);
+    void setCommentOpenDelimiter(String commentOpenDelimiter);
 
     /**
      * @return the commentCloseDelimiter
      */
-    public String getCommentCloseDelimiter();
+    String getCommentCloseDelimiter();
 
     /**
      * @param commentCloseDelimiter
      *            the commentCloseDelimiter to set
      */
-    public void setCommentCloseDelimiter(String commentCloseDelimiter);
+    void setCommentCloseDelimiter(String commentCloseDelimiter);
 
     /**
      * @return the executeOpenDelimiter
      */
-    public String getExecuteOpenDelimiter();
+    String getExecuteOpenDelimiter();
 
     /**
      * @param executeOpenDelimiter
      *            the executeOpenDelimiter to set
      */
-    public void setExecuteOpenDelimiter(String executeOpenDelimiter);
+    void setExecuteOpenDelimiter(String executeOpenDelimiter);
 
     /**
      * @return the executeCloseDelimiter
      */
-    public String getExecuteCloseDelimiter();
+    String getExecuteCloseDelimiter();
 
     /**
      * @param executeCloseDelimiter
      *            the executeCloseDelimiter to set
      */
-    public void setExecuteCloseDelimiter(String executeCloseDelimiter);
+    void setExecuteCloseDelimiter(String executeCloseDelimiter);
 
     /**
      * @return the printOpenDelimiter
      */
-    public String getPrintOpenDelimiter();
+    String getPrintOpenDelimiter();
 
     /**
      * @param printOpenDelimiter
      *            the printOpenDelimiter to set
      */
-    public void setPrintOpenDelimiter(String printOpenDelimiter);
+    void setPrintOpenDelimiter(String printOpenDelimiter);
 
     /**
      * @return the printCloseDelimiter
      */
-    public String getPrintCloseDelimiter();
+    String getPrintCloseDelimiter();
 
     /**
      * @param printCloseDelimiter
      *            the printCloseDelimiter to set
      */
-    public void setPrintCloseDelimiter(String printCloseDelimiter);
+    void setPrintCloseDelimiter(String printCloseDelimiter);
 }

@@ -15,5 +15,5 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public interface Expression<T> extends Node {
 
-    public T evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException;
+    T evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException;
 }

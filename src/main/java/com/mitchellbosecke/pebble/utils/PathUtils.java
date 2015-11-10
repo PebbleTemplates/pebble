@@ -10,7 +10,6 @@ import java.util.List;
  * Utility class to handle relative paths.
  *
  * @author Thomas Hunziker
- *
  */
 public final class PathUtils {
 
@@ -22,15 +21,11 @@ public final class PathUtils {
      * Resolves the given {@code relativePath} based on the given
      * {@code anchorPath}.
      *
-     * @param relativePath
-     *            the relative path which should be resolved.
-     * @param anchorPath
-     *            the anchor path based on which the relative path should be
-     *            resolved on.
-     * @param anchorPathSeparator
-     *            the path separator to use to resolve the path.
+     * @param relativePath        the relative path which should be resolved.
+     * @param anchorPath          the anchor path based on which the relative path should be
+     *                            resolved on.
      * @return the resolved path or {@code null} when the path could not be
-     *         resolved.
+     * resolved.
      */
     public static String resolveRelativePath(String relativePath, String anchorPath) {
         if (relativePath == null || relativePath.isEmpty()) {
@@ -42,8 +37,8 @@ public final class PathUtils {
         // same way.
         if (relativePath.startsWith(".." + UNIX_SEPARATOR) || relativePath.startsWith("." + UNIX_SEPARATOR)) {
             return resolvePathInner(relativePath, anchorPath, UNIX_SEPARATOR);
-        } else if (relativePath.startsWith(".." + WINDOWS_SEPARATOR)
-                || relativePath.startsWith("." + WINDOWS_SEPARATOR)) {
+        } else if (relativePath.startsWith(".." + WINDOWS_SEPARATOR) || relativePath
+                .startsWith("." + WINDOWS_SEPARATOR)) {
             return resolvePathInner(relativePath, anchorPath, WINDOWS_SEPARATOR);
         }
 

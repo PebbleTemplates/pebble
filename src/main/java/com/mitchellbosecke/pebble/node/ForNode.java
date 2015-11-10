@@ -76,15 +76,19 @@ public class ForNode extends AbstractRenderableNode {
             int length = getIteratorSize(iterableEvaluation);
             int index = 0;
 
+            Map<String, Object> loop = new HashMap<>();
+
             while (iterator.hasNext()) {
 
                 /*
-                 * Must create a new map with every iteration instead of
-                 * re-using the same one just in case there is a "parallel" tag
-                 * within this for loop; it's imperative that each thread would
+                 * If the user is using an executor service (i.e. parallel node), we
+                 * must create a new map with every iteration instead of
+                 * re-using the same one; it's imperative that each thread would
                  * get it's own distinct copy of the context.
                  */
-                Map<String, Object> loop = new HashMap<>();
+                if(context.getExecutorService() != null) {
+                    loop = new HashMap<>();
+                }
                 loop.put("last", index == length - 1);
                 loop.put("first", index == 0);
                 loop.put("revindex", length - index - 1);

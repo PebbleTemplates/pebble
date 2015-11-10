@@ -12,5 +12,5 @@ import java.util.Map;
 
 public interface Test extends NamedArguments {
 
-    public boolean apply(Object input, Map<String, Object> args);
+    boolean apply(Object input, Map<String, Object> args);
 }
