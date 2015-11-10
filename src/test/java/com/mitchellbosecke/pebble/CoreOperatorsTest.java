@@ -550,7 +550,7 @@ public class CoreOperatorsTest extends AbstractTest {
      */
     @Test
     public void testStringConcatenation() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         String source = "{{ name1 ~ name2 ~ name3 | lower }}";

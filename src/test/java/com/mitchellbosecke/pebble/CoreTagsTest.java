@@ -218,7 +218,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testForWithMap() throws PebbleException, IOException {
-        Loader loader = new StringLoader();
+        Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
         Map<String, Integer> data = new LinkedHashMap<>();
