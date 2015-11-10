@@ -133,6 +133,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("trim", new TrimFilter());
         filters.put("upper", new UpperFilter());
         filters.put("urlencode", new UrlEncoderFilter());
+        filters.put("length", new LengthFilter());
         return filters;
     }
 
