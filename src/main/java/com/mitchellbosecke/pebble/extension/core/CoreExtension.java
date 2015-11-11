@@ -45,6 +45,7 @@ import com.mitchellbosecke.pebble.operator.BinaryOperatorImpl;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperatorImpl;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.CacheTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.FilterTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.FlushTokenParser;
@@ -73,6 +74,7 @@ public class CoreExtension extends AbstractExtension {
         parsers.add(new MacroTokenParser());
         parsers.add(new ParallelTokenParser());
         parsers.add(new SetTokenParser());
+        parsers.add(new CacheTokenParser());
 
         // verbatim tag is implemented directly in the LexerImpl
         return parsers;
