@@ -88,7 +88,7 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("no", writer.toString());
     }
-
+    
     @Test(expected = PebbleException.class)
     public void testExceptionWithIfStatement() throws PebbleException, IOException {
         Loader<?> loader = new StringLoader();
@@ -494,6 +494,72 @@ public class CoreTagsTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("HELLO" + LINE_SEPARATOR, writer.toString());
+    }
+    
+    @Test
+    public void testCache() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% cache test %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("foobar", true);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
+        
+        //Value should be cached
+        context.put("foobar", false);
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
+    }
+    
+    /**
+     * The template used to fail if the user wrapped the block name in quotes.
+     *
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testCacheWithStringLiteralName() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% cache 'test' %}{% if foobar %}true{% else %}false{% endif %}{% endcache 'test' %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("foobar", true);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
+        
+        //Value should be cached
+        context.put("foobar", false);
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
+    }
+    
+    @Test(expected = PebbleException.class)
+    public void testCacheWithNoName() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% cache %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("foobar", true);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
     }
 
     public static class SimpleObjectA {
