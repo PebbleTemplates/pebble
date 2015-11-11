@@ -1,16 +1,19 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.escaper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
@@ -25,6 +28,7 @@ import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpre
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
@@ -32,12 +36,12 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
     private final LinkedList<Boolean> active = new LinkedList<>();
 
-    private final List<String> safeFilters = new ArrayList<>();
+    private final Set<String> safeFilters;
 
-    public EscaperNodeVisitor() {
-        safeFilters.add("raw");
-        safeFilters.add("escape");
-        safeFilters.add("date");
+    public EscaperNodeVisitor(PebbleTemplateImpl template, List<String> safeFilters, boolean autoEscapting) {
+        super(template);
+        this.safeFilters = Collections.unmodifiableSet(new LinkedHashSet<>(safeFilters));
+        this.pushAutoEscapeState(autoEscapting);
     }
 
     @Override
@@ -130,10 +134,6 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         }
 
         return safe;
-    }
-
-    public void addSafeFilter(String filter) {
-        this.safeFilters.add(filter);
     }
 
     public void pushAutoEscapeState(boolean auto) {

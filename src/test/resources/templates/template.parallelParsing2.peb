@@ -1,0 +1,1 @@
+output in 2: a|{% delay 50 %}output in 2: b|{% delay 100 %}output in 2: c

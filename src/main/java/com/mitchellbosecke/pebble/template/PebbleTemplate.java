@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -24,4 +24,5 @@ public interface PebbleTemplate {
     void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException;
 
     void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException;
+
 }
