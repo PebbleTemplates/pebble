@@ -174,8 +174,7 @@ public class ParserImpl implements Parser {
                             token.getLineNumber(), stream.getFilename());
                 }
 
-                tokenParser.setParser(this);
-                RenderableNode node = tokenParser.parse(token);
+                RenderableNode node = tokenParser.parse(token, this);
 
                 // node might be null (ex. "extend" token parser)
                 if (node != null) {

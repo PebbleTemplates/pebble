@@ -18,6 +18,7 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -111,9 +112,9 @@ public class TestParallelParsing extends AbstractTest {
         }
 
         @Override
-        public RenderableNode parse(Token token) throws ParserException {
+        public RenderableNode parse(Token token, Parser parser) throws ParserException {
 
-            TokenStream stream = this.parser.getStream();
+            TokenStream stream = parser.getStream();
 
             // skip over the 'delay' token
             Token delayName = stream.next();
