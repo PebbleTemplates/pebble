@@ -31,11 +31,12 @@ public class IncludeWithParameterTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
 
         context.put("contextVariable", "some-context-variable");
+        context.put("level", 1);
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
 
-        String expectedOutput = "simple:simple-value" + "contextVariable:some-context-variable"
-                + "map.position:left" + "map.contextVariable:some-context-variable";
+        String expectedOutput = "simple:simple-value" + "contextVariable:some-context-variable" + "map.position:left"
+                + "map.contextVariable:some-context-variable" + "level:2" + "level-main:1";
 
         assertEquals(expectedOutput, writer.toString());
 
