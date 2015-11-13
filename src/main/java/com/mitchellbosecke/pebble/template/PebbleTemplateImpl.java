@@ -163,10 +163,12 @@ public class PebbleTemplateImpl implements PebbleTemplate {
             throws PebbleException, IOException {
         PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name));
         EvaluationContext newContext = context.shallowCopyWithoutInheritanceChain(template);
+        newContext.pushScope();
         for (Entry<?, ?> entry : additionalVariables.entrySet()) {
             newContext.put((String) entry.getKey(), entry.getValue());
         }
         template.evaluate(writer, newContext);
+        newContext.popScope();
     }
 
     public boolean hasMacro(String macroName) {
