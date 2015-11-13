@@ -159,16 +159,20 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @throws PebbleException Any error occurring during the compilation of the template
      * @throws IOException Any error during the loading of the template
      */
-    public void includeTemplate(Writer writer, EvaluationContext context, String name, Map<?, ?> additionalVariables)
+    public void includeTemplate(Writer writer, EvaluationContext context, String name, Map<?, ?> additionalVariables, boolean isolate)
             throws PebbleException, IOException {
         PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name));
         EvaluationContext newContext = context.shallowCopyWithoutInheritanceChain(template);
-        newContext.pushScope();
+        if (isolate) {
+            newContext.pushScope();
+        }
         for (Entry<?, ?> entry : additionalVariables.entrySet()) {
             newContext.put((String) entry.getKey(), entry.getValue());
         }
         template.evaluate(writer, newContext);
-        newContext.popScope();
+        if (isolate) {
+            newContext.popScope();
+        }
     }
 
     public boolean hasMacro(String macroName) {

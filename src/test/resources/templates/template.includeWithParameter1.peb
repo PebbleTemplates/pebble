@@ -6,6 +6,6 @@
         'map': {
             'position': 'left',
             'contextVariable': contextVariable
-        }}
+        }} isolate
    %}
 level-main:{{ level }}

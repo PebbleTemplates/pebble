@@ -26,10 +26,13 @@ public class IncludeNode extends AbstractRenderableNode {
 
     private final MapExpression mapExpression;
 
-    public IncludeNode(int lineNumber, Expression<?> includeExpression, MapExpression mapExpression) {
+    private final boolean isolate;
+
+    public IncludeNode(int lineNumber, Expression<?> includeExpression, MapExpression mapExpression, boolean isolate) {
         super(lineNumber);
         this.includeExpression = includeExpression;
         this.mapExpression = mapExpression;
+        this.isolate = isolate;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class IncludeNode extends AbstractRenderableNode {
                             "The template name in an include tag evaluated to NULL. If the template name is static, make sure to wrap it in quotes.",
                             templateName), getLineNumber(), self.getName());
         }
-        self.includeTemplate(writer, context, templateName, map);
+        self.includeTemplate(writer, context, templateName, map, this.isolate);
     }
 
     @Override
