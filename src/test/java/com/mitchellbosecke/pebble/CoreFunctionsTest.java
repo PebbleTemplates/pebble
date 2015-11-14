@@ -149,6 +149,21 @@ public class CoreFunctionsTest extends AbstractTest {
         assertEquals("0246810", writer.toString());
     }
     
+    @Test
+    public void testRangeFunctionDecrement2() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(10,0,-2) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("1086420", writer.toString());
+    }
+    
     public class SimpleObject {
 
         public int small = 1;

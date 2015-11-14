@@ -39,10 +39,17 @@ public class RangeFunction implements Function {
     	if (increment == null) {
     		increment = 1L;
     	}
-
+    	
     	List<Long> results = new ArrayList<>();
-    	for (Long i = start; i <= end; i += increment) {
-    		results.add(i);
+    	if (increment > 0) {
+    		for (Long i = start; i <= end; i += increment) {
+        		results.add(i);
+        	}
+    	}
+    	else {
+    		for (Long i = start; i >= end; i += increment) {
+        		results.add(i);
+        	}
     	}
     	
     	return results;
