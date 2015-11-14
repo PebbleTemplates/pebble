@@ -26,7 +26,7 @@ public class RangeExpression extends BinaryExpression<Object> {
         	leftNum = (Long) left;
         }
         else {
-        	throw new IllegalArgumentException("Left operand in range function must be a long " + left);
+        	throw new PebbleException(null, String.format("Left operand [%s] in range function must be a long ", left));
         }
         
         Long rightNum = null;
@@ -34,7 +34,7 @@ public class RangeExpression extends BinaryExpression<Object> {
         	rightNum = (Long) right;
         }
         else {
-        	throw new IllegalArgumentException("Right operand in range function must be a long " + right);
+        	throw new PebbleException(null, String.format("Right operand [%s] in range function must be a long ", right));
         }
         
         List<Long> result = new ArrayList<>();
