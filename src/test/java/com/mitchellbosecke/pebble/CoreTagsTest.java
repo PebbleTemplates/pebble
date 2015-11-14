@@ -235,6 +235,20 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("One 1Two 2Three 3", writer.toString());
     }
+    
+    @Test
+    public void testForSequenceNumber() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in 0..5 %}{{i}}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("012345", writer.toString());
+    }
 
     @Test
     public void testFilterTag() throws PebbleException, IOException {
