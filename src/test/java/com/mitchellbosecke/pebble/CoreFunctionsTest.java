@@ -118,7 +118,37 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("20", writer.toString());
     }
+    
+    @Test
+    public void testRangeFunction() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
+        String source = "{% for i in range(0,5) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("012345", writer.toString());
+    }
+    
+    @Test
+    public void testRangeFunctionIncrement2() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,10,2) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("0246810", writer.toString());
+    }
+    
     public class SimpleObject {
 
         public int small = 1;

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -17,32 +19,14 @@ public class RangeExpression extends BinaryExpression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-
-        Object left = getLeftExpression().evaluate(self, context);
-        Object right = getRightExpression().evaluate(self, context);
+        List<PositionalArgumentNode> positionalArgs = new ArrayList<>();
+        positionalArgs.add(new PositionalArgumentNode(getLeftExpression()));
+        positionalArgs.add(new PositionalArgumentNode(getRightExpression()));
         
-        Long leftNum = null;
-        if (left instanceof Long) {
-        	leftNum = (Long) left;
-        }
-        else {
-        	throw new PebbleException(null, String.format("Left operand [%s] in range function must be a long ", left));
-        }
+        ArgumentsNode arguments = new ArgumentsNode(positionalArgs, null);
+        FunctionOrMacroInvocationExpression function = new FunctionOrMacroInvocationExpression("range", arguments);
         
-        Long rightNum = null;
-        if (right instanceof Long) {
-        	rightNum = (Long) right;
-        }
-        else {
-        	throw new PebbleException(null, String.format("Right operand [%s] in range function must be a long ", right));
-        }
-        
-        List<Long> result = new ArrayList<>();
-        for (Long i = leftNum; i <= rightNum; i++) {
-        	result.add(i);
-        }
-
-        return result;
+        return function.evaluate(self, context);
     }
 
 }
