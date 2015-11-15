@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -31,9 +31,9 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
  * Used to get an attribute from an object. It will look up attributes in the
  * following order: map entry, array item, list item, get method, is method, has
  * method, public method, public field.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class GetAttributeExpression implements Expression<Object> {
 
@@ -43,19 +43,26 @@ public class GetAttributeExpression implements Expression<Object> {
 
     private final ArgumentsNode args;
 
+    private final String filename;
+
+    private final int lineNumber;
+
     /**
      * Potentially cached on first evaluation.
      */
     private final ConcurrentHashMap<Class<?>, Member> memberCache;
 
-    public GetAttributeExpression(Expression<?> node, String attributeName) {
-        this(node, attributeName, null);
+    public GetAttributeExpression(Expression<?> node, String attributeName, String filename, int lineNumber) {
+        this(node, attributeName, null, filename, lineNumber);
     }
 
-    public GetAttributeExpression(Expression<?> node, String attributeName, ArgumentsNode args) {
+    public GetAttributeExpression(Expression<?> node, String attributeName, ArgumentsNode args, String filename,
+            int lineNumber) {
         this.node = node;
         this.attributeName = attributeName;
         this.args = args;
+        this.filename = filename;
+        this.lineNumber = lineNumber;
 
         /*
          * I dont imagine that users will often give different types to the same
@@ -134,17 +141,18 @@ public class GetAttributeExpression implements Expression<Object> {
         } else if (context.isStrictVariables()) {
             if (object == null) {
                 final String rootPropertyName = ((ContextVariableExpression) node).getName();
-                throw new RootAttributeNotFoundException(null,
+                throw new RootAttributeNotFoundException(
+                        null,
                         String.format(
                                 "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
-                                rootPropertyName),
-                        rootPropertyName);
+                                rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
             } else {
-                throw new AttributeNotFoundException(null,
+                throw new AttributeNotFoundException(
+                        null,
                         String.format(
                                 "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                                attributeName, object.getClass().getName()),
-                        attributeName);
+                                attributeName, object.getClass().getName()), attributeName, this.lineNumber,
+                        this.filename);
             }
         }
         return result;
@@ -153,7 +161,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Invoke the "Member" that was found via reflection.
-     * 
+     *
      * @param object
      * @param member
      * @param argumentValues
@@ -178,7 +186,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Fully evaluates the individual arguments.
-     * 
+     *
      * @param self
      * @param context
      * @return
@@ -207,7 +215,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Performs the actual reflection to obtain a "Member" from a class.
-     * 
+     *
      * @param object
      * @param attributeName
      * @param parameterTypes
@@ -258,7 +266,7 @@ public class GetAttributeExpression implements Expression<Object> {
     /**
      * Finds an appropriate method by comparing if parameter types are
      * compatible. This is more relaxed than class.getMethod.
-     * 
+     *
      * @param clazz
      * @param name
      * @param requiredTypes
@@ -298,7 +306,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Performs a widening conversion (primitive to boxed type)
-     * 
+     *
      * @param clazz
      * @return
      */

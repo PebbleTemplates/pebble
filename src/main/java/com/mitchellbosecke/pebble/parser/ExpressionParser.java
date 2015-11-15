@@ -467,7 +467,7 @@ public class ExpressionParser {
                 }
             }
 
-            node = new GetAttributeExpression(node, token.getValue(), args);
+            node = new GetAttributeExpression(node, token.getValue(), args, stream.getFilename(), token.getLineNumber());
 
         } else if (stream.current().test(Token.Type.PUNCTUATION, "[")) {
             // skip over opening '[' bracket
@@ -479,7 +479,7 @@ public class ExpressionParser {
             // restrictions (e.g. can include hyphens '-')
             Token token = stream.current();
             if (token.test(Type.STRING) || token.test(Type.NUMBER)) {
-                node = new GetAttributeExpression(node, token.getValue());
+                node = new GetAttributeExpression(node, token.getValue(), stream.getFilename(), token.getLineNumber());
             } else {
                 throw new ParserException(null, "Only strings and numbers allowed within square brackets.",
                         token.getLineNumber(), stream.getFilename());
