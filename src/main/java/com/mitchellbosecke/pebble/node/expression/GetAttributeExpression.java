@@ -278,7 +278,7 @@ public class GetAttributeExpression implements Expression<Object> {
         Method[] candidates = clazz.getMethods();
 
         for (Method candidate : candidates) {
-            if (!candidate.getName().equals(name)) {
+            if (!candidate.getName().equalsIgnoreCase(name)) {
                 continue;
             }
 
