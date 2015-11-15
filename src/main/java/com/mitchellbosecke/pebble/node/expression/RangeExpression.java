@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.core.RangeFunction;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
@@ -24,7 +25,8 @@ public class RangeExpression extends BinaryExpression<Object> {
         positionalArgs.add(new PositionalArgumentNode(getRightExpression()));
         
         ArgumentsNode arguments = new ArgumentsNode(positionalArgs, null);
-        FunctionOrMacroInvocationExpression function = new FunctionOrMacroInvocationExpression("range", arguments);
+        FunctionOrMacroInvocationExpression function = 
+        		new FunctionOrMacroInvocationExpression(RangeFunction.FUNCTION_NAME, arguments);
         
         return function.evaluate(self, context);
     }

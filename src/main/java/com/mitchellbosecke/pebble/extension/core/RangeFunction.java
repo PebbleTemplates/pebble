@@ -15,6 +15,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.extension.Function;
 
 public class RangeFunction implements Function {
+	public static final String FUNCTION_NAME = "range";
 	private static final String PARAM_START = "start";
 	private static final String PARAM_END = "end";
 	private static final String PARAM_INCREMENT = "increment";
@@ -46,10 +47,13 @@ public class RangeFunction implements Function {
         		results.add(i);
         	}
     	}
-    	else {
+    	else if (increment < 0) {
     		for (Long i = start; i >= end; i += increment) {
         		results.add(i);
         	}
+    	}
+    	else {
+    		throw new IllegalArgumentException("The increment of the range function must be different than 0");
     	}
     	
     	return results;

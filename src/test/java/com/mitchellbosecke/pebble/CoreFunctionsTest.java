@@ -164,6 +164,20 @@ public class CoreFunctionsTest extends AbstractTest {
         assertEquals("1086420", writer.toString());
     }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void testRangeFunctionIncrement0() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,5,0) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+    
     public class SimpleObject {
 
         public int small = 1;

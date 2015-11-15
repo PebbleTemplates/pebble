@@ -163,7 +163,7 @@ public class CoreExtension extends AbstractExtension {
 
         functions.put("max", new MaxFunction());
         functions.put("min", new MinFunction());
-        functions.put("range", new RangeFunction());
+        functions.put(RangeFunction.FUNCTION_NAME, new RangeFunction());
         return functions;
     }
 
