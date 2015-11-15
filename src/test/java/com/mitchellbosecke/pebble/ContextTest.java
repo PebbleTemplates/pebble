@@ -19,6 +19,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -71,7 +72,7 @@ public class ContextTest extends AbstractTest {
         assertEquals("", writer.toString());
     }
 
-    @Test
+    @Test(expected = RootAttributeNotFoundException.class)
     public void testMissingContextVariableWithStrictVariables() throws PebbleException, IOException {
         Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
@@ -80,7 +81,6 @@ public class ContextTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate("{{ foo }}");
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("", writer.toString());
     }
 
     @Test

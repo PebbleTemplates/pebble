@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -31,7 +31,7 @@ public class ScopeChain {
      * because every new thread should have a "snapshot" of the scopes, i.e. if
      * one thread adds a new object to a scope, it should not be available to
      * the other threads.
-     * 
+     *
      * @return A copy of the scope chain
      */
     public ScopeChain deepCopy() {
@@ -90,6 +90,46 @@ public class ScopeChain {
         }
 
         return result;
+    }
+
+    /**
+     * This method checks if the given {@code key} does exists within the scope
+     * chain.
+     *
+     * @param key
+     *            the for which the the check should be executed for.
+     * @return {@code true} when the key does exists or {@code false} when the
+     *         given key does not exists.
+     */
+    public boolean containsKey(String key) {
+
+        /*
+         * The majority of time, the requested variable will be in the first
+         * scope so we do a quick lookup in that scope before attempting to
+         * create an iterator, etc. This is solely for performance.
+         */
+        Scope scope = stack.getFirst();
+        if (scope.containsKey(key)) {
+            return true;
+        }
+
+        Iterator<Scope> iterator = stack.iterator();
+
+        // account for the first lookup we did
+        iterator.next();
+
+        while (iterator.hasNext()) {
+            scope = iterator.next();
+
+            if (scope.containsKey(key)) {
+                return true;
+            }
+            if (scope.isLocal()) {
+                break;
+            }
+        }
+
+        return false;
     }
 
     public boolean currentScopeContainsVariable(String variableName) {
