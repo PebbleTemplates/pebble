@@ -28,11 +28,11 @@ public class CacheTokenParser extends AbstractTokenParser {
         TokenStream stream = this.parser.getStream();
         int lineNumber = token.getLineNumber();
 
-        // skip over the 'block' token to the name token
-        Token blockName = stream.next();
+        // skip over the 'cache' token to the name token
+        Token cacheName = stream.next();
 
-        // expect a name or string for the new block
-        if (!blockName.test(Token.Type.NAME) && !blockName.test(Token.Type.STRING)) {
+        // expect a name or string for the cache
+        if (!cacheName.test(Token.Type.NAME) && !cacheName.test(Token.Type.STRING)) {
 
             // we already know an error has occurred but let's just call the
             // typical "expect" method so that we know a proper error
@@ -41,7 +41,7 @@ public class CacheTokenParser extends AbstractTokenParser {
         }
 
         // get the name of the new cache
-        String name = blockName.getValue();
+        String name = cacheName.getValue();
 
         // skip over name
         stream.next();
@@ -50,7 +50,7 @@ public class CacheTokenParser extends AbstractTokenParser {
 
         this.parser.pushBlockStack(name);
 
-        // now we parse the block body
+        // now we parse the cache body
         BodyNode cacheBody = this.parser.subparse(new StoppingCondition() {
 
             @Override
@@ -63,7 +63,7 @@ public class CacheTokenParser extends AbstractTokenParser {
         // skip the 'endcache' token
         stream.next();
 
-        // check if user included block name in endblock
+        // check if user included cache name in endcache
         Token current = stream.current();
         if (current.test(Token.Type.NAME, name) || current.test(Token.Type.STRING, name)) {
             stream.next();
