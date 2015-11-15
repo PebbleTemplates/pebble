@@ -123,7 +123,7 @@ public class ExpressionParser {
             try {
                 unaryExpression = operatorNodeClass.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-               throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
             unaryExpression.setChildExpression(expression);
 
@@ -292,7 +292,7 @@ public class ExpressionParser {
 
                 // variable name
                 else {
-                    node = new ContextVariableExpression(token.getValue());
+                    node = new ContextVariableExpression(token.getValue(), token.getLineNumber(), stream.getFilename());
                 }
                 break;
             }

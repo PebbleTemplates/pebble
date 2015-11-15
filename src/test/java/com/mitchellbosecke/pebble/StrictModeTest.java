@@ -33,9 +33,9 @@ public class StrictModeTest extends AbstractTest {
      * exception in strict mode.
      */
     @Test()
-    public void testSimpleVariable() throws PebbleException, IOException {
+    public void testComplexVariable() throws PebbleException, IOException {
 
-        PebbleTemplate template = pebble.getTemplate("template.strictModeExpression.peb");
+        PebbleTemplate template = pebble.getTemplate("template.strictModeComplexExpression.peb");
 
         Map<String, Object> context = new HashMap<>();
 
@@ -45,7 +45,29 @@ public class StrictModeTest extends AbstractTest {
             template.evaluate(writer, context);
             Assert.fail("Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
         } catch (RootAttributeNotFoundException e) {
-            Assert.assertEquals(e.getFileName(), "template.strictModeExpression.peb");
+            Assert.assertEquals(e.getFileName(), "template.strictModeComplexExpression.peb");
+            Assert.assertEquals(e.getLineNumber(), 2);
+        }
+    }
+
+    /**
+     * Tests that the line number and file name is correctly passed to the
+     * exception in strict mode.
+     */
+    @Test()
+    public void testSimpleVariable() throws PebbleException, IOException {
+
+        PebbleTemplate template = pebble.getTemplate("template.strictModeSimpleExpression.peb");
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+
+        try {
+            template.evaluate(writer, context);
+            Assert.fail("Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
+        } catch (RootAttributeNotFoundException e) {
+            Assert.assertEquals(e.getFileName(), "template.strictModeSimpleExpression.peb");
             Assert.assertEquals(e.getLineNumber(), 2);
         }
     }
