@@ -147,7 +147,8 @@ public class OperatorUtils {
         Number num2 = (Number) op2;
 
         if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
-            return bigDecimalOperation((BigDecimal) num1, (BigDecimal) num2, operation);
+            return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()), BigDecimal.valueOf(num2.doubleValue()), 
+                    operation);
         }
         
         if (num1 instanceof Double || num2 instanceof Double) {
@@ -176,7 +177,8 @@ public class OperatorUtils {
         Number num2 = (Number) op2;
 
         if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
-            return bigDecimalComparison((BigDecimal) num1, (BigDecimal) num2, comparison);
+            return bigDecimalComparison(BigDecimal.valueOf(num1.doubleValue()), BigDecimal.valueOf(num2.doubleValue()),
+                    comparison);
         }
         
         if (num1 instanceof Double || num2 instanceof Double) {
