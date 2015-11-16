@@ -23,11 +23,11 @@ public class RangeExpression extends BinaryExpression<Object> {
         List<PositionalArgumentNode> positionalArgs = new ArrayList<>();
         positionalArgs.add(new PositionalArgumentNode(getLeftExpression()));
         positionalArgs.add(new PositionalArgumentNode(getRightExpression()));
-        
+
         ArgumentsNode arguments = new ArgumentsNode(positionalArgs, null);
-        FunctionOrMacroInvocationExpression function = 
-        		new FunctionOrMacroInvocationExpression(RangeFunction.FUNCTION_NAME, arguments);
-        
+        FunctionOrMacroInvocationExpression function = new FunctionOrMacroInvocationExpression(
+                RangeFunction.FUNCTION_NAME, arguments);
+
         return function.evaluate(self, context);
     }
 
