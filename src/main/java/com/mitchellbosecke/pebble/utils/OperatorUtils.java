@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.utils;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Collection;
 import java.util.List;
 
@@ -144,6 +146,10 @@ public class OperatorUtils {
         Number num1 = (Number) op1;
         Number num2 = (Number) op2;
 
+        if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
+            return bigDecimalOperation((BigDecimal) num1, (BigDecimal) num2, operation);
+        }
+        
         if (num1 instanceof Double || num2 instanceof Double) {
             return doubleOperation(num1.doubleValue(), num2.doubleValue(), operation);
         }
@@ -169,6 +175,10 @@ public class OperatorUtils {
         Number num1 = (Number) op1;
         Number num2 = (Number) op2;
 
+        if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
+            return bigDecimalComparison((BigDecimal) num1, (BigDecimal) num2, comparison);
+        }
+        
         if (num1 instanceof Double || num2 instanceof Double) {
             return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
         }
@@ -213,6 +223,40 @@ public class OperatorUtils {
             return op1 <= op2;
         case EQUALS:
             return op1 == op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+    
+    private static BigDecimal bigDecimalOperation(BigDecimal op1, BigDecimal op2, Operation operation) {
+        switch (operation) {
+        case ADD:
+            return op1.add(op2);
+        case SUBTRACT:
+            return op1.subtract(op2);
+        case MULTIPLICATION:
+            return op1.multiply(op2, MathContext.DECIMAL128);
+        case DIVISION:
+            return op1.divide(op2, MathContext.DECIMAL128);
+        case MODULUS:
+            return op1.remainder(op2, MathContext.DECIMAL128);
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+
+    private static boolean bigDecimalComparison(BigDecimal op1, BigDecimal op2, Comparison comparison) {
+        switch (comparison) {
+        case GREATER_THAN:
+            return op1.compareTo(op2) > 0;
+        case GREATER_THAN_EQUALS:
+            return op1.compareTo(op2) >= 0;
+        case LESS_THAN:
+            return op1.compareTo(op2) < 0;
+        case LESS_THAN_EQUALS:
+            return op1.compareTo(op2) <= 0;
+        case EQUALS:
+            return op1.compareTo(op2) == 0;
         default:
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
