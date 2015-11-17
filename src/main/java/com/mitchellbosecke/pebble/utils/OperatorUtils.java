@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 
+ *
  * This class acts as a sort of wrapper around Java's built in operators. This
  * is necessary because Pebble treats all user provided variables as Objects
  * even if they were originally primitives.
@@ -20,9 +20,9 @@ import java.util.List;
  * It's important that this class mimics the natural type conversion that Java
  * will apply when performing operators. This can be found in section 5.6.2 of
  * the Java 7 spec, under Binary Numeric Promotion.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class OperatorUtils {
 
@@ -65,9 +65,17 @@ public class OperatorUtils {
     public static boolean equals(Object op1, Object op2) {
         if (op1 != null && op1 instanceof Number && op2 != null && op2 instanceof Number) {
             return wideningConversionBinaryComparison(op1, op2, Comparison.EQUALS);
+        } else if (op1 != null && op1 instanceof Enum<?> && op2 != null && op2 instanceof String) {
+            return compareEnum((Enum<?>) op1, (String) op2);
+        } else if (op2 != null && op2 instanceof Enum<?> && op1 != null && op1 instanceof String) {
+            return compareEnum((Enum<?>) op2, (String) op1);
         } else {
             return ((op1 == op2) || ((op1 != null) && op1.equals(op2)));
         }
+    }
+
+    private static <T extends Enum<T>> boolean compareEnum(Enum<T> enumVariable, String compareToString) {
+        return enumVariable.name().equals(compareToString);
     }
 
     public static boolean gt(Object op1, Object op2) {
@@ -101,7 +109,7 @@ public class OperatorUtils {
     /**
      * This is not a documented feature but we are leaving this in for now. I'm
      * unsure if there is demand for this feature.
-     * 
+     *
      * @param op1
      * @param op2
      * @return
@@ -119,7 +127,7 @@ public class OperatorUtils {
     /**
      * This is not a documented feature but we are leaving this in for now. I'm
      * unsure if there is demand for this feature.
-     * 
+     *
      * @param op1
      * @param op2
      * @return

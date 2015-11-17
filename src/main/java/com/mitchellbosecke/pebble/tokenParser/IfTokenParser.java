@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -18,14 +18,15 @@ import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.IfNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 public class IfTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token) throws ParserException {
-        TokenStream stream = this.parser.getStream();
+    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+        TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 
         // skip the 'if' token
@@ -33,11 +34,11 @@ public class IfTokenParser extends AbstractTokenParser {
 
         List<Pair<Expression<?>, BodyNode>> conditionsWithBodies = new ArrayList<>();
 
-        Expression<?> expression = this.parser.getExpressionParser().parseExpression();
+        Expression<?> expression = parser.getExpressionParser().parseExpression();
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = this.parser.subparse(decideIfFork);
+        BodyNode body = parser.subparse(decideIfFork);
 
         conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
 
@@ -48,14 +49,14 @@ public class IfTokenParser extends AbstractTokenParser {
             case "else":
                 stream.next();
                 stream.expect(Token.Type.EXECUTE_END);
-                elseBody = this.parser.subparse(decideIfEnd);
+                elseBody = parser.subparse(decideIfEnd);
                 break;
 
             case "elseif":
                 stream.next();
-                expression = this.parser.getExpressionParser().parseExpression();
+                expression = parser.getExpressionParser().parseExpression();
                 stream.expect(Token.Type.EXECUTE_END);
-                body = this.parser.subparse(decideIfFork);
+                body = parser.subparse(decideIfFork);
                 conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
                 break;
 
