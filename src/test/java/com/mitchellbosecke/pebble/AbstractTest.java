@@ -8,16 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.parser.Parser;
 
 public abstract class AbstractTest {
 
 	protected final PebbleEngine pebble;
-	protected final Lexer lexer;
 	protected final Loader<?> loader;
-	protected final Parser parser;
 
 	public AbstractTest() {
 
@@ -26,8 +22,6 @@ public abstract class AbstractTest {
 		pebble.getLoader().setPrefix("templates");
 
 		loader = pebble.getLoader();
-		lexer = pebble.getLexer();
-		parser = pebble.getParser();
 	}
 
 }
