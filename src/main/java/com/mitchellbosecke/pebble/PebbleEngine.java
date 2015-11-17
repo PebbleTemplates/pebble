@@ -154,8 +154,6 @@ public class PebbleEngine {
      *            The template loader for this engine
      * @param extensions
      *            The extensions which should be loaded.
-     * @param syntax
-     *            the syntax to use for parsing the templates.
      */
     public PebbleEngine(Loader<?> loader, Collection<? extends Extension> extensions) {
         this(loader, new Syntax.Builder().build(), extensions);
