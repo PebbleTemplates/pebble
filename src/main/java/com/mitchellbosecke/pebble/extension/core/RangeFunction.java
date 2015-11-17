@@ -73,7 +73,6 @@ public class RangeFunction implements Function {
             char startChar = startStr.charAt(0);
             char endChar = endStr.charAt(0);
 
-            Character.getNumericValue(startChar);
             if (increment > 0) {
                 for (int i = startChar; i <= endChar; i += increment) {
                     results.add((char) i);
