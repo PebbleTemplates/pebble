@@ -178,6 +178,65 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
     }
     
+    @Test
+    public void testRangeFunctionChar() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range('a','e') %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("abcde", writer.toString());
+    }
+    
+    @Test
+    public void testRangeFunctionCharIncrement2() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range('a','f',2) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("ace", writer.toString());
+    }
+    
+    @Test
+    public void testRangeFunctionCharDecrement2() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range('f','a',-2) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("fdb", writer.toString());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testRangeFunctionCharIncrement0() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range('a','e',0) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+    
     public class SimpleObject {
 
         public int small = 1;

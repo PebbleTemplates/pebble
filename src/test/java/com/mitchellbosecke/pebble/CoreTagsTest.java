@@ -250,7 +250,7 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("012345", writer.toString());
     }
     
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testForSequenceNumberException() throws PebbleException, IOException {
         Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
