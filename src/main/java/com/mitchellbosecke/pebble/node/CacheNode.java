@@ -15,7 +15,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
@@ -25,15 +24,13 @@ public class CacheNode extends AbstractRenderableNode {
 
     private final BodyNode body;
     private final Cache<String, String> cache;
-
     private final String name;
 
-    public CacheNode(int lineNumber, String name, BodyNode body, Long cacheSize) {
+    public CacheNode(int lineNumber, String name, BodyNode body, Cache<String, String> cache) {
         super(lineNumber);
         this.body = body;
         this.name = name;
-
-        this.cache = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
+        this.cache = cache;
     }
 
     @Override

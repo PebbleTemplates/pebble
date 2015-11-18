@@ -72,7 +72,10 @@ public class PebbleEngine {
 
     private Locale defaultLocale = Locale.getDefault();
     
-    private long cacheTagSize = 200L;
+    /**
+     * cache for cache tag
+     */
+    private Cache<String, String> cacheForCacheTag;
 
     private ExecutorService executorService;
 
@@ -185,6 +188,7 @@ public class PebbleEngine {
 
         // set up a default cache
         templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
+        cacheForCacheTag = CacheBuilder.newBuilder().maximumSize(200).build();
 
         this.loader = loader;
 
@@ -411,7 +415,6 @@ public class PebbleEngine {
     public void setTemplateCache(Cache<Object, PebbleTemplate> cache) {
         if (cache == null) {
             templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
-            cacheTagSize = 0L;
         } else {
             templateCache = cache;
         }
@@ -472,22 +475,22 @@ public class PebbleEngine {
     public Syntax getSyntax() {
         return this.syntax;
     }
-
-    /**
-     * Returns the size of the cache for the cacheTag
-     * 
-     * @return the size of the cache for the cacheTag
-     */
-    public long getCacheTagSize() {
-        return cacheTagSize;
+    
+    public Cache<String, String> getCacheForCacheTag() {
+        return cacheForCacheTag;
     }
 
     /**
-     * Affects the size of the cache for the cacheTag
+     * Sets the cache to be used for the cache tag
      *
-     * @param cacheTagSize the size of the cache for the cacheTag.
+     * @param cache
+     *            The cache to be used
      */
-    public void setCacheTagSize(long cacheTagSize) {
-        this.cacheTagSize = cacheTagSize;
+    public void setCacheForCacheTag(Cache<String, String> cache) {
+        if (cache == null) {
+            cacheForCacheTag = CacheBuilder.newBuilder().maximumSize(0).build();
+        } else {
+            cacheForCacheTag = cache;
+        }
     }
 }
