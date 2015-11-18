@@ -38,14 +38,6 @@ public class CacheNode extends AbstractRenderableNode {
         visitor.visit(this);
     }
 
-    public BodyNode getBody() {
-        return this.body;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
     @Override
     public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
             throws PebbleException,
