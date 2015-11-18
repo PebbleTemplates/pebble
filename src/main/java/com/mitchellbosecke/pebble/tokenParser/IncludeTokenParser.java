@@ -15,19 +15,20 @@ import com.mitchellbosecke.pebble.node.IncludeNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.node.expression.MapExpression;
+import com.mitchellbosecke.pebble.parser.Parser;
 
 public class IncludeTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token) throws ParserException {
+    public RenderableNode parse(Token token, Parser parser) throws ParserException {
 
-        TokenStream stream = this.parser.getStream();
+        TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 
         // skip over the 'include' token
         stream.next();
 
-        Expression<?> includeExpression = this.parser.getExpressionParser().parseExpression();
+        Expression<?> includeExpression = parser.getExpressionParser().parseExpression();
 
         Token current = stream.current();
         MapExpression mapExpression = null;
@@ -38,13 +39,13 @@ public class IncludeTokenParser extends AbstractTokenParser {
             // Skip over 'with'
             stream.next();
 
-            Expression<?> parsedExpression = this.parser.getExpressionParser().parseExpression();
+            Expression<?> parsedExpression = parser.getExpressionParser().parseExpression();
 
             if (parsedExpression instanceof MapExpression) {
-                mapExpression = (MapExpression)parsedExpression;
+                mapExpression = (MapExpression) parsedExpression;
             } else {
-                throw new ParserException(null, String.format("Unexpected expression '%1s'.", parsedExpression.getClass()
-                        .getCanonicalName()), token.getLineNumber(), stream.getFilename());
+                throw new ParserException(null, String.format("Unexpected expression '%1s'.", parsedExpression
+                        .getClass().getCanonicalName()), token.getLineNumber(), stream.getFilename());
             }
 
         }

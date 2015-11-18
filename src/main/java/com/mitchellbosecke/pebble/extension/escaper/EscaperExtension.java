@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -15,7 +15,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
 import com.mitchellbosecke.pebble.tokenParser.AutoEscapeTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
@@ -23,11 +23,11 @@ public class EscaperExtension extends AbstractExtension {
 
     private final EscapeFilter filter;
 
-    private final EscaperNodeVisitor visitor;
+    private final EscaperNodeVisitorFactory visitorFactory;
 
     public EscaperExtension() {
         this.filter = new EscapeFilter();
-        this.visitor = new EscaperNodeVisitor();
+        this.visitorFactory = new EscaperNodeVisitorFactory();
     }
 
     @Override
@@ -46,37 +46,45 @@ public class EscaperExtension extends AbstractExtension {
     }
 
     @Override
-    public List<NodeVisitor> getNodeVisitors() {
-        List<NodeVisitor> visitors = new ArrayList<>();
-        visitors.add(visitor);
+    public List<NodeVisitorFactory> getNodeVisitors() {
+        List<NodeVisitorFactory> visitors = new ArrayList<>();
+        visitors.add(visitorFactory);
         return visitors;
     }
 
     /**
      * Sets the default escaping strategy.
-     * 
+     *
      * @param strategy
      *            Escaping strategy
      */
     public void setDefaultStrategy(String strategy) {
+        // TODO: This method is dangerous, because the state of the filter is
+        // changed. When this is changed during the rendering of template this
+        // can lead to unexpected results.
         filter.setDefaultStrategy(strategy);
     }
 
     public void setAutoEscaping(boolean auto) {
-        visitor.pushAutoEscapeState(auto);
+        visitorFactory.setAutoEscaping(auto);
     }
 
     public void addSafeFilter(String filter) {
-        visitor.addSafeFilter(filter);
+        visitorFactory.addSafeFilter(filter);
     }
 
     /**
      * Adds a custom escaping strategy to the filter.
-     * 
-     * @param name Name of the escaping strategy
-     * @param strategy The implementation of the escaping strategy
+     *
+     * @param name
+     *            Name of the escaping strategy
+     * @param strategy
+     *            The implementation of the escaping strategy
      */
     public void addEscapingStrategy(String name, EscapingStrategy strategy) {
+        // TODO: This method is dangerous, because the state of the filter is
+        // changed. When this is changed during the rendering of template this
+        // can lead to unexpected results.
         filter.addEscapingStrategy(name, strategy);
     }
 

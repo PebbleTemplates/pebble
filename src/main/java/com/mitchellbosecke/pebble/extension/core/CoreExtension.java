@@ -16,7 +16,7 @@ import java.util.Map;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.node.expression.AddExpression;
 import com.mitchellbosecke.pebble.node.expression.AndExpression;
@@ -133,6 +133,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("trim", new TrimFilter());
         filters.put("upper", new UpperFilter());
         filters.put("urlencode", new UrlEncoderFilter());
+        filters.put("length", new LengthFilter());
         return filters;
     }
 
@@ -169,9 +170,9 @@ public class CoreExtension extends AbstractExtension {
         return null;
     }
 
-    public List<NodeVisitor> getNodeVisitors() {
-        List<NodeVisitor> visitors = new ArrayList<>();
-        visitors.add(new MacroAndBlockRegistrantNodeVisitor());
+    public List<NodeVisitorFactory> getNodeVisitors() {
+        List<NodeVisitorFactory> visitors = new ArrayList<>();
+        visitors.add(new MacroAndBlockRegistrantNodeVisitorFactory());
         return visitors;
     }
 

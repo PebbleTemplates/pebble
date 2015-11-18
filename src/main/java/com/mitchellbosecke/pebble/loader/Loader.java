@@ -118,7 +118,7 @@ public interface Loader<T> {
      * stability of the memory is not given anymore.
      *
      * @param templateName
-     * @return
+     * @return Returns the cache key
      */
     T createCacheKey(String templateName);
 

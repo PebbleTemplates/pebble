@@ -255,6 +255,29 @@ public class CoreTestsTest extends AbstractTest {
         assertEquals("yesyes", writer.toString());
     }
 
+    /**
+     * Tests if the test function 'defined' is working on maps.
+     */
+    @Test
+    public void testDefinedWithMap() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(true);
+
+        String source = "{% if test.test is defined %}yes{% else %}no{% endif %}{% if test.test2 is defined %}no{% else %}yes{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        Map<String, Object> context = new HashMap<>();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("test", "yes");
+        context.put("test", map);
+        template.evaluate(writer, context);
+        assertEquals("yesyes", writer.toString());
+    }
+
+
 
 
     public static class Classroom {
