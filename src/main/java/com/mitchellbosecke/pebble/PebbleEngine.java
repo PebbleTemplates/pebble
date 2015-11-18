@@ -71,6 +71,8 @@ public class PebbleEngine {
     private boolean strictVariables = false;
 
     private Locale defaultLocale = Locale.getDefault();
+    
+    private long cacheTagSize = 200L;
 
     private ExecutorService executorService;
 
@@ -470,4 +472,21 @@ public class PebbleEngine {
         return this.syntax;
     }
 
+    /**
+     * Returns the size of the cache for the cacheTag
+     * 
+     * @return the size of the cache for the cacheTag
+     */
+    public long getCacheTagSize() {
+        return cacheTagSize;
+    }
+
+    /**
+     * Affects the size of the cache for the cacheTag
+     *
+     * @param cacheTagSize the size of the cache for the cacheTag.
+     */
+    public void setCacheTagSize(long cacheTagSize) {
+        this.cacheTagSize = cacheTagSize;
+    }
 }

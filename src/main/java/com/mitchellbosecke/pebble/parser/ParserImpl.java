@@ -221,4 +221,9 @@ public class ParserImpl implements Parser {
     public void pushBlockStack(String blockName) {
         blockStack.push(blockName);
     }
+
+    @Override
+    public PebbleEngine getEngine() {
+        return engine;
+    }
 }

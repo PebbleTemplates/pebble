@@ -28,16 +28,12 @@ public class CacheNode extends AbstractRenderableNode {
 
     private final String name;
 
-    public CacheNode(int lineNumber, String name) {
-        this(lineNumber, name, null);
-    }
-
-    public CacheNode(int lineNumber, String name, BodyNode body) {
+    public CacheNode(int lineNumber, String name, BodyNode body, Long cacheSize) {
         super(lineNumber);
         this.body = body;
         this.name = name;
 
-        this.cache = CacheBuilder.newBuilder().maximumSize(200).build();
+        this.cache = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
     }
 
     @Override
