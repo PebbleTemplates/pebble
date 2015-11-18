@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.BodyNode;
@@ -44,5 +45,7 @@ public interface Parser {
     String popBlockStack();
 
     void pushBlockStack(String blockName);
+    
+    PebbleEngine getEngine();
 
 }
