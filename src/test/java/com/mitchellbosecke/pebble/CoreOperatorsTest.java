@@ -386,6 +386,40 @@ public class CoreOperatorsTest extends AbstractTest {
     }
     
     @Test()
+    public void testComparisonWithNull() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% if number1 > number2 %}yes{% else %}no{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("number1", null);
+        context.put("number2", BigDecimal.valueOf(2d));
+        
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("no", writer.toString());
+    }
+    
+    @Test()
+    public void testComparisonWithNull2() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% if number1 > number2 %}yes{% else %}no{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("number1", BigDecimal.valueOf(3d));
+        context.put("number2", null);
+        
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("no", writer.toString());
+    }
+    
+    @Test()
     public void testComparisonBigDecimalWithDouble() throws PebbleException, IOException {
         Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);

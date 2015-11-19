@@ -167,7 +167,9 @@ public class OperatorUtils {
     }
 
     private static boolean wideningConversionBinaryComparison(Object op1, Object op2, Comparison comparison) {
-
+        if (op1 == null || op2 == null) {
+            return false;
+        }
         if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
             throw new RuntimeException(String.format("invalid operands for mathematical comparison [%s]",
                     comparison.toString()));
