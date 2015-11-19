@@ -35,6 +35,7 @@ import com.mitchellbosecke.pebble.node.expression.NegativeTestExpression;
 import com.mitchellbosecke.pebble.node.expression.NotEqualsExpression;
 import com.mitchellbosecke.pebble.node.expression.OrExpression;
 import com.mitchellbosecke.pebble.node.expression.PositiveTestExpression;
+import com.mitchellbosecke.pebble.node.expression.RangeExpression;
 import com.mitchellbosecke.pebble.node.expression.SubtractExpression;
 import com.mitchellbosecke.pebble.node.expression.UnaryMinusExpression;
 import com.mitchellbosecke.pebble.node.expression.UnaryNotExpression;
@@ -109,6 +110,7 @@ public class CoreExtension extends AbstractExtension {
         operators.add(new BinaryOperatorImpl("%", 60, ModulusExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("|", 100, FilterExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("~", 110, ConcatenateExpression.class, Associativity.LEFT));
+        operators.add(new BinaryOperatorImpl("..", 120, RangeExpression.class, Associativity.LEFT));
 
         return operators;
     }
@@ -162,6 +164,7 @@ public class CoreExtension extends AbstractExtension {
 
         functions.put("max", new MaxFunction());
         functions.put("min", new MinFunction());
+        functions.put(RangeFunction.FUNCTION_NAME, new RangeFunction());
         return functions;
     }
 
