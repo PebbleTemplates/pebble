@@ -50,6 +50,72 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
 
     @SuppressWarnings("serial")
     @Test
+    public void testAccessingValueWithExpressionSubscript() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
+
+        String source1 = "{% set var = 'apple' %}{{ colors[var] }}";
+        PebbleTemplate template1 = pebble.getTemplate(source1);
+
+        String source2 = "{% set var = 'pear' %}{{ colors[var] }}";
+        PebbleTemplate template2 = pebble.getTemplate(source2);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("colors", new HashMap<String, Object>() {
+
+            {
+                put("apple", "red");
+                put("pear", "green");
+            }
+        });
+
+        Writer writer1 = new StringWriter();
+        template1.evaluate(writer1, context);
+        assertEquals("red", writer1.toString());
+
+
+        Writer writer2 = new StringWriter();
+        template2.evaluate(writer2, context);
+        assertEquals("green", writer2.toString());
+    }
+
+    @SuppressWarnings("serial")
+    @Test
+    public void testAccessingValueWithIntegerExpressionSubscript() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+        pebble.setStrictVariables(false);
+
+        String source1 = "{{ colors[one] }}";
+        PebbleTemplate template1 = pebble.getTemplate(source1);
+
+        String source2 = "{{ colors[var] }}";
+        PebbleTemplate template2 = pebble.getTemplate(source2);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("colors", new HashMap<Long, Object>() {
+
+            {
+                put(1l, "red");
+                put(2l, "green");
+            }
+        });
+        context.put("one", 1l);
+        context.put("two", 2l);
+
+        Writer writer1 = new StringWriter();
+        template1.evaluate(writer1, context);
+        assertEquals("red", writer1.toString());
+
+
+        Writer writer2 = new StringWriter();
+        template2.evaluate(writer2, context);
+        //assertEquals("green", writer2.toString());
+    }
+
+    @SuppressWarnings("serial")
+    @Test
     public void testAccessingNestedValuesWithSubscript() throws PebbleException, IOException {
         Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);

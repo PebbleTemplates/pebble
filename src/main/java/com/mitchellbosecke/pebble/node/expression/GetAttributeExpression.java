@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -31,15 +31,15 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
  * Used to get an attribute from an object. It will look up attributes in the
  * following order: map entry, array item, list item, get method, is method, has
  * method, public method, public field.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class GetAttributeExpression implements Expression<Object> {
 
     private final Expression<?> node;
 
-    private final String attributeName;
+    private final Expression<?> attributeNameExpression;
 
     private final ArgumentsNode args;
 
@@ -48,13 +48,13 @@ public class GetAttributeExpression implements Expression<Object> {
      */
     private final ConcurrentHashMap<Class<?>, Member> memberCache;
 
-    public GetAttributeExpression(Expression<?> node, String attributeName) {
-        this(node, attributeName, null);
+    public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression) {
+        this(node, attributeNameExpression, null);
     }
 
-    public GetAttributeExpression(Expression<?> node, String attributeName, ArgumentsNode args) {
+    public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, ArgumentsNode args) {
         this.node = node;
-        this.attributeName = attributeName;
+        this.attributeNameExpression = attributeNameExpression;
         this.args = args;
 
         /*
@@ -67,6 +67,8 @@ public class GetAttributeExpression implements Expression<Object> {
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
         Object object = node.evaluate(self, context);
+        Object attributeNameValue = attributeNameExpression.evaluate(self, context);
+        String attributeName = String.valueOf(attributeNameValue);
 
         Object result = null;
 
@@ -83,8 +85,8 @@ public class GetAttributeExpression implements Expression<Object> {
             if (args == null) {
 
                 // first we check maps
-                if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeName)) {
-                    return ((Map<?, ?>) object).get(attributeName);
+                if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeNameValue)) {
+                    return ((Map<?, ?>) object).get(attributeNameValue);
                 }
 
                 try {
@@ -134,17 +136,13 @@ public class GetAttributeExpression implements Expression<Object> {
         } else if (context.isStrictVariables()) {
             if (object == null) {
                 final String rootPropertyName = ((ContextVariableExpression) node).getName();
-                throw new RootAttributeNotFoundException(null,
-                        String.format(
-                                "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
-                                rootPropertyName),
-                        rootPropertyName);
+                throw new RootAttributeNotFoundException(null, String.format(
+                        "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
+                        rootPropertyName), rootPropertyName);
             } else {
-                throw new AttributeNotFoundException(null,
-                        String.format(
-                                "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                                attributeName, object.getClass().getName()),
-                        attributeName);
+                throw new AttributeNotFoundException(null, String.format(
+                        "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                        attributeName, object.getClass().getName()), attributeName);
             }
         }
         return result;
@@ -153,7 +151,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Invoke the "Member" that was found via reflection.
-     * 
+     *
      * @param object
      * @param member
      * @param argumentValues
@@ -178,7 +176,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Fully evaluates the individual arguments.
-     * 
+     *
      * @param self
      * @param context
      * @return
@@ -207,7 +205,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Performs the actual reflection to obtain a "Member" from a class.
-     * 
+     *
      * @param object
      * @param attributeName
      * @param parameterTypes
@@ -258,7 +256,7 @@ public class GetAttributeExpression implements Expression<Object> {
     /**
      * Finds an appropriate method by comparing if parameter types are
      * compatible. This is more relaxed than class.getMethod.
-     * 
+     *
      * @param clazz
      * @param name
      * @param requiredTypes
@@ -298,7 +296,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     /**
      * Performs a widening conversion (primitive to boxed type)
-     * 
+     *
      * @param clazz
      * @return
      */
@@ -327,10 +325,6 @@ public class GetAttributeExpression implements Expression<Object> {
 
     public Expression<?> getNode() {
         return node;
-    }
-
-    public String getAttribute() {
-        return attributeName;
     }
 
     public ArgumentsNode getArgumentsNode() {
