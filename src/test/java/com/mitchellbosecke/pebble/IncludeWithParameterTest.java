@@ -42,4 +42,19 @@ public class IncludeWithParameterTest extends AbstractTest {
 
     }
 
+    @Test
+    public void testIncludeWithParametersNotIsolated() throws PebbleException, IOException {
+
+        PebbleTemplate template = pebble.getTemplate("template.includeWithParameterNotIsolated1.peb");
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+
+        String expectedOutput = "bazbar";
+
+        assertEquals(expectedOutput, writer.toString());
+
+    }
+
 }
