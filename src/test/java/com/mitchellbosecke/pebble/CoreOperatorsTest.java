@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -106,7 +107,7 @@ public class CoreOperatorsTest extends AbstractTest {
         context.put("number2", BigDecimal.valueOf(30d));
         
         template.evaluate(writer, context);
-        assertEquals("200.0-10.0", writer.toString());
+        assertEquals("200-10", writer.toString());
     }
     
     @Test
@@ -124,9 +125,63 @@ public class CoreOperatorsTest extends AbstractTest {
         context.put("number2", 30d);
         
         template.evaluate(writer, context);
-        assertEquals("200.0-10.0", writer.toString());
+        assertEquals("200-10", writer.toString());
     }
+    
+    @Test
+    public void testBinaryOperatorsBigInteger() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
 
+        String source = "{{ number1 + number2 * number1 / number2 }}-{{number1 % number2}}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("number1", BigInteger.valueOf(100));
+        context.put("number2", BigInteger.valueOf(30));
+        
+        template.evaluate(writer, context);
+        assertEquals("200-10", writer.toString());
+    }
+    
+    @Test
+    public void testBinaryOperatorsBigIntegerWithLong() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{{ number1 + number2 * number1 / number2 }}-{{number1 % number2}}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("number1", BigInteger.valueOf(100));
+        context.put("number2", 30L);
+        
+        template.evaluate(writer, context);
+        assertEquals("200-10", writer.toString());
+    }
+    
+    @Test
+    public void testBinaryOperatorsShort() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{{ number1 + number2 * number1 / number2 }}-{{number1 % number2}}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        
+        Map<String, Object> context = new HashMap<>();
+        context.put("number1", (short) 100);
+        context.put("number2", (short) 30);
+        
+        template.evaluate(writer, context);
+        assertEquals("200-10", writer.toString());
+    }
+    
     /**
      * Problem existed where getAttribute would return an Object type which was
      * an invalid operand for java's algebraic operators.
