@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -14,13 +14,14 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.BlockNode;
 import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class BlockTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token) throws ParserException {
-        TokenStream stream = this.parser.getStream();
+    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+        TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 
         // skip over the 'block' token to the name token
@@ -43,17 +44,17 @@ public class BlockTokenParser extends AbstractTokenParser {
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        this.parser.pushBlockStack(name);
+        parser.pushBlockStack(name);
 
         // now we parse the block body
-        BodyNode blockBody = this.parser.subparse(new StoppingCondition() {
+        BodyNode blockBody = parser.subparse(new StoppingCondition() {
 
             @Override
             public boolean evaluate(Token token) {
                 return token.test(Token.Type.NAME, "endblock");
             }
         });
-        this.parser.popBlockStack();
+        parser.popBlockStack();
 
         // skip the 'endblock' token
         stream.next();

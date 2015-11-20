@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -34,15 +34,15 @@ import com.mitchellbosecke.pebble.utils.Pair;
 /**
  * A base node visitor that can be extended for the sake of using it's
  * navigational abilities.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class AbstractNodeVisitor implements NodeVisitor {
 
-    protected PebbleTemplateImpl template;
+    private final PebbleTemplateImpl template;
 
-    public void setTemplate(PebbleTemplateImpl template) {
+    public AbstractNodeVisitor(PebbleTemplateImpl template) {
         this.template = template;
     }
 
@@ -169,6 +169,10 @@ public class AbstractNodeVisitor implements NodeVisitor {
     @Override
     public void visit(TextNode node) {
 
+    }
+
+    protected PebbleTemplateImpl getTemplate() {
+        return this.template;
     }
 
 }

@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Semaphore;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -28,13 +27,13 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.extension.core.CoreExtension;
 import com.mitchellbosecke.pebble.extension.escaper.EscaperExtension;
 import com.mitchellbosecke.pebble.extension.i18n.I18nExtension;
-import com.mitchellbosecke.pebble.lexer.Lexer;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
+import com.mitchellbosecke.pebble.lexer.Syntax;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
@@ -64,9 +63,7 @@ public class PebbleEngine {
      */
     private Loader<?> loader;
 
-    private final Parser parser;
-
-    private final Lexer lexer;
+    private final Syntax syntax;
 
     /*
      * User Editable Settings
@@ -104,13 +101,7 @@ public class PebbleEngine {
 
     private Map<String, Function> functions = new HashMap<>();
 
-    private List<NodeVisitor> nodeVisitors = new ArrayList<>();
-
-    /**
-     * compilationMutex ensures that only one template is being compiled at a
-     * time. Only concurrent evaluation is supported at this time.
-     */
-    private final Semaphore compilationMutex = new Semaphore(1, true);
+    private List<NodeVisitorFactory> nodeVisitors = new ArrayList<>();
 
     public PebbleEngine() {
         this(null);
@@ -148,8 +139,39 @@ public class PebbleEngine {
      *            The template loader for this engine
      * @param extensions
      *            The extensions which should be loaded.
+     * @param syntax
+     *            the syntax to use for parsing the templates.
+     */
+    public PebbleEngine(Loader<?> loader, Syntax syntax, Extension... extensions) {
+        this(loader, syntax, Arrays.asList(extensions));
+    }
+
+    /**
+     * Constructor for the Pebble Engine given an instantiated Loader. This
+     * method does only load those extensions listed here.
+     *
+     * @param loader
+     *            The template loader for this engine
+     * @param extensions
+     *            The extensions which should be loaded.
      */
     public PebbleEngine(Loader<?> loader, Collection<? extends Extension> extensions) {
+        this(loader, new Syntax.Builder().build(), extensions);
+    }
+
+    /**
+     * Constructor for the Pebble Engine given an instantiated Loader. This
+     * method does only load those extensions listed here.
+     *
+     * @param loader
+     *            The template loader for this engine
+     * @param syntax
+     *            the syntax to use for parsing the templates.
+     * @param extensions
+     *            The extensions which should be loaded.
+     */
+    public PebbleEngine(Loader<?> loader, Syntax syntax, Collection<? extends Extension> extensions) {
+        this.syntax = syntax;
 
         // set up a default loader if necessary
         if (loader == null) {
@@ -163,8 +185,6 @@ public class PebbleEngine {
         templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
 
         this.loader = loader;
-        lexer = new LexerImpl(this);
-        parser = new ParserImpl(this);
 
         // register default extensions
         for (Extension extension : extensions) {
@@ -208,25 +228,17 @@ public class PebbleEngine {
 
                 public PebbleTemplateImpl call() throws Exception {
 
-                    compilationMutex.acquire();
+                    LexerImpl lexer = new LexerImpl(self);
+                    Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
+                    TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
 
-                    PebbleTemplateImpl instance = null;
-                    RootNode root = null;
+                    Parser parser = new ParserImpl(self);
+                    RootNode root = parser.parse(tokenStream);
 
-                    try {
-                        Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
-                        TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
-                        root = parser.parse(tokenStream);
+                    PebbleTemplateImpl instance = new PebbleTemplateImpl(self, root, templateName);
 
-                        instance = new PebbleTemplateImpl(self, root, templateName);
-
-                        for (NodeVisitor visitor : nodeVisitors) {
-                            visitor.setTemplate(instance);
-                            visitor.visit(root);
-                        }
-
-                    } finally {
-                        compilationMutex.release();
+                    for (NodeVisitorFactory visitorFactory : nodeVisitors) {
+                        visitorFactory.createVisitor(instance).visit(root);
                     }
 
                     return instance;
@@ -282,14 +294,6 @@ public class PebbleEngine {
 
     public Loader<?> getLoader() {
         return loader;
-    }
-
-    public Parser getParser() {
-        return parser;
-    }
-
-    public Lexer getLexer() {
-        return lexer;
     }
 
     public void addExtension(Extension extension) {
@@ -348,7 +352,7 @@ public class PebbleEngine {
         }
 
         // node visitors
-        List<NodeVisitor> nodeVisitors = extension.getNodeVisitors();
+        List<NodeVisitorFactory> nodeVisitors = extension.getNodeVisitors();
         if (nodeVisitors != null) {
             this.nodeVisitors.addAll(nodeVisitors);
         }
@@ -388,7 +392,7 @@ public class PebbleEngine {
         return this.globalVariables;
     }
 
-    public List<NodeVisitor> getNodeVisitors() {
+    public List<NodeVisitorFactory> getNodeVisitors() {
         return this.nodeVisitors;
     }
 
@@ -456,4 +460,14 @@ public class PebbleEngine {
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
+
+    /**
+     * Returns the syntax which is used by this PebbleEngine.
+     *
+     * @return the syntax used by the PebbleEngine.
+     */
+    public Syntax getSyntax() {
+        return this.syntax;
+    }
+
 }

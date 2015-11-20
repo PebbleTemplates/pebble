@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -14,22 +14,23 @@ import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.SetNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.parser.Parser;
 
 public class SetTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token) throws ParserException {
-        TokenStream stream = this.parser.getStream();
+    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+        TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 
         // skip the 'set' token
         stream.next();
 
-        String name = this.parser.getExpressionParser().parseNewVariableName();
+        String name = parser.getExpressionParser().parseNewVariableName();
 
         stream.expect(Token.Type.PUNCTUATION, "=");
 
-        Expression<?> value = this.parser.getExpressionParser().parseExpression();
+        Expression<?> value = parser.getExpressionParser().parseExpression();
 
         stream.expect(Token.Type.EXECUTE_END);
 

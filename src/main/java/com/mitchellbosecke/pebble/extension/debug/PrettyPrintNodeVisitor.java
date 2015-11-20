@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -33,8 +33,13 @@ import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
+
+    public PrettyPrintNodeVisitor(PebbleTemplateImpl template) {
+        super(template);
+    }
 
     private StringBuilder output = new StringBuilder();
 

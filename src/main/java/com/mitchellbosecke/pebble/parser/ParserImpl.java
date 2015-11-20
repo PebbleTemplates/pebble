@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -55,7 +55,7 @@ public class ParserImpl implements Parser {
 
     /**
      * Constructor
-     * 
+     *
      * @param engine
      *            The main PebbleEngine that this parser is working for
      */
@@ -91,7 +91,7 @@ public class ParserImpl implements Parser {
     /**
      * The main method for the parser. This method does the work of converting
      * a TokenStream into a Node
-     * 
+     *
      * @param stopCondition	A stopping condition provided by a token parser
      * @return Node		The root node of the generated Abstract Syntax Tree
      */
@@ -131,7 +131,7 @@ public class ParserImpl implements Parser {
                 nodes.add(new PrintNode(expression, token.getLineNumber()));
 
                 // we expect to see a print closing delimiter
-                stream.expect(Token.Type.PRINT_END, engine.getLexer().getPrintCloseDelimiter());
+                stream.expect(Token.Type.PRINT_END, engine.getSyntax().getPrintCloseDelimiter());
 
                 break;
 
@@ -145,7 +145,7 @@ public class ParserImpl implements Parser {
 
                 /*
                  * We expect a name token at the beginning of every block.
-                 * 
+                 *
                  * We do not use stream.expect() because it consumes the current
                  * token. The current token may be needed by a token parser
                  * which has provided a stopping condition. Ex. the 'if' token
@@ -174,8 +174,7 @@ public class ParserImpl implements Parser {
                             token.getLineNumber(), stream.getFilename());
                 }
 
-                tokenParser.setParser(this);
-                RenderableNode node = tokenParser.parse(token);
+                RenderableNode node = tokenParser.parse(token, this);
 
                 // node might be null (ex. "extend" token parser)
                 if (node != null) {

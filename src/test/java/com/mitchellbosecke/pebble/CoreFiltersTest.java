@@ -17,6 +17,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -847,6 +850,43 @@ public class CoreFiltersTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
+    }
+
+    /**
+     * Tests {@link LengthFilter} with different inputs.
+     */
+    @Test
+    public void testLengthFilterInputs() {
+        LengthFilter filter = new LengthFilter();
+
+        assertEquals(0, filter.apply(null, null));
+        assertEquals(4, filter.apply("test", null));
+        assertEquals(0, filter.apply(Collections.EMPTY_LIST, null));
+        assertEquals(2, filter.apply(Arrays.asList("tttt", "ssss"), null));
+        assertEquals(2, filter.apply(Arrays.asList("tttt", "ssss").iterator(), null));
+        Map<String, String> test = new HashMap<>();
+        test.put("test", "test");
+        test.put("other", "other");
+        test.put("and_other", "other");
+        assertEquals(3, filter.apply(test, null));
+    }
+
+    /**
+     * Tests {@link LengthFilter} if the length filter is working within templates.
+     */
+    @Test
+    public void testLengthFilterInTemplate() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ names | length }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", "test");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("4", writer.toString());
     }
 
 }

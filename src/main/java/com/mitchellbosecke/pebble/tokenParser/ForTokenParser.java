@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -15,29 +15,30 @@ import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.ForNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 public class ForTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token) throws ParserException {
-        TokenStream stream = this.parser.getStream();
+    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+        TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 
         // skip the 'for' token
         stream.next();
 
         // get the iteration variable
-        String iterationVariable = this.parser.getExpressionParser().parseNewVariableName();
+        String iterationVariable = parser.getExpressionParser().parseNewVariableName();
 
         stream.expect(Token.Type.NAME, "in");
 
         // get the iterable variable
-        Expression<?> iterable = this.parser.getExpressionParser().parseExpression();
+        Expression<?> iterable = parser.getExpressionParser().parseExpression();
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = this.parser.subparse(decideForFork);
+        BodyNode body = parser.subparse(decideForFork);
 
         BodyNode elseBody = null;
 
@@ -45,7 +46,7 @@ public class ForTokenParser extends AbstractTokenParser {
             // skip the 'else' token
             stream.next();
             stream.expect(Token.Type.EXECUTE_END);
-            elseBody = this.parser.subparse(decideForEnd);
+            elseBody = parser.subparse(decideForEnd);
         }
 
         // skip the 'endfor' token
