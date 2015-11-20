@@ -467,24 +467,15 @@ public class ExpressionParser {
                 }
             }
 
-            node = new GetAttributeExpression(node, token.getValue(), args);
+            node = new GetAttributeExpression(node, new LiteralStringExpression(token.getValue()), args);
 
         } else if (stream.current().test(Token.Type.PUNCTUATION, "[")) {
             // skip over opening '[' bracket
             stream.next();
 
-            // treat the string value inside the brackets just the same as we
-            // would an attribute name following a '.', except that the
-            // attribute name gathered this way is NOT held to the same naming
-            // restrictions (e.g. can include hyphens '-')
-            Token token = stream.current();
-            if (token.test(Type.STRING) || token.test(Type.NUMBER)) {
-                node = new GetAttributeExpression(node, token.getValue());
-            } else {
-                throw new ParserException(null, "Only strings and numbers allowed within square brackets.",
-                        token.getLineNumber(), stream.getFilename());
-            }
-            stream.next();
+            node = new GetAttributeExpression(node, parseExpression());
+
+           //stream.next();
 
             // move past the closing ']' bracket
             stream.expect(Token.Type.PUNCTUATION, "]");
