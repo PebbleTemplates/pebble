@@ -42,10 +42,10 @@ public class RangeFunction implements Function {
         }
 
         List<Object> results = new ArrayList<>();
-        // Iterating over Long
-        if (start instanceof Long && end instanceof Long) {
-            Long startNum = (Long) start;
-            Long endNum = (Long) end;
+        // Iterating over Number
+        if (start instanceof Number && end instanceof Number) {
+            Long startNum = ((Number) start).longValue();
+            Long endNum = ((Number) end).longValue();
 
             if (increment > 0) {
                 for (Long i = startNum; i <= endNum; i += increment) {
