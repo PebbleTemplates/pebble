@@ -33,6 +33,8 @@ public class IncludeTokenParser extends AbstractTokenParser {
         Token current = stream.current();
         MapExpression mapExpression = null;
 
+        boolean isolate = false;
+
         // We check if there is an optional 'with' parameter on the include tag.
         if (current.getType().equals(Token.Type.NAME) && current.getValue().equals("with")) {
 
@@ -47,12 +49,23 @@ public class IncludeTokenParser extends AbstractTokenParser {
                 throw new ParserException(null, String.format("Unexpected expression '%1s'.", parsedExpression
                         .getClass().getCanonicalName()), token.getLineNumber(), stream.getFilename());
             }
+        }
 
+        // We check if there is an optional 'isolate' parameter on the
+        // include tag. Isolate means that any change to the variable will have
+        // no effect to the remaining execution.
+        if (stream.current().getType().equals(Token.Type.NAME) && stream.current().getValue().equals("isolate")) {
+
+            // Skip over 'isolate'
+            stream.next();
+
+            // Handle the include in isolate mode
+            isolate = true;
         }
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        return new IncludeNode(lineNumber, includeExpression, mapExpression);
+        return new IncludeNode(lineNumber, includeExpression, mapExpression, isolate);
     }
 
     @Override
