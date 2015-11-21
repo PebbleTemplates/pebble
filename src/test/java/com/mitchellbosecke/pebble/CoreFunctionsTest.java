@@ -10,11 +10,7 @@
  */
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,7 +18,12 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreFunctionsTest extends AbstractTest {
 
@@ -237,6 +238,88 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
     }
     
+    @Test
+    public void testRangeFunctionLongVariable() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,var) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("var", 5L);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("012345", writer.toString());
+    }
+
+    @Test
+    public void testRangeFunctionDoubleVariable() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,var) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("var", 5.5D);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("012345", writer.toString());
+    }
+    
+    @Test
+    public void testRangeFunctionIntegerVariable() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,var) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("var", 5);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("012345", writer.toString());
+    }
+    
+    @Test
+    public void testRangeFunctionIncrementIntegerVariable() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,var,increment) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("var", 5);
+        context.put("increment", 2);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("024", writer.toString());
+    }
+    
+    @Test
+    public void testRangeFunctionIncrementDoubleVariable() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,var,increment) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("var", 5);
+        context.put("increment", 2D);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("024", writer.toString());
+    }
+
     public class SimpleObject {
 
         public int small = 1;
