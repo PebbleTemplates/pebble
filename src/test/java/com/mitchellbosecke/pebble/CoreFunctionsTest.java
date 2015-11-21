@@ -300,7 +300,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("012345", writer.toString());
+        assertEquals("024", writer.toString());
     }
     
     @Test
@@ -317,7 +317,7 @@ public class CoreFunctionsTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("012345", writer.toString());
+        assertEquals("024", writer.toString());
     }
 
     public class SimpleObject {
