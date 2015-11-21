@@ -285,6 +285,40 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("012345", writer.toString());
     }
+    
+    @Test
+    public void testRangeFunctionIncrementIntegerVariable() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,var,increment) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("var", 5);
+        context.put("increment", 2);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("012345", writer.toString());
+    }
+    
+    @Test
+    public void testRangeFunctionIncrementDoubleVariable() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% for i in range(0,var,increment) %}{{ i }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("var", 5);
+        context.put("increment", 2D);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("012345", writer.toString());
+    }
 
     public class SimpleObject {
 
