@@ -43,7 +43,7 @@ public class IncludeWithParameterTest extends AbstractTest {
     }
 
     @Test
-    public void testIncludeWithParametersNotIsolated() throws PebbleException, IOException {
+    public void testIncludeWithParametersIsolated() throws PebbleException, IOException {
 
         PebbleTemplate template = pebble.getTemplate("template.includeWithParameterNotIsolated1.peb");
         Map<String, Object> context = new HashMap<>();
