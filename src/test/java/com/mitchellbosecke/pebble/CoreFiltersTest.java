@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.core.LengthFilter;
+import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -887,6 +888,24 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("4", writer.toString());
+    }
+
+    /**
+     * Tests {@link ReplaceFilter} if the length filter is working within templates.
+     */
+    @Test
+    public void testReplaceFilterInTemplate() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble.getTemplate("{{ \"I like %this% and %that%.\"|replace({'%this%': foo, '%that%': \"bar\"}) }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("foo", "foo");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("I like foo and bar.", writer.toString());
     }
 
 }
