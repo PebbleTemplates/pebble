@@ -75,7 +75,7 @@ public class ErrorReportingTest extends AbstractTest {
             String message = ex.getMessage();
             assertEquals("root", ((RootAttributeNotFoundException) ex).getAttributeName());
             assertEquals(message,
-                    "Root attribute [root] does not exist or can not be accessed and strict variables is set to true. (?:?)");
+                    "Root attribute [root] does not exist or can not be accessed and strict variables is set to true. (template.errorReportingMissingRootProperty.peb:2)");
             throw ex;
         } finally {
             pebble.setStrictVariables(false);

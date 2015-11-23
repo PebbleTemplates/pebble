@@ -90,7 +90,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
         String source1 = "{{ colors[one] }}";
         PebbleTemplate template1 = pebble.getTemplate(source1);
 
-        String source2 = "{{ colors[var] }}";
+        String source2 = "{{ colors[two] }}";
         PebbleTemplate template2 = pebble.getTemplate(source2);
 
         Map<String, Object> context = new HashMap<>();
@@ -111,7 +111,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
 
         Writer writer2 = new StringWriter();
         template2.evaluate(writer2, context);
-        //assertEquals("green", writer2.toString());
+        assertEquals("green", writer2.toString());
     }
 
     @SuppressWarnings("serial")

@@ -36,24 +36,29 @@ public class RangeFunction implements Function {
     public Object execute(Map<String, Object> args) {
         Object start = args.get(PARAM_START);
         Object end = args.get(PARAM_END);
-        Long increment = (Long) args.get(PARAM_INCREMENT);
+        Object increment = (Object) args.get(PARAM_INCREMENT);
         if (increment == null) {
             increment = 1L;
         }
+        else if (!(increment instanceof Number)) {
+            throw new IllegalArgumentException("The increment of the range function must be a number " + increment);
+        }
+        
+        Long incrementNum = ((Number) increment).longValue();
 
         List<Object> results = new ArrayList<>();
-        // Iterating over Long
-        if (start instanceof Long && end instanceof Long) {
-            Long startNum = (Long) start;
-            Long endNum = (Long) end;
+        // Iterating over Number
+        if (start instanceof Number && end instanceof Number) {
+            Long startNum = ((Number) start).longValue();
+            Long endNum = ((Number) end).longValue();
 
-            if (increment > 0) {
-                for (Long i = startNum; i <= endNum; i += increment) {
+            if (incrementNum > 0) {
+                for (Long i = startNum; i <= endNum; i += incrementNum) {
                     results.add(i);
                 }
             }
-            else if (increment < 0) {
-                for (Long i = startNum; i >= endNum; i += increment) {
+            else if (incrementNum < 0) {
+                for (Long i = startNum; i >= endNum; i += incrementNum) {
                     results.add(i);
                 }
             }
@@ -73,13 +78,13 @@ public class RangeFunction implements Function {
             char startChar = startStr.charAt(0);
             char endChar = endStr.charAt(0);
 
-            if (increment > 0) {
-                for (int i = startChar; i <= endChar; i += increment) {
+            if (incrementNum > 0) {
+                for (int i = startChar; i <= endChar; i += incrementNum) {
                     results.add((char) i);
                 }
             }
-            else if (increment < 0) {
-                for (int i = startChar; i >= endChar; i += increment) {
+            else if (incrementNum < 0) {
+                for (int i = startChar; i >= endChar; i += incrementNum) {
                     results.add((char) i);
                 }
             }

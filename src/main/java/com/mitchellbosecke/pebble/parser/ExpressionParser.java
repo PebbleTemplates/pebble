@@ -123,7 +123,7 @@ public class ExpressionParser {
             try {
                 unaryExpression = operatorNodeClass.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-               throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
             unaryExpression.setChildExpression(expression);
 
@@ -292,7 +292,7 @@ public class ExpressionParser {
 
                 // variable name
                 else {
-                    node = new ContextVariableExpression(token.getValue());
+                    node = new ContextVariableExpression(token.getValue(), token.getLineNumber(), stream.getFilename());
                 }
                 break;
             }
@@ -467,15 +467,14 @@ public class ExpressionParser {
                 }
             }
 
-            node = new GetAttributeExpression(node, new LiteralStringExpression(token.getValue()), args);
+            node = new GetAttributeExpression(node, new LiteralStringExpression(token.getValue()), args, stream.getFilename(), token.getLineNumber());
+
 
         } else if (stream.current().test(Token.Type.PUNCTUATION, "[")) {
             // skip over opening '[' bracket
             stream.next();
 
-            node = new GetAttributeExpression(node, parseExpression());
-
-           //stream.next();
+            node = new GetAttributeExpression(node, parseExpression(), stream.getFilename(), stream.current().getLineNumber());
 
             // move past the closing ']' bracket
             stream.expect(Token.Type.PUNCTUATION, "]");

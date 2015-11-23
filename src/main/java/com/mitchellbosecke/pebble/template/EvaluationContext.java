@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -23,9 +23,9 @@ import com.mitchellbosecke.pebble.extension.Test;
  * An evaluation context will store all stateful data that is necessary for the
  * evaluation of a template. Passing the entire state around will assist with
  * thread safety.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class EvaluationContext {
 
@@ -41,7 +41,7 @@ public class EvaluationContext {
     /**
      * A scope is a set of visible variables. A trivial template will only have
      * one scope. New scopes are added with for loops and macros for example.
-     * 
+     *
      * Most scopes will have a link to their parent scope which allow an
      * evaluation to look up the scope chain for variables. A macro is an
      * exception to this as it only has access to it's local variables.
@@ -81,7 +81,7 @@ public class EvaluationContext {
 
     /**
      * Constructor used to provide all final variables.
-     * 
+     *
      * @param self
      *            The template implementation
      * @param strictVariables
@@ -122,7 +122,7 @@ public class EvaluationContext {
     /**
      * Makes an exact copy of the evaluation context EXCEPT for the inheritance
      * chain. This is necessary for the "include" tag.
-     * 
+     *
      * @param self
      *            The template implementation
      * @return A copy of the evaluation context
@@ -137,7 +137,7 @@ public class EvaluationContext {
      * Makes an exact copy of the evaluation context except the "scopeChain"
      * object will be a deep copy without reference to the original. This is
      * used for the "parallel" tag.
-     * 
+     *
      * @param self
      *            The template implementation
      * @return A copy of the evaluation context
@@ -152,7 +152,7 @@ public class EvaluationContext {
      * This method might be called DURING the evaluation of a template (ex. for
      * node, set node, and macro node) and must be thread safe in case there are
      * multiple threads evaluating the same template (via parallel tag).
-     * 
+     *
      * @param key
      *            Key
      * @param value
@@ -165,13 +165,25 @@ public class EvaluationContext {
     /**
      * Will look for a variable, traveling upwards through the scope chain until
      * it is found.
-     * 
+     *
      * @param key
      *            Key
      * @return The object, if found
      */
     public Object get(String key) {
         return scopeChain.get(key);
+    }
+
+    /**
+     * Checks if the given key exists within the context.
+     *
+     * @param key
+     *            the key for which the check should be executed for.
+     * @return {@code true} when the key does exists or {@code false} when the
+     *         given key does not exists.
+     */
+    public boolean containsKey(String key) {
+        return scopeChain.containsKey(key);
     }
 
     public void ascendInheritanceChain() {
