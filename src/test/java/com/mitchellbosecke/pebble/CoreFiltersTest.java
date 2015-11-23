@@ -635,6 +635,70 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("x", writer.toString());
     }
 
+    @Test
+    public void testLastWithArrayInput() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ names | last }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", new String[]{"FirstName", "FamilyName"});
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("FamilyName", writer.toString());
+    }
+
+    @Test
+    public void testLastWithPrimitiveArrayInput() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ ages | last }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("ages", new int[]{28,30});
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("30", writer.toString());
+    }
+
+    @Test
+    public void testFirstWithArrayInput() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ names | first }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", new String[]{"FirstName", "FamilyName"});
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("FirstName", writer.toString());
+    }
+
+    @Test
+    public void testFirstWithPrimitiveArrayInput() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{ ages | first }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("ages", new int[]{28,30});
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("28", writer.toString());
+    }
+
     public class User {
 
         private final String username;

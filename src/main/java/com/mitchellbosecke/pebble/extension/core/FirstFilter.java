@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,11 @@ public class FirstFilter implements Filter {
         if(input instanceof String){
             String inputString = (String)input;
             return inputString.charAt(0);
+        }
+
+        if(input.getClass().isArray()) {
+            int length = Array.getLength(input);
+            return length > 0 ? Array.get(input, 0) : null;
         }
         
         Collection<?> inputCollection = (Collection<?>) input;
