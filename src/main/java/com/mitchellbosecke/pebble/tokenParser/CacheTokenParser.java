@@ -17,11 +17,17 @@ import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
+/**
+ * Token parser for the cache tag
+ *
+ * @author Eric Bussieres
+ */
 public class CacheTokenParser extends AbstractTokenParser {
+    public static final String TAG_NAME = "cache";
 
     @Override
     public String getTag() {
-        return "cache";
+        return TAG_NAME;
     }
 
     @Override
@@ -71,6 +77,6 @@ public class CacheTokenParser extends AbstractTokenParser {
         }
 
         stream.expect(Token.Type.EXECUTE_END);
-        return new CacheNode(lineNumber, name, cacheBody, parser.getEngine().getCacheForCacheTag());
+        return new CacheNode(lineNumber, name, cacheBody, parser.getEngine().getTagCache());
     }
 }
