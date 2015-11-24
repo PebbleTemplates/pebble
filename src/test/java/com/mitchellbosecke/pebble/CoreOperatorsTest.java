@@ -107,7 +107,7 @@ public class CoreOperatorsTest extends AbstractTest {
         context.put("number2", BigDecimal.valueOf(30d));
         
         template.evaluate(writer, context);
-        assertEquals("200-10", writer.toString());
+        assertEquals("200.0-10.0", writer.toString());
     }
     
     @Test
@@ -125,7 +125,7 @@ public class CoreOperatorsTest extends AbstractTest {
         context.put("number2", 30d);
         
         template.evaluate(writer, context);
-        assertEquals("200-10", writer.toString());
+        assertEquals("200.0-10.0", writer.toString());
     }
     
     @Test
@@ -434,6 +434,37 @@ public class CoreOperatorsTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
         context.put("number1", BigDecimal.valueOf(3d));
         context.put("number2", BigDecimal.valueOf(2d));
+        
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("yesyesyesyesyesyesyesyes", writer.toString());
+    }
+    
+    @Test()
+    public void testComparisonString() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% if number1 > number2 %}yes{% endif %}" +
+                "{% if number2 > number1 %}no{% endif %}" +
+                "{% if number2 > number2 %}no{% endif %}" +
+                "{% if number2 < number1 %}yes{% endif %}" +
+                "{% if number1 < number2 %}no{% endif %}" +
+                "{% if number2 < number2 %}no{% endif %}" +
+                "{% if number1 >= number1 %}yes{% endif %}" +
+                "{% if number1 >= number2 %}yes{% endif %}" +
+                "{% if number2 >= number1 %}no{% endif %}" +
+                "{% if number1 <= number1 %}yes{% endif %}" +
+                "{% if number1 <= number2 %}no{% endif %}" +
+                "{% if number2 <= number1 %}yes{% endif %}" +
+                "{% if number2 <= number2 %}yes{% endif %}" +
+                "{% if number2 == number2 %}yes{% endif %}" +
+                "{% if number2 == number1 %}no{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("number1", BigDecimal.valueOf(3d));
+        context.put("number2", "2");
         
         Writer writer = new StringWriter();
         template.evaluate(writer, context);

@@ -137,113 +137,152 @@ public class OperatorUtils {
         return op1;
     }
 
-    private static Object wideningConversionBinaryOperation(Object op1, Object op2, Operation operation) {        
-        BigDecimal num1 = evaluateAsNumber(op1);
-        BigDecimal num2 = evaluateAsNumber(op2);
+    private static Object wideningConversionBinaryOperation(Object op1, Object op2, Operation operation) {
+        // If operand are String, we try to parse it as a number
+        op1 = evaluateAsNumber(op1);
+        op2 = evaluateAsNumber(op2);
         
-        if (num1 == null || num2 == null) {
-            throw new RuntimeException(String.format("invalid operands for mathematical operation [%s][%s][%s]",
-                    operation.toString(), op1, op2));
+        if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
+            throw new RuntimeException(String.format("invalid operands for mathematical operation [%s]",
+                    operation.toString()));
         }
 
-        BigDecimal result = null;
-        switch (operation) {
-        case ADD:
-            result =  num1.add(num2);
-            break;
-        case SUBTRACT:
-            result =  num1.subtract(num2);
-            break;
-        case MULTIPLICATION:
-            result =  num1.multiply(num2, MathContext.DECIMAL128);
-            break;
-        case DIVISION:
-            result =  num1.divide(num2, MathContext.DECIMAL128);
-            break;
-        case MODULUS:
-            result =  num1.remainder(num2, MathContext.DECIMAL128);
-            break;
-        default:
-            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        Number num1 = (Number) op1;
+        Number num2 = (Number) op2;
+
+        if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
+            return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()), BigDecimal.valueOf(num2.doubleValue()), 
+                    operation);
         }
         
-        result = result.stripTrailingZeros();
+        if (num1 instanceof Double || num2 instanceof Double) {
+            return doubleOperation(num1.doubleValue(), num2.doubleValue(), operation);
+        }
+
+        if (num1 instanceof Float || num2 instanceof Float) {
+            return floatOperation(num1.floatValue(), num2.floatValue(), operation);
+        }
         
-        //For compatibility issue, we cast as before to the type specified
-        if (op1 instanceof BigDecimal || op2 instanceof BigDecimal) {
-            return result;
-        }            
-        if (op1 instanceof Double || op2 instanceof Double) {
-            return result.doubleValue();
-        }
-        if (op1 instanceof Float || op2 instanceof Float) {
-            return result.floatValue();
-        }
-        if (op1 instanceof BigInteger || op2 instanceof BigInteger) {
-            return result.toBigInteger();
-        }
-        if (op1 instanceof Long || op2 instanceof Long) {
-            return result.longValue();
-        }
-        if (op1 instanceof Integer || op2 instanceof Integer) {
-            return result.intValue();
-        }
-        if (op1 instanceof Short || op2 instanceof Short) {
-            return result.shortValue();
-        }
-        if (op1 instanceof Byte || op2 instanceof Byte) {
-            return result.byteValue();
-        }
-        throw new IllegalArgumentException("in OperatorUtils in pebble library");
+        return longOperation(num1.longValue(), num2.longValue(), operation);
     }
-    
+
     private static boolean wideningConversionBinaryComparison(Object op1, Object op2, Comparison comparison) {
-        BigDecimal num1 = evaluateAsNumber(op1);
-        BigDecimal num2 = evaluateAsNumber(op2);
-        
-        if (num1 == null || num2 == null) {
+        if (op1 == null || op2 == null) {
             return false;
         }
+        
+        // If operand are String, we try to parse it as a number
+        op1 = evaluateAsNumber(op1);
+        op2 = evaluateAsNumber(op2);
+ 
+        if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
+            throw new RuntimeException(String.format("invalid operands for mathematical comparison [%s]",
+                    comparison.toString()));
+        }
 
+        Number num1 = (Number) op1;
+        Number num2 = (Number) op2;
+
+        return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
+    }
+
+    private static double doubleOperation(double op1, double op2, Operation operation) {
+        switch (operation) {
+        case ADD:
+            return op1 + op2;
+        case SUBTRACT:
+            return op1 - op2;
+        case MULTIPLICATION:
+            return op1 * op2;
+        case DIVISION:
+            return op1 / op2;
+        case MODULUS:
+            return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+
+    private static boolean doubleComparison(double op1, double op2, Comparison comparison) {
         switch (comparison) {
         case GREATER_THAN:
-            return num1.compareTo(num2) > 0;
+            return op1 > op2;
         case GREATER_THAN_EQUALS:
-            return num1.compareTo(num2) >= 0;
+            return op1 >= op2;
         case LESS_THAN:
-            return num1.compareTo(num2) < 0;
+            return op1 < op2;
         case LESS_THAN_EQUALS:
-            return num1.compareTo(num2) <= 0;
+            return op1 <= op2;
         case EQUALS:
-            return num1.compareTo(num2) == 0;
+            return op1 == op2;
         default:
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
     
-    private static BigDecimal evaluateAsNumber(Object object) {
-        if (object == null) {
-            return null;
+    private static BigDecimal bigDecimalOperation(BigDecimal op1, BigDecimal op2, Operation operation) {
+        switch (operation) {
+        case ADD:
+            return op1.add(op2);
+        case SUBTRACT:
+            return op1.subtract(op2);
+        case MULTIPLICATION:
+            return op1.multiply(op2, MathContext.DECIMAL128);
+        case DIVISION:
+            return op1.divide(op2, MathContext.DECIMAL128);
+        case MODULUS:
+            return op1.remainder(op2, MathContext.DECIMAL128);
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
+    }
+    
+    private static Float floatOperation(Float op1, Float op2, Operation operation) {
+        switch (operation) {
+        case ADD:
+            return op1 + op2;
+        case SUBTRACT:
+            return op1 - op2;
+        case MULTIPLICATION:
+            return op1 * op2;
+        case DIVISION:
+            return op1 / op2;
+        case MODULUS:
+            return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
 
-        if (object instanceof Number) {
-            if (object instanceof BigDecimal) {
-                return (BigDecimal) object;
-            }
-            else {
-                return BigDecimal.valueOf(((Number) object).doubleValue());
-            }
+    private static long longOperation(long op1, long op2, Operation operation) {
+        switch (operation) {
+        case ADD:
+            return op1 + op2;
+        case SUBTRACT:
+            return op1 - op2;
+        case MULTIPLICATION:
+            return op1 * op2;
+        case DIVISION:
+            return op1 / op2;
+        case MODULUS:
+            return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
-        else if (object instanceof String) {
+    }
+    
+    private static Object evaluateAsNumber(Object op) {
+        Object result = op;
+        if (op != null && op instanceof String) {
             try {
-                return new BigDecimal(((String) object).trim());
+                result = Double.parseDouble((String) op);
             }
             catch (NumberFormatException e) {
                 throw new IllegalArgumentException(String.format("invalid operands for mathematical comparison [%s]",
-                        object));
+                        op));
             }
         }
-
-        return null;
+        
+        return result;
     }
-}
+} 
