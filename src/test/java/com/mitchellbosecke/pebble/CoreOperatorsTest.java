@@ -169,7 +169,7 @@ public class CoreOperatorsTest extends AbstractTest {
         Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        String source = "{{ number1 + number2 * number1 / number2 }} - {{number1 % number2}}";
+        String source = "{{ number1 + number2 * number1 / number2 }}-{{number1 % number2}}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
