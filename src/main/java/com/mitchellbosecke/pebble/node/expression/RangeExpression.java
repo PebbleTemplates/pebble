@@ -24,9 +24,9 @@ public class RangeExpression extends BinaryExpression<Object> {
         positionalArgs.add(new PositionalArgumentNode(getLeftExpression()));
         positionalArgs.add(new PositionalArgumentNode(getRightExpression()));
 
-        ArgumentsNode arguments = new ArgumentsNode(positionalArgs, null);
+        ArgumentsNode arguments = new ArgumentsNode(positionalArgs, null, this.getLineNumber());
         FunctionOrMacroInvocationExpression function = new FunctionOrMacroInvocationExpression(
-                RangeFunction.FUNCTION_NAME, arguments);
+                RangeFunction.FUNCTION_NAME, arguments, this.getLineNumber());
 
         return function.evaluate(self, context);
     }

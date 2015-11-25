@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -18,8 +18,11 @@ public class FunctionOrMacroNameNode implements Expression<String> {
 
     private final String name;
 
-    public FunctionOrMacroNameNode(String name) {
+    private final int lineNumber;
+
+    public FunctionOrMacroNameNode(String name, int lineNumber) {
         this.name = name;
+        this.lineNumber = lineNumber;
     }
 
     @Override
@@ -34,6 +37,11 @@ public class FunctionOrMacroNameNode implements Expression<String> {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int getLineNumber() {
+        return this.lineNumber;
     }
 
 }

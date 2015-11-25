@@ -20,12 +20,9 @@ public class ContextVariableExpression implements Expression<Object> {
 
     private final int lineNumber;
 
-    private final String filename;
-
-    public ContextVariableExpression(String name, int lineNumber, String filename) {
+    public ContextVariableExpression(String name, int lineNumber) {
         this.name = name;
         this.lineNumber = lineNumber;
-        this.filename = filename;
     }
 
     @Override
@@ -43,27 +40,14 @@ public class ContextVariableExpression implements Expression<Object> {
         if (context.isStrictVariables() && result == null && !context.containsKey(name)) {
             throw new RootAttributeNotFoundException(null, String.format(
                     "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
-                    this.name), this.name, this.lineNumber, this.filename);
+                    this.name), this.name, this.lineNumber, self.getName());
         }
         return result;
     }
 
-    /**
-     * Returns the line number on which the expression is defined on.
-     *
-     * @return the line number on which the expression is defined on.
-     */
+   @Override
     public int getLineNumber() {
         return lineNumber;
-    }
-
-    /**
-     * Returns the filename in which the expression is defined in.
-     *
-     * @return the filename in which the expression is defined in.
-     */
-    public String getFilename() {
-        return filename;
     }
 
 }

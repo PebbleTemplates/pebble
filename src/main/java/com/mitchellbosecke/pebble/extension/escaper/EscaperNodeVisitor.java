@@ -85,14 +85,14 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         List<NamedArgumentNode> namedArgs = new ArrayList<>();
         if (!strategies.isEmpty() && strategies.peek() != null) {
             String strategy = strategies.peek();
-            namedArgs.add(new NamedArgumentNode("strategy", new LiteralStringExpression(strategy)));
+            namedArgs.add(new NamedArgumentNode("strategy", new LiteralStringExpression(strategy, expression.getLineNumber())));
         }
-        ArgumentsNode args = new ArgumentsNode(null, namedArgs);
+        ArgumentsNode args = new ArgumentsNode(null, namedArgs, expression.getLineNumber());
 
         /*
          * Create the filter invocation with the newly created named arguments.
          */
-        FilterInvocationExpression filter = new FilterInvocationExpression("escape", args);
+        FilterInvocationExpression filter = new FilterInvocationExpression("escape", args, expression.getLineNumber());
 
         /*
          * The given expression and the filter invocation now become a binary

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -17,8 +17,11 @@ public class LiteralDoubleExpression implements Expression<Double> {
 
     private final Double value;
 
-    public LiteralDoubleExpression(Double value) {
+    private final int lineNumber;
+
+    public LiteralDoubleExpression(Double value, int lineNumber) {
         this.value = value;
+        this.lineNumber = lineNumber;
     }
 
     @Override
@@ -29,6 +32,11 @@ public class LiteralDoubleExpression implements Expression<Double> {
     @Override
     public Double evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
         return value;
+    }
+
+    @Override
+    public int getLineNumber() {
+        return this.lineNumber;
     }
 
 }
