@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -71,6 +72,11 @@ public class PebbleEngine {
     private boolean strictVariables = false;
 
     private Locale defaultLocale = Locale.getDefault();
+    
+    /**
+     * Tags cache
+     */
+    private Cache<BaseTagCacheKey, Object> tagCache;
 
     private ExecutorService executorService;
 
@@ -183,6 +189,7 @@ public class PebbleEngine {
 
         // set up a default cache
         templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
+        tagCache = CacheBuilder.newBuilder().maximumSize(200).build();
 
         this.loader = loader;
 
@@ -469,5 +476,22 @@ public class PebbleEngine {
     public Syntax getSyntax() {
         return this.syntax;
     }
+    
+    public Cache<BaseTagCacheKey, Object> getTagCache() {
+        return this.tagCache;
+    }
 
+    /**
+     * Sets the cache to be used for tags
+     *
+     * @param cache
+     *            The cache to be used
+     */
+    public void setTagCache(Cache<BaseTagCacheKey, Object> cache) {
+        if (cache == null) {
+            this.tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
+        } else {
+            this.tagCache = cache;
+        }
+    }
 }
