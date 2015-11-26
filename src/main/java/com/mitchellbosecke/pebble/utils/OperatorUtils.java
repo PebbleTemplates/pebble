@@ -140,16 +140,13 @@ public class OperatorUtils {
         if (op2 instanceof Collection) {
             op1.removeAll((Collection) op2);
         } else {
-            ((List<Object>) op1).remove(op2);
+            op1.remove(op2);
         }
         return op1;
     }
 
     private static Object wideningConversionBinaryOperation(Object op1, Object op2, Operation operation) {
-        // If operand are String, we try to parse it as a number
-        op1 = evaluateAsNumber(op1);
-        op2 = evaluateAsNumber(op2);
-        
+
         if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
             throw new RuntimeException(String.format("invalid operands for mathematical operation [%s]",
                     operation.toString()));
@@ -170,8 +167,12 @@ public class OperatorUtils {
         if (num1 instanceof Float || num2 instanceof Float) {
             return floatOperation(num1.floatValue(), num2.floatValue(), operation);
         }
+
+        if (num1 instanceof Long || num2 instanceof Long) {
+            return longOperation(num1.longValue(), num2.longValue(), operation);
+        }
         
-        return longOperation(num1.longValue(), num2.longValue(), operation);
+        return integerOperation(num1.intValue(), num2.intValue(), operation);
     }
 
     private static boolean wideningConversionBinaryComparison(Object op1, Object op2, Comparison comparison) {
@@ -263,6 +264,23 @@ public class OperatorUtils {
     }
 
     private static long longOperation(long op1, long op2, Operation operation) {
+        switch (operation) {
+        case ADD:
+            return op1 + op2;
+        case SUBTRACT:
+            return op1 - op2;
+        case MULTIPLICATION:
+            return op1 * op2;
+        case DIVISION:
+            return op1 / op2;
+        case MODULUS:
+            return op1 % op2;
+        default:
+            throw new RuntimeException("Bug in OperatorUtils in pebble library");
+        }
+    }
+
+    private static long integerOperation(int op1, int op2, Operation operation) {
         switch (operation) {
         case ADD:
             return op1 + op2;
