@@ -92,8 +92,9 @@ public class ForNode extends AbstractRenderableNode {
                 loop.put("last", index == length - 1);
                 loop.put("first", index == 0);
                 loop.put("revindex", length - index - 1);
+                loop.put("revindex0", length - index - 1);
+                loop.put("index0", index);
                 loop.put("index", index++);
-                loop.put("length", length);
                 loop.put("length", length);
 
                 context.put("loop", loop);
