@@ -1,3 +1,19 @@
+## v2.0.0 (to be announced)
+- Support for relative template paths
+- Added a "cache" tag to cache portions of a template
+- String concatenation with "~" operator
+- Length filter
+- Support for parallel template parsing
+- Additional loop variables: last, first, revindex
+- "equals" support for enums
+- Added a range function and ability to iterate over a range of characters/numbers
+- Added support for BigDecimals
+- Expressions are permitted within square bracket notation when accessing maps/arrays/lists
+- Better error handling with more informative exceptions
+- Ability to add extra variables to the context when "including" another template
+- Bug fix: "defined" test did not work as expected in strict mode
+- Bug fix: fixed broken "less than equal" comparison 
+
 ## v1.6.0 (2015-09-06)
 - Support for custom escaping strategies
 - Support for calling bean methods with primitive argument types
