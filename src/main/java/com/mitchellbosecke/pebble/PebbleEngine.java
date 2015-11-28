@@ -75,7 +75,7 @@ public class PebbleEngine {
      * @param syntax     the syntax to use for parsing the templates.
      * @param extensions The extensions which should be loaded.
      */
-    public PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
+    private PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
             Cache<BaseTagCacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
             ExecutorService executorService, Collection<? extends Extension> extensions) {
 
@@ -371,7 +371,6 @@ public class PebbleEngine {
 
             // core extensions
             List<Extension> extensions = new ArrayList<>();
-            extensions = new ArrayList<>();
             extensions.add(new CoreExtension());
             extensions.add(escaperExtension);
             extensions.add(new I18nExtension());
