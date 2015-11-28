@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -33,10 +34,15 @@ public class LastFilter implements Filter {
         if (input == null) {
             return null;
         }
-        
+
         if(input instanceof String){
             String inputString = (String)input;
             return inputString.charAt(inputString.length() - 1);
+        }
+
+        if(input.getClass().isArray()) {
+            int length = Array.getLength(input);
+            return length > 0 ? Array.get(input, length - 1) : null;
         }
         
         @SuppressWarnings("unchecked")
