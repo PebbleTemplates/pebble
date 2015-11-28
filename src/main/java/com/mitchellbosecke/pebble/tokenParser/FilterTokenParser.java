@@ -55,7 +55,7 @@ public class FilterTokenParser extends AbstractTokenParser {
         stream.next();
         stream.expect(Token.Type.EXECUTE_END);
 
-        Expression<?> lastExpression = new RenderableNodeExpression(body);
+        Expression<?> lastExpression = new RenderableNodeExpression(body, stream.current().getLineNumber());
 
         for(Expression<?> filterInvocationExpression : filterInvocationExpressions){
 

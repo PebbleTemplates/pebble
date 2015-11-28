@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -22,11 +22,14 @@ public class ArgumentsNode implements Node {
 
     private final List<NamedArgumentNode> namedArgs;
 
-    private List<PositionalArgumentNode> positionalArgs;
+    private final List<PositionalArgumentNode> positionalArgs;
 
-    public ArgumentsNode(List<PositionalArgumentNode> positionalArgs, List<NamedArgumentNode> namedArgs) {
+    private final int lineNumber;
+
+    public ArgumentsNode(List<PositionalArgumentNode> positionalArgs, List<NamedArgumentNode> namedArgs, int lineNumber) {
         this.positionalArgs = positionalArgs;
         this.namedArgs = namedArgs;
+        this.lineNumber = lineNumber;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class ArgumentsNode implements Node {
      * Using hints from the filter/function/test/macro it will convert an
      * ArgumentMap (which holds both positional and named arguments) into a
      * regular Map that the filter/function/test/macro is expecting.
-     * 
+     *
      * @param self
      *            The template implementation
      * @param context
@@ -76,6 +79,12 @@ public class ArgumentsNode implements Node {
                 int nameIndex = 0;
 
                 for (PositionalArgumentNode arg : positionalArgs) {
+                    if (argumentNames.size() <= nameIndex) {
+                        throw new PebbleException(null, "The argument at position " + (nameIndex + 1)
+                                + " is not allowed. Only " + argumentNames.size() + " argument(s) are allowed.",
+                                this.lineNumber, self.getName());
+                    }
+
                     result.put(argumentNames.get(nameIndex), arg.getValueExpression().evaluate(self, context));
                     nameIndex++;
                 }
@@ -85,7 +94,8 @@ public class ArgumentsNode implements Node {
                 for (NamedArgumentNode arg : namedArgs) {
                     // check if user used an incorrect name
                     if (!argumentNames.contains(arg.getName())) {
-                        throw new PebbleException(null, "The following named argument does not exist: " + arg.getName());
+                        throw new PebbleException(null, "The following named argument does not exist: " + arg.getName(),
+                                this.lineNumber, self.getName());
                     }
                     Object value = arg.getValueExpression() == null ? null : arg.getValueExpression().evaluate(self,
                             context);

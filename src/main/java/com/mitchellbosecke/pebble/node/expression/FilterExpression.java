@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -42,7 +42,7 @@ public class FilterExpression extends BinaryExpression<Object> {
         }
 
         if (filter == null) {
-            throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName));
+            throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName), this.getLineNumber(), self.getName());
         }
 
         if (filter instanceof LocaleAware) {

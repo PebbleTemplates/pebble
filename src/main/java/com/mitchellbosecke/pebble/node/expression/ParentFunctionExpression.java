@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -38,12 +38,13 @@ public class ParentFunctionExpression implements Expression<String> {
                         self.getName());
             }
             PebbleTemplateImpl parent = context.getParentTemplate();
-            
+
             context.ascendInheritanceChain();
             parent.block(writer, context, blockName, true);
             context.descendInheritanceChain();
         } catch (IOException e) {
-            throw new PebbleException(e, "Could not render block [" + blockName + "]");
+            throw new PebbleException(e, "Could not render block [" + blockName + "]", this.getLineNumber(),
+                    self.getName());
         }
         return writer.toString();
     }
@@ -51,6 +52,11 @@ public class ParentFunctionExpression implements Expression<String> {
     @Override
     public void accept(NodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public int getLineNumber() {
+        return this.lineNumber;
     }
 
 }

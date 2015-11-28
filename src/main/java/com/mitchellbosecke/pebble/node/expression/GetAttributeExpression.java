@@ -15,11 +15,11 @@
 package com.mitchellbosecke.pebble.node.expression;
 
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,11 +58,13 @@ public class GetAttributeExpression implements Expression<Object> {
      */
     private final ConcurrentHashMap<Class<?>, Member> memberCache;
 
-    public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, String filename, int lineNumber) {
+    public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, String filename,
+            int lineNumber) {
         this(node, attributeNameExpression, null, filename, lineNumber);
     }
 
-    public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, ArgumentsNode args, String filename, int lineNumber) {
+    public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, ArgumentsNode args,
+            String filename, int lineNumber) {
 
         this.node = node;
         this.attributeNameExpression = attributeNameExpression;
@@ -348,6 +350,11 @@ public class GetAttributeExpression implements Expression<Object> {
 
     public ArgumentsNode getArgumentsNode() {
         return args;
+    }
+
+    @Override
+    public int getLineNumber() {
+        return this.lineNumber;
     }
 
 }

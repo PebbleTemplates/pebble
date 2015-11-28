@@ -528,7 +528,7 @@ public class CoreTagsTest extends AbstractTest {
         Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        String source = "{% cache test %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
+        String source = "{% cache 'test' %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Map<String, Object> context = new HashMap<>();
@@ -545,22 +545,17 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("true", writer.toString());
     }
     
-    /**
-     * The template used to fail if the user wrapped the block name in quotes.
-     *
-     * @throws PebbleException
-     * @throws IOException
-     */
     @Test
-    public void testCacheWithStringLiteralName() throws PebbleException, IOException {
+    public void testCacheWithVariable() throws PebbleException, IOException {
         Loader<?> loader = new StringLoader();
         PebbleEngine pebble = new PebbleEngine(loader);
 
-        String source = "{% cache 'test' %}{% if foobar %}true{% else %}false{% endif %}{% endcache 'test' %}";
+        String source = "{% cache 'test' + var %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Map<String, Object> context = new HashMap<>();
         context.put("foobar", true);
+        context.put("var", 12);
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
@@ -572,7 +567,7 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("true", writer.toString());
     }
-    
+        
     @Test(expected = PebbleException.class)
     public void testCacheWithNoName() throws PebbleException, IOException {
         Loader<?> loader = new StringLoader();

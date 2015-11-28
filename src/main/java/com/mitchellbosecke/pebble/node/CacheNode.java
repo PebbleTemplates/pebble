@@ -19,6 +19,7 @@ import com.google.common.cache.Cache;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.CacheTokenParser;
@@ -105,9 +106,9 @@ public class CacheNode extends AbstractRenderableNode {
 
     private final BodyNode body;
     private final Cache<BaseTagCacheKey, Object> cache;
-    private final String name;
+    private final Expression<?> name;
 
-    public CacheNode(int lineNumber, String name, BodyNode body, Cache<BaseTagCacheKey, Object> cache) {
+    public CacheNode(int lineNumber, Expression<?> name, BodyNode body, Cache<BaseTagCacheKey, Object> cache) {
         super(lineNumber);
         this.body = body;
         this.name = name;
@@ -124,7 +125,7 @@ public class CacheNode extends AbstractRenderableNode {
             throws PebbleException,
             IOException {
         try {
-            CacheKey key = new CacheKey(this.name, context.getLocale());
+            CacheKey key = new CacheKey((String) this.name.evaluate(self, context), context.getLocale());
             String body = (String) this.cache.get(key, new Callable<Object>() {
                 @Override
                 public String call() throws Exception {

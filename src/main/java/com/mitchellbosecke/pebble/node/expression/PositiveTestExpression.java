@@ -37,7 +37,8 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
             cachedTest = tests.get(testInvocation.getTestName());
 
             if (cachedTest == null) {
-                throw new PebbleException(null, String.format("Test [%s] does not exist.", testName));
+                throw new PebbleException(null, String.format("Test [%s] does not exist.", testName),
+                        this.getLineNumber(), self.getName());
             }
 
             if (cachedTest instanceof LocaleAware) {

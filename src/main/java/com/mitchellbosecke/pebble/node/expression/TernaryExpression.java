@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -21,10 +21,13 @@ public class TernaryExpression implements Expression<Object> {
 
     private Expression<?> expression3;
 
-    public TernaryExpression(Expression<Boolean> expression1, Expression<?> expression2, Expression<?> expression3) {
+    private final int lineNumber;
+
+    public TernaryExpression(Expression<Boolean> expression1, Expression<?> expression2, Expression<?> expression3, int lineNumber, String filename) {
         this.expression1 = expression1;
         this.expression2 = expression2;
         this.expression3 = expression3;
+        this.lineNumber = lineNumber;
     }
 
     @Override
@@ -61,4 +64,8 @@ public class TernaryExpression implements Expression<Object> {
         this.expression2 = expression2;
     }
 
+    @Override
+    public int getLineNumber() {
+       return this.lineNumber;
+    }
 }
