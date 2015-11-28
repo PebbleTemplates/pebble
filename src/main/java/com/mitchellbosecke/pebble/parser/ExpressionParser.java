@@ -18,7 +18,6 @@ import java.util.Set;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
-import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.FunctionOrMacroNameNode;
@@ -122,6 +121,7 @@ public class ExpressionParser {
             Class<? extends UnaryExpression> operatorNodeClass = operator.getNodeClass();
             try {
                 unaryExpression = operatorNodeClass.newInstance();
+                unaryExpression.setLineNumber(stream.current().getLineNumber());
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -206,6 +206,7 @@ public class ExpressionParser {
             Class<? extends BinaryExpression<?>> operatorNodeClass = operator.getNodeClass();
             try {
                 finalExpression = operatorNodeClass.newInstance();
+                finalExpression.setLineNumber(stream.current().getLineNumber());
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
                 throw new ParserException(e, "Error instantiating operator node [" + operatorNodeClass.getName() + "]",
@@ -270,29 +271,29 @@ public class ExpressionParser {
             // a constant?
             case "true":
             case "TRUE":
-                node = new LiteralBooleanExpression(true);
+                node = new LiteralBooleanExpression(true, token.getLineNumber());
                 break;
             case "false":
             case "FALSE":
-                node = new LiteralBooleanExpression(false);
+                node = new LiteralBooleanExpression(false, token.getLineNumber());
                 break;
             case "none":
             case "NONE":
             case "null":
             case "NULL":
-                node = new LiteralNullExpression();
+                node = new LiteralNullExpression(token.getLineNumber());
                 break;
 
             default:
 
                 // name of a function?
                 if (stream.peek().test(Token.Type.PUNCTUATION, "(")) {
-                    node = new FunctionOrMacroNameNode(token.getValue());
+                    node = new FunctionOrMacroNameNode(token.getValue(), stream.peek().getLineNumber());
                 }
 
                 // variable name
                 else {
-                    node = new ContextVariableExpression(token.getValue(), token.getLineNumber(), stream.getFilename());
+                    node = new ContextVariableExpression(token.getValue(), token.getLineNumber());
                 }
                 break;
             }
@@ -301,15 +302,15 @@ public class ExpressionParser {
         case NUMBER:
             final String numberValue = token.getValue();
             if (numberValue.contains(".")) {
-                node = new LiteralDoubleExpression(Double.valueOf(numberValue));
+                node = new LiteralDoubleExpression(Double.valueOf(numberValue), token.getLineNumber());
             } else {
-                node = new LiteralLongExpression(Long.valueOf(numberValue));
+                node = new LiteralLongExpression(Long.valueOf(numberValue), token.getLineNumber());
             }
 
             break;
 
         case STRING:
-            node = new LiteralStringExpression(token.getValue());
+            node = new LiteralStringExpression(token.getValue(), token.getLineNumber());
             break;
 
         // not found, syntax error
@@ -345,7 +346,8 @@ public class ExpressionParser {
                 expression3 = parseExpression();
             }
 
-            expression = new TernaryExpression((Expression<Boolean>) expression, expression2, expression3);
+            expression = new TernaryExpression((Expression<Boolean>) expression, expression2, expression3, this.stream
+                    .current().getLineNumber(), stream.getFilename());
         }
 
         return expression;
@@ -399,10 +401,10 @@ public class ExpressionParser {
         case "parent":
             return new ParentFunctionExpression(parser.peekBlockStack(), stream.current().getLineNumber());
         case "block":
-            return new BlockFunctionExpression(args);
+            return new BlockFunctionExpression(args, node.getLineNumber());
         }
 
-        return new FunctionOrMacroInvocationExpression(functionName, args);
+        return new FunctionOrMacroInvocationExpression(functionName, args, node.getLineNumber());
     }
 
     public FilterInvocationExpression parseFilterInvocationExpression() throws ParserException {
@@ -413,10 +415,10 @@ public class ExpressionParser {
         if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
             args = this.parseArguments();
         } else {
-            args = new ArgumentsNode(null, null);
+            args = new ArgumentsNode(null, null, filterToken.getLineNumber());
         }
 
-        return new FilterInvocationExpression(filterToken.getValue(), args);
+        return new FilterInvocationExpression(filterToken.getValue(), args, filterToken.getLineNumber());
     }
 
     private Expression<?> parseTestInvocationExpression() throws ParserException {
@@ -429,7 +431,7 @@ public class ExpressionParser {
         if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
             args = this.parseArguments();
         } else {
-            args = new ArgumentsNode(null, null);
+            args = new ArgumentsNode(null, null, testToken.getLineNumber());
         }
 
         return new TestInvocationExpression(lineNumber, testToken.getValue(), args);
@@ -467,14 +469,15 @@ public class ExpressionParser {
                 }
             }
 
-            node = new GetAttributeExpression(node, new LiteralStringExpression(token.getValue()), args, stream.getFilename(), token.getLineNumber());
-
+            node = new GetAttributeExpression(node, new LiteralStringExpression(token.getValue(), token.getLineNumber()), args,
+                    stream.getFilename(), token.getLineNumber());
 
         } else if (stream.current().test(Token.Type.PUNCTUATION, "[")) {
             // skip over opening '[' bracket
             stream.next();
 
-            node = new GetAttributeExpression(node, parseExpression(), stream.getFilename(), stream.current().getLineNumber());
+            node = new GetAttributeExpression(node, parseExpression(), stream.getFilename(), stream.current()
+                    .getLineNumber());
 
             // move past the closing ']' bracket
             stream.expect(Token.Type.PUNCTUATION, "]");
@@ -538,7 +541,7 @@ public class ExpressionParser {
 
         stream.expect(Token.Type.PUNCTUATION, ")");
 
-        return new ArgumentsNode(positionalArgs, namedArgs);
+        return new ArgumentsNode(positionalArgs, namedArgs, stream.current().getLineNumber());
     }
 
     /**
@@ -574,7 +577,7 @@ public class ExpressionParser {
         stream.expect(Token.Type.PUNCTUATION, "[");
         if (stream.current().test(Token.Type.PUNCTUATION, "]")) {
             stream.next();
-            return new ArrayExpression();
+            return new ArrayExpression(stream.current().getLineNumber());
         }
 
         // there's at least one expression in the array
@@ -594,7 +597,7 @@ public class ExpressionParser {
         // expect the closing bracket
         stream.expect(Token.Type.PUNCTUATION, "]");
 
-        return new ArrayExpression(elements);
+        return new ArrayExpression(elements, stream.current().getLineNumber());
     }
 
     private Expression<?> parseMapDefinitionExpression() throws ParserException {
@@ -604,7 +607,7 @@ public class ExpressionParser {
         stream.expect(Token.Type.PUNCTUATION, "{");
         if (stream.current().test(Token.Type.PUNCTUATION, "}")) {
             stream.next();
-            return new MapExpression();
+            return new MapExpression(stream.current().getLineNumber());
         }
 
         // there's at least one expression in the map
@@ -627,7 +630,7 @@ public class ExpressionParser {
         // expect the closing brace
         stream.expect(Token.Type.PUNCTUATION, "}");
 
-        return new MapExpression(elements);
+        return new MapExpression(elements, stream.current().getLineNumber());
     }
 
 }

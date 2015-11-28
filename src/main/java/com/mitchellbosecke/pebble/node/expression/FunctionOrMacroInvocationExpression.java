@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -27,9 +27,12 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     private final ArgumentsNode args;
 
-    public FunctionOrMacroInvocationExpression(String functionName, ArgumentsNode arguments) {
+    private final int lineNumber;
+
+    public FunctionOrMacroInvocationExpression(String functionName, ArgumentsNode arguments, int lineNumber) {
         this.functionName = functionName;
         this.args = arguments;
+        this.lineNumber = lineNumber;
     }
 
     @Override
@@ -66,6 +69,11 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     public ArgumentsNode getArguments() {
         return args;
+    }
+
+    @Override
+    public int getLineNumber() {
+        return this.lineNumber;
     }
 
 }

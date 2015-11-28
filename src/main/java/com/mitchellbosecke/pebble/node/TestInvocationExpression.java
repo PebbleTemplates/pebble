@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -16,15 +16,17 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
  * The right hand side to the test expression.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class TestInvocationExpression implements Expression<Object> {
 
     private final String testName;
 
     private final ArgumentsNode args;
+
+    private final int lineNumber;
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
@@ -34,6 +36,7 @@ public class TestInvocationExpression implements Expression<Object> {
     public TestInvocationExpression(int lineNumber, String testName, ArgumentsNode args) {
         this.testName = testName;
         this.args = args;
+        this.lineNumber = lineNumber;
     }
 
     @Override
@@ -49,4 +52,8 @@ public class TestInvocationExpression implements Expression<Object> {
         return testName;
     }
 
+    @Override
+    public int getLineNumber() {
+        return this.lineNumber;
+    }
 }
