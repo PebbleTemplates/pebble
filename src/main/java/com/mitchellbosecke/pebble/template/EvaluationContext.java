@@ -44,13 +44,12 @@ public class EvaluationContext {
     private final ScopeChain scopeChain;
 
     /**
-     * The locale of this template. Will be used by LocaleAware filters,
-     * functions, etc.
+     * The locale of this template.
      */
     private final Locale locale;
 
     /**
-     * All the available filters for this template.
+     * All the available filters/tests/functions for this template.
      */
     private final ExtensionRegistry extensionRegistry;
 

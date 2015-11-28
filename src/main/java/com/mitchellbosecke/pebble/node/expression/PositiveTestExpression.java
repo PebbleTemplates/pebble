@@ -10,7 +10,6 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.extension.core.DefinedTest;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
@@ -38,10 +37,6 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
             if (cachedTest == null) {
                 throw new PebbleException(null, String.format("Test [%s] does not exist.", testName),
                         this.getLineNumber(), self.getName());
-            }
-
-            if (cachedTest instanceof LocaleAware) {
-                ((LocaleAware) cachedTest).setLocale(context.getLocale());
             }
         }
         Test test = cachedTest;
