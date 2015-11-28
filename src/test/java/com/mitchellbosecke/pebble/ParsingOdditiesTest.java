@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -10,7 +10,6 @@ package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
@@ -32,7 +31,8 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test
     public void testEscapeCharactersText() throws PebbleException, IOException {
-        PebbleTemplate template = pebble.getTemplate("template.escapeCharactersInText.peb");
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.escapeCharactersInText.peb");
         Map<String, Object> context = new HashMap<>();
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
@@ -40,8 +40,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test
     public void testExpressionInArguments() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble
                 .getTemplate("{{ input(1 + 1) }}{% macro input(value) %}{{value}}{% endmacro %}");
@@ -53,9 +52,8 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test
     public void testPositionalAndNamedArguments() throws PebbleException, IOException, ParseException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setDefaultLocale(Locale.ENGLISH);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
 
         String source = "{{ stringDate | date('yyyy/MMMM/d', existingFormat='yyyy-MMMM-d') }}";
 
@@ -72,8 +70,8 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test(expected = PebbleException.class)
     public void testPositionalArgumentAfterNamedArguments() throws PebbleException, IOException, ParseException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
 
         String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
@@ -90,8 +88,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test
     public void testVariableNamePrefixedWithOperatorName() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble
                 .getTemplate("{{ organization }} {{ nothing }} {{ andy }} {{ equalsy }} {{ istanbul }}");
@@ -108,8 +105,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test
     public void testAttributeNamePrefixedWithOperatorName() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ foo.org }}");
         Map<String, Object> context = new HashMap<>();
@@ -130,8 +126,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test(expected = PebbleException.class)
     public void testIncorrectlyNamedArgument() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble
                 .getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
@@ -143,8 +138,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test
     public void testStringConstantWithLinebreak() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ 'test\ntest' }}");
 
@@ -155,8 +149,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testStringWithDifferentQuotationMarks() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("{{'test\"}}");
 
@@ -167,8 +160,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     @Test
     public void testSingleQuoteWithinDoubleQuotes() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("{{\"te'st\"}}");
 

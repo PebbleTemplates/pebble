@@ -8,20 +8,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.loader.Loader;
-
 public abstract class AbstractTest {
 
-	protected final PebbleEngine pebble;
-	protected final Loader<?> loader;
 
-	public AbstractTest() {
-
-		// main testing engine uses all default settings
-		pebble = new PebbleEngine();
-		pebble.getLoader().setPrefix("templates");
-
-		loader = pebble.getLoader();
-	}
-
+	// PebbleEngine pebble =  new PebbleEngine.Builder().loaderPrefix("templates").strictVariables(false).build();
 }

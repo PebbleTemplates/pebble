@@ -1,23 +1,19 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
+import com.google.common.cache.Cache;
+import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.extension.Test;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * An evaluation context will store all stateful data that is necessary for the
@@ -25,7 +21,6 @@ import com.mitchellbosecke.pebble.extension.Test;
  * thread safety.
  *
  * @author Mitchell
- *
  */
 public class EvaluationContext {
 
@@ -41,7 +36,7 @@ public class EvaluationContext {
     /**
      * A scope is a set of visible variables. A trivial template will only have
      * one scope. New scopes are added with for loops and macros for example.
-     *
+     * <p>
      * Most scopes will have a link to their parent scope which allow an
      * evaluation to look up the scope chain for variables. A macro is an
      * exception to this as it only has access to it's local variables.
@@ -57,17 +52,12 @@ public class EvaluationContext {
     /**
      * All the available filters for this template.
      */
-    private final Map<String, Filter> filters;
+    private final ExtensionRegistry extensionRegistry;
 
     /**
-     * All the available tests for this template.
+     * The tag cache
      */
-    private final Map<String, Test> tests;
-
-    /**
-     * All the available functions for this template.
-     */
-    private final Map<String, Function> functions;
+    private Cache<BaseTagCacheKey, Object> tagCache;
 
     /**
      * The user-provided ExecutorService (can be null).
@@ -82,27 +72,16 @@ public class EvaluationContext {
     /**
      * Constructor used to provide all final variables.
      *
-     * @param self
-     *            The template implementation
-     * @param strictVariables
-     *            Whether strict variables is to be used
-     * @param locale
-     *            The locale of the template
-     * @param filters
-     *            Available filters
-     * @param tests
-     *            Available tests
-     * @param functions
-     *            Available functions
-     * @param executorService
-     *            The optional executor service
-     * @param scopeChain
-     *            The scope chain
-     * @param inheritanceChain
-     *            The inheritance chain
+     * @param self              The template implementation
+     * @param strictVariables   Whether strict variables is to be used
+     * @param locale            The locale of the template
+     * @param extensionRegistry The extension registry
+     * @param executorService   The optional executor service
+     * @param scopeChain        The scope chain
+     * @param inheritanceChain  The inheritance chain
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
-            Map<String, Filter> filters, Map<String, Test> tests, Map<String, Function> functions,
+            ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
             ExecutorService executorService, ScopeChain scopeChain, InheritanceChain inheritanceChain) {
 
         if (inheritanceChain == null) {
@@ -111,9 +90,8 @@ public class EvaluationContext {
 
         this.strictVariables = strictVariables;
         this.locale = locale;
-        this.filters = filters;
-        this.tests = tests;
-        this.functions = functions;
+        this.extensionRegistry = extensionRegistry;
+        this.tagCache = tagCache;
         this.executorService = executorService;
         this.scopeChain = scopeChain;
         this.inheritanceChain = inheritanceChain;
@@ -123,12 +101,11 @@ public class EvaluationContext {
      * Makes an exact copy of the evaluation context EXCEPT for the inheritance
      * chain. This is necessary for the "include" tag.
      *
-     * @param self
-     *            The template implementation
+     * @param self The template implementation
      * @return A copy of the evaluation context
      */
     public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
-        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
+        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
                 executorService, scopeChain, null);
         return result;
     }
@@ -138,12 +115,11 @@ public class EvaluationContext {
      * object will be a deep copy without reference to the original. This is
      * used for the "parallel" tag.
      *
-     * @param self
-     *            The template implementation
+     * @param self The template implementation
      * @return A copy of the evaluation context
      */
     public EvaluationContext deepCopy(PebbleTemplateImpl self) {
-        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, filters, tests, functions,
+        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
                 executorService, scopeChain.deepCopy(), inheritanceChain);
         return result;
     }
@@ -153,10 +129,8 @@ public class EvaluationContext {
      * node, set node, and macro node) and must be thread safe in case there are
      * multiple threads evaluating the same template (via parallel tag).
      *
-     * @param key
-     *            Key
-     * @param value
-     *            Value
+     * @param key   Key
+     * @param value Value
      */
     public void put(String key, Object value) {
         scopeChain.put(key, value);
@@ -166,8 +140,7 @@ public class EvaluationContext {
      * Will look for a variable, traveling upwards through the scope chain until
      * it is found.
      *
-     * @param key
-     *            Key
+     * @param key Key
      * @return The object, if found
      */
     public Object get(String key) {
@@ -177,10 +150,9 @@ public class EvaluationContext {
     /**
      * Checks if the given key exists within the context.
      *
-     * @param key
-     *            the key for which the check should be executed for.
+     * @param key the key for which the check should be executed for.
      * @return {@code true} when the key does exists or {@code false} when the
-     *         given key does not exists.
+     * given key does not exists.
      */
     public boolean containsKey(String key) {
         return scopeChain.containsKey(key);
@@ -237,16 +209,8 @@ public class EvaluationContext {
         return locale;
     }
 
-    public Map<String, Test> getTests() {
-        return tests;
-    }
-
-    public Map<String, Filter> getFilters() {
-        return filters;
-    }
-
-    public Map<String, Function> getFunctions() {
-        return functions;
+    public ExtensionRegistry getExtensionRegistry() {
+        return extensionRegistry;
     }
 
     public ExecutorService getExecutorService() {
@@ -263,6 +227,10 @@ public class EvaluationContext {
 
     public void setParent(PebbleTemplateImpl parent) {
         inheritanceChain.pushAncestor(parent);
+    }
+
+    public Cache<BaseTagCacheKey, Object> getTagCache() {
+        return tagCache;
     }
 
 }

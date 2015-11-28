@@ -9,10 +9,8 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,9 +26,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testAccessingValueWithSubscript() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ person['first-name'] }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -51,9 +47,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testAccessingValueWithExpressionSubscript() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source1 = "{% set var = 'apple' %}{{ colors[var] }}";
         PebbleTemplate template1 = pebble.getTemplate(source1);
@@ -83,9 +77,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testAccessingValueWithIntegerExpressionSubscript() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source1 = "{{ colors[one] }}";
         PebbleTemplate template1 = pebble.getTemplate(source1);
@@ -117,9 +109,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testAccessingNestedValuesWithSubscript() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ person['name']['first'] }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -145,9 +135,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testMixAndMatchingAttributeSyntax() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ person['name'].first }}";
         PebbleTemplate template = pebble.getTemplate(source);

@@ -8,7 +8,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,19 +19,13 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testStandardizationOfNewlineCharacters() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         // windows
         PebbleTemplate windowsTemplate = pebble.getTemplate("\r\n");
@@ -45,8 +42,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testLeadingWhitespaceTrimWithPrintDelimiter() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("<li>    	{{- foo }}</li>");
         Writer writer = new StringWriter();
@@ -59,8 +55,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testLeadingWhitespaceTrimWithoutOutsideText() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{- foo -}}");
         Writer writer = new StringWriter();
@@ -73,8 +68,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testTrailingWhitespaceTrimWithPrintDelimiter() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("<li>{{ foo -}}   	</li>");
         Writer writer = new StringWriter();
@@ -87,8 +81,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testWhitespaceTrimInPresenceOfMultipleTags() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ foo }} <li>   {{- foo -}}   	</li> {{ foo }}");
         Writer writer = new StringWriter();
@@ -101,8 +94,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testWhitespaceTrimRemovesNewlines() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("<li>\n{{- foo -}}\n</li>");
         Writer writer = new StringWriter();
@@ -115,8 +107,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testWhitespaceTrimWithExecuteDelimiter() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble
                 .getTemplate("<li>    	{%- if true %} success {% else %} fail {% endif -%}   	</li>");
@@ -130,8 +121,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testLeadingWhitespaceTrimWithCommentDelimiter() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("<li>    	{#- comment #}</li>");
         Writer writer = new StringWriter();
@@ -142,8 +132,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testTrailingWhitespaceTrimWithCommentDelimiter() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("<li>{# comment -#}   	</li>");
         Writer writer = new StringWriter();
@@ -154,8 +143,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testLeadingWhitespaceTrimWithVerbatimTag() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("<li> {%- verbatim %}{{ bar }} {%- endverbatim %}</li>");
         Writer writer = new StringWriter();
@@ -166,8 +154,7 @@ public class WhitespaceControlTest extends AbstractTest {
 
     @Test
     public void testTrailingWhitespaceTrimWithVerbatimTag() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("<li>{% verbatim -%} {{ bar }}{% endverbatim -%} </li>");
         Writer writer = new StringWriter();

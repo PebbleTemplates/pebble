@@ -8,7 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,22 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testOneLayerAttributeNesting() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -46,9 +42,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testAttributeCacheHitting() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}{{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -60,9 +54,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testMultiLayerAttributeNesting() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.simpleObject2.simpleObject.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -75,9 +67,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testHashmapAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -92,9 +82,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testMethodAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -115,9 +103,7 @@ public class GetAttributeTest extends AbstractTest {
      */
     @Test
     public void testMethodAttributeWithDifferentObjects() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
         Map<String, Object> context1 = new HashMap<>();
@@ -135,9 +121,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithArgument() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name('Steve') }}");
         Map<String, Object> context = new HashMap<>();
@@ -150,9 +134,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithLongArgument() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.number(2) }}");
         Map<String, Object> context = new HashMap<>();
@@ -165,9 +147,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithOverloadedArgument() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.number(2.0) }}");
         Map<String, Object> context = new HashMap<>();
@@ -180,9 +160,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testBeanMethodWithTwoArguments() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.multiply(2, 3) }}");
         Map<String, Object> context = new HashMap<>();
@@ -195,8 +173,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testGetMethodAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -209,8 +186,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testHasMethodAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -223,8 +199,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testIsMethodAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -237,8 +212,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testComplexNestedAttributes() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "hello {{ object.map.SimpleObject2.simpleObject.name }}. My name is {{ object.map.SimpleObject6.name }}.";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -252,9 +226,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test(expected = RootAttributeNotFoundException.class)
     public void testAttributeOfNullObjectWithStrictVariables() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
@@ -264,9 +236,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testAttributeOfNullObjectWithoutStrictVariables() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
@@ -280,9 +250,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testNonExistingAttributeWithoutStrictVariables() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -295,9 +263,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test(expected = AttributeNotFoundException.class)
     public void testNonExistingAttributeWithStrictVariables() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -310,8 +276,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testNullAttributeWithoutStrictVariables() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -331,9 +296,7 @@ public class GetAttributeTest extends AbstractTest {
      */
     @Test
     public void testNullAttributeWithStrictVariables() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -347,8 +310,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test()
     public void testPrimitiveAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -361,8 +323,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testArrayIndexAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ arr[2] }}");
         Map<String, Object> context = new HashMap<>();
@@ -379,8 +340,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test
     public void testListIndexAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ arr[2] }}");
         Map<String, Object> context = new HashMap<>();
@@ -397,9 +357,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test()
     public void testInheritedAttribute() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
         Map<String, Object> context = new HashMap<>();
@@ -518,9 +476,7 @@ public class GetAttributeTest extends AbstractTest {
 
     @Test()
     public void testPrimitiveArgument() throws PebbleException, IOException {
-         Loader<?> stringLoader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(stringLoader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ obj.getStringFromLong(1) }} {{ obj.getStringFromLongs(1,2) }}");
 

@@ -8,7 +8,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,11 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class ConcurrencyTest extends AbstractTest {
 
@@ -52,9 +51,9 @@ public class ConcurrencyTest extends AbstractTest {
 
     @Test
     public void testConcurrentEvaluation() throws InterruptedException, PebbleException {
+        PebbleEngine engine = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String templateSource = "{{ test.a }}:{{ test.b }}:{{ test.c }}:{{ test.d | upper }}";
-        PebbleEngine engine = new PebbleEngine(new StringLoader());
         final PebbleTemplate template = engine.getTemplate(templateSource);
 
         ExecutorService es = Executors.newCachedThreadPool();
@@ -123,8 +122,7 @@ public class ConcurrencyTest extends AbstractTest {
      */
     @Test
     public void testThreadSafeCompilationOfMultipleTemplates() throws InterruptedException, PebbleException {
-        final PebbleEngine engine = new PebbleEngine();
-        engine.setTemplateCache(null);
+        final PebbleEngine engine = new PebbleEngine.Builder().templateCache(null).strictVariables(false).build();
         final ExecutorService es = Executors.newCachedThreadPool();
         final AtomicInteger totalFailed = new AtomicInteger();
 
@@ -227,8 +225,8 @@ public class ConcurrencyTest extends AbstractTest {
     @Test
     public void testConcurrentEvaluationWithDifferingLocals() throws InterruptedException, PebbleException {
 
+        final PebbleEngine engine = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         String templateSource = "{{ 2000.234 | numberformat }}";
-        PebbleEngine engine = new PebbleEngine(new StringLoader());
         final PebbleTemplate template = engine.getTemplate(templateSource);
 
         ExecutorService es = Executors.newCachedThreadPool();

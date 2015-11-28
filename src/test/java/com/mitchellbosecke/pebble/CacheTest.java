@@ -39,7 +39,7 @@ public class CacheTest extends AbstractTest {
 	 */
 	@Test
 	public void templatesWithSameNameOverridingCache() throws PebbleException, IOException {
-		PebbleEngine engine = new PebbleEngine();
+		PebbleEngine engine = new PebbleEngine.Builder().strictVariables(false).build();
 
 		PebbleTemplate cache1 = engine.getTemplate("templates/cache/cache1/template.cache.peb");
 		PebbleTemplate cache2 = engine.getTemplate("templates/cache/cache2/template.cache.peb");
@@ -66,7 +66,7 @@ public class CacheTest extends AbstractTest {
 	 */
 	@Test
 	public void ensureChildTemplateNotCached() throws PebbleException, IOException {
-		PebbleEngine engine = new PebbleEngine();
+		PebbleEngine engine = new PebbleEngine.Builder().strictVariables(false).build();
 
 		PebbleTemplate cache1 = engine.getTemplate("templates/cache/template.cacheChild.peb");
 		PebbleTemplate cache2 = engine.getTemplate("templates/cache/template.cacheParent.peb");
@@ -97,8 +97,9 @@ public class CacheTest extends AbstractTest {
 	 */
 	@Test
 	public void templateCachedButBytecodeCleared() throws PebbleException, IOException {
-		PebbleTemplate template1 = pebble.getTemplate("template.parent.peb");
-		PebbleTemplate template2 = pebble.getTemplate("template.parent2.peb");
+		PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+		PebbleTemplate template1 = pebble.getTemplate("templates/template.parent.peb");
+		PebbleTemplate template2 = pebble.getTemplate("templates/template.parent2.peb");
 
 		Writer writer1 = new StringWriter();
 		Writer writer2 = new StringWriter();
@@ -116,7 +117,7 @@ public class CacheTest extends AbstractTest {
 
 	@Test
 	public void testConcurrentCacheHitting() throws InterruptedException, PebbleException {
-		final PebbleEngine engine = new PebbleEngine();
+		final PebbleEngine engine = new PebbleEngine.Builder().strictVariables(false).build();
 		
 		final ExecutorService es = Executors.newCachedThreadPool();
 		final AtomicInteger totalFailed = new AtomicInteger();

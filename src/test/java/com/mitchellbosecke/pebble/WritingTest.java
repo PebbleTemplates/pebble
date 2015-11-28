@@ -1,14 +1,17 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -17,12 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class WritingTest extends AbstractTest {
 
@@ -35,8 +33,7 @@ public class WritingTest extends AbstractTest {
      */
     @Test
     public void testMultipleEvaluationsWithOneWriter() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
 
         PebbleTemplate template1 = pebble.getTemplate("first");
         PebbleTemplate template2 = pebble.getTemplate("second");
@@ -65,9 +62,8 @@ public class WritingTest extends AbstractTest {
      */
     @Test
     public void testParallelCharacterBuffersBeingOverriden() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setExecutorService(Executors.newCachedThreadPool());
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+                .executorService(Executors.newCachedThreadPool()).build();
         String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end {% parallel %}{{ slowObject.third }}{% endparallel %}";
         PebbleTemplate template = pebble.getTemplate(source);
         for (int i = 0; i < 2; i++) {

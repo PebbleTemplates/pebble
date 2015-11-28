@@ -1,16 +1,5 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.Test;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
@@ -24,6 +13,16 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.AbstractTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * This tests tests the parallel parsing / compilation of templates.
@@ -41,9 +40,7 @@ public class TestParallelParsing extends AbstractTest {
      */
     @Test
     public void testParser() throws InterruptedException {
-
-        // Setup
-        pebble.addExtension(new DelayExtension());
+        final PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).extension(new DelayExtension()).build();
 
         final AtomicReference<String> resultThread1 = new AtomicReference<String>();
         final AtomicReference<String> resultThread2 = new AtomicReference<String>();
@@ -53,7 +50,7 @@ public class TestParallelParsing extends AbstractTest {
             @Override
             public void run() {
                 try {
-                    PebbleTemplate template = pebble.getTemplate("template.parallelParsing1.peb");
+                    PebbleTemplate template = pebble.getTemplate("templates/template.parallelParsing1.peb");
                     Writer writer = new StringWriter();
                     template.evaluate(writer);
                     resultThread1.set(writer.toString());
@@ -68,7 +65,7 @@ public class TestParallelParsing extends AbstractTest {
             @Override
             public void run() {
                 try {
-                    PebbleTemplate template = pebble.getTemplate("template.parallelParsing2.peb");
+                    PebbleTemplate template = pebble.getTemplate("templates/template.parallelParsing2.peb");
                     Writer writer = new StringWriter();
                     template.evaluate(writer);
                     resultThread2.set(writer.toString());

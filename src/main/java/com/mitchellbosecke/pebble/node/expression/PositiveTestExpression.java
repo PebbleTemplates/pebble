@@ -1,14 +1,12 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
-
-import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -19,6 +17,8 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.TestInvocationExpression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.Map;
 
 public class PositiveTestExpression extends BinaryExpression<Object> {
 
@@ -33,8 +33,7 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
         if (cachedTest == null) {
             String testName = testInvocation.getTestName();
 
-            Map<String, Test> tests = context.getTests();
-            cachedTest = tests.get(testInvocation.getTestName());
+            cachedTest = context.getExtensionRegistry().getTest(testInvocation.getTestName());
 
             if (cachedTest == null) {
                 throw new PebbleException(null, String.format("Test [%s] does not exist.", testName),

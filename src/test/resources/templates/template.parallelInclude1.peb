@@ -1,5 +1,5 @@
 {# used by CoreTagsTest.testIncludeWithinParallelTag #}
-{% parallel %}{% include "template.parallelInclude2.peb" %}{% endparallel %}
+{% parallel %}{% include "./template.parallelInclude2.peb" %}{% endparallel %}
 
 TEMPLATE1
-{% include "template.parallelInclude2.peb" %}
+{% include "./template.parallelInclude2.peb" %}

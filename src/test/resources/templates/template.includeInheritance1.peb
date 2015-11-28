@@ -2,4 +2,4 @@
 	used by 
 		- CoreTagsTest.includeInheritance
 #}
-{% include 'template.includeInheritance2.peb' %}
+{% include './template.includeInheritance2.peb' %}

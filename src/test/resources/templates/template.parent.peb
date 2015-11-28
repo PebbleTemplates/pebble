@@ -4,7 +4,7 @@
 		- InheritanceTest.testSimpleInheritance 
 		- InheritanceTest.testMultiLevelInheritance 
 #}
-{% extends "template.grandfather.peb" %}
+{% extends "./template.grandfather.peb" %}
 
 {% block head %}
 	PARENT HEAD

@@ -1,6 +1,6 @@
 {# used by CoreTagsTest.testIncludeOverridesBlocks #}
-{% include "template.includeOverrideBlock2.peb" %}
+{% include "templates/template.includeOverrideBlock2.peb" %}
 {% block content %}
 ONE
 {% endblock %}
-{% include "template.includeOverrideBlock2.peb" %}
+{% include "templates/template.includeOverrideBlock2.peb" %}

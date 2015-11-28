@@ -8,8 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -17,21 +21,14 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.TestingExtension;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testMapSyntax() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -43,8 +40,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testSimpleMap() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'key':'value'} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -56,9 +52,8 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void test2ElementMap() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.addExtension(new TestingExtension());
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).extension(new TestingExtension())
+                .strictVariables(false).build();
 
         String source = "{{ {'key1':'value1','key2':'value2'} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -70,9 +65,8 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void test2ElementMap2() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.addExtension(new TestingExtension());
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).extension(new TestingExtension())
+                .strictVariables(false).build();
 
         String source = "{{ {'key1' :  'value1'   ,    'key2'      :       'value2' } | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -84,9 +78,8 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testNElementMap() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.addExtension(new TestingExtension());
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).extension(new TestingExtension())
+                .strictVariables(false).build();
 
         String source = "{{ {'key1':'value1','key2':'value2','key3':'value3','key4':'value4','key5':'value5'} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -98,8 +91,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testIncompleteMapSyntax() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {,} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -110,8 +102,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testIncompleteMapSyntax2() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'key'} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -122,8 +113,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testIncompleteMapSyntax3() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'key':} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -134,8 +124,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testIncompleteMapSyntax4() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {:'value'} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -146,8 +135,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test(expected = ParserException.class)
     public void testIncompleteMapSyntax5() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'key':'value',} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -159,9 +147,8 @@ public class MapSyntaxTest extends AbstractTest {
     @SuppressWarnings("serial")
     @Test
     public void testMapWithExpressions() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.addExtension(new TestingExtension());
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).extension(new TestingExtension())
+                .strictVariables(false).build();
 
         String source = "{{ {1:'one', 'two':2, three:'three', numbers['four']:4} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -183,9 +170,8 @@ public class MapSyntaxTest extends AbstractTest {
     @SuppressWarnings({ "serial", "unused" })
     @Test
     public void testMapWithComplexExpressions() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.addExtension(new TestingExtension());
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).extension(new TestingExtension())
+                .strictVariables(false).build();
 
         String source = "{{ {'one' + 'plus':'oneplus', 2 - 1:3, three.number:(2+1), 0:numbers['four'][0], numbers ['five'] .value:'five'} | mapToString }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -217,8 +203,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testSetCommand() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% set map = {'key'+1:'value'+'1'} %}{{ map }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -232,8 +217,7 @@ public class MapSyntaxTest extends AbstractTest {
     // trusted
     @Test
     public void testForTag() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% set names = {'Bob':'Marley','Maria':'Callas','John':'Cobra'} %}{% for name in names %}{{ name.key + '-' + name.value }}{% endfor %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -248,8 +232,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testForTag2() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% for name in {'Bob':'Marley','Maria':'Callas','John':'Cobra'} %}{{ name.key + '-' + name.value }}{% endfor %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -264,8 +247,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testForElseTag() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% for name in {} %}{{ name }}{% else %}{{ 'no name' }}{% endfor %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -277,8 +259,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testIfTag() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% if {'Bob':'Marley','Maria':'Callas','John':'Cobra'} is null %}{{ 'it is' }}{% else %}{{ 'it is not' }}{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -290,8 +271,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testMacroTag() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% macro print(name) %}{{ name }}{% endmacro %}{{ print({'Bob':'Marley'}) }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -303,8 +283,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testMacroTagNamedArguments() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% macro print(name) %}{{ name }}{% endmacro %}{{ print(name={'Bob':'Marley'}) }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -317,8 +296,7 @@ public class MapSyntaxTest extends AbstractTest {
     // no operator overloading for maps
     @Test(expected = RuntimeException.class)
     public void testAdditionOverloading() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% set map = {'Bob':'Marley'} + 1 %}{{ map }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -329,8 +307,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test(expected = RuntimeException.class)
     public void testSubtractionOverloading() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% set map = {'Bob':'Marley'} - 1 %}{{ map }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -341,8 +318,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testEmptyTest() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% if {'John':'Cobra'} is empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -354,8 +330,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testEmptyTest2() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% if {} is empty %}{{ 'true' }}{% else %}{{ 'false' }}{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -367,8 +342,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testIterableTest() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% if {} is iterable %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -380,8 +354,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% if {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'Maria' %}true{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -393,8 +366,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator2() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% if not {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'Freddie' %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -406,8 +378,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testContainsOperator3() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% if {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'John' and not {'Freddie':'Mercury'} contains 'Bob' %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -419,8 +390,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testNestedMaps() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ { 1 : {}, 2 : { 1 : 1 }, { 3 : 3} : 3, 4 : { 4 : { 4 : 4 } } } }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -432,8 +402,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testNestedArrayInMap() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'array':[]} }}";
         PebbleTemplate template = pebble.getTemplate(source);
@@ -447,9 +416,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     @Test
     public void testBraceSyntax() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% set var = true %}{{ 'hi' }}{# comment #}";
         PebbleTemplate template = pebble.getTemplate(source);

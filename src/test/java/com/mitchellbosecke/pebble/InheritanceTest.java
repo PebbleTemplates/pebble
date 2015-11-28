@@ -9,7 +9,6 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
@@ -28,7 +27,8 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testSimpleInheritance() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("template.parent.peb");
+		PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+		PebbleTemplate template = pebble.getTemplate("templates/template.parent.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -39,7 +39,8 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testMultiLevelInheritance() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("template.child.peb");
+		PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+		PebbleTemplate template = pebble.getTemplate("templates/template.child.peb");
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer);
@@ -50,7 +51,8 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testDynamicInheritance() throws PebbleException, IOException {
-		PebbleTemplate template = pebble.getTemplate("template.dynamicChild.peb");
+		PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+		PebbleTemplate template = pebble.getTemplate("templates/template.dynamicChild.peb");
 		Map<String, Object> context = new HashMap<>();
 		context.put("extendNumberOne", true);
 
@@ -66,8 +68,7 @@ public class InheritanceTest extends AbstractTest {
 
 	@Test
 	public void testNullParent() throws PebbleException, IOException {
-		Loader<?> loader = new StringLoader();
-		PebbleEngine pebble = new PebbleEngine(loader);
+		PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 		PebbleTemplate template = pebble
 				.getTemplate("{% extends null %}success");
 

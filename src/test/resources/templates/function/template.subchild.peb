@@ -1,5 +1,5 @@
 {# used by CoreFunctionsTest.testParentFunctionWithTwoLevels #}
-{% extends "function/template.child.peb" %}
+{% extends "templates/function/template.child.peb" %}
 sub child text
 {% block head %}
 	{{ parent() }}

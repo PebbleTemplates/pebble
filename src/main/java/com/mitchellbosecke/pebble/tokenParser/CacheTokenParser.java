@@ -56,6 +56,6 @@ public class CacheTokenParser extends AbstractTokenParser {
         stream.next();
 
         stream.expect(Token.Type.EXECUTE_END);
-        return new CacheNode(lineNumber, expression, cacheBody, parser.getEngine().getTagCache());
+        return new CacheNode(lineNumber, expression, cacheBody);
     }
 }

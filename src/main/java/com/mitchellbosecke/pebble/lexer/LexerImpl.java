@@ -1,24 +1,13 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.lexer;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
@@ -27,19 +16,33 @@ import com.mitchellbosecke.pebble.utils.Pair;
 import com.mitchellbosecke.pebble.utils.StringLengthComparator;
 import com.mitchellbosecke.pebble.utils.StringUtils;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * This class reads the template input and builds single items out of it.
- *
+ * <p>
  * This class is not thread safe.
  */
 public final class LexerImpl implements Lexer {
 
     /**
-     * Main components
+     * Syntax
      */
-    private final PebbleEngine engine;
-
     private final Syntax syntax;
+
+    /**
+     * Unary operators
+     */
+    private final Collection<UnaryOperator> unaryOperators;
+
+    /**
+     * Binary operators
+     */
+    private final Collection<BinaryOperator> binaryOperators;
 
     /**
      * As we progress through the source we maintain a string which is the text
@@ -86,8 +89,8 @@ public final class LexerImpl implements Lexer {
 
     // the negative lookbehind assertion is used to ignore escaped quotation
     // marks
-    private static final Pattern REGEX_STRING = Pattern.compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))",
-            Pattern.DOTALL);
+    private static final Pattern REGEX_STRING = Pattern
+            .compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))", Pattern.DOTALL);
 
     private static final String PUNCTUATION = "()[]{}?:.,|=";
 
@@ -99,24 +102,22 @@ public final class LexerImpl implements Lexer {
     /**
      * Constructor
      *
-     * @param engine
-     *            The PebbleEngine that the lexer can use to get information
-     *            from
+     * @param syntax          The primary syntax
+     * @param unaryOperators  The available unary operators
+     * @param binaryOperators The available binary operators
      */
-    public LexerImpl(PebbleEngine engine) {
-        this.engine = engine;
-        this.syntax = engine.getSyntax();
+    public LexerImpl(Syntax syntax, Collection<UnaryOperator> unaryOperators, Collection<BinaryOperator> binaryOperators) {
+        this.syntax = syntax;
+        this.unaryOperators = unaryOperators;
+        this.binaryOperators = binaryOperators;
     }
 
     /**
      * This is the main method used to tokenize the raw contents of a template.
      *
-     * @param reader
-     *            The reader provided from the Loader
-     * @param name
-     *            The name of the template (used for meaningful error messages)
-     * @throws ParserException
-     *             Thrown from the Reader object
+     * @param reader The reader provided from the Loader
+     * @param name   The name of the template (used for meaningful error messages)
+     * @throws ParserException Thrown from the Reader object
      */
     @Override
     public TokenStream tokenize(Reader reader, String name) throws ParserException {
@@ -298,7 +299,7 @@ public final class LexerImpl implements Lexer {
 
     /**
      * Tokenizes between comment delimiters.
-     *
+     * <p>
      * Simply find the closing delimiter for the comment and move the cursor to
      * that point.
      *
@@ -502,8 +503,7 @@ public final class LexerImpl implements Lexer {
      * pass control to the overloaded method that will push this token into a
      * list of tokens that we are maintaining.
      *
-     * @param type
-     *            The type of Token we are creating
+     * @param type The type of Token we are creating
      */
     private Token pushToken(Token.Type type) {
         return pushToken(type, null);
@@ -513,10 +513,8 @@ public final class LexerImpl implements Lexer {
      * Create a Token of a certain type and value and push it into the list of
      * tokens that we are maintaining. `
      *
-     * @param type
-     *            The type of token we are creating
-     * @param value
-     *            The value of the new token
+     * @param type  The type of token we are creating
+     * @param value The value of the new token
      */
     private Token pushToken(Token.Type type, String value) {
         // ignore empty text tokens
@@ -533,8 +531,7 @@ public final class LexerImpl implements Lexer {
      * Pushes the current state onto the stack and then updates the current
      * state to the new state.
      *
-     * @param state
-     *            The new state to use as the current state
+     * @param state The new state to use as the current state
      */
     private void pushState(State state) {
         this.states.push(this.state);
@@ -559,11 +556,11 @@ public final class LexerImpl implements Lexer {
 
         List<String> operators = new ArrayList<>();
 
-        for (UnaryOperator operator : engine.getUnaryOperators().values()) {
+        for (UnaryOperator operator : unaryOperators) {
             operators.add(operator.getSymbol());
         }
 
-        for (BinaryOperator operator : engine.getBinaryOperators().values()) {
+        for (BinaryOperator operator : binaryOperators) {
             operators.add(operator.getSymbol());
         }
 

@@ -2,5 +2,5 @@
 	used by 
 		- CoreTagsTest.skipGenerationBlock
 #}
-{% extends 'template.skipGenerationBlock2.peb' %}
+{% extends './template.skipGenerationBlock2.peb' %}
 {% block content %}success{% endblock %}
