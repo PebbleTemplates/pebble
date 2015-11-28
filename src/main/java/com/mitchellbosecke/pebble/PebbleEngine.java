@@ -289,6 +289,9 @@ public class PebbleEngine {
          */
         private Cache<Object, PebbleTemplate> templateCache;
 
+        /**
+         * Cache used with the "cache" tag.
+         */
         private Cache<BaseTagCacheKey, Object> tagCache;
 
         private EscaperExtension escaperExtension = new EscaperExtension();
@@ -297,11 +300,23 @@ public class PebbleEngine {
 
         }
 
+        /**
+         * Sets the loader used to find templates.
+         *
+         * @param loader
+         * @return
+         */
         public Builder loader(Loader<?> loader) {
             this.loader = loader;
             return this;
         }
 
+        /**
+         * Adds an extension, can be safely invoked several times to add different extensions.
+         *
+         * @param extensions
+         * @return
+         */
         public Builder extension(Extension... extensions) {
             for (Extension extension : extensions) {
                 this.extensions.add(extension);
@@ -309,26 +324,56 @@ public class PebbleEngine {
             return this;
         }
 
+        /**
+         * Sets the syntax to be used.
+         *
+         * @param syntax
+         * @return
+         */
         public Builder syntax(Syntax syntax) {
             this.syntax = syntax;
             return this;
         }
 
+        /**
+         * Sets whether or not strict variables is used.
+         *
+         * @param strictVariables
+         * @return
+         */
         public Builder strictVariables(boolean strictVariables) {
             this.strictVariables = strictVariables;
             return this;
         }
 
+        /**
+         * Sets the default Locale used by all templates constructed by this PebbleEngine
+         *
+         * @param defaultLocale
+         * @return
+         */
         public Builder defaultLocale(Locale defaultLocale) {
             this.defaultLocale = defaultLocale;
             return this;
         }
 
+        /**
+         * Sets the executor service which is required to use several multithreading features of Pebble.
+         *
+         * @param executorService
+         * @return
+         */
         public Builder executorService(ExecutorService executorService) {
             this.executorService = executorService;
             return this;
         }
 
+        /**
+         * Sets the cache used by the engine to store compiled PebbleTemplate instances.
+         *
+         * @param templateCache
+         * @return
+         */
         public Builder templateCache(Cache<Object, PebbleTemplate> templateCache) {
             if (templateCache == null) {
                 this.templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
@@ -338,6 +383,12 @@ public class PebbleEngine {
             return this;
         }
 
+        /**
+         * Sets the cache used by the "cache" tag.
+         *
+         * @param tagCache
+         * @return
+         */
         public Builder tagCache(Cache<BaseTagCacheKey, Object> tagCache) {
             if (tagCache == null) {
                 this.tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
@@ -347,26 +398,56 @@ public class PebbleEngine {
             return this;
         }
 
-        public Builder autoEscaping(boolean autoEscaping){
+        /**
+         * Sets whether or not escaping should be performed automatically.
+         *
+         * @param autoEscaping
+         * @return
+         */
+        public Builder autoEscaping(boolean autoEscaping) {
             escaperExtension.setAutoEscaping(autoEscaping);
             return this;
         }
 
-        public Builder defaultEscapingStrategy(String strategy){
+        /**
+         * Sets the default escaping strategy of the built-in escaper extension.
+         *
+         * @param strategy
+         * @return
+         */
+        public Builder defaultEscapingStrategy(String strategy) {
             escaperExtension.setDefaultStrategy(strategy);
             return this;
         }
 
-        public Builder addEscaperSafeFilter(String filter){
+        /**
+         * Marks a particular tag as safe to the built-in escaper extension.
+         *
+         * @param filter
+         * @return
+         */
+        public Builder addEscaperSafeFilter(String filter) {
             escaperExtension.addSafeFilter(filter);
             return this;
         }
 
-        public Builder addEscapingStrategy(String name, EscapingStrategy strategy){
+        /**
+         * Adds an escaping strategy to the built-in escaper extension.
+         *
+         * @param name
+         * @param strategy
+         * @return
+         */
+        public Builder addEscapingStrategy(String name, EscapingStrategy strategy) {
             escaperExtension.addEscapingStrategy(name, strategy);
             return this;
         }
 
+        /**
+         * Creates the PebbleEngine instance.
+         *
+         * @return
+         */
         public PebbleEngine build() {
 
             // core extensions
@@ -377,7 +458,7 @@ public class PebbleEngine {
             extensions.addAll(this.extensions);
 
             // default loader
-            if(loader == null) {
+            if (loader == null) {
                 List<Loader<?>> defaultLoadingStrategies = new ArrayList<>();
                 defaultLoadingStrategies.add(new ClasspathLoader());
                 defaultLoadingStrategies.add(new FileLoader());
@@ -385,16 +466,16 @@ public class PebbleEngine {
             }
 
             // default locale
-            if(defaultLocale == null) {
+            if (defaultLocale == null) {
                 defaultLocale = Locale.getDefault();
             }
 
             // default caches
-            if(templateCache == null) {
+            if (templateCache == null) {
                 templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
             }
 
-            if(tagCache == null) {
+            if (tagCache == null) {
                 tagCache = CacheBuilder.newBuilder().maximumSize(200).build();
             }
 
