@@ -56,7 +56,7 @@ public class EvaluationContext {
     /**
      * The tag cache
      */
-    private Cache<BaseTagCacheKey, Object> tagCache;
+    private final Cache<BaseTagCacheKey, Object> tagCache;
 
     /**
      * The user-provided ExecutorService (can be null).
@@ -117,13 +117,15 @@ public class EvaluationContext {
      * @param self The template implementation
      * @return A copy of the evaluation context
      */
-    public EvaluationContext deepCopy(PebbleTemplateImpl self) {
+    public EvaluationContext shallowCopyWithNewScopeChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
                 executorService, scopeChain.deepCopy(), inheritanceChain);
         return result;
     }
 
     /**
+     * Adds a variable to the scope chain.
+     * <p>
      * This method might be called DURING the evaluation of a template (ex. for
      * node, set node, and macro node) and must be thread safe in case there are
      * multiple threads evaluating the same template (via parallel tag).
@@ -139,8 +141,8 @@ public class EvaluationContext {
      * Will look for a variable, traveling upwards through the scope chain until
      * it is found.
      *
-     * @param key Key
-     * @return The object, if found
+     * @param key The name of the variable
+     * @return The value of the variable
      */
     public Object get(String key) {
         return scopeChain.get(key);
@@ -157,18 +159,36 @@ public class EvaluationContext {
         return scopeChain.containsKey(key);
     }
 
+    /**
+     * Signifies that the parent template in the hierarchy is now being evaluated so it should
+     * be considered the "current" template.
+     */
     public void ascendInheritanceChain() {
         inheritanceChain.ascend();
     }
 
+    /**
+     * Signifies that the child template in the hierarchy is now being evaluated so i t
+     * should be considered the "current" template.
+     */
     public void descendInheritanceChain() {
         inheritanceChain.descend();
     }
 
+    /**
+     * Returns the parent of the template currently being evaluated or null if there is no parent.
+     *
+     * @return
+     */
     public PebbleTemplateImpl getParentTemplate() {
         return inheritanceChain.getParent();
     }
 
+    /**
+     * Returns the child of the template currently being evaluated or null if there is no child.
+     *
+     * @return The child template if exists or null
+     */
     public PebbleTemplateImpl getChildTemplate() {
         return inheritanceChain.getChild();
     }

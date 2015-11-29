@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -13,16 +13,31 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * A stack data structure used to represent the scope of variables that are currently accessible. Pushing a new scope
+ * will allow the template to add variables with names of pre-existing variables without
+ * overriding the originals; to access the original variables you would pop the scope again.
+ */
 public class ScopeChain {
 
+    /**
+     * The stack of scopes
+     */
     private LinkedList<Scope> stack = new LinkedList<>();
 
+    /**
+     * Constructs an empty scope chain without any known scopes.
+     */
     public ScopeChain() {
-
     }
 
+    /**
+     * Constructs a new scope chain with one known scope.
+     *
+     * @param map The map of variables used to initialize a scope.
+     */
     public ScopeChain(Map<String, Object> map) {
-        Scope scope = new Scope(new HashMap<String, Object>(map), false);
+        Scope scope = new Scope(new HashMap<>(map), false);
         stack.push(scope);
     }
 
@@ -31,6 +46,11 @@ public class ScopeChain {
      * because every new thread should have a "snapshot" of the scopes, i.e. if
      * one thread adds a new object to a scope, it should not be available to
      * the other threads.
+     * <p>
+     * This will construct a new scope chain and new scopes but it will continue
+     * to have references to the original user-provided variables. This is why
+     * it is important for the user to only provide thread-safe variables
+     * when using the "parallel" tag.
      *
      * @return A copy of the scope chain
      */
@@ -43,26 +63,50 @@ public class ScopeChain {
         return copy;
     }
 
+    /**
+     * Adds a new non-local scope to the scope chain
+     *
+     * @param map The known variables of this scope.
+     */
     public void pushScope(Map<String, Object> map) {
         Scope scope = new Scope(map, false);
         stack.push(scope);
     }
 
+    /**
+     * Adds a new local scope to the scope chain
+     */
     public void pushLocalScope() {
         Scope scope = new Scope(new HashMap<String, Object>(), true);
         stack.push(scope);
     }
 
+    /**
+     * Pops the most recent scope from the scope chain.
+     */
     public void popScope() {
         stack.pop();
     }
 
+    /**
+     * Adds a variable to the current scope.
+     *
+     * @param key   The name of the variable
+     * @param value The value of the variable
+     */
     public void put(String key, Object value) {
         stack.peek().put(key, value);
     }
 
+    /**
+     * Retrieves a variable from the scope chain, starting at the current
+     * scope and working it's way up all visible scopes.
+     *
+     * @param key The name of the variable
+     * @return The value of the variable
+     */
     public Object get(String key) {
-        Object result = null;
+        Object result;
 
         /*
          * The majority of time, the requested variable will be in the first
@@ -96,10 +140,9 @@ public class ScopeChain {
      * This method checks if the given {@code key} does exists within the scope
      * chain.
      *
-     * @param key
-     *            the for which the the check should be executed for.
+     * @param key the for which the the check should be executed for.
      * @return {@code true} when the key does exists or {@code false} when the
-     *         given key does not exists.
+     * given key does not exists.
      */
     public boolean containsKey(String key) {
 
@@ -132,6 +175,13 @@ public class ScopeChain {
         return false;
     }
 
+    /**
+     * Checks if the current scope contains a variable without
+     * then looking up the scope chain.
+     *
+     * @param variableName The name of the variable
+     * @return Whether or not the variable exists in the current scope
+     */
     public boolean currentScopeContainsVariable(String variableName) {
         return stack.getFirst().containsKey(variableName);
     }
