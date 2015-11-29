@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -89,4 +90,35 @@ public class ContextTest extends AbstractTest {
         assertEquals("YES", writer.toString());
     }
 
+    @Test
+    public void testDefaultLocale() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.CANADA_FRENCH).build();
+        PebbleTemplate template = pebble.getTemplate("{{ locale.language }}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("fr", writer.toString());
+    }
+
+    @Test
+    public void testLocaleProvidedDuringEvaluation() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.CANADA).build();
+        PebbleTemplate template = pebble.getTemplate("{{ locale }}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, Locale.CANADA);
+        assertEquals("en_CA", writer.toString());
+    }
+
+    @Test
+    public void testGlobalTemplateName() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("{{ template.name }}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("{{ template.name }}", writer.toString());
+    }
 }

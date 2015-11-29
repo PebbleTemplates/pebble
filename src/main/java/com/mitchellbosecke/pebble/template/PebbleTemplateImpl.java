@@ -127,7 +127,16 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      */
     private EvaluationContext initContext(Locale locale) {
         locale = locale == null ? engine.getDefaultLocale() : locale;
-        ScopeChain scopeChain = new ScopeChain(engine.getExtensionRegistry().getGlobalVariables());
+
+        // globals
+        Map<String, Object> globals = new HashMap<>();
+        globals.put("locale", locale);
+        globals.put("template", this);
+        ScopeChain scopeChain = new ScopeChain(globals);
+
+        // global vars provided from extensions
+        scopeChain.pushScope(engine.getExtensionRegistry().getGlobalVariables());
+
         EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
                 engine.getExtensionRegistry(), engine.getTagCache(), engine.getExecutorService(), scopeChain, null);
         return context;
