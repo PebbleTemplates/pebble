@@ -17,6 +17,11 @@
 - Ability to add extra variables to the context when "including" another template
 - Bug fix: "defined" test did not work as expected in strict mode
 - Bug fix: fixed broken "less than equal" comparison 
+- **Backwards incompatibility: Constructor for PebbleEngine is now private, must use PebbleEngine.Builder**
+- **Backwards incompatibility: PebbleEngine is immutable once constructed**
+- **Backwards incompatibility: Removed "getExtension" method from PebbleEngine, core extensions must be configured during construction of the PebbleEngine object**
+- **Backwards incompatibility: Removed deprecated LocaleAware interface**
+- **Backwards incompatibility: Extensions are now expected to return NodeVisitorFactory objects instead of NodeVisitors**
 
 ## v1.6.0 (2015-09-06)
 - Support for custom escaping strategies
