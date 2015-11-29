@@ -103,7 +103,7 @@ public class ContextTest extends AbstractTest {
     
     @Test
     public void testLocaleWithContext() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).defaultLocale(Locale.CANADA).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).defaultLocale(Locale.CANADA_FRENCH).build();
         PebbleTemplate template = pebble.getTemplate("{{ locale }}");
 
         Map<String, Object> context = new HashMap<>();
