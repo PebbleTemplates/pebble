@@ -64,6 +64,13 @@ public class ScopeChain {
     }
 
     /**
+     * Adds an empty non-local scope to the scope chain
+     */
+    public void pushScope() {
+        pushScope(new HashMap<String, Object>());
+    }
+
+    /**
      * Adds a new non-local scope to the scope chain
      *
      * @param map The known variables of this scope.

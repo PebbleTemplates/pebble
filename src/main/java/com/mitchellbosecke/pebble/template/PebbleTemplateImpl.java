@@ -60,9 +60,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
     public void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException {
         rootNode.render(this, writer, context);
-        if (context.getParentTemplate() != null) {
-            PebbleTemplateImpl parent = context.getParentTemplate();
-            context.ascendInheritanceChain();
+        if (context.getInheritanceChain().getParent() != null) {
+            PebbleTemplateImpl parent = context.getInheritanceChain().getParent();
+            context.getInheritanceChain().ascend();
             parent.buildContent(writer, context);
         }
     }
@@ -79,13 +79,13 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
     public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
         EvaluationContext context = initContext(null);
-        context.pushScope(map);
+        context.getScopeChain().pushScope(map);
         evaluate(writer, context);
     }
 
     public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
         EvaluationContext context = initContext(locale);
-        context.pushScope(map);
+        context.getScopeChain().pushScope(map);
         evaluate(writer, context);
     }
 
@@ -131,7 +131,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      *                         template
      */
     public void importTemplate(EvaluationContext context, String name) throws PebbleException {
-        context.addImportedTemplate((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name)));
+        context.getImportedTemplates().add((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name)));
     }
 
     /**
@@ -149,12 +149,13 @@ public class PebbleTemplateImpl implements PebbleTemplate {
             throws PebbleException, IOException {
         PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name));
         EvaluationContext newContext = context.shallowCopyWithoutInheritanceChain(template);
-        newContext.pushScope();
+        ScopeChain scopeChain = newContext.getScopeChain();
+        scopeChain.pushScope();
         for (Entry<?, ?> entry : additionalVariables.entrySet()) {
-            newContext.put((String) entry.getKey(), entry.getValue());
+            scopeChain.put((String) entry.getKey(), entry.getValue());
         }
         template.evaluate(writer, newContext);
-        newContext.popScope();
+        scopeChain.popScope();
     }
 
     public boolean hasMacro(String macroName) {
@@ -211,13 +212,14 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     public void block(Writer writer, EvaluationContext context, String blockName, boolean ignoreOverriden)
             throws PebbleException, IOException {
 
-        PebbleTemplateImpl childTemplate = context.getChildTemplate();
+        InheritanceChain inheritanceChain = context.getInheritanceChain();
+        PebbleTemplateImpl childTemplate = inheritanceChain.getChild();
 
         // check child
         if (!ignoreOverriden && childTemplate != null) {
-            context.descendInheritanceChain();
+            inheritanceChain.descend();
             childTemplate.block(writer, context, blockName, false);
-            context.ascendInheritanceChain();
+            inheritanceChain.ascend();
 
             // check this template
         } else if (blocks.containsKey(blockName)) {
@@ -226,11 +228,11 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
             // delegate to parent
         } else {
-            if (context.getParentTemplate() != null) {
-                PebbleTemplateImpl parent = context.getParentTemplate();
-                context.ascendInheritanceChain();
+            if (inheritanceChain.getParent() != null) {
+                PebbleTemplateImpl parent = inheritanceChain.getParent();
+                inheritanceChain.ascend();
                 parent.block(writer, context, blockName, true);
-                context.descendInheritanceChain();
+                inheritanceChain.descend();
             }
         }
 
@@ -241,14 +243,14 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         String result = null;
         boolean found = false;
 
-        PebbleTemplateImpl childTemplate = context.getChildTemplate();
+        PebbleTemplateImpl childTemplate = context.getInheritanceChain().getChild();
 
         // check child template first
         if (!ignoreOverriden && childTemplate != null) {
             found = true;
-            context.descendInheritanceChain();
+            context.getInheritanceChain().descend();
             result = childTemplate.macro(context, macroName, args, false);
-            context.ascendInheritanceChain();
+            context.getInheritanceChain().ascend();
 
             // check current template
         } else if (hasMacro(macroName)) {
@@ -271,11 +273,11 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
         // delegate to parent template
         if (!found) {
-            if (context.getParentTemplate() != null) {
-                PebbleTemplateImpl parent = context.getParentTemplate();
-                context.ascendInheritanceChain();
+            if (context.getInheritanceChain().getParent() != null) {
+                PebbleTemplateImpl parent = context.getInheritanceChain().getParent();
+                context.getInheritanceChain().ascend();
                 result = parent.macro(context, macroName, args, true);
-                context.descendInheritanceChain();
+                context.getInheritanceChain().descend();
             } else {
                 throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));
             }
@@ -285,7 +287,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     public void setParent(EvaluationContext context, String parentName) throws PebbleException {
-        context.setParent((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(parentName)));
+        context.getInheritanceChain()
+                .pushAncestor((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(parentName)));
     }
 
     public String getName() {

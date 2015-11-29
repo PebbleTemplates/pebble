@@ -69,11 +69,11 @@ public class PebbleEngine {
 
     /**
      * Constructor for the Pebble Engine given an instantiated Loader. This
-     * method does only load those extensions listed here.
+     * method does only load those userProvidedExtensions listed here.
      *
      * @param loader     The template loader for this engine
      * @param syntax     the syntax to use for parsing the templates.
-     * @param extensions The extensions which should be loaded.
+     * @param extensions The userProvidedExtensions which should be loaded.
      */
     private PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
             Cache<BaseTagCacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
@@ -176,7 +176,7 @@ public class PebbleEngine {
     /**
      * Returns the loader
      *
-     * @return
+     * @return The loader
      */
     public Loader<?> getLoader() {
         return loader;
@@ -185,7 +185,7 @@ public class PebbleEngine {
     /**
      * Returns the template cache
      *
-     * @return
+     * @return The template cache
      */
     public Cache<Object, PebbleTemplate> getTemplateCache() {
         return templateCache;
@@ -194,7 +194,7 @@ public class PebbleEngine {
     /**
      * Returns the strict variables setting
      *
-     * @return
+     * @return The strict variables setting
      */
     public boolean isStrictVariables() {
         return strictVariables;
@@ -203,7 +203,7 @@ public class PebbleEngine {
     /**
      * Returns the default locale
      *
-     * @return
+     * @return The default locale
      */
     public Locale getDefaultLocale() {
         return defaultLocale;
@@ -212,7 +212,7 @@ public class PebbleEngine {
     /**
      * Returns the executor service
      *
-     * @return
+     * @return The executor service
      */
     public ExecutorService getExecutorService() {
         return executorService;
@@ -230,7 +230,7 @@ public class PebbleEngine {
     /**
      * Returns the extension registry.
      *
-     * @return
+     * @return The extension registry
      */
     public ExtensionRegistry getExtensionRegistry() {
         return extensionRegistry;
@@ -239,7 +239,7 @@ public class PebbleEngine {
     /**
      * Returns the tag cache
      *
-     * @return
+     * @return The tag cache
      */
     public Cache<BaseTagCacheKey, Object> getTagCache() {
         return this.tagCache;
@@ -252,46 +252,18 @@ public class PebbleEngine {
 
         private Loader<?> loader;
 
-        private List<Extension> extensions = new ArrayList<>();
+        private List<Extension> userProvidedExtensions = new ArrayList<>();
 
         private Syntax syntax = new Syntax.Builder().build();
 
-        /**
-         * Changes the <code>strictVariables</code> setting of the PebbleEngine. If
-         * strictVariables is equal to false (which is the default) then expressions
-         * become much more null-safe and type issues are handled in a much more
-         * graceful manner.
-         *
-         * @param strictVariables Whether or not strict variables is used
-         */
         private boolean strictVariables = false;
 
-        /**
-         * The default locale that will be passed to each template upon compilation.
-         * An individual template can be given a new locale on evaluation.
-         *
-         * @param locale The default locale to pass to all newly compiled templates.
-         */
         private Locale defaultLocale;
 
-        /**
-         * Providing an ExecutorService will enable some advanced multithreading
-         * features such as the parallel tag.
-         *
-         * @param executorService The ExecutorService to enable multithreading features.
-         */
         private ExecutorService executorService;
 
-        /**
-         * Sets the cache to be used for storing compiled PebbleTemplate instances.
-         *
-         * @param cache The cache to be used
-         */
         private Cache<Object, PebbleTemplate> templateCache;
 
-        /**
-         * Cache used with the "cache" tag.
-         */
         private Cache<BaseTagCacheKey, Object> tagCache;
 
         private EscaperExtension escaperExtension = new EscaperExtension();
@@ -303,8 +275,8 @@ public class PebbleEngine {
         /**
          * Sets the loader used to find templates.
          *
-         * @param loader
-         * @return
+         * @param loader A template loader
+         * @return This builder object
          */
         public Builder loader(Loader<?> loader) {
             this.loader = loader;
@@ -312,14 +284,14 @@ public class PebbleEngine {
         }
 
         /**
-         * Adds an extension, can be safely invoked several times to add different extensions.
+         * Adds an extension, can be safely invoked several times to add different userProvidedExtensions.
          *
-         * @param extensions
-         * @return
+         * @param extensions One or more userProvidedExtensions to add
+         * @return This builder object
          */
         public Builder extension(Extension... extensions) {
             for (Extension extension : extensions) {
-                this.extensions.add(extension);
+                this.userProvidedExtensions.add(extension);
             }
             return this;
         }
@@ -327,8 +299,8 @@ public class PebbleEngine {
         /**
          * Sets the syntax to be used.
          *
-         * @param syntax
-         * @return
+         * @param syntax The syntax to be used
+         * @return This builder object
          */
         public Builder syntax(Syntax syntax) {
             this.syntax = syntax;
@@ -336,10 +308,13 @@ public class PebbleEngine {
         }
 
         /**
-         * Sets whether or not strict variables is used.
+         * Changes the <code>strictVariables</code> setting of the PebbleEngine. If
+         * strictVariables is equal to false (which is the default) then expressions
+         * become much more null-safe and type issues are handled in a much more
+         * graceful manner.
          *
-         * @param strictVariables
-         * @return
+         * @param strictVariables Whether or not strict variables is used
+         * @return This builder object
          */
         public Builder strictVariables(boolean strictVariables) {
             this.strictVariables = strictVariables;
@@ -347,10 +322,12 @@ public class PebbleEngine {
         }
 
         /**
-         * Sets the default Locale used by all templates constructed by this PebbleEngine
+         * Sets the Locale passed to all templates constructed by this PebbleEngine.
+         * <p>
+         * An individual template can always be given a new locale during evaluation.
          *
-         * @param defaultLocale
-         * @return
+         * @param defaultLocale The default locale
+         * @return This builder object
          */
         public Builder defaultLocale(Locale defaultLocale) {
             this.defaultLocale = defaultLocale;
@@ -358,10 +335,11 @@ public class PebbleEngine {
         }
 
         /**
-         * Sets the executor service which is required to use several multithreading features of Pebble.
+         * Sets the executor service which is required if using one of Pebble's multithreading features
+         * such as the "parallel" tag.
          *
-         * @param executorService
-         * @return
+         * @param executorService The executor service
+         * @return This builder object
          */
         public Builder executorService(ExecutorService executorService) {
             this.executorService = executorService;
@@ -371,8 +349,8 @@ public class PebbleEngine {
         /**
          * Sets the cache used by the engine to store compiled PebbleTemplate instances.
          *
-         * @param templateCache
-         * @return
+         * @param templateCache The template cache
+         * @return This builder object
          */
         public Builder templateCache(Cache<Object, PebbleTemplate> templateCache) {
             if (templateCache == null) {
@@ -386,8 +364,8 @@ public class PebbleEngine {
         /**
          * Sets the cache used by the "cache" tag.
          *
-         * @param tagCache
-         * @return
+         * @param tagCache The tag cache
+         * @return This builder object
          */
         public Builder tagCache(Cache<BaseTagCacheKey, Object> tagCache) {
             if (tagCache == null) {
@@ -401,8 +379,8 @@ public class PebbleEngine {
         /**
          * Sets whether or not escaping should be performed automatically.
          *
-         * @param autoEscaping
-         * @return
+         * @param autoEscaping The auto escaping setting
+         * @return This builder object
          */
         public Builder autoEscaping(boolean autoEscaping) {
             escaperExtension.setAutoEscaping(autoEscaping);
@@ -412,8 +390,8 @@ public class PebbleEngine {
         /**
          * Sets the default escaping strategy of the built-in escaper extension.
          *
-         * @param strategy
-         * @return
+         * @param strategy The name of the default escaping strategy
+         * @return This builder object
          */
         public Builder defaultEscapingStrategy(String strategy) {
             escaperExtension.setDefaultStrategy(strategy);
@@ -423,8 +401,8 @@ public class PebbleEngine {
         /**
          * Marks a particular tag as safe to the built-in escaper extension.
          *
-         * @param filter
-         * @return
+         * @param filter The name of the tag to be marked as safe
+         * @return This builder object
          */
         public Builder addEscaperSafeFilter(String filter) {
             escaperExtension.addSafeFilter(filter);
@@ -434,9 +412,9 @@ public class PebbleEngine {
         /**
          * Adds an escaping strategy to the built-in escaper extension.
          *
-         * @param name
-         * @param strategy
-         * @return
+         * @param name     The name of the escaping strategy
+         * @param strategy The strategy implementation
+         * @return This builder object
          */
         public Builder addEscapingStrategy(String name, EscapingStrategy strategy) {
             escaperExtension.addEscapingStrategy(name, strategy);
@@ -446,16 +424,16 @@ public class PebbleEngine {
         /**
          * Creates the PebbleEngine instance.
          *
-         * @return
+         * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
          */
         public PebbleEngine build() {
 
-            // core extensions
+            // core userProvidedExtensions
             List<Extension> extensions = new ArrayList<>();
             extensions.add(new CoreExtension());
             extensions.add(escaperExtension);
             extensions.add(new I18nExtension());
-            extensions.addAll(this.extensions);
+            extensions.addAll(this.userProvidedExtensions);
 
             // default loader
             if (loader == null) {

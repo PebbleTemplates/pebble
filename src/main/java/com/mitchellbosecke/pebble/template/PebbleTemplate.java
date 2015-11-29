@@ -21,8 +21,8 @@ public interface PebbleTemplate {
      * Evaluate the template.
      *
      * @param writer    The results of the evaluation are written to this writer.
-     * @throws PebbleException
-     * @throws IOException
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException An IO exception during the evaluation
      */
     void evaluate(Writer writer) throws PebbleException, IOException;
 
@@ -31,8 +31,8 @@ public interface PebbleTemplate {
      *
      * @param writer    The results of the evaluation are written to this writer.
      * @param locale    The locale used during the evaluation of the template.
-     * @throws PebbleException
-     * @throws IOException
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException An IO exception during the evaluation
      */
     void evaluate(Writer writer, Locale locale) throws PebbleException, IOException;
 
@@ -41,8 +41,8 @@ public interface PebbleTemplate {
      *
      * @param writer    The results of the evaluation are written to this writer.
      * @param context   The variables used during the evaluation of the template.
-     * @throws PebbleException
-     * @throws IOException
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException An IO exception during the evaluation
      */
     void evaluate(Writer writer, Map<String, Object> context) throws PebbleException, IOException;
 
@@ -52,8 +52,8 @@ public interface PebbleTemplate {
      * @param writer    The results of the evaluation are written to this writer.
      * @param context   The variables used during the evaluation of the template.
      * @param locale    The locale used during the evaluation of the template.
-     * @throws PebbleException
-     * @throws IOException
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException An IO exception during the evaluation
      */
     void evaluate(Writer writer, Map<String, Object> context, Locale locale) throws PebbleException, IOException;
 

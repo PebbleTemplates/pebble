@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.template;
 import java.util.ArrayList;
 
 /**
- * A data structure that represents the inheritance hierarchy
+ * A data structure that represents the entire inheritance hierarchy
  * of the current template and tracks which level in the hierarchy
  * we are currently evaluating.
  */
@@ -30,7 +30,7 @@ public class InheritanceChain {
     /**
      * Constructs an inheritance chain with one known template.
      *
-     * @param currentTemplate
+     * @param currentTemplate The current template
      */
     public InheritanceChain(PebbleTemplateImpl currentTemplate) {
         family.add(currentTemplate);
@@ -40,7 +40,7 @@ public class InheritanceChain {
      * Adds a known ancestor onto the inheritance chain, does not
      * increment which template is the "current" template being evaluated.
      *
-     * @param ancestor
+     * @param ancestor The ancestor template
      */
     public void pushAncestor(PebbleTemplateImpl ancestor) {
         family.add(ancestor);

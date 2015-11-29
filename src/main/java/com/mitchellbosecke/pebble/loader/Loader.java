@@ -1,17 +1,17 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
-import java.io.Reader;
-
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.LoaderException;
+
+import java.io.Reader;
 
 /**
  * Interface used to find templates for Pebble. Different implementations can
@@ -117,7 +117,7 @@ public interface Loader<T> {
      * the cache should evict some templates at some point in time otherwise the
      * stability of the memory is not given anymore.
      *
-     * @param templateName
+     * @param templateName The name of the template
      * @return Returns the cache key
      */
     T createCacheKey(String templateName);

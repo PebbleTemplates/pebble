@@ -62,11 +62,11 @@ public class ParserImpl implements Parser {
     /**
      * Constructor
      *
-     * @param binaryOperators
-     * @param unaryOperators
-     * @param tokenParsers
+     * @param binaryOperators A map of binary operators
+     * @param unaryOperators  A map of unary operators
+     * @param tokenParsers    A map of token parsers
      */
-    public ParserImpl(Map<String, UnaryOperator> unaryOperators,Map<String, BinaryOperator> binaryOperators,
+    public ParserImpl(Map<String, UnaryOperator> unaryOperators, Map<String, BinaryOperator> binaryOperators,
             Map<String, TokenParser> tokenParsers) {
         this.binaryOperators = binaryOperators;
         this.unaryOperators = unaryOperators;
