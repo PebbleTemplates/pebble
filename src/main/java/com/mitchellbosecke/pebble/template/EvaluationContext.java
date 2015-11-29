@@ -33,7 +33,7 @@ public class EvaluationContext {
      * and other features; this inheritance chain will help the template keep
      * track of where in the inheritance chain it currently is.
      */
-    private final InheritanceChain inheritanceChain;
+    private final Hierarchy hierarchy;
 
     /**
      * A scope is a set of visible variables. A trivial template will only have
@@ -79,15 +79,15 @@ public class EvaluationContext {
      * @param extensionRegistry The extension registry
      * @param executorService   The optional executor service
      * @param scopeChain        The scope chain
-     * @param inheritanceChain  The inheritance chain
+     * @param hierarchy  The inheritance chain
      * @param tagCache          The cache used by the "cache" tag
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
             ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
-            ExecutorService executorService, ScopeChain scopeChain, InheritanceChain inheritanceChain) {
+            ExecutorService executorService, ScopeChain scopeChain, Hierarchy hierarchy) {
 
-        if (inheritanceChain == null) {
-            inheritanceChain = new InheritanceChain(self);
+        if (hierarchy == null) {
+            hierarchy = new Hierarchy(self);
         }
 
         this.strictVariables = strictVariables;
@@ -96,7 +96,7 @@ public class EvaluationContext {
         this.tagCache = tagCache;
         this.executorService = executorService;
         this.scopeChain = scopeChain;
-        this.inheritanceChain = inheritanceChain;
+        this.hierarchy = hierarchy;
     }
 
     /**
@@ -122,7 +122,7 @@ public class EvaluationContext {
      */
     public EvaluationContext shallowCopyWithNewScopeChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, scopeChain.deepCopy(), inheritanceChain);
+                executorService, scopeChain.deepCopy(), hierarchy);
         return result;
     }
 
@@ -191,13 +191,13 @@ public class EvaluationContext {
     }
 
     /**
-     * Returns the inheritance chain which is a data structure representing the entire hierarchy of
+     * Returns the data structure representing the entire hierarchy of
      * the template currently being evaluated.
      *
      * @return The inheritance chain
      */
-    public InheritanceChain getInheritanceChain() {
-        return inheritanceChain;
+    public Hierarchy getHierarchy() {
+        return hierarchy;
     }
 
 }

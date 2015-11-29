@@ -38,7 +38,7 @@ public class BodyNode extends AbstractRenderableNode {
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
             throws PebbleException, IOException {
         for (RenderableNode child : children) {
-            if (onlyRenderInheritanceSafeNodes && context.getInheritanceChain().getParent() != null) {
+            if (onlyRenderInheritanceSafeNodes && context.getHierarchy().getParent() != null) {
                 if (!nodesToRenderInChild.contains(child.getClass())) {
                     continue;
                 }

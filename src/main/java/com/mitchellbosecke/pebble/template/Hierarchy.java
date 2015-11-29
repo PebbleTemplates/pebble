@@ -15,12 +15,13 @@ import java.util.ArrayList;
  * of the current template and tracks which level in the hierarchy
  * we are currently evaluating.
  */
-public class InheritanceChain {
+public class Hierarchy {
 
     /**
-     * A list of all the templates in this hierarchy.
+     * A list of all the templates in this hierarchy. A template at index i is the child
+     * to the template at index i+1.
      */
-    private final ArrayList<PebbleTemplateImpl> family = new ArrayList<>();
+    private final ArrayList<PebbleTemplateImpl> hierarchy = new ArrayList<>();
 
     /**
      * Index of the template currently being evaluated.
@@ -32,8 +33,8 @@ public class InheritanceChain {
      *
      * @param currentTemplate The current template
      */
-    public InheritanceChain(PebbleTemplateImpl currentTemplate) {
-        family.add(currentTemplate);
+    public Hierarchy(PebbleTemplateImpl currentTemplate) {
+        hierarchy.add(currentTemplate);
     }
 
     /**
@@ -43,7 +44,7 @@ public class InheritanceChain {
      * @param ancestor The ancestor template
      */
     public void pushAncestor(PebbleTemplateImpl ancestor) {
-        family.add(ancestor);
+        hierarchy.add(ancestor);
     }
 
     /**
@@ -71,7 +72,7 @@ public class InheritanceChain {
         if (current == 0) {
             return null;
         }
-        return family.get(current - 1);
+        return hierarchy.get(current - 1);
     }
 
     /**
@@ -80,9 +81,9 @@ public class InheritanceChain {
      * @return The parent template if exists or null
      */
     public PebbleTemplateImpl getParent() {
-        if (current == family.size() - 1) {
+        if (current == hierarchy.size() - 1) {
             return null;
         }
-        return family.get(current + 1);
+        return hierarchy.get(current + 1);
     }
 }

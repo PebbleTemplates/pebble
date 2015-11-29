@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
-import com.mitchellbosecke.pebble.template.InheritanceChain;
+import com.mitchellbosecke.pebble.template.Hierarchy;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.io.IOException;
@@ -33,17 +33,17 @@ public class ParentFunctionExpression implements Expression<String> {
     public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
         Writer writer = new StringWriter();
         try {
-            InheritanceChain inheritanceChain = context.getInheritanceChain();
-            if (inheritanceChain.getParent() == null) {
+            Hierarchy hierarchy = context.getHierarchy();
+            if (hierarchy.getParent() == null) {
                 throw new PebbleException(null,
                         "Can not use parent function if template does not extend another template.", lineNumber,
                         self.getName());
             }
-            PebbleTemplateImpl parent = inheritanceChain.getParent();
+            PebbleTemplateImpl parent = hierarchy.getParent();
 
-            inheritanceChain.ascend();
+            hierarchy.ascend();
             parent.block(writer, context, blockName, true);
-            inheritanceChain.descend();
+            hierarchy.descend();
         } catch (IOException e) {
             throw new PebbleException(e, "Could not render block [" + blockName + "]", this.getLineNumber(),
                     self.getName());
