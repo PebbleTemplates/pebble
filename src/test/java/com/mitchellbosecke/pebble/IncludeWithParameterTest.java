@@ -1,6 +1,8 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -8,10 +10,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 /**
  * This class tests if includes with parameters work.
@@ -26,8 +25,8 @@ public class IncludeWithParameterTest extends AbstractTest {
      */
     @Test
     public void testIncludeWithParameters() throws PebbleException, IOException {
-
-        PebbleTemplate template = pebble.getTemplate("template.includeWithParameter1.peb");
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.includeWithParameter1.peb");
         Map<String, Object> context = new HashMap<>();
 
         context.put("contextVariable", "some-context-variable");
@@ -45,7 +44,8 @@ public class IncludeWithParameterTest extends AbstractTest {
     @Test
     public void testIncludeWithParametersIsolated() throws PebbleException, IOException {
 
-        PebbleTemplate template = pebble.getTemplate("template.includeWithParameterNotIsolated1.peb");
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.includeWithParameterNotIsolated1.peb");
         Map<String, Object> context = new HashMap<>();
 
         Writer writer = new StringWriter();

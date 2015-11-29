@@ -1,16 +1,14 @@
 package com.mitchellbosecke.pebble;
 
-import java.io.StringWriter;
-import java.io.Writer;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * Tests {@link ArgumentsNode}.
@@ -25,8 +23,7 @@ public class ArgumentsNodeTest extends AbstractTest{
     public void testInvalidArgument() throws Exception {
 
         try {
-            Loader<?> loader = new StringLoader();
-            PebbleEngine pebble = new PebbleEngine(loader);
+            PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
             PebbleTemplate template = pebble
                     .getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(16, 10) }}");

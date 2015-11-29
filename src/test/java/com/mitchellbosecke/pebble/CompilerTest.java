@@ -8,7 +8,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,19 +19,13 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class CompilerTest extends AbstractTest {
 
     @Test
     public void testCompile() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ foo }}");
         Map<String, Object> context = new HashMap<>();
@@ -47,13 +44,13 @@ public class CompilerTest extends AbstractTest {
      */
     @Test(timeout = 3000)
     public void testCompilationMutexIsAlwaysReleased() throws PebbleException, IOException {
-
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         try {
             pebble.getTemplate("non-existing");
         } catch (Exception e) {
 
         }
-        PebbleTemplate template = pebble.getTemplate("template.general.peb");
+        PebbleTemplate template = pebble.getTemplate("templates/template.general.peb");
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("test", writer.toString());

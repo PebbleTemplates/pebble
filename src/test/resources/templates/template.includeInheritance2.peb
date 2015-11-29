@@ -2,5 +2,5 @@
 	used by 
 		- CoreTagsTest.includeInheritance
 #}
-{% extends 'template.includeInheritance3.peb' %}
+{% extends './template.includeInheritance3.peb' %}
 {% block content %}success{% endblock %}

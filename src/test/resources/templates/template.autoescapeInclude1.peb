@@ -2,4 +2,4 @@
 	used by:
 		EscaperExtensionTest.testAutoEscapingInclude
 #}
-{% include 'template.autoescapeInclude2.peb' %}
+{% include './template.autoescapeInclude2.peb' %}

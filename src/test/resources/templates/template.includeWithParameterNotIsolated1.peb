@@ -1,4 +1,4 @@
 {# used by IncludeWithParameterTest.testIncludeWithMapParametersNotIsolated #}
 {% set 'foo' = 'bar' %}
-{% include 'template.includeWithParameterNotIsolated2.peb' with { 'foo' : 'baz' } %}
+{% include './template.includeWithParameterNotIsolated2.peb' with { 'foo' : 'baz' } %}
 {{ foo }}

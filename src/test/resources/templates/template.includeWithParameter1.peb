@@ -1,5 +1,5 @@
 {# used by IncludeWithParameterTest.testIncludeWithMapParameters #}
-{% include 'template.includeWithParameter2.peb' with {
+{% include './template.includeWithParameter2.peb' with {
         'simple': 'simple-value',
         'contextVariable': contextVariable,
         'level': level + 1,

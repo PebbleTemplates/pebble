@@ -1,36 +1,43 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
+
+import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.lexer.Token;
+import com.mitchellbosecke.pebble.lexer.TokenStream;
+import com.mitchellbosecke.pebble.node.*;
+import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
+import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.lexer.Token;
-import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.BodyNode;
-import com.mitchellbosecke.pebble.node.PrintNode;
-import com.mitchellbosecke.pebble.node.RenderableNode;
-import com.mitchellbosecke.pebble.node.RootNode;
-import com.mitchellbosecke.pebble.node.TextNode;
-import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-
 public class ParserImpl implements Parser {
 
     /**
-     * A reference to the main engine.
+     * Binary operators
      */
-    private final PebbleEngine engine;
+    private final Map<String, BinaryOperator> binaryOperators;
+
+    /**
+     * Unary operators
+     */
+    private final Map<String, UnaryOperator> unaryOperators;
+
+    /**
+     * Token parsers
+     */
+    private final Map<String, TokenParser> tokenParsers;
 
     /**
      * An expression parser.
@@ -45,7 +52,6 @@ public class ParserImpl implements Parser {
     /**
      * TokenParser objects provided by the extensions.
      */
-    private Map<String, TokenParser> tokenParsers;
 
     /**
      * used to keep track of the name of the block that we are currently inside
@@ -56,21 +62,22 @@ public class ParserImpl implements Parser {
     /**
      * Constructor
      *
-     * @param engine
-     *            The main PebbleEngine that this parser is working for
+     * @param binaryOperators
+     * @param unaryOperators
+     * @param tokenParsers
      */
-    public ParserImpl(PebbleEngine engine) {
-        this.engine = engine;
+    public ParserImpl(Map<String, UnaryOperator> unaryOperators,Map<String, BinaryOperator> binaryOperators,
+            Map<String, TokenParser> tokenParsers) {
+        this.binaryOperators = binaryOperators;
+        this.unaryOperators = unaryOperators;
+        this.tokenParsers = tokenParsers;
     }
 
     @Override
     public RootNode parse(TokenStream stream) throws ParserException {
 
-        // token parsers which have come from the extensions
-        this.tokenParsers = engine.getTokenParsers();
-
         // expression parser
-        this.expressionParser = new ExpressionParser(this, engine.getBinaryOperators(), engine.getUnaryOperators());
+        this.expressionParser = new ExpressionParser(this, binaryOperators, unaryOperators);
 
         this.stream = stream;
 
@@ -92,10 +99,9 @@ public class ParserImpl implements Parser {
      * The main method for the parser. This method does the work of converting
      * a TokenStream into a Node
      *
-     * @param stopCondition	A stopping condition provided by a token parser
-     * @return Node		The root node of the generated Abstract Syntax Tree
-     */
-    public BodyNode subparse(StoppingCondition stopCondition) throws ParserException {
+     * @param stopCondition    A stopping condition provided by a token parser
+     * @return Node        The root node of the generated Abstract Syntax Tree
+     */ public BodyNode subparse(StoppingCondition stopCondition) throws ParserException {
 
         // these nodes will be the children of the root node
         List<RenderableNode> nodes = new ArrayList<>();
@@ -131,7 +137,7 @@ public class ParserImpl implements Parser {
                 nodes.add(new PrintNode(expression, token.getLineNumber()));
 
                 // we expect to see a print closing delimiter
-                stream.expect(Token.Type.PRINT_END, engine.getSyntax().getPrintCloseDelimiter());
+                stream.expect(Token.Type.PRINT_END);
 
                 break;
 
@@ -220,10 +226,5 @@ public class ParserImpl implements Parser {
     @Override
     public void pushBlockStack(String blockName) {
         blockStack.push(blockName);
-    }
-
-    @Override
-    public PebbleEngine getEngine() {
-        return engine;
     }
 }

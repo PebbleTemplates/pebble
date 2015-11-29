@@ -1,25 +1,24 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
@@ -37,9 +36,9 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-        Map<String, Function> functions = context.getFunctions();
-        if (functions.containsKey(functionName)) {
-            return applyFunction(self, context, functions.get(functionName), args);
+        Function function = context.getExtensionRegistry().getFunction(functionName);
+        if (function != null) {
+            return applyFunction(self, context, function, args);
         }
         return self.macro(context, functionName, args, false);
     }
@@ -49,10 +48,6 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
         List<Object> arguments = new ArrayList<>();
 
         Collections.addAll(arguments, args);
-
-        if (function instanceof LocaleAware) {
-            ((LocaleAware) function).setLocale(context.getLocale());
-        }
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, function);
         return function.execute(namedArguments);

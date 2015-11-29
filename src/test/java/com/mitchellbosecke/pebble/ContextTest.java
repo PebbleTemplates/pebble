@@ -8,7 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,22 +20,14 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class ContextTest extends AbstractTest {
 
     @SuppressWarnings("serial")
     @Test
     public void testLazyMap() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ eager_key }} {{ lazy_key }}");
         Writer writer = new StringWriter();
@@ -62,9 +58,7 @@ public class ContextTest extends AbstractTest {
 
     @Test
     public void testMissingContextVariableWithoutStrictVariables() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(false);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ foo }}");
         Writer writer = new StringWriter();
@@ -74,9 +68,7 @@ public class ContextTest extends AbstractTest {
 
     @Test(expected = RootAttributeNotFoundException.class)
     public void testMissingContextVariableWithStrictVariables() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ foo }}");
         Writer writer = new StringWriter();
@@ -85,9 +77,7 @@ public class ContextTest extends AbstractTest {
 
     @Test
     public void testExistingButNullContextVariableWithStrictVariables() throws PebbleException, IOException {
-        Loader<?> loader = new StringLoader();
-        PebbleEngine pebble = new PebbleEngine(loader);
-        pebble.setStrictVariables(true);
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{% if foo == null %}YES{% endif %}");
 

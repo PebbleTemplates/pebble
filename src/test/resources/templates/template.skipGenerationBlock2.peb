@@ -2,4 +2,4 @@
 	used by 
 		- CoreTagsTest.skipGenerationBlock
 #}
-{% extends 'template.skipGenerationBlock3.peb' %}
+{% extends './template.skipGenerationBlock3.peb' %}

@@ -1,15 +1,14 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests if relative path works as expected.
@@ -24,7 +23,8 @@ public class TestRelativePath extends AbstractTest {
      */
     @Test
     public void testRelativeInclude() throws PebbleException, IOException {
-        PebbleTemplate template = pebble.getTemplate("relativepath/template.relativeinclude1.peb");
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).build();
+        PebbleTemplate template = pebble.getTemplate("templates/relativepath/template.relativeinclude1.peb");
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -36,7 +36,8 @@ public class TestRelativePath extends AbstractTest {
      */
     @Test
     public void testRelativeExtends() throws PebbleException, IOException {
-        PebbleTemplate template = pebble.getTemplate("relativepath/template.relativeextends1.peb");
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).build();
+        PebbleTemplate template = pebble.getTemplate("templates/relativepath/template.relativeextends1.peb");
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -48,7 +49,8 @@ public class TestRelativePath extends AbstractTest {
      */
     @Test
     public void testRelativeImports() throws PebbleException, IOException {
-        PebbleTemplate template = pebble.getTemplate("relativepath/template.relativeimport1.peb");
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).build();
+        PebbleTemplate template = pebble.getTemplate("templates/relativepath/template.relativeimport1.peb");
 
         Writer writer = new StringWriter();
         template.evaluate(writer);

@@ -1,2 +1,2 @@
 {# used by CoreTagsTest.testIncludePropagatesContext #}
-{% include "template.includePropagatesContext2.peb" %}
+{% include "templates/template.includePropagatesContext2.peb" %}

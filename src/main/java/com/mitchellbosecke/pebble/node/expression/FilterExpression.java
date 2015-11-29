@@ -8,14 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.LocaleAware;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.Map;
 
 public class FilterExpression extends BinaryExpression<Object> {
 
@@ -37,16 +36,11 @@ public class FilterExpression extends BinaryExpression<Object> {
         String filterName = filterInvocation.getFilterName();
 
         if (this.filter == null) {
-            Map<String, Filter> filters = context.getFilters();
-            this.filter = filters.get(filterInvocation.getFilterName());
+            this.filter = context.getExtensionRegistry().getFilter(filterInvocation.getFilterName());
         }
 
         if (filter == null) {
             throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName), this.getLineNumber(), self.getName());
-        }
-
-        if (filter instanceof LocaleAware) {
-            ((LocaleAware) filter).setLocale(context.getLocale());
         }
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, filter);
