@@ -8,18 +8,18 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.node.ArgumentsNode;
-import com.mitchellbosecke.pebble.node.RootNode;
-import com.mitchellbosecke.pebble.utils.FutureWriter;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.RootNode;
+import com.mitchellbosecke.pebble.utils.FutureWriter;
 
 public class PebbleTemplateImpl implements PebbleTemplate {
 
@@ -116,7 +116,11 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      */
     private EvaluationContext initContext(Locale locale) {
         locale = locale == null ? engine.getDefaultLocale() : locale;
-        ScopeChain scopeChain = new ScopeChain(engine.getExtensionRegistry().getGlobalVariables());
+        
+        Map<String, Object> vars = engine.getExtensionRegistry().getGlobalVariables();
+        vars.put("locale", locale);
+                
+        ScopeChain scopeChain = new ScopeChain(vars);
         EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
                 engine.getExtensionRegistry(), engine.getTagCache(), engine.getExecutorService(), scopeChain, null);
         return context;
