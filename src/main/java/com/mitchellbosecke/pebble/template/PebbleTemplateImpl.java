@@ -21,6 +21,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * The actual implementation of a PebbleTemplate
+ */
 public class PebbleTemplateImpl implements PebbleTemplate {
 
     /**
@@ -30,7 +33,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * invokes during evaluation is the "getTemplate" method because this is the
      * only one that I'm sure is thread-safe.
      */
-    protected final PebbleEngine engine;
+    private final PebbleEngine engine;
 
     /**
      * Blocks defined inside this template.
@@ -52,19 +55,17 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      */
     private final String name;
 
-    public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name) throws PebbleException {
+    /**
+     * Constructor
+     *
+     * @param engine The pebble engine used to construct this template
+     * @param root   The root not to evaluate
+     * @param name   The name of the template
+     */
+    public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name) {
         this.engine = engine;
         this.rootNode = root;
         this.name = name;
-    }
-
-    public void buildContent(Writer writer, EvaluationContext context) throws IOException, PebbleException {
-        rootNode.render(this, writer, context);
-        if (context.getHierarchy().getParent() != null) {
-            PebbleTemplateImpl parent = context.getHierarchy().getParent();
-            context.getHierarchy().ascend();
-            parent.buildContent(writer, context);
-        }
     }
 
     public void evaluate(Writer writer) throws PebbleException, IOException {
@@ -90,21 +91,24 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     /**
-     * This is the authoritative evaluate method. It should not be invoked by
-     * the end user and is therefore not included in the PebbleTemplate
-     * interface. I can't, however, make it "private" due to the fact that
-     * NodeInclude will call this method on a template other than itself.
+     * This is the authoritative evaluate method. It will evaluate the template
+     * starting at the root node.
      *
      * @param writer  The writer used to write the final output of the template
      * @param context The evaluation context
      * @throws PebbleException Thrown if any sort of template error occurs
      * @throws IOException     Thrown from the writer object
      */
-    public void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
+    private void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
         if (context.getExecutorService() != null) {
             writer = new FutureWriter(writer);
         }
-        buildContent(writer, context);
+        rootNode.render(this, writer, context);
+        if (context.getHierarchy().getParent() != null) {
+            PebbleTemplateImpl parent = context.getHierarchy().getParent();
+            context.getHierarchy().ascend();
+            parent.evaluate(writer, context);
+        }
         writer.flush();
     }
 
@@ -158,6 +162,12 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         scopeChain.popScope();
     }
 
+    /**
+     * Checks if a macro exists
+     *
+     * @param macroName The name of the macro
+     * @return Whether or not the macro exists
+     */
     public boolean hasMacro(String macroName) {
         return macros.containsKey(macroName);
     }
@@ -187,10 +197,12 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         blocks.put(block.getName(), block);
     }
 
-    public boolean hasBlock(String blockName) {
-        return blocks.containsKey(blockName);
-    }
-
+    /**
+     * Registers a macro
+     *
+     * @param macro The macro
+     * @throws PebbleException Throws exception if macro already exists with the same name
+     */
     public void registerMacro(Macro macro) throws PebbleException {
         if (macros.containsKey(macro.getName())) {
             throw new PebbleException(null, "More than one macro can not share the same name: " + macro.getName());
@@ -238,6 +250,16 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
     }
 
+    /**
+     * Invokes a macro
+     *
+     * @param context         The evaluation context
+     * @param macroName       The name of the macro
+     * @param args            The arguments
+     * @param ignoreOverriden Whether or not to ignore macro definitions in child template
+     * @return The results of the macro invocation
+     * @throws PebbleException An exception that may have occurred
+     */
     public String macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden)
             throws PebbleException {
         String result = null;
@@ -291,6 +313,11 @@ public class PebbleTemplateImpl implements PebbleTemplate {
                 .pushAncestor((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(parentName)));
     }
 
+    /**
+     * Returns the template name
+     *
+     * @return The name of the template
+     */
     public String getName() {
         return name;
     }
