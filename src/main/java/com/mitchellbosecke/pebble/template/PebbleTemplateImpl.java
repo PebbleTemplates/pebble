@@ -28,10 +28,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
     /**
      * A template has to store a reference to the main engine so that it can
-     * compile other templates when using the "import" or "include" tags. It's
-     * important that the only method of the PebbleEngine that a template
-     * invokes during evaluation is the "getTemplate" method because this is the
-     * only one that I'm sure is thread-safe.
+     * compile other templates when using the "import" or "include" tags.
+     * <p>
+     * It will also retrieve some stateful information such as the default locale
+     * when necessary. Luckily, the engine is immutable so this should be thread safe.
      */
     private final PebbleEngine engine;
 
@@ -104,6 +104,13 @@ public class PebbleTemplateImpl implements PebbleTemplate {
             writer = new FutureWriter(writer);
         }
         rootNode.render(this, writer, context);
+
+        /*
+         * If the current template has a parent then we know the current template
+         * was only used to evaluate a very small subset of tags such as "set" and "import".
+         * We now evaluate the parent template as to evaluate all of the actual content.
+         * When evaluating the parent template, it will check the child template for overridden blocks.
+         */
         if (context.getHierarchy().getParent() != null) {
             PebbleTemplateImpl parent = context.getHierarchy().getParent();
             context.getHierarchy().ascend();
