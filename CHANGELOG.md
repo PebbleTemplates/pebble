@@ -2,7 +2,11 @@
 - Support for relative template paths
 - Added a "cache" tag to cache portions of a template
 - String concatenation with "~" operator
-- Length filter
+- Added two global variables into the context
+  - "locale": the current locale
+  - "template": reference to the actual template. Can be used to get the template name with {{ template.name }}
+- "Length" filter
+- "Replace" filter
 - Support for parallel template parsing
 - Additional loop variables: last, first, revindex
 - "equals" support for enums
