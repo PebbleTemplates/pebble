@@ -1,15 +1,14 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.utils;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Collection;
 import java.util.List;
@@ -148,18 +147,18 @@ public class OperatorUtils {
     private static Object wideningConversionBinaryOperation(Object op1, Object op2, Operation operation) {
 
         if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
-            throw new RuntimeException(String.format("invalid operands for mathematical operation [%s]",
-                    operation.toString()));
+            throw new RuntimeException(
+                    String.format("invalid operands for mathematical operation [%s]", operation.toString()));
         }
 
         Number num1 = (Number) op1;
         Number num2 = (Number) op2;
 
         if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
-            return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()), BigDecimal.valueOf(num2.doubleValue()), 
+            return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()), BigDecimal.valueOf(num2.doubleValue()),
                     operation);
         }
-        
+
         if (num1 instanceof Double || num2 instanceof Double) {
             return doubleOperation(num1.doubleValue(), num2.doubleValue(), operation);
         }
@@ -171,7 +170,7 @@ public class OperatorUtils {
         if (num1 instanceof Long || num2 instanceof Long) {
             return longOperation(num1.longValue(), num2.longValue(), operation);
         }
-        
+
         return integerOperation(num1.intValue(), num2.intValue(), operation);
     }
 
@@ -179,18 +178,16 @@ public class OperatorUtils {
         if (op1 == null || op2 == null) {
             return false;
         }
-        
-        // If operand are String, we try to parse it as a number
-        op1 = evaluateAsNumber(op1);
-        op2 = evaluateAsNumber(op2);
- 
-        if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
-            throw new RuntimeException(String.format("invalid operands for mathematical comparison [%s]",
-                    comparison.toString()));
-        }
 
-        Number num1 = (Number) op1;
-        Number num2 = (Number) op2;
+        Number num1;
+        Number num2;
+        try {
+            num1 = (Number) op1;
+            num2 = (Number) op2;
+        } catch (ClassCastException ex) {
+            throw new RuntimeException(
+                    String.format("invalid operands for mathematical comparison [%s]", comparison.toString()));
+        }
 
         return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
     }
@@ -228,7 +225,7 @@ public class OperatorUtils {
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
-    
+
     private static BigDecimal bigDecimalOperation(BigDecimal op1, BigDecimal op2, Operation operation) {
         switch (operation) {
         case ADD:
@@ -245,7 +242,7 @@ public class OperatorUtils {
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
-    
+
     private static Float floatOperation(Float op1, Float op2, Operation operation) {
         switch (operation) {
         case ADD:
@@ -295,20 +292,5 @@ public class OperatorUtils {
         default:
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
-    }
-    
-    private static Object evaluateAsNumber(Object op) {
-        Object result = op;
-        if (op != null && op instanceof String) {
-            try {
-                result = Double.parseDouble((String) op);
-            }
-            catch (NumberFormatException e) {
-                throw new IllegalArgumentException(String.format("invalid operands for mathematical comparison [%s]",
-                        op));
-            }
-        }
-        
-        return result;
     }
 } 

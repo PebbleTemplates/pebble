@@ -13,6 +13,7 @@ import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.ScopeChain;
 
 public class ContextVariableExpression implements Expression<Object> {
 
@@ -36,8 +37,9 @@ public class ContextVariableExpression implements Expression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-        Object result = context.getScopeChain().get(name);
-        if (result == null && context.isStrictVariables() && !context.getScopeChain().containsKey(name)) {
+        ScopeChain scopeChain = context.getScopeChain();
+        Object result = scopeChain.get(name);
+        if (result == null && context.isStrictVariables() && !scopeChain.containsKey(name)) {
             throw new RootAttributeNotFoundException(null, String.format(
                     "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
                     this.name), this.name, this.lineNumber, self.getName());

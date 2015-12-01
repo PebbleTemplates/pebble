@@ -13,6 +13,7 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.ScopeChain;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -23,7 +24,6 @@ import java.util.*;
  * Represents a "for" loop within the template.
  *
  * @author mbosecke
- *
  */
 public class ForNode extends AbstractRenderableNode {
 
@@ -62,15 +62,17 @@ public class ForNode extends AbstractRenderableNode {
 
         if (iterator.hasNext()) {
 
+            ScopeChain scopeChain = context.getScopeChain();
+
             /*
              * Only if there is a variable name conflict between one of the
              * variables added by the for loop construct and an existing
              * variable do we push another scope, otherwise we reuse the current
              * scope for performance purposes.
              */
-            if (context.getScopeChain().currentScopeContainsVariable("loop") || context.getScopeChain()
+            if (scopeChain.currentScopeContainsVariable("loop") || scopeChain
                     .currentScopeContainsVariable(variableName)) {
-                context.getScopeChain().pushScope();
+                scopeChain.pushScope();
                 newScope = true;
             }
 
@@ -78,6 +80,8 @@ public class ForNode extends AbstractRenderableNode {
             int index = 0;
 
             Map<String, Object> loop = new HashMap<>();
+
+            boolean usingExecutorService = context.getExecutorService() != null;
 
             while (iterator.hasNext()) {
 
@@ -87,7 +91,7 @@ public class ForNode extends AbstractRenderableNode {
                  * re-using the same one; it's imperative that each thread would
                  * get it's own distinct copy of the context.
                  */
-                if (context.getExecutorService() != null) {
+                if (usingExecutorService) {
                     loop = new HashMap<>();
                 }
                 loop.put("last", index == length - 1);
@@ -95,17 +99,16 @@ public class ForNode extends AbstractRenderableNode {
                 loop.put("revindex", length - index - 1);
                 loop.put("index", index++);
                 loop.put("length", length);
-                loop.put("length", length);
 
-                context.getScopeChain().put("loop", loop);
+                scopeChain.put("loop", loop);
 
-                context.getScopeChain().put(variableName, iterator.next());
+                scopeChain.put(variableName, iterator.next());
                 body.render(self, writer, context);
 
             }
 
             if (newScope) {
-                context.getScopeChain().popScope();
+                scopeChain.popScope();
             }
 
         } else if (elseBody != null) {
