@@ -1,15 +1,17 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.core.DefaultFilter;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -40,11 +42,26 @@ public class FilterExpression extends BinaryExpression<Object> {
         }
 
         if (filter == null) {
-            throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName), this.getLineNumber(), self.getName());
+            throw new PebbleException(null, String.format("Filter [%s] does not exist.", filterName),
+                    this.getLineNumber(), self.getName());
         }
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, filter);
 
-        return filter.apply(getLeftExpression().evaluate(self, context), namedArguments);
+        // This check is not nice, because we use instanceof. However this is
+        // the only filter which should not fail in strict mode, when the variable
+        // is not set, because this method should exactly test this. Hence a
+        // generic solution to allow other tests to reuse this feature make no sense
+        if (filter instanceof DefaultFilter) {
+            Object input;
+            try {
+                input = getLeftExpression().evaluate(self, context);
+            } catch (AttributeNotFoundException ex) {
+                input = null;
+            }
+            return filter.apply(input, namedArguments);
+        } else {
+            return filter.apply(getLeftExpression().evaluate(self, context), namedArguments);
+        }
     }
 }

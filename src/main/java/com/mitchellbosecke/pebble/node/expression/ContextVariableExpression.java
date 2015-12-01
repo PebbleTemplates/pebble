@@ -37,7 +37,7 @@ public class ContextVariableExpression implements Expression<Object> {
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
         Object result = context.getScopeChain().get(name);
-        if (context.isStrictVariables() && result == null && !context.getScopeChain().containsKey(name)) {
+        if (result == null && context.isStrictVariables() && !context.getScopeChain().containsKey(name)) {
             throw new RootAttributeNotFoundException(null, String.format(
                     "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
                     this.name), this.name, this.lineNumber, self.getName());

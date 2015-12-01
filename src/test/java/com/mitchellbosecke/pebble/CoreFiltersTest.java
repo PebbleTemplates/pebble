@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -103,7 +103,8 @@ public class CoreFiltersTest extends AbstractTest {
 
     @Test
     public void testDate() throws ParseException, PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).defaultLocale(Locale.ENGLISH).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
 
         String source = "{{ realDate | date('MM/dd/yyyy') }}{{ realDate | date(format) }}{{ stringDate | date('yyyy/MMMM/d','yyyy-MMMM-d') }}";
 
@@ -122,7 +123,8 @@ public class CoreFiltersTest extends AbstractTest {
 
     @Test
     public void testDateWithNamedArguments() throws ParseException, PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).defaultLocale(Locale.ENGLISH).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
 
         String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', format='yyyy/MMMM/d') }}";
 
@@ -172,7 +174,8 @@ public class CoreFiltersTest extends AbstractTest {
 
     @Test
     public void testNumberFormatFilterWithFormat() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).defaultLocale(Locale.ENGLISH).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
 
         PebbleTemplate template = pebble.getTemplate("You owe me {{ 10000.235166 | numberformat(currencyFormat) }}.");
         Map<String, Object> context = new HashMap<>();
@@ -185,7 +188,8 @@ public class CoreFiltersTest extends AbstractTest {
 
     @Test
     public void testNumberFormatFilterWithNamedArgument() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).defaultLocale(Locale.US).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.US).build();
 
         PebbleTemplate template = pebble
                 .getTemplate("You owe me {{ 10000.235166 | numberformat(format=currencyFormat) }}.");
@@ -210,7 +214,8 @@ public class CoreFiltersTest extends AbstractTest {
 
     @Test
     public void testNumberFormatFilterWithLocale() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).defaultLocale(Locale.ENGLISH).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ 1000000 | numberformat }}");
 
@@ -342,8 +347,8 @@ public class CoreFiltersTest extends AbstractTest {
     public void testTitle() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ null | title }} {{ 'test' | title }} {{ 'test test' | title }} {{ 'TEST TEST' | title }}");
+        PebbleTemplate template = pebble.getTemplate(
+                "{{ null | title }} {{ 'test' | title }} {{ 'test test' | title }} {{ 'TEST TEST' | title }}");
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -387,14 +392,35 @@ public class CoreFiltersTest extends AbstractTest {
     public void testDefault() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ obj|default('ONE') }} {{ null|default('TWO') }} {{ '  ' |default('THREE') }} {{ 4 |default('FOUR') }}");
+        PebbleTemplate template = pebble.getTemplate(
+                "{{ obj|default('ONE') }} {{ null|default('TWO') }} {{ '  ' |default('THREE') }} {{ 4 |default('FOUR') }}");
         Map<String, Object> context = new HashMap<>();
         context.put("obj", null);
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("ONE TWO THREE 4", writer.toString());
+    }
+
+    /**
+     * Tests if the {@link com.mitchellbosecke.pebble.extension.core.DefaultFilter} is working as expected.
+     *
+     * @throws Exception
+     *             thrown when something went wrong.
+     */
+    @Test
+    public void testDefaultFilterWithStrictMode() throws Exception {
+
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ name | default('test') }}");
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("test", writer.toString());
+
     }
 
     @Test
@@ -414,8 +440,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testFirst() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ names | first }}");
+        PebbleTemplate template = pebble.getTemplate("{{ names | first }}");
 
         List<String> names = new ArrayList<>();
         names.add("Alex");
@@ -434,8 +459,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testFirstWithNullInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ names | first }}");
+        PebbleTemplate template = pebble.getTemplate("{{ names | first }}");
 
         Map<String, Object> context = new HashMap<>();
         context.put("names", null);
@@ -449,8 +473,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testFirstWithStringInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ name | first }}");
+        PebbleTemplate template = pebble.getTemplate("{{ name | first }}");
 
         Map<String, Object> context = new HashMap<>();
         context.put("name", "Alex");
@@ -464,8 +487,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testJoin() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ names | join(',') }}");
+        PebbleTemplate template = pebble.getTemplate("{{ names | join(',') }}");
 
         List<String> names = new ArrayList<>();
         names.add("Alex");
@@ -480,13 +502,11 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("Alex,Joe,Bob", writer.toString());
     }
 
-
     @Test
     public void testJoinWithoutGlue() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ names | join }}");
+        PebbleTemplate template = pebble.getTemplate("{{ names | join }}");
 
         List<String> names = new ArrayList<>();
         names.add("Alex");
@@ -501,13 +521,11 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("AlexJoeBob", writer.toString());
     }
 
-
     @Test
     public void testJoinWithNumbers() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ numbers | join(',') }}");
+        PebbleTemplate template = pebble.getTemplate("{{ numbers | join(',') }}");
 
         List<Integer> numbers = new ArrayList<>();
         numbers.add(1);
@@ -526,8 +544,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testJoinWithNullInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ null | join(',') }}");
+        PebbleTemplate template = pebble.getTemplate("{{ null | join(',') }}");
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -538,8 +555,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testLast() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ names | last }}");
+        PebbleTemplate template = pebble.getTemplate("{{ names | last }}");
 
         List<String> names = new ArrayList<>();
         names.add("Alex");
@@ -558,8 +574,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testLastWithNullInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ null | last }}");
+        PebbleTemplate template = pebble.getTemplate("{{ null | last }}");
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -570,8 +585,7 @@ public class CoreFiltersTest extends AbstractTest {
     public void testLastWithStringInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ name | last }}");
+        PebbleTemplate template = pebble.getTemplate("{{ name | last }}");
 
         Map<String, Object> context = new HashMap<>();
         context.put("name", "Alex");
@@ -585,11 +599,10 @@ public class CoreFiltersTest extends AbstractTest {
     public void testLastWithArrayInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ names | last }}");
+        PebbleTemplate template = pebble.getTemplate("{{ names | last }}");
 
         Map<String, Object> context = new HashMap<>();
-        context.put("names", new String[]{"FirstName", "FamilyName"});
+        context.put("names", new String[] { "FirstName", "FamilyName" });
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
@@ -600,11 +613,10 @@ public class CoreFiltersTest extends AbstractTest {
     public void testLastWithPrimitiveArrayInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ ages | last }}");
+        PebbleTemplate template = pebble.getTemplate("{{ ages | last }}");
 
         Map<String, Object> context = new HashMap<>();
-        context.put("ages", new int[]{28,30});
+        context.put("ages", new int[] { 28, 30 });
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
@@ -615,11 +627,10 @@ public class CoreFiltersTest extends AbstractTest {
     public void testFirstWithArrayInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ names | first }}");
+        PebbleTemplate template = pebble.getTemplate("{{ names | first }}");
 
         Map<String, Object> context = new HashMap<>();
-        context.put("names", new String[]{"FirstName", "FamilyName"});
+        context.put("names", new String[] { "FirstName", "FamilyName" });
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
@@ -630,11 +641,10 @@ public class CoreFiltersTest extends AbstractTest {
     public void testFirstWithPrimitiveArrayInput() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble
-                .getTemplate("{{ ages | first }}");
+        PebbleTemplate template = pebble.getTemplate("{{ ages | first }}");
 
         Map<String, Object> context = new HashMap<>();
-        context.put("ages", new int[]{28,30});
+        context.put("ages", new int[] { 28, 30 });
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
@@ -681,7 +691,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("Alex", writer.toString());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSliceWithInvalidFirstArg() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -694,7 +704,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -707,7 +717,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -761,7 +771,7 @@ public class CoreFiltersTest extends AbstractTest {
 
         PebbleTemplate template = pebble.getTemplate("{% set n = names | slice(2,5) %}{{ n[0] }}");
 
-        String[] names = new String[] {"Alex", "Joe", "Bob", "Sarah", "Mary", "Marge"};
+        String[] names = new String[] { "Alex", "Joe", "Bob", "Sarah", "Mary", "Marge" };
         Map<String, Object> context = new HashMap<>();
         context.put("names", names);
 
@@ -780,62 +790,62 @@ public class CoreFiltersTest extends AbstractTest {
 
         // boolean
         writer = new StringWriter();
-        boolean[] booleans = new boolean[] {true, false, true, false, true, false};
+        boolean[] booleans = new boolean[] { true, false, true, false, true, false };
         context.put("primitives", booleans);
         template.evaluate(writer, context);
         assertEquals("true", writer.toString());
 
         // byte
         writer = new StringWriter();
-        byte[] bytes = new byte[] {0, 1, 2, 3, 4, 5};
+        byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5 };
         context.put("primitives", bytes);
         template.evaluate(writer, context);
         assertEquals("2", writer.toString());
 
         // char
         writer = new StringWriter();
-        char[] chars = new char[] {'a', 'b', 'c', 'd', 'e', 'f'};
+        char[] chars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f' };
         context.put("primitives", chars);
         template.evaluate(writer, context);
         assertEquals("c", writer.toString());
 
         // double
         writer = new StringWriter();
-        double[] doubles = new double[] {0.0d, 1.0d, 2.0d, 3.0d, 4.0d, 5.0d};
+        double[] doubles = new double[] { 0.0d, 1.0d, 2.0d, 3.0d, 4.0d, 5.0d };
         context.put("primitives", doubles);
         template.evaluate(writer, context);
         assertEquals("2.0", writer.toString());
 
         // float
         writer = new StringWriter();
-        float[] floats = new float[] {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+        float[] floats = new float[] { 0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f };
         context.put("primitives", floats);
         template.evaluate(writer, context);
         assertEquals("2.0", writer.toString());
 
         // int
         writer = new StringWriter();
-        int[] ints = new int[] {0, 1, 2, 3, 4, 5};
+        int[] ints = new int[] { 0, 1, 2, 3, 4, 5 };
         context.put("primitives", ints);
         template.evaluate(writer, context);
         assertEquals("2", writer.toString());
 
         // long
         writer = new StringWriter();
-        long[] longs = new long[] {0, 1, 2, 3, 4, 5};
+        long[] longs = new long[] { 0, 1, 2, 3, 4, 5 };
         context.put("primitives", longs);
         template.evaluate(writer, context);
         assertEquals("2", writer.toString());
 
         // short
         writer = new StringWriter();
-        short[] shorts = new short[] {0, 1, 2, 3, 4, 5};
+        short[] shorts = new short[] { 0, 1, 2, 3, 4, 5 };
         context.put("primitives", shorts);
         template.evaluate(writer, context);
         assertEquals("2", writer.toString());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSliceWithInvalidInputType() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -891,7 +901,8 @@ public class CoreFiltersTest extends AbstractTest {
     public void testReplaceFilterInTemplate() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble.getTemplate("{{ \"I like %this% and %that%.\"|replace({'%this%': foo, '%that%': \"bar\"}) }}");
+        PebbleTemplate template = pebble
+                .getTemplate("{{ \"I like %this% and %that%.\"|replace({'%this%': foo, '%that%': \"bar\"}) }}");
 
         Map<String, Object> context = new HashMap<>();
         context.put("foo", "foo");
