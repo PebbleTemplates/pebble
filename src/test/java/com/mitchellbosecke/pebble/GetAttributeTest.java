@@ -355,6 +355,46 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("Two", writer.toString());
     }
 
+    /**
+     * Tests retrieving a non-existing index from a list with strict mode on.
+     *
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test(expected = AttributeNotFoundException.class)
+    public void testListNonExistingIndexAttributeWithStrictMode() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ arr[1] }}");
+        Map<String, Object> context = new HashMap<>();
+        List<String> data = new ArrayList<>();
+        context.put("arr", data);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Two", writer.toString());
+    }
+
+    /**
+     * Tests retrieving a non-existing index from a list with strict mode off.
+     *
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testListNonExistingIndexAttribute() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ arr[1] }}");
+        Map<String, Object> context = new HashMap<>();
+        List<String> data = new ArrayList<>();
+        context.put("arr", data);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
+    }
+
     @Test()
     public void testInheritedAttribute() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();

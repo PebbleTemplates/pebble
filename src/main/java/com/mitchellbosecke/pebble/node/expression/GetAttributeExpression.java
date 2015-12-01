@@ -1,28 +1,18 @@
 /*******************************************************************************
  * This file is part of Pebble.
-<<<<<<< HEAD
+ * <<<<<<< HEAD
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
-=======
- *
+ * =======
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
->>>>>>> d6a41085fe86ce30f23d3b7929ad492343ff01b7
+ * <p>
+ * >>>>>>> d6a41085fe86ce30f23d3b7929ad492343ff01b7
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
-
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -33,13 +23,17 @@ import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+import java.lang.reflect.*;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Used to get an attribute from an object. It will look up attributes in the
  * following order: map entry, array item, list item, get method, is method, has
  * method, public method, public field.
  *
  * @author Mitchell
- *
  */
 public class GetAttributeExpression implements Expression<Object> {
 
@@ -109,15 +103,39 @@ public class GetAttributeExpression implements Expression<Object> {
                     // then we check arrays
                     if (object.getClass().isArray()) {
                         int index = Integer.parseInt(attributeName);
+                        int length = Array.getLength(object);
+                        if (index < 0 || index >= length) {
+                            if (context.isStrictVariables()) {
+                                throw new AttributeNotFoundException(null,
+                                        "Index out of bounds while accessing array with strict variables on.",
+                                        attributeName, lineNumber, filename);
+                            } else {
+                                return null;
+                            }
+                        }
                         return Array.get(object, index);
                     }
 
                     // then lists
                     if (object instanceof List) {
-                        Integer key = Integer.valueOf(attributeName);
+
                         @SuppressWarnings("unchecked")
                         List<Object> list = (List<Object>) object;
-                        return list.get(key);
+
+                        int index = Integer.parseInt(attributeName);
+                        int length = list.size();
+
+                        if (index < 0 || index >= length) {
+                            if (context.isStrictVariables()) {
+                                throw new AttributeNotFoundException(null,
+                                        "Index out of bounds while accessing array with strict variables on.",
+                                        attributeName, lineNumber, filename);
+                            } else {
+                                return null;
+                            }
+                        }
+
+                        return list.get(index);
                     }
                 } catch (NumberFormatException ex) {
                     // do nothing
@@ -152,18 +170,13 @@ public class GetAttributeExpression implements Expression<Object> {
             if (object == null) {
                 final String rootPropertyName = ((ContextVariableExpression) node).getName();
 
-                throw new RootAttributeNotFoundException(
-                        null,
-                        String.format(
-                                "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
-                                rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
+                throw new RootAttributeNotFoundException(null, String.format(
+                        "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
+                        rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
             } else {
-                throw new AttributeNotFoundException(
-                        null,
-                        String.format(
-                                "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                                attributeName, object.getClass().getName()), attributeName, this.lineNumber,
-                        this.filename);
+                throw new AttributeNotFoundException(null, String.format(
+                        "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                        attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
             }
         }
         return result;
@@ -181,14 +194,12 @@ public class GetAttributeExpression implements Expression<Object> {
     private Object invokeMember(Object object, Member member, Object[] argumentValues) {
         Object result = null;
         try {
-            if (member != null) {
-
-                if (member instanceof Method) {
-                    result = ((Method) member).invoke(object, argumentValues);
-                } else if (member instanceof Field) {
-                    result = ((Field) member).get(object);
-                }
+            if (member instanceof Method) {
+                result = ((Method) member).invoke(object, argumentValues);
+            } else if (member instanceof Field) {
+                result = ((Field) member).get(object);
             }
+
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
