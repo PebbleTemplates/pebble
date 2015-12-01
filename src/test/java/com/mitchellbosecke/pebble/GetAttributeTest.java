@@ -528,6 +528,20 @@ public class GetAttributeTest extends AbstractTest {
 
         assertEquals("1 1 2", writer.toString());
     }
+    
+    @Test
+    public void testBeanMethodWithNullArgument() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name(var) }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new BeanWithMethodsThatHaveArguments());
+        context.put("var", null);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello ", writer.toString());
+    }
 
     public class PrimitiveArguments {
 
