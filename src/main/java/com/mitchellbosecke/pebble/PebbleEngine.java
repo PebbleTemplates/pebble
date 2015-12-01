@@ -308,10 +308,19 @@ public class PebbleEngine {
         }
 
         /**
-         * Changes the <code>strictVariables</code> setting of the PebbleEngine. If
-         * strictVariables is equal to false (which is the default) then expressions
-         * become much more null-safe and type issues are handled in a much more
-         * graceful manner.
+         * Changes the <code>strictVariables</code> setting of the PebbleEngine.
+         * The default value of this setting is "false".
+         * <p>
+         * <p>
+         * The following examples will all print empty strings if strictVariables
+         * is false but will throw exceptions if it is true:
+         * <p>
+         * {{ nonExistingVariable }}
+         * {{ nonExistingVariable.attribute }}
+         * {{ nullVariable.attribute }}
+         * {{ existingVariable.nullAttribute.attribute }}
+         * {{ existingVariable.nonExistingAttribute }}
+         * {{ array[-1] }}
          *
          * @param strictVariables Whether or not strict variables is used
          * @return This builder object
