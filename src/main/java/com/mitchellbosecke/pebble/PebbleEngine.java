@@ -263,6 +263,8 @@ public class PebbleEngine {
         private ExecutorService executorService;
 
         private Cache<Object, PebbleTemplate> templateCache;
+        
+        private boolean cacheActive = true;
 
         private Cache<BaseTagCacheKey, Object> tagCache;
 
@@ -362,11 +364,7 @@ public class PebbleEngine {
          * @return This builder object
          */
         public Builder templateCache(Cache<Object, PebbleTemplate> templateCache) {
-            if (templateCache == null) {
-                this.templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
-            } else {
-                this.templateCache = templateCache;
-            }
+            this.templateCache = templateCache;
             return this;
         }
 
@@ -377,11 +375,7 @@ public class PebbleEngine {
          * @return This builder object
          */
         public Builder tagCache(Cache<BaseTagCacheKey, Object> tagCache) {
-            if (tagCache == null) {
-                this.tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
-            } else {
-                this.tagCache = tagCache;
-            }
+            this.tagCache = tagCache;
             return this;
         }
 
@@ -429,6 +423,18 @@ public class PebbleEngine {
             escaperExtension.addEscapingStrategy(name, strategy);
             return this;
         }
+        
+        /**
+         * Enable/disable all caches, i.e. cache used by the engine to store compiled PebbleTemplate instances 
+         * and tags cache
+         *
+         * @param cacheActive     toggle to enable/disable all caches
+         * @return This builder object
+         */
+        public Builder cacheActive(boolean cacheActive) {
+            this.cacheActive = cacheActive;
+            return this;
+        }
 
         /**
          * Creates the PebbleEngine instance.
@@ -457,18 +463,24 @@ public class PebbleEngine {
                 defaultLocale = Locale.getDefault();
             }
 
-            // default caches
-            if (templateCache == null) {
-                templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
-            }
+            
+            if (cacheActive) {
+                // default caches
+                if (templateCache == null) {
+                    templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
+                }
 
-            if (tagCache == null) {
-                tagCache = CacheBuilder.newBuilder().maximumSize(200).build();
+                if (tagCache == null) {
+                    tagCache = CacheBuilder.newBuilder().maximumSize(200).build();
+                }
             }
-
+            else {
+                templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
+                tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
+            }
+            
             return new PebbleEngine(loader, syntax, strictVariables, defaultLocale, tagCache, templateCache,
                     executorService, extensions);
         }
-
     }
 }
