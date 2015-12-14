@@ -1,4 +1,4 @@
-## v2.0.0 (to be announced)
+## v2.0.0 (2015-12-13)
 - Support for relative template paths
 - Added a "cache" tag to cache portions of a template
 - String concatenation with "~" operator
