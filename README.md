@@ -48,7 +48,7 @@ Then create a template that extends base.html, call it "home.html":
 ```
 Now we want to compile the template, and render it:
 ```JAVA
-PebbleEngine engine = new PebbleEngine();
+PebbleEngine engine = new PebbleEngine.Builder().build();
 PebbleTemplate compiledTemplate = engine.getTemplate("home.html");
 
 Map<String, Object> context = new HashMap<>();
