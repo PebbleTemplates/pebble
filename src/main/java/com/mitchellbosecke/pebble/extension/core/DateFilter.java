@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.escaper.RawString;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 
 public class DateFilter implements Filter {
@@ -60,6 +61,6 @@ public class DateFilter implements Filter {
             date = (Date) input;
         }
 
-        return intendedFormat.format(date);
+        return new RawString(intendedFormat.format(date));
     }
 }

@@ -69,10 +69,6 @@ public class EscaperExtension extends AbstractExtension {
         visitorFactory.setAutoEscaping(auto);
     }
 
-    public void addSafeFilter(String filter) {
-        visitorFactory.addSafeFilter(filter);
-    }
-
     /**
      * Adds a custom escaping strategy to the filter.
      *
