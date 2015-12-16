@@ -117,9 +117,7 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         if (expression instanceof LiteralStringExpression) {
             safe = true;
         }
-        // function and macro calls are considered safe
-        else if (expression instanceof FunctionOrMacroInvocationExpression
-                || expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
+        else if (expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
             safe = true;
         } else if (expression instanceof FilterExpression) {
 
