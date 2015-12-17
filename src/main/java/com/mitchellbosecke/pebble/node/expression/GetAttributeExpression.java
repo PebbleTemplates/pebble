@@ -151,7 +151,13 @@ public class GetAttributeExpression implements Expression<Object> {
             Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
 
             for (int i = 0; i < argumentValues.length; i++) {
-                argumentTypes[i] = argumentValues[i].getClass();
+                Object o = argumentValues[i];
+                if (o == null) {
+                    argumentTypes[i] = null;
+                }
+                else {
+                    argumentTypes[i] = o.getClass();
+                }
             }
 
             member = reflect(object, attributeName, argumentTypes);
@@ -312,7 +318,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
             boolean compatibleTypes = true;
             for (int i = 0; i < types.length; i++) {
-                if (!widen(types[i]).isAssignableFrom(requiredTypes[i])) {
+                if (requiredTypes[i] != null && !widen(types[i]).isAssignableFrom(requiredTypes[i])) {
                     compatibleTypes = false;
                     break;
                 }
