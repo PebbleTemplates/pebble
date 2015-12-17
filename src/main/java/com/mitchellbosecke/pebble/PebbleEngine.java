@@ -440,17 +440,26 @@ public class PebbleEngine {
         }
 
         /**
-         * Creates the PebbleEngine instance.
+         * Creates the PebbleEngine instance, with default base extensions.
          *
          * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
          */
         public PebbleEngine build() {
-
-            // core userProvidedExtensions
             List<Extension> extensions = new ArrayList<>();
             extensions.add(new CoreExtension());
             extensions.add(escaperExtension);
             extensions.add(new I18nExtension());
+            return build(extensions);
+        }
+
+        /**
+         * Creates the PebbleEngine instance with a custom list of base extensions.
+         *
+         * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
+         */
+        public PebbleEngine build(List<Extension> extensions) {
+
+            // core userProvidedExtensions
             extensions.addAll(this.userProvidedExtensions);
 
             // default loader
