@@ -31,7 +31,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testBlock() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.grandfather.peb");
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -46,7 +46,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void skipGenerationBlock() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.skipGenerationBlock1.peb");
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -392,7 +392,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testMacro() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.macro1.peb");
 
         Writer writer = new StringWriter();
@@ -410,7 +410,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void skipGenerationMacro() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.skipGenerationMacro1.peb");
         Writer writer = new StringWriter();
         template.evaluate(writer);
@@ -449,7 +449,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testMacroInvokedTwice() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.macroDouble.peb");
 
         Writer writer = new StringWriter();
@@ -493,7 +493,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testMacroBeingFiltered() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.macro3.peb");
 
         Writer writer = new StringWriter();
@@ -520,6 +520,28 @@ public class CoreTagsTest extends AbstractTest {
         writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("true", writer.toString());
+    }
+
+    @Test
+    public void testDisabledCache() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .cacheActive(false).build();
+
+        String source = "{% cache 'test' %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("foobar", true);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
+
+        //Value should NOT be cached
+        context.put("foobar", false);
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("false", writer.toString());
     }
 
     @Test
@@ -662,7 +684,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testImportWithinBlock() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.importWithinBlock.peb");
 
         Writer writer = new StringWriter();
@@ -673,7 +695,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testImportFile() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.macro2.peb");
 
         Writer writer = new StringWriter();
@@ -684,7 +706,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testImportInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.macro.child.peb");
 
         Writer writer = new StringWriter();
@@ -704,7 +726,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testInclude() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.include1.peb");
 
         Writer writer = new StringWriter();
@@ -722,7 +744,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testIncludeInheritance() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.includeInheritance1.peb");
 
         Writer writer = new StringWriter();
@@ -732,7 +754,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testIncludeWithinBlock() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.includeWithinBlock.peb");
 
         Writer writer = new StringWriter();
@@ -748,7 +770,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testIncludePropagatesContext() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.includePropagatesContext.peb");
         Writer writer = new StringWriter();
         Map<String, Object> context = new HashMap<>();
@@ -766,7 +788,7 @@ public class CoreTagsTest extends AbstractTest {
      */
     @Test
     public void testIncludeOverridesBlocks() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.includeOverrideBlock.peb");
 
         Writer writer = new StringWriter();
@@ -790,7 +812,7 @@ public class CoreTagsTest extends AbstractTest {
 
     @Test
     public void testSetInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
-        PebbleEngine pebble =  new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("templates/template.set.child.peb");
 
         Writer writer = new StringWriter();
