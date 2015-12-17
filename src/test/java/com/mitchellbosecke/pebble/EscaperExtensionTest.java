@@ -14,6 +14,7 @@ import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.escaper.EscapingStrategy;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
@@ -81,6 +82,17 @@ public class EscaperExtensionTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("&lt;br /&gt;", writer.toString());
+    }
+
+    @Test
+    public void testAutoescapeNonString() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("{{ text }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("text", Collections.singletonList("<br />"));
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("[&lt;br /&gt;]", writer.toString());
     }
 
     @Test
