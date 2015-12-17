@@ -77,10 +77,10 @@ public class EscapeFilter implements Filter {
     }
 
     public Object apply(Object inputObject, Map<String, Object> args) {
-        if (!(inputObject instanceof String)) {
+        if (inputObject == null || inputObject instanceof SafeString) {
             return inputObject;
         }
-        String input = (String) inputObject;
+        String input = inputObject.toString();
 
         String strategy = defaultStrategy;
 
