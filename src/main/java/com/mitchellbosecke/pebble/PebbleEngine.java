@@ -455,7 +455,6 @@ public class PebbleEngine {
          */
         public PebbleEngine build() {
             List<Extension> extensions = new ArrayList<>();
-            extensions.add(new CoreExtension());
             extensions.add(escaperExtension);
             extensions.add(new I18nExtension());
             return build(extensions);
@@ -466,9 +465,12 @@ public class PebbleEngine {
          *
          * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
          */
-        public PebbleEngine build(List<Extension> extensions) {
+        public PebbleEngine build(List<Extension> baseExtensions) {
 
             // core userProvidedExtensions
+            List<Extension> extensions = new ArrayList<>();
+            extensions.add(new CoreExtension());
+            extensions.addAll(baseExtensions);
             extensions.addAll(this.userProvidedExtensions);
 
             // default loader
