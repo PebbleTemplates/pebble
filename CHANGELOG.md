@@ -17,6 +17,7 @@
 - Ability to add extra variables to the context when "including" another template
 - Bug fix: "defined" test did not work as expected in strict mode
 - Bug fix: fixed broken "less than equal" comparison 
+- **Backwards incompatibility: "Included" templates run in their own dedicated scope and no longer affect the variables of the template that included it.**
 - **Backwards incompatibility: Constructor for PebbleEngine is now private, must use PebbleEngine.Builder**
 - **Backwards incompatibility: PebbleEngine is immutable once constructed**
 - **Backwards incompatibility: Removed "getExtension" method from PebbleEngine, core extensions must be configured during construction of the PebbleEngine object**
