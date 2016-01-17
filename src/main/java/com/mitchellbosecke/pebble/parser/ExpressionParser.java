@@ -326,29 +326,15 @@ public class ExpressionParser {
 
     @SuppressWarnings("unchecked")
     private Expression<?> parseTernaryExpression(Expression<?> expression) throws ParserException {
-        while (this.stream.current().test(Token.Type.PUNCTUATION, "?")) {
-
-            stream.next();
-
-            Expression<?> expression2 = null;
-            Expression<?> expression3 = null;
-
-            if (!stream.current().test(Token.Type.PUNCTUATION, ":")) {
-                expression2 = parseExpression();
-
-                if (stream.current().test(Token.Type.PUNCTUATION, ":")) {
-                    stream.next();
-                    expression3 = parseExpression();
-                }
-            } else {
-                stream.next();
-                expression2 = expression;
-                expression3 = parseExpression();
-            }
-
-            expression = new TernaryExpression((Expression<Boolean>) expression, expression2, expression3, this.stream
-                    .current().getLineNumber(), stream.getFilename());
-        }
+    	if (!stream.current().test(Token.Type.PUNCTUATION, "?")) return expression;
+    	
+    	stream.next();
+    	Expression<?> expression2 = parseExpression();
+    	stream.expect(Token.Type.PUNCTUATION, ":");
+    	Expression<?> expression3 = parseExpression();
+    	
+    	expression = new TernaryExpression((Expression<Boolean>) expression, expression2, expression3, this.stream
+                .current().getLineNumber(), stream.getFilename());
 
         return expression;
     }
