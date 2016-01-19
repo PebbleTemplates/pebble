@@ -405,17 +405,6 @@ public class PebbleEngine {
         }
 
         /**
-         * Marks a particular tag as safe to the built-in escaper extension.
-         *
-         * @param filter The name of the tag to be marked as safe
-         * @return This builder object
-         */
-        public Builder addEscaperSafeFilter(String filter) {
-            escaperExtension.addSafeFilter(filter);
-            return this;
-        }
-
-        /**
          * Adds an escaping strategy to the built-in escaper extension.
          *
          * @param name     The name of the escaping strategy

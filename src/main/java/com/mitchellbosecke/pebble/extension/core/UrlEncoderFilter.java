@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.escaper.RawString;
 
 public class UrlEncoderFilter implements Filter {
 
@@ -26,7 +27,7 @@ public class UrlEncoderFilter implements Filter {
         if (input == null) {
             return null;
         }
-        String arg = (String) input;
+        String arg = input instanceof RawString ? input.toString() : (String) input;
         try {
             arg = URLEncoder.encode(arg, "UTF-8");
         } catch (UnsupportedEncodingException e) {

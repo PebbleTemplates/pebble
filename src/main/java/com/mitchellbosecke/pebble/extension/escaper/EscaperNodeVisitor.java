@@ -9,11 +9,8 @@
 package com.mitchellbosecke.pebble.extension.escaper;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
@@ -24,7 +21,6 @@ import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.node.expression.FilterExpression;
 import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
-import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
@@ -36,11 +32,8 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
     private final LinkedList<Boolean> active = new LinkedList<>();
 
-    private final Set<String> safeFilters;
-
-    public EscaperNodeVisitor(PebbleTemplateImpl template, List<String> safeFilters, boolean autoEscapting) {
+    public EscaperNodeVisitor(PebbleTemplateImpl template, boolean autoEscapting) {
         super(template);
-        this.safeFilters = Collections.unmodifiableSet(new LinkedHashSet<>(safeFilters));
         this.pushAutoEscapeState(autoEscapting);
     }
 
@@ -117,20 +110,8 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         if (expression instanceof LiteralStringExpression) {
             safe = true;
         }
-        // function and macro calls are considered safe
-        else if (expression instanceof FunctionOrMacroInvocationExpression
-                || expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
+        else if (expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
             safe = true;
-        } else if (expression instanceof FilterExpression) {
-
-            // certain filters do not need to be escaped
-            FilterExpression binary = (FilterExpression) expression;
-            FilterInvocationExpression filterInvocation = (FilterInvocationExpression) binary.getRightExpression();
-            String filterName = filterInvocation.getFilterName();
-
-            if (safeFilters.contains(filterName)) {
-                safe = true;
-            }
         }
 
         return safe;

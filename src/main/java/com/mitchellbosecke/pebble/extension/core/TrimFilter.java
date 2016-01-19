@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.escaper.RawString;
 
 public class TrimFilter implements Filter {
 
@@ -25,7 +26,7 @@ public class TrimFilter implements Filter {
         if (input == null) {
             return null;
         }
-        String str = (String) input;
+        String str = input instanceof RawString ? input.toString() : (String) input;
         return str.trim();
     }
 
