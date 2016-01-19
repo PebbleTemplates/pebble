@@ -10,17 +10,10 @@ package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
-import com.mitchellbosecke.pebble.extension.Extension;
-import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
 import com.mitchellbosecke.pebble.extension.escaper.EscapingStrategy;
 import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.operator.BinaryOperator;
-import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -226,45 +219,46 @@ public class EscaperExtensionTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("my nbme is blex", writer.toString());
     }
-    
+
     @Test
     public void testEscapeFunction() throws PebbleException, IOException {
-    	PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).extension(new TestExtension()).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .extension(new TestExtension()).build();
         PebbleTemplate template = pebble.getTemplate("{{ bad() }}");
         Map<String, Object> context = new HashMap<>();
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("&lt;script&gt;alert(&quot;injection&quot;);&lt;/script&gt;", writer.toString());
     }
-    
+
     @Test
     public void testNoEscapeMacro() throws PebbleException, IOException {
-    	PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("{{ test() }}{% macro test() %}<br/>{% endmacro %}");
         Map<String, Object> context = new HashMap<>();
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("<br/>", writer.toString());
     }
-    
+
     public static class TestExtension extends AbstractExtension {
 
-		@Override
-		public Map<String, Function> getFunctions() {
-			return Collections.<String, Function>singletonMap("bad", new Function(){
+        @Override
+        public Map<String, Function> getFunctions() {
+            return Collections.<String, Function>singletonMap("bad", new Function() {
 
-				@Override
-				public List<String> getArgumentNames() {
-					return null;
-				}
+                @Override
+                public List<String> getArgumentNames() {
+                    return null;
+                }
 
-				@Override
-				public Object execute(Map<String, Object> args) {
-					return "<script>alert(\"injection\");</script>";
-				}
-				
-			});
-		}
-    	
+                @Override
+                public Object execute(Map<String, Object> args) {
+                    return "<script>alert(\"injection\");</script>";
+                }
+
+            });
+        }
+
     }
 }
