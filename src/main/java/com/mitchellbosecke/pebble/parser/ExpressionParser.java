@@ -326,7 +326,7 @@ public class ExpressionParser {
 
     @SuppressWarnings("unchecked")
     private Expression<?> parseTernaryExpression(Expression<?> expression) throws ParserException {
-    	// if the next token isn't a ?, we're not dealing with a ternary expression
+        // if the next token isn't a ?, we're not dealing with a ternary expression
         if (!stream.current().test(Token.Type.PUNCTUATION, "?")) return expression;
 
         stream.next();
