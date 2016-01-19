@@ -45,7 +45,7 @@ public class ServletLoader implements Loader<String> {
         InputStream is = null;
 
         // Add the prefix and make sure that it ends with a separator character
-        StringBuilder path = new StringBuilder("");
+        StringBuilder path = new StringBuilder(128);
         if (getPrefix() != null) {
 
             path.append(getPrefix());
@@ -56,8 +56,9 @@ public class ServletLoader implements Loader<String> {
                 path.append("/");
             }
         }
-
-        String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
+        path.append(templateName);
+        if (getSuffix() != null) path.append(getSuffix());
+        String location = path.toString();
         logger.debug("Looking for template in {}.", location);
 
         is = context.getResourceAsStream(location);

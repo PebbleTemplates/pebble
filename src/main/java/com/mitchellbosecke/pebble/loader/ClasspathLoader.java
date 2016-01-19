@@ -50,9 +50,8 @@ public class ClasspathLoader implements Loader<String> {
 
         InputStream is = null;
 
-        // append the prefix and make sure prefix ends with a separator
-        // character
-        StringBuilder path = new StringBuilder("");
+        // append the prefix and make sure prefix ends with a separator character
+        StringBuilder path = new StringBuilder(128);
         if (getPrefix() != null) {
 
             path.append(getPrefix());
@@ -63,8 +62,9 @@ public class ClasspathLoader implements Loader<String> {
                 path.append("/");
             }
         }
-
-        String location = path.toString() + templateName + (getSuffix() == null ? "" : getSuffix());
+        path.append(templateName);
+        if (getSuffix() != null) path.append(getSuffix());
+        String location = path.toString();
         logger.debug("Looking for template in {}.", location);
 
         // perform the lookup
