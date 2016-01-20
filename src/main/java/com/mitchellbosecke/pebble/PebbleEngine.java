@@ -435,7 +435,7 @@ public class PebbleEngine {
          */
         public PebbleEngine build() {
 
-            // core userProvidedExtensions
+            // core extensions
             List<Extension> extensions = new ArrayList<>();
             extensions.add(new CoreExtension());
             extensions.add(escaperExtension);

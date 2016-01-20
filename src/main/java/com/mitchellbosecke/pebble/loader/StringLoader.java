@@ -8,11 +8,16 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
+import com.mitchellbosecke.pebble.error.LoaderException;
+
 import java.io.Reader;
 import java.io.StringReader;
 
-import com.mitchellbosecke.pebble.error.LoaderException;
-
+/**
+ * This loader is not intended to be used in a production system;
+ * it is primarily for testing and debugging. Many tags do not
+ * work when using this loader, such as "extends", "imports", "include".
+ */
 public class StringLoader implements Loader<String> {
 
     @Override
