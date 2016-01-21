@@ -18,8 +18,6 @@ public class i18nFunction implements Function {
 
     private final List<String> argumentNames = new ArrayList<>();
 
-    private ResourceBundle.Control utf8Control = new UTF8Control();
-
     public i18nFunction() {
         argumentNames.add("bundle");
         argumentNames.add("key");
@@ -40,7 +38,7 @@ public class i18nFunction implements Function {
         EvaluationContext context = (EvaluationContext) args.get("_context");
         Locale locale = context.getLocale();
 
-        ResourceBundle bundle = ResourceBundle.getBundle(basename, locale, utf8Control);
+        ResourceBundle bundle = ResourceBundle.getBundle(basename, locale, new UTF8Control());
         Object phraseObject = bundle.getObject(key);
 
         if (phraseObject != null && params != null) {
