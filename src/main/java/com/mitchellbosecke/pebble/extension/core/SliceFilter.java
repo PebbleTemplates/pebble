@@ -8,13 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
 
 public class SliceFilter implements Filter {
 
@@ -43,11 +43,11 @@ public class SliceFilter implements Filter {
         if (argFrom == null) {
             // defaults to 0
             argFrom = Long.valueOf(0);
-        } else if (!(argFrom instanceof Long)) {
+        } else if (!(argFrom instanceof Number)) {
             throw new IllegalArgumentException("Argument fromIndex must be a number. Actual type: "
                     + (argFrom == null ? "null" : argFrom.getClass().getName()));
         }
-        int from = ((Long) argFrom).intValue();
+        int from = ((Number) argFrom).intValue();
         if (from < 0) {
             throw new IllegalArgumentException("fromIndex must be greater than 0");
         }
@@ -57,7 +57,7 @@ public class SliceFilter implements Filter {
         if (argTo == null) {
             // defaults to input length
             // argTo == null;
-        } else if (!(argTo instanceof Long)) {
+        } else if (!(argTo instanceof Number)) {
             throw new IllegalArgumentException("Argument toIndex must be a number. Actual type: "
                     + (argTo == null ? "null" : argTo.getClass().getName()));
         }
@@ -77,7 +77,7 @@ public class SliceFilter implements Filter {
         int to;
 
         if (argTo != null) {
-            to = ((Long) argTo).intValue();
+            to = ((Number) argTo).intValue();
             if (to > length)
                 throw new IllegalArgumentException("toIndex must be smaller than input size: " + length);
             else if (from >= to)

@@ -704,6 +704,21 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
+    @Test
+    public void testSliceWithIntegerArguments() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ 'abcdefghijklmnopqrstuvwxyz' | slice(from, to) }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("from", new Integer(2));
+        context.put("to", new Integer(4));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("cd", writer.toString());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
