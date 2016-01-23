@@ -1,12 +1,14 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,7 +16,6 @@ import static org.junit.Assert.assertEquals;
  * Tests if relative path works as expected.
  *
  * @author Thomas Hunziker
- *
  */
 public class TestRelativePath extends AbstractTest {
 
@@ -41,7 +42,8 @@ public class TestRelativePath extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("<div>overridden</div>", writer.toString().replaceAll("\\r?\\n", "").replace("\t", "").replace(" ", ""));
+        assertEquals("<div>overridden</div>",
+                writer.toString().replaceAll("\\r?\\n", "").replace("\t", "").replace(" ", ""));
     }
 
     /**
@@ -54,7 +56,37 @@ public class TestRelativePath extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer);
-        assertEquals("<input name=\"company\" value=\"forcorp\" type=\"text\" />", writer.toString().replaceAll("\\r?\\n", "").replace("\t", ""));
+        assertEquals("<input name=\"company\" value=\"forcorp\" type=\"text\" />",
+                writer.toString().replaceAll("\\r?\\n", "").replace("\t", ""));
     }
 
+    /**
+     * Tests if relative includes work. Issue #162.
+     */
+    @Test
+    public void testPathWithBackslashesWithRelativePathWithForwardSlashes() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
+        URL url = getClass().getResource("/templates/relativepath/subdirectory1/template.forwardslashes.peb");
+        PebbleTemplate template = pebble
+                .getTemplate(url.getPath().replace("/", "\\")); // ensure backslashes in all environments
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("included", writer.toString());
+    }
+
+    /**
+     * Issue #162.
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testPathWithForwardSlashesWithRelativePathWithBackwardSlashes() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
+        URL url = getClass().getResource("/templates/relativepath/subdirectory1/template.backwardslashes.peb");
+        PebbleTemplate template = pebble
+                .getTemplate(url.getPath().replace("\\", "/")); // ensure forward slashes in all environments
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("included", writer.toString());
+    }
 }

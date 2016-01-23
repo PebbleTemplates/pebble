@@ -1,0 +1,5 @@
+{#
+	used by:
+		TestRelativePath.testRelativeIncludeWithSubdirectory
+#}
+{% include '..\subdirectory2\template.relativeinclude2.peb' %}

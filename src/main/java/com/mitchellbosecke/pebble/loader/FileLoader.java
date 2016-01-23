@@ -8,20 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-
+import com.mitchellbosecke.pebble.error.LoaderException;
+import com.mitchellbosecke.pebble.utils.PathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mitchellbosecke.pebble.error.LoaderException;
-import com.mitchellbosecke.pebble.utils.PathUtils;
+import java.io.*;
 
 /**
  * This loader searches for a file located anywhere on the filesystem. It uses
@@ -39,6 +31,8 @@ public class FileLoader implements Loader<String> {
     private String suffix;
 
     private String charset = "UTF-8";
+
+    private char expectedSeparator = '/';
 
     @Override
     public Reader getReader(String templateName) throws LoaderException {
@@ -131,7 +125,7 @@ public class FileLoader implements Loader<String> {
 
     @Override
     public String resolveRelativePath(String relativePath, String anchorPath) {
-        return PathUtils.resolveRelativePath(relativePath, anchorPath);
+        return PathUtils.resolveRelativePath(relativePath, anchorPath, File.separatorChar);
     }
 
     @Override
