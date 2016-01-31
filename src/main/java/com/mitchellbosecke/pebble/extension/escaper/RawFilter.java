@@ -21,7 +21,7 @@ public class RawFilter implements Filter {
 
     public Object apply(Object inputObject, Map<String, Object> args) {
         if(inputObject instanceof String){
-            return new RawString((String) inputObject);
+            return new SafeString((String) inputObject);
         }
         return inputObject;
     }

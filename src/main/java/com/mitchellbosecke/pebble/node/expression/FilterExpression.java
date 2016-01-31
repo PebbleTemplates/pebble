@@ -13,7 +13,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.core.DefaultFilter;
 import com.mitchellbosecke.pebble.extension.escaper.EscapeFilter;
-import com.mitchellbosecke.pebble.extension.escaper.RawString;
+import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -65,7 +65,7 @@ public class FilterExpression extends BinaryExpression<Object> {
             input = getLeftExpression().evaluate(self, context);
         }
 
-        if (input instanceof RawString && !(filter instanceof EscapeFilter)) {
+        if (input instanceof SafeString && !(filter instanceof EscapeFilter)) {
             input = input.toString();
         }
 

@@ -8,18 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.escaper.SafeString;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.escaper.RawString;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import java.util.*;
 
 public class DateFilter implements Filter {
 
@@ -61,6 +57,6 @@ public class DateFilter implements Filter {
             date = (Date) input;
         }
 
-        return new RawString(intendedFormat.format(date));
+        return new SafeString(intendedFormat.format(date));
     }
 }

@@ -10,7 +10,7 @@ package com.mitchellbosecke.pebble.template;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.escaper.RawString;
+import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
@@ -277,9 +277,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @return The results of the macro invocation
      * @throws PebbleException An exception that may have occurred
      */
-    public RawString macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden)
+    public SafeString macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden)
 			throws PebbleException {
-		RawString result = null;
+		SafeString result = null;
 		boolean found = false;
 
         PebbleTemplateImpl childTemplate = context.getHierarchy().getChild();
@@ -297,7 +297,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
             Macro macro = macros.get(macroName);
 
             Map<String, Object> namedArguments = args.getArgumentMap(this, context, macro);
-            result = new RawString(macro.call(this, context, namedArguments));
+            result = new SafeString(macro.call(this, context, namedArguments));
         }
 
         // check imported templates

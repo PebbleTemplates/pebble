@@ -7,11 +7,11 @@ package com.mitchellbosecke.pebble.extension.escaper;
  * <b>Warning:</b> The EscaperExtension will never escape a string that is wrapped with this class.
  * 
  */
-public class RawString {
+public class SafeString {
 
 	private final String content;
 
-	public RawString(String content) {
+	public SafeString(String content) {
 		this.content = content;
 	}
 

@@ -92,7 +92,7 @@ public class EscapeFilter implements Filter {
             throw new RuntimeException(String.format("Unknown escaping strategy [%s]", strategy));
         }
 
-        return new RawString(strategies.get(strategy).escape(input));
+        return new SafeString(strategies.get(strategy).escape(input));
     }
 
     public String getDefaultStrategy() {
