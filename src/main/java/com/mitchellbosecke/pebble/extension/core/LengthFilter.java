@@ -1,13 +1,12 @@
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.escaper.RawString;
 
 public class LengthFilter implements Filter {
 
@@ -21,9 +20,7 @@ public class LengthFilter implements Filter {
         if (input == null) {
             return 0;
         }
-        if (input instanceof RawString) {
-            return input.toString().length();
-        } else if (input instanceof String) {
+        if (input instanceof String) {
             return ((String) input).length();
         } else if (input instanceof Collection) {
             return ((Collection<?>) input).size();

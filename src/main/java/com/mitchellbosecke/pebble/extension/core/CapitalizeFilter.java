@@ -8,12 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.escaper.RawString;
 
 public class CapitalizeFilter implements Filter {
 
@@ -27,7 +26,7 @@ public class CapitalizeFilter implements Filter {
         if (input == null) {
             return null;
         }
-        String value = input instanceof RawString ? input.toString() : (String) input;
+        String value = (String) input;
 
         if (value.length() == 0) {
             return value;

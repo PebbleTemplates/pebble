@@ -36,6 +36,7 @@ public class FilterInvocationExpression implements Expression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+        // see FilterExpression.java
         throw new UnsupportedOperationException();
     }
 

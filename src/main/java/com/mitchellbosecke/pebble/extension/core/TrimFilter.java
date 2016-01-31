@@ -8,11 +8,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.escaper.RawString;
 
 public class TrimFilter implements Filter {
 
@@ -26,7 +25,7 @@ public class TrimFilter implements Filter {
         if (input == null) {
             return null;
         }
-        String str = input instanceof RawString ? input.toString() : (String) input;
+        String str = (String) input;
         return str.trim();
     }
 

@@ -12,6 +12,8 @@ import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.core.DefaultFilter;
+import com.mitchellbosecke.pebble.extension.escaper.EscapeFilter;
+import com.mitchellbosecke.pebble.extension.escaper.RawString;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -52,16 +54,21 @@ public class FilterExpression extends BinaryExpression<Object> {
         // the only filter which should not fail in strict mode, when the variable
         // is not set, because this method should exactly test this. Hence a
         // generic solution to allow other tests to reuse this feature make no sense
+        Object input;
         if (filter instanceof DefaultFilter) {
-            Object input;
             try {
                 input = getLeftExpression().evaluate(self, context);
             } catch (AttributeNotFoundException ex) {
                 input = null;
             }
-            return filter.apply(input, namedArguments);
         } else {
-            return filter.apply(getLeftExpression().evaluate(self, context), namedArguments);
+            input = getLeftExpression().evaluate(self, context);
         }
+
+        if (input instanceof RawString && !(filter instanceof EscapeFilter)) {
+            input = input.toString();
+        }
+
+        return filter.apply(input, namedArguments);
     }
 }

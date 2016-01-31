@@ -118,6 +118,17 @@ public class EscaperExtensionTest extends AbstractTest {
     }
 
     @Test
+    public void testEscapeIntoAbbreviate() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("{{ text | escape | abbreviate(5)}}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("text", "1234567");
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("12...", writer.toString());
+    }
+
+    @Test
     public void testDoubleEscaping() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("{{ text | escape }}");

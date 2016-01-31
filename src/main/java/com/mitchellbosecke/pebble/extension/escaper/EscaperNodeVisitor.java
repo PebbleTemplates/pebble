@@ -8,23 +8,17 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.escaper;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.AutoEscapeNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.PrintNode;
-import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
-import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.node.expression.FilterExpression;
-import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
-import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
-import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
-import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
+import com.mitchellbosecke.pebble.node.expression.*;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
@@ -69,6 +63,11 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         strategies.pop();
     }
 
+    /**
+     * Simply wraps the input expression with a {@link EscapeFilter}.
+     * @param expression
+     * @return
+     */
     private Expression<?> escape(Expression<?> expression) {
 
         /*
