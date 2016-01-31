@@ -1,3 +1,13 @@
+## v2.1.0 (2016-01-31)
+- Added method in Pebble builder class to completely disable cache
+- Improved error message with malformed ternary expression
+- Bug fix: NPE when calling bean method will null argument
+- Bug fix: relative paths were not platform agnostic
+- Bug fix: slice filter failed on integer argument
+- Bug fix: Pebble didn't work on GAE due to a restricted class in the JRE
+- **Backwards incompatibility: Functions are escaped by default**
+
+
 ## v2.0.0 (2015-12-13)
 - Support for relative template paths
 - Added a "cache" tag to cache portions of a template
