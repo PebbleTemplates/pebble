@@ -260,6 +260,17 @@ public class CoreFiltersTest extends AbstractTest {
     }
 
     @Test
+    public void testAbbreviateWithSmallLength() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("{{ text | abbreviate(2)}}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("text", "1234567");
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("12", writer.toString());
+    }
+
+    @Test
     public void testCapitalize() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 

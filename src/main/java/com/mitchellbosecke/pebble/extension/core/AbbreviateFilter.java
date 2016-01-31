@@ -8,11 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.Filter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
 
 public class AbbreviateFilter implements Filter {
 
@@ -35,6 +36,10 @@ public class AbbreviateFilter implements Filter {
         String value = (String) input;
         int maxWidth = ((Long) args.get("length")).intValue();
 
+        if(maxWidth < 0){
+            throw new RuntimeException("Invalid argument to abbreviate filter; must be greater than zero");
+        }
+
         String ellipsis = "...";
         int length = value.length();
 
@@ -44,7 +49,10 @@ public class AbbreviateFilter implements Filter {
         if (length <= 3) {
             return value;
         }
-        return value.substring(0, maxWidth - 3) + ellipsis;
+        if(maxWidth <= 3){
+            return value.substring(0, maxWidth);
+        }
+        return value.substring(0, Math.max(0, maxWidth - 3)) + ellipsis;
     }
 
 }
