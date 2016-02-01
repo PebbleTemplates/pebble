@@ -17,6 +17,7 @@ import com.mitchellbosecke.pebble.utils.FutureWriter;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -139,7 +140,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         scopeChain.pushScope(engine.getExtensionRegistry().getGlobalVariables());
 
         EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
-                engine.getExtensionRegistry(), engine.getTagCache(), engine.getExecutorService(), scopeChain, null);
+                engine.getExtensionRegistry(), engine.getTagCache(), engine.getExecutorService(),
+                new ArrayList<PebbleTemplateImpl>(), scopeChain, null);
         return context;
     }
 
@@ -278,9 +280,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @throws PebbleException An exception that may have occurred
      */
     public SafeString macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden)
-			throws PebbleException {
-		SafeString result = null;
-		boolean found = false;
+            throws PebbleException {
+        SafeString result = null;
+        boolean found = false;
 
         PebbleTemplateImpl childTemplate = context.getHierarchy().getChild();
 

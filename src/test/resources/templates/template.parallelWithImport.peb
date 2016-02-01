@@ -1,0 +1,3 @@
+{# used by CoreTagsTest.testParallelWithImport #}
+{% import 'templates/template.parallelWithImport2.peb' %}
+{% parallel %}{{ test() }}{% endparallel %}

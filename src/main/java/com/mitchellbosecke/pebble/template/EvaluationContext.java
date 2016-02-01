@@ -12,7 +12,6 @@ import com.google.common.cache.Cache;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -68,7 +67,7 @@ public class EvaluationContext {
     /**
      * The imported templates are used to look up macros.
      */
-    private final List<PebbleTemplateImpl> importedTemplates = new ArrayList<>();
+    private final List<PebbleTemplateImpl> importedTemplates;
 
     /**
      * Constructor used to provide all final variables.
@@ -79,12 +78,13 @@ public class EvaluationContext {
      * @param extensionRegistry The extension registry
      * @param executorService   The optional executor service
      * @param scopeChain        The scope chain
-     * @param hierarchy  The inheritance chain
+     * @param hierarchy         The inheritance chain
      * @param tagCache          The cache used by the "cache" tag
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
             ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
-            ExecutorService executorService, ScopeChain scopeChain, Hierarchy hierarchy) {
+            ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates, ScopeChain scopeChain,
+            Hierarchy hierarchy) {
 
         if (hierarchy == null) {
             hierarchy = new Hierarchy(self);
@@ -95,6 +95,7 @@ public class EvaluationContext {
         this.extensionRegistry = extensionRegistry;
         this.tagCache = tagCache;
         this.executorService = executorService;
+        this.importedTemplates = importedTemplates;
         this.scopeChain = scopeChain;
         this.hierarchy = hierarchy;
     }
@@ -108,7 +109,7 @@ public class EvaluationContext {
      */
     public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, scopeChain, null);
+                executorService, importedTemplates, scopeChain, null);
         return result;
     }
 
@@ -122,7 +123,7 @@ public class EvaluationContext {
      */
     public EvaluationContext shallowCopyWithNewScopeChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, scopeChain.deepCopy(), hierarchy);
+                executorService, importedTemplates, scopeChain.deepCopy(), hierarchy);
         return result;
     }
 

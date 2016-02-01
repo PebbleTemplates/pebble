@@ -848,6 +848,7 @@ public class CoreTagsTest extends AbstractTest {
 
     }
 
+
     /**
      * The for loop will add variables into the evaluation context during
      * runtime and there was an issue where the evaluation context wasn't thread
@@ -928,6 +929,24 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
 
         assertEquals("beginning first", writer.toString());
+    }
+
+
+    /**
+     * Issue #159
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testParallelWithImport() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder()
+                .executorService(Executors.newCachedThreadPool()).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.parallelWithImport.peb");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+
+        assertEquals("success", writer.toString());
     }
 
     public class SlowObject {

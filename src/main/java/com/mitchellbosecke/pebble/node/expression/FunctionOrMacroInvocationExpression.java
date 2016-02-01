@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class FunctionOrMacroInvocationExpression implements Expression<Object> {
+public class  FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     private final String functionName;
 
