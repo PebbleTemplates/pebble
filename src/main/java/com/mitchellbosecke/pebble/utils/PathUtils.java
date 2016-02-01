@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public final class PathUtils {
 
-    private static final Pattern separtorRegex = Pattern.compile("\\\\|/");
+    private static final Pattern separatorRegex = Pattern.compile("\\\\|/");
 
     /**
      * Resolves the given {@code relativePath} based on the given
@@ -33,8 +33,6 @@ public final class PathUtils {
         relativePath = sanitize(relativePath, expectedSeparator);
         anchorPath = sanitize(anchorPath, expectedSeparator);
 
-        // first we replace all separator characters in the relative path with the expected separator character
-        // which will match the anchor path.
         if (relativePath.startsWith(".." + expectedSeparator) || relativePath.startsWith("." + expectedSeparator)) {
             return resolvePathInner(relativePath, anchorPath, expectedSeparator);
         }
@@ -43,7 +41,7 @@ public final class PathUtils {
     }
 
     private static String sanitize(String path, char expectedSeparator){
-        return separtorRegex.matcher(path).replaceAll(Matcher.quoteReplacement(String.valueOf(expectedSeparator)));
+        return separatorRegex.matcher(path).replaceAll(Matcher.quoteReplacement(String.valueOf(expectedSeparator)));
     }
 
     private static String resolvePathInner(String relativePath, String anchorPath, char separator) {
@@ -70,9 +68,9 @@ public final class PathUtils {
     }
 
     private static Collection<String> resolvePathSegments(Collection<String> anchorSegments,
-            Collection<String> relativeSegements) {
+            Collection<String> relativeSegments) {
         ArrayDeque<String> result = new ArrayDeque<>(anchorSegments);
-        for (String segment : relativeSegements) {
+        for (String segment : relativeSegments) {
             if (segment.equals(".")) {
                 // do nothing
             } else if (segment.equals("..")) {
