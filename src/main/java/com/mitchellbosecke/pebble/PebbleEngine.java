@@ -289,9 +289,9 @@ public class PebbleEngine {
         }
 
         /**
-         * Adds an extension, can be safely invoked several times to add different userProvidedExtensions.
+         * Adds an extension, can be safely invoked several times to add different extensions.
          *
-         * @param extensions One or more userProvidedExtensions to add
+         * @param extensions One or more extensions to add
          * @return This builder object
          */
         public Builder extension(Extension... extensions) {
@@ -316,10 +316,9 @@ public class PebbleEngine {
          * Changes the <code>strictVariables</code> setting of the PebbleEngine.
          * The default value of this setting is "false".
          * <p>
-         * <p>
          * The following examples will all print empty strings if strictVariables
          * is false but will throw exceptions if it is true:
-         * <p>
+         * </p>
          * {{ nonExistingVariable }}
          * {{ nonExistingVariable.attribute }}
          * {{ nullVariable.attribute }}
