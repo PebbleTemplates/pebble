@@ -1,5 +1,7 @@
 package com.mitchellbosecke.pebble.extension.escaper;
 
+import java.util.Objects;
+
 /**
  * Wrap a string in this to mark the string as safe to ignore by the Escape extension.
  * 
@@ -20,4 +22,8 @@ public class SafeString {
 		return content;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof SafeString && this.content.equals(((SafeString) o).content);
+	}
 }

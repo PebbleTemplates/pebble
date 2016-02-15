@@ -252,6 +252,17 @@ public class EscaperExtensionTest extends AbstractTest {
         assertEquals("<br/>", writer.toString());
     }
 
+    @Test
+    public void testCompareSafeStrings() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("{{ text|raw == text|raw }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("text", "a");
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("true", writer.toString());
+    }
+
     public static class TestExtension extends AbstractExtension {
 
         @Override
