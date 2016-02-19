@@ -37,6 +37,8 @@ public class ContainsExpression extends BinaryExpression<Boolean> {
             return Boolean.valueOf(((Map) leftValue).containsKey(rightValue));
         } else if (leftValue.getClass().isArray()) {
             return arrayContains(leftValue, rightValue);
+        } else if (leftValue instanceof String) {
+            return String.valueOf(leftValue).contains(String.valueOf(rightValue));
         } else {
             throw new IllegalArgumentException(
                     "Contains operator can only be used on Collections, Maps and arrays. Actual type was: "
