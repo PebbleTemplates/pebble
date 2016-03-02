@@ -98,6 +98,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("urlencode", new UrlEncoderFilter());
         filters.put("length", new LengthFilter());
         filters.put(ReplaceFilter.FILTER_NAME, new ReplaceFilter());
+        filters.put(MergeFilter.FILTER_NAME, new MergeFilter());
         return filters;
     }
 
