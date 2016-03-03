@@ -518,7 +518,8 @@ public class GetAttributeTest extends AbstractTest {
     public void testPrimitiveArgument() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
-        PebbleTemplate template = pebble.getTemplate("{{ obj.getStringFromLong(1) }} {{ obj.getStringFromLongs(1,2) }}");
+        PebbleTemplate template = pebble.getTemplate("{{ obj.getStringFromLong(1) }} {{ obj.getStringFromLongs(1,2) }}"
+            + " {{ obj.getStringFromBoolean(true) }}");
 
         Map<String, Object> context = new HashMap<>();
         context.put("obj", new PrimitiveArguments());
@@ -526,7 +527,7 @@ public class GetAttributeTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
 
-        assertEquals("1 1 2", writer.toString());
+        assertEquals("1 1 2 true", writer.toString());
     }
     
     @Test
@@ -551,6 +552,10 @@ public class GetAttributeTest extends AbstractTest {
 
         public String getStringFromLongs(Long first, long second) {
             return String.valueOf(first) + " " + String.valueOf(second);
+        }
+
+        public String getStringFromBoolean(boolean bool) {
+            return String.valueOf(bool);
         }
     }
 

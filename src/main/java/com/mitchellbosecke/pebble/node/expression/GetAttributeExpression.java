@@ -352,6 +352,8 @@ public class GetAttributeExpression implements Expression<Object> {
             result = Short.class;
         } else if (clazz == byte.class) {
             result = Byte.class;
+        } else if (clazz == boolean.class) {
+            result = Boolean.class;
         }
         return result;
     }
