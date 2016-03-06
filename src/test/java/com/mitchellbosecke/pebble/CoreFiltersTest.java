@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -936,6 +937,60 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("I like foo and bar.", writer.toString());
+    }
+
+    @Test
+    public void testMergeOk() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).extension(new TestingExtension()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble
+                .getTemplate("{{{'one':1}|merge({'two':2})|mapToString}} {%set m1 = {'one':1}|merge(['two'])%}{{m1['two']}} {{[1]|merge([2])|listToString}} {%set l1 = [1]|merge({'two':2})%}{{l1[1].value}} {{arr1|merge(arr2)|arrayToString}}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("arr1", new int[] {1});
+        context.put("arr2", new int[] {2});
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("{one=1, two=2} two [1,2] 2 [1,2]", writer.toString());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMergeMapWithStringAndFail() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ {'one':1}|merge('No way!') }}");
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMergeListWithStringAndFail() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ [1]|merge('No way!') }}");
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMergeDifferentArraysAndFail() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ arr1|merge(arr2) }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("arr1", new int[] {1});
+        context.put("arr2", new String[] {"2"});
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
     }
 
 }

@@ -21,6 +21,8 @@ public class TestingExtension extends AbstractExtension {
     public Map<String, Filter> getFilters() {
         Map<String, Filter> filters = new HashMap<>();
         filters.put("mapToString", new MapToStringFilter());
+        filters.put("listToString", new ListToStringFilter());
+        filters.put("arrayToString", new ArrayToStringFilter());
         return filters;
     }
 
