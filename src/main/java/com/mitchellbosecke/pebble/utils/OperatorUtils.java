@@ -116,6 +116,7 @@ public class OperatorUtils {
      * @param op2
      * @return
      */
+    @Deprecated
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Object addToList(List<?> op1, Object op2) {
         if (op2 instanceof Collection) {
@@ -134,6 +135,7 @@ public class OperatorUtils {
      * @param op2
      * @return
      */
+    @Deprecated
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Object subtractFromList(List<?> op1, Object op2) {
         if (op2 instanceof Collection) {
