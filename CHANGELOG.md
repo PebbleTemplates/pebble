@@ -1,3 +1,9 @@
+## v2.2.0 (2016-03-06)
+- Added "merge" filter
+- Add support for strings to the "contains" operator
+- Bug fix: Couldn't invoke methods that had boolean arguments
+- Bug fix: Unexpected results when comparing the outputs of the "raw" filter
+
 ## v2.1.0 (2016-01-31)
 - Added method in PebbleEngine.Builder class to completely disable cache
 - Improved error message with malformed ternary expression
