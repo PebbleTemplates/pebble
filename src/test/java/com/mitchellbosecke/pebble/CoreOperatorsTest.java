@@ -24,7 +24,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.utils.Pair;
@@ -593,6 +592,22 @@ public class CoreOperatorsTest extends AbstractTest {
 
         Map<String, Object> context = new HashMap<>();
         context.put("names", Arrays.asList("Bob", "Maria", "John"));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("no", writer.toString());
+    }
+
+    @Test
+    public void testContainsOperator5() throws PebbleException, IOException {
+
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{% if names contains 'Cobra' %}yes{% else %}no{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", "Bob Maria John");
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
