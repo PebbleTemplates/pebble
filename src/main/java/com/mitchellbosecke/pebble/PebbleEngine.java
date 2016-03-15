@@ -404,6 +404,18 @@ public class PebbleEngine {
         }
 
         /**
+         * Marks a particular tag as safe to the built-in escaper extension.
+         *
+         * @param filter The name of the tag to be marked as safe
+         * @return This builder object
+         * @deprecated tags are now escaped by default; this call should be removed
+         */
+        @Deprecated
+        public Builder addEscaperSafeFilter(String filter) {
+            return this;
+        }
+
+        /**
          * Adds an escaping strategy to the built-in escaper extension.
          *
          * @param name     The name of the escaping strategy
