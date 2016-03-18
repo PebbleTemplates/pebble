@@ -1,19 +1,23 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
+import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -38,7 +42,7 @@ public class ConcurrencyTest extends AbstractTest {
         final public int b;
 
         final public int c;
-        
+
         final public String d;
 
         private TestObject(int a, int b, int c, String d) {
@@ -116,7 +120,7 @@ public class ConcurrencyTest extends AbstractTest {
      * will only compile one at a time. This test simply makes sure that if a
      * user attempts to trigger concurrent compilation everything still succeeds
      * (despite it being executed one at a time behind the scenes).
-     * 
+     *
      * @throws InterruptedException
      * @throws PebbleException
      */
@@ -205,7 +209,7 @@ public class ConcurrencyTest extends AbstractTest {
                     }
                 }
             });
-            
+
             if (totalFailed.intValue() > 0) {
                 break;
             }
@@ -218,7 +222,7 @@ public class ConcurrencyTest extends AbstractTest {
 
     /**
      * Issue #40
-     * 
+     *
      * @throws InterruptedException
      * @throws PebbleException
      */
@@ -280,5 +284,93 @@ public class ConcurrencyTest extends AbstractTest {
         semaphore.acquire(numOfConcurrentEvaluations);
         es.shutdown();
         assertEquals(0, totalFailed.intValue());
+    }
+
+    @Test
+    public void testConcurrentEvaluationWithImportingMacros() throws PebbleException, IOException
+    {
+        Loader<String> loader = new Loader<String>(){
+            private final String TEMPLATE =
+                  "{% import \"macro\" %}"
+                + "{{test(0)}}"
+                + "{% for i in [1,2,3,4,5,6,7,8,9,10] %}"
+                + "    {% parallel %}"
+                + "        {% import \"macro\" %}"
+                + "        {{test(i)}}"
+                + "    {% endparallel %}"
+                + "{% endfor %}";
+
+            private final String MACRO =
+                  "{% macro test(count) %}"
+                + "    test({{count}})"
+                + "{% endmacro %}";
+
+            @Override
+            public Reader getReader(String cacheKey) throws LoaderException
+            {
+                switch (cacheKey)
+                {
+                    case "template":
+                        return new StringReader(TEMPLATE);
+                    case "macro":
+                        return new StringReader(MACRO);
+                    default:
+                        throw new IllegalStateException("No such file");
+                }
+            }
+
+            @Override
+            public void setCharset(String charset)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void setPrefix(String prefix)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void setSuffix(String suffix)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public String resolveRelativePath(String relativePath, String anchorPath)
+            {
+                return relativePath;
+            }
+
+            @Override
+            public String createCacheKey(String templateName)
+            {
+                return templateName;
+            }
+
+        };
+
+        PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
+
+        PebbleTemplate template = engine.getTemplate("template");
+
+        StringWriter singleThreadResult = new StringWriter();
+
+        template.evaluate(singleThreadResult);
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+
+        engine = new PebbleEngine.Builder().loader(loader).executorService(executor).strictVariables(false).build();
+
+        template = engine.getTemplate("template");
+
+        StringWriter multipleThreadResult = new StringWriter();
+
+        template.evaluate(multipleThreadResult);
+
+        executor.shutdown();
+        
+        assertEquals(singleThreadResult.toString(), multipleThreadResult.toString());
     }
 }
