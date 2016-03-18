@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.template;
 import com.google.common.cache.Cache;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
+import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Locale;
@@ -95,7 +96,7 @@ public class EvaluationContext {
         this.extensionRegistry = extensionRegistry;
         this.tagCache = tagCache;
         this.executorService = executorService;
-        this.importedTemplates = importedTemplates;
+        this.importedTemplates = importedTemplates != null ? new ArrayList<PebbleTemplateImpl>(importedTemplates) : null;
         this.scopeChain = scopeChain;
         this.hierarchy = hierarchy;
     }
