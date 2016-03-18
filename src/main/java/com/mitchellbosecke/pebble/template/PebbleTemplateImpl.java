@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The actual implementation of a PebbleTemplate
@@ -141,7 +142,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
         EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
                 engine.getExtensionRegistry(), engine.getTagCache(), engine.getExecutorService(),
-                new ArrayList<PebbleTemplateImpl>(), scopeChain, null);
+                new CopyOnWriteArrayList<PebbleTemplateImpl>(), scopeChain, null);
         return context;
     }
 
