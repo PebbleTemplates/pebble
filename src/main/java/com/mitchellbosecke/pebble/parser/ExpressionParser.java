@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- *
+ * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
- *
+ * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -74,7 +74,7 @@ public class ExpressionParser {
      *            All the unary operators
      */
     public ExpressionParser(Parser parser, Map<String, BinaryOperator> binaryOperators,
-            Map<String, UnaryOperator> unaryOperators) {
+                            Map<String, UnaryOperator> unaryOperators) {
         this.parser = parser;
         this.binaryOperators = binaryOperators;
         this.unaryOperators = unaryOperators;
@@ -265,58 +265,58 @@ public class ExpressionParser {
 
         switch (token.getType()) {
 
-        case NAME:
-            switch (token.getValue()) {
+            case NAME:
+                switch (token.getValue()) {
 
-            // a constant?
-            case "true":
-            case "TRUE":
-                node = new LiteralBooleanExpression(true, token.getLineNumber());
-                break;
-            case "false":
-            case "FALSE":
-                node = new LiteralBooleanExpression(false, token.getLineNumber());
-                break;
-            case "none":
-            case "NONE":
-            case "null":
-            case "NULL":
-                node = new LiteralNullExpression(token.getLineNumber());
+                    // a constant?
+                    case "true":
+                    case "TRUE":
+                        node = new LiteralBooleanExpression(true, token.getLineNumber());
+                        break;
+                    case "false":
+                    case "FALSE":
+                        node = new LiteralBooleanExpression(false, token.getLineNumber());
+                        break;
+                    case "none":
+                    case "NONE":
+                    case "null":
+                    case "NULL":
+                        node = new LiteralNullExpression(token.getLineNumber());
+                        break;
+
+                    default:
+
+                        // name of a function?
+                        if (stream.peek().test(Token.Type.PUNCTUATION, "(")) {
+                            node = new FunctionOrMacroNameNode(token.getValue(), stream.peek().getLineNumber());
+                        }
+
+                        // variable name
+                        else {
+                            node = new ContextVariableExpression(token.getValue(), token.getLineNumber());
+                        }
+                        break;
+                }
                 break;
 
+            case NUMBER:
+                final String numberValue = token.getValue();
+                if (numberValue.contains(".")) {
+                    node = new LiteralDoubleExpression(Double.valueOf(numberValue), token.getLineNumber());
+                } else {
+                    node = new LiteralLongExpression(Long.valueOf(numberValue), token.getLineNumber());
+                }
+
+                break;
+
+            case STRING:
+                node = new LiteralStringExpression(token.getValue(), token.getLineNumber());
+                break;
+
+            // not found, syntax error
             default:
-
-                // name of a function?
-                if (stream.peek().test(Token.Type.PUNCTUATION, "(")) {
-                    node = new FunctionOrMacroNameNode(token.getValue(), stream.peek().getLineNumber());
-                }
-
-                // variable name
-                else {
-                    node = new ContextVariableExpression(token.getValue(), token.getLineNumber());
-                }
-                break;
-            }
-            break;
-
-        case NUMBER:
-            final String numberValue = token.getValue();
-            if (numberValue.contains(".")) {
-                node = new LiteralDoubleExpression(Double.valueOf(numberValue), token.getLineNumber());
-            } else {
-                node = new LiteralLongExpression(Long.valueOf(numberValue), token.getLineNumber());
-            }
-
-            break;
-
-        case STRING:
-            node = new LiteralStringExpression(token.getValue(), token.getLineNumber());
-            break;
-
-        // not found, syntax error
-        default:
-            throw new ParserException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token.getType()
-                    .toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
+                throw new ParserException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token.getType()
+                        .toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
         }
 
         // there may or may not be more to this expression - let's keep looking
@@ -384,10 +384,10 @@ public class ExpressionParser {
          * unique ways for the sake of performance.
          */
         switch (functionName) {
-        case "parent":
-            return new ParentFunctionExpression(parser.peekBlockStack(), stream.current().getLineNumber());
-        case "block":
-            return new BlockFunctionExpression(args, node.getLineNumber());
+            case "parent":
+                return new ParentFunctionExpression(parser.peekBlockStack(), stream.current().getLineNumber());
+            case "block":
+                return new BlockFunctionExpression(args, node.getLineNumber());
         }
 
         return new FunctionOrMacroInvocationExpression(functionName, args, node.getLineNumber());
@@ -516,7 +516,7 @@ public class ExpressionParser {
                 if (!namedArgs.isEmpty()) {
                     throw new ParserException(null,
                             "Positional arguments must be declared before any named arguments.", stream.current()
-                                    .getLineNumber(), stream.getFilename());
+                            .getLineNumber(), stream.getFilename());
                 }
                 positionalArgs.add(new PositionalArgumentNode(argumentValue));
             } else {

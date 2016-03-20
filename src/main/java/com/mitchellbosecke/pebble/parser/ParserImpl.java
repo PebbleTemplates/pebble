@@ -67,7 +67,7 @@ public class ParserImpl implements Parser {
      * @param tokenParsers    A map of token parsers
      */
     public ParserImpl(Map<String, UnaryOperator> unaryOperators, Map<String, BinaryOperator> binaryOperators,
-            Map<String, TokenParser> tokenParsers) {
+                      Map<String, TokenParser> tokenParsers) {
         this.binaryOperators = binaryOperators;
         this.unaryOperators = unaryOperators;
         this.tokenParsers = tokenParsers;
@@ -110,18 +110,18 @@ public class ParserImpl implements Parser {
         while (!stream.isEOF()) {
 
             switch (stream.current().getType()) {
-            case TEXT:
+                case TEXT:
 
                 /*
                  * The current token is a text token. Not much to do here other
                  * than convert it to a text Node.
                  */
-                token = stream.current();
-                nodes.add(new TextNode(token.getValue(), token.getLineNumber()));
-                stream.next();
-                break;
+                    token = stream.current();
+                    nodes.add(new TextNode(token.getValue(), token.getLineNumber()));
+                    stream.next();
+                    break;
 
-            case PRINT_START:
+                case PRINT_START:
 
                 /*
                  * We are entering a print delimited region at this point. These
@@ -129,25 +129,25 @@ public class ParserImpl implements Parser {
                  * control to our expression parser.
                  */
 
-                // go to the next token because the current one is just the
-                // opening delimiter
-                token = stream.next();
+                    // go to the next token because the current one is just the
+                    // opening delimiter
+                    token = stream.next();
 
-                Expression<?> expression = this.expressionParser.parseExpression();
-                nodes.add(new PrintNode(expression, token.getLineNumber()));
+                    Expression<?> expression = this.expressionParser.parseExpression();
+                    nodes.add(new PrintNode(expression, token.getLineNumber()));
 
-                // we expect to see a print closing delimiter
-                stream.expect(Token.Type.PRINT_END);
+                    // we expect to see a print closing delimiter
+                    stream.expect(Token.Type.PRINT_END);
 
-                break;
+                    break;
 
-            case EXECUTE_START:
+                case EXECUTE_START:
 
-                // go to the next token because the current one is just the
-                // opening delimiter
-                stream.next();
+                    // go to the next token because the current one is just the
+                    // opening delimiter
+                    stream.next();
 
-                token = stream.current();
+                    token = stream.current();
 
                 /*
                  * We expect a name token at the beginning of every block.
@@ -159,39 +159,39 @@ public class ParserImpl implements Parser {
                  * 'endif' or 'else' and act accordingly, thus we should not
                  * consume it.
                  */
-                if (!Token.Type.NAME.equals(token.getType())) {
-                    throw new ParserException(null, "A block must start with a tag name.", token.getLineNumber(),
+                    if (!Token.Type.NAME.equals(token.getType())) {
+                        throw new ParserException(null, "A block must start with a tag name.", token.getLineNumber(),
+                                stream.getFilename());
+                    }
+
+                    // If this method was executed using a TokenParser and
+                    // that parser provided a stopping condition (ex. checking
+                    // for the 'endif' token) let's check for that condition
+                    // now.
+                    if (stopCondition != null && stopCondition.evaluate(token)) {
+                        return new BodyNode(token.getLineNumber(), nodes);
+                    }
+
+                    // find an appropriate parser for this name
+                    TokenParser tokenParser = tokenParsers.get(token.getValue());
+
+                    if (tokenParser == null) {
+                        throw new ParserException(null, String.format("Unexpected tag name \"%s\"", token.getValue()),
+                                token.getLineNumber(), stream.getFilename());
+                    }
+
+                    RenderableNode node = tokenParser.parse(token, this);
+
+                    // node might be null (ex. "extend" token parser)
+                    if (node != null) {
+                        nodes.add(node);
+                    }
+
+                    break;
+
+                default:
+                    throw new ParserException(null, "Parser ended in undefined state.", stream.current().getLineNumber(),
                             stream.getFilename());
-                }
-
-                // If this method was executed using a TokenParser and
-                // that parser provided a stopping condition (ex. checking
-                // for the 'endif' token) let's check for that condition
-                // now.
-                if (stopCondition != null && stopCondition.evaluate(token)) {
-                    return new BodyNode(token.getLineNumber(), nodes);
-                }
-
-                // find an appropriate parser for this name
-                TokenParser tokenParser = tokenParsers.get(token.getValue());
-
-                if (tokenParser == null) {
-                    throw new ParserException(null, String.format("Unexpected tag name \"%s\"", token.getValue()),
-                            token.getLineNumber(), stream.getFilename());
-                }
-
-                RenderableNode node = tokenParser.parse(token, this);
-
-                // node might be null (ex. "extend" token parser)
-                if (node != null) {
-                    nodes.add(node);
-                }
-
-                break;
-
-            default:
-                throw new ParserException(null, "Parser ended in undefined state.", stream.current().getLineNumber(),
-                        stream.getFilename());
             }
         }
 

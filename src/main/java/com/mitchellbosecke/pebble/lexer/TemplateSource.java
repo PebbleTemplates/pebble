@@ -10,9 +10,8 @@ import java.util.Arrays;
  * allocating a copy and it is possible to perform regex matches from the
  * logical beginning of the remaining un-tokenized source. This class will also
  * standardize newline characters from different architectures.
- * 
- * @author mbosecke
  *
+ * @author mbosecke
  */
 public class TemplateSource implements CharSequence {
 
@@ -52,13 +51,10 @@ public class TemplateSource implements CharSequence {
 
     /**
      * Constructor
-     * 
-     * @param reader
-     *            Reader provided by the Loader
-     * @param filename
-     *            Filename of the template
-     * @throws IOException
-     *             Exceptions thrown from the reader
+     *
+     * @param reader   Reader provided by the Loader
+     * @param filename Filename of the template
+     * @throws IOException Exceptions thrown from the reader
      */
     public TemplateSource(Reader reader, String filename) throws IOException {
         this.filename = filename;
@@ -68,7 +64,7 @@ public class TemplateSource implements CharSequence {
 
     /**
      * Read the contents of the template into the internal char[].
-     * 
+     *
      * @param reader
      * @return
      * @throws IOException
@@ -86,7 +82,7 @@ public class TemplateSource implements CharSequence {
 
     /**
      * Append characters to the internal array.
-     * 
+     *
      * @param characters
      * @param amount
      */
@@ -99,7 +95,7 @@ public class TemplateSource implements CharSequence {
 
     /**
      * Ensure that the internal array has a minimum capacity.
-     * 
+     *
      * @param minCapacity
      */
     private void ensureCapacity(int minCapacity) {
@@ -110,7 +106,7 @@ public class TemplateSource implements CharSequence {
 
     /**
      * Grow the internal array to at least the desired minimum capacity.
-     * 
+     *
      * @param minCapacity
      */
     private void grow(int minCapacity) {
@@ -128,9 +124,8 @@ public class TemplateSource implements CharSequence {
     /**
      * Moves the start index a certain amount. While traversing this amount we
      * will count how many newlines have been encountered.
-     * 
-     * @param amount
-     *            Amount of characters to advance by
+     *
+     * @param amount Amount of characters to advance by
      */
     public void advance(int amount) {
 
@@ -170,9 +165,8 @@ public class TemplateSource implements CharSequence {
      * Advances through possible newline character and returns how many
      * characters were used to represent the newline (windows uses two
      * characters to represent one newline).
-     * 
-     * @param index
-     *            The index of the potential newline character
+     *
+     * @param index The index of the potential newline character
      * @return
      */
     private int advanceThroughNewline(int index) {

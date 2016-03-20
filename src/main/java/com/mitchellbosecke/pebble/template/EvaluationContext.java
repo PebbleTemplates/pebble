@@ -82,9 +82,9 @@ public class EvaluationContext {
      * @param tagCache          The cache used by the "cache" tag
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
-            ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
-            ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates, ScopeChain scopeChain,
-            Hierarchy hierarchy) {
+                             ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
+                             ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates, ScopeChain scopeChain,
+                             Hierarchy hierarchy) {
 
         if (hierarchy == null) {
             hierarchy = new Hierarchy(self);
