@@ -53,12 +53,12 @@ public class GetAttributeExpression implements Expression<Object> {
     private final ConcurrentHashMap<Class<?>, Member> memberCache;
 
     public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, String filename,
-            int lineNumber) {
+                                  int lineNumber) {
         this(node, attributeNameExpression, null, filename, lineNumber);
     }
 
     public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, ArgumentsNode args,
-            String filename, int lineNumber) {
+                                  String filename, int lineNumber) {
 
         this.node = node;
         this.attributeNameExpression = attributeNameExpression;
@@ -154,8 +154,7 @@ public class GetAttributeExpression implements Expression<Object> {
                 Object o = argumentValues[i];
                 if (o == null) {
                     argumentTypes[i] = null;
-                }
-                else {
+                } else {
                     argumentTypes[i] = o.getClass();
                 }
             }

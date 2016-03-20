@@ -150,20 +150,20 @@ public final class LexerImpl implements Lexer {
          */
         while (this.source.length() > 0) {
             switch (this.state) {
-            case DATA:
-                lexData();
-                break;
-            case EXECUTE:
-                lexExecute();
-                break;
-            case PRINT:
-                lexPrint();
-                break;
-            case COMMENT:
-                lexComment();
-                break;
-            default:
-                break;
+                case DATA:
+                    lexData();
+                    break;
+                case EXECUTE:
+                    lexExecute();
+                    break;
+                case PRINT:
+                    lexPrint();
+                    break;
+                case COMMENT:
+                    lexComment();
+                    break;
+                default:
+                    break;
             }
 
         }

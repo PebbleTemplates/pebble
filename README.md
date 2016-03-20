@@ -121,4 +121,4 @@ Currently looking for contributors! In particular we need help with new feature 
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-![Continuous Integration](https://travis-ci.org/mbosecke/pebble.svg?branch=master)
+![Continuous Integration](https://api.travis-ci.org/PebbleTemplates/pebble.svg?branch=master)

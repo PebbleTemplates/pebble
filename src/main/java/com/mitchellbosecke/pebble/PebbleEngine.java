@@ -76,8 +76,8 @@ public class PebbleEngine {
      * @param extensions The userProvidedExtensions which should be loaded.
      */
     private PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
-            Cache<BaseTagCacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
-            ExecutorService executorService, Collection<? extends Extension> extensions) {
+                         Cache<BaseTagCacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
+                         ExecutorService executorService, Collection<? extends Extension> extensions) {
 
         this.loader = loader;
         this.syntax = syntax;
@@ -263,7 +263,7 @@ public class PebbleEngine {
         private ExecutorService executorService;
 
         private Cache<Object, PebbleTemplate> templateCache;
-        
+
         private boolean cacheActive = true;
 
         private Cache<BaseTagCacheKey, Object> tagCache;
@@ -414,12 +414,12 @@ public class PebbleEngine {
             escaperExtension.addEscapingStrategy(name, strategy);
             return this;
         }
-        
+
         /**
-         * Enable/disable all caches, i.e. cache used by the engine to store compiled PebbleTemplate instances 
+         * Enable/disable all caches, i.e. cache used by the engine to store compiled PebbleTemplate instances
          * and tags cache
          *
-         * @param cacheActive     toggle to enable/disable all caches
+         * @param cacheActive toggle to enable/disable all caches
          * @return This builder object
          */
         public Builder cacheActive(boolean cacheActive) {
@@ -454,7 +454,7 @@ public class PebbleEngine {
                 defaultLocale = Locale.getDefault();
             }
 
-            
+
             if (cacheActive) {
                 // default caches
                 if (templateCache == null) {
@@ -464,12 +464,11 @@ public class PebbleEngine {
                 if (tagCache == null) {
                     tagCache = CacheBuilder.newBuilder().maximumSize(200).build();
                 }
-            }
-            else {
+            } else {
                 templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
                 tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
             }
-            
+
             return new PebbleEngine(loader, syntax, strictVariables, defaultLocale, tagCache, templateCache,
                     executorService, extensions);
         }
