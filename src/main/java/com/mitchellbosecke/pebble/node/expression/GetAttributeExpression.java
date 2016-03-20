@@ -173,11 +173,17 @@ public class GetAttributeExpression implements Expression<Object> {
             result = invokeMember(object, member, argumentValues);
         } else if (context.isStrictVariables()) {
             if (object == null) {
-                final String rootPropertyName = ((ContextVariableExpression) node).getName();
 
-                throw new RootAttributeNotFoundException(null, String.format(
-                        "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
-                        rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
+                if (node instanceof ContextVariableExpression) {
+                    final String rootPropertyName = ((ContextVariableExpression) node).getName();
+                    throw new RootAttributeNotFoundException(null, String.format(
+                            "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
+                            rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
+                } else {
+                    throw new RootAttributeNotFoundException(null,
+                            "Attempt to get attribute of null object and strict variables is set to true.", attributeName, this.lineNumber, this.filename);
+                }
+
             } else {
                 throw new AttributeNotFoundException(null, String.format(
                         "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
@@ -360,7 +366,8 @@ public class GetAttributeExpression implements Expression<Object> {
     private class MemberCacheKey {
         private final Class<?> clazz;
         private final String attributeName;
-        private MemberCacheKey(Class<?> clazz, String attributeName){
+
+        private MemberCacheKey(Class<?> clazz, String attributeName) {
             this.clazz = clazz;
             this.attributeName = attributeName;
         }
