@@ -11,8 +11,8 @@ package com.mitchellbosecke.pebble.template;
 import com.google.common.cache.Cache;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -96,7 +96,7 @@ public class EvaluationContext {
         this.extensionRegistry = extensionRegistry;
         this.tagCache = tagCache;
         this.executorService = executorService;
-        this.importedTemplates = importedTemplates != null ? new ArrayList<PebbleTemplateImpl>(importedTemplates) : null;
+        this.importedTemplates = importedTemplates;
         this.scopeChain = scopeChain;
         this.hierarchy = hierarchy;
     }
@@ -115,16 +115,16 @@ public class EvaluationContext {
     }
 
     /**
-     * Makes an exact copy of the evaluation context except the "scopeChain"
-     * object will be a deep copy without reference to the original. This is
-     * used for the "parallel" tag.
+     * Makes a "snapshot" of the evaluation context. The scopeChain
+     * object will be a deep copy and the imported templates will be
+     * a new list. This is used for the "parallel" tag.
      *
      * @param self The template implementation
      * @return A copy of the evaluation context
      */
-    public EvaluationContext shallowCopyWithNewScopeChain(PebbleTemplateImpl self) {
+    public EvaluationContext threadSafeCopy(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, importedTemplates, scopeChain.deepCopy(), hierarchy);
+                executorService, new ArrayList<>(importedTemplates), scopeChain.deepCopy(), hierarchy);
         return result;
     }
 

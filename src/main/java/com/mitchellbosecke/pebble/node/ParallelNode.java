@@ -66,7 +66,7 @@ public class ParallelNode extends AbstractRenderableNode {
             
         } else {
 
-            final EvaluationContext contextCopy = context.shallowCopyWithNewScopeChain(self);
+            final EvaluationContext contextCopy = context.threadSafeCopy(self);
 
             final StringWriter newStringWriter = new StringWriter();
             final Writer newFutureWriter = new FutureWriter(newStringWriter);
