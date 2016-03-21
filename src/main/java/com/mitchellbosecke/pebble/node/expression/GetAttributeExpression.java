@@ -50,7 +50,7 @@ public class GetAttributeExpression implements Expression<Object> {
     /**
      * Potentially cached on first evaluation.
      */
-    private final ConcurrentHashMap<Class<?>, Member> memberCache;
+    private final ConcurrentHashMap<MemberCacheKey, Member> memberCache;
 
     public GetAttributeExpression(Expression<?> node, Expression<?> attributeNameExpression, String filename,
                                   int lineNumber) {
@@ -83,7 +83,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
         Object[] argumentValues = null;
 
-        Member member = object == null ? null : memberCache.get(object.getClass());
+        Member member = object == null ? null : memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
 
         if (object != null && member == null) {
 
@@ -161,7 +161,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
             member = reflect(object, attributeName, argumentTypes);
             if (member != null) {
-                memberCache.put(object.getClass(), member);
+                memberCache.put(new MemberCacheKey(object.getClass(), attributeName), member);
             }
 
         }
@@ -173,11 +173,17 @@ public class GetAttributeExpression implements Expression<Object> {
             result = invokeMember(object, member, argumentValues);
         } else if (context.isStrictVariables()) {
             if (object == null) {
-                final String rootPropertyName = ((ContextVariableExpression) node).getName();
 
-                throw new RootAttributeNotFoundException(null, String.format(
-                        "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
-                        rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
+                if (node instanceof ContextVariableExpression) {
+                    final String rootPropertyName = ((ContextVariableExpression) node).getName();
+                    throw new RootAttributeNotFoundException(null, String.format(
+                            "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
+                            rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
+                } else {
+                    throw new RootAttributeNotFoundException(null,
+                            "Attempt to get attribute of null object and strict variables is set to true.", attributeName, this.lineNumber, this.filename);
+                }
+
             } else {
                 throw new AttributeNotFoundException(null, String.format(
                         "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
@@ -355,6 +361,35 @@ public class GetAttributeExpression implements Expression<Object> {
             result = Boolean.class;
         }
         return result;
+    }
+
+    private class MemberCacheKey {
+        private final Class<?> clazz;
+        private final String attributeName;
+
+        private MemberCacheKey(Class<?> clazz, String attributeName) {
+            this.clazz = clazz;
+            this.attributeName = attributeName;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            MemberCacheKey that = (MemberCacheKey) o;
+
+            if (!clazz.equals(that.clazz)) return false;
+            return attributeName.equals(that.attributeName);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = clazz.hashCode();
+            result = 31 * result + attributeName.hashCode();
+            return result;
+        }
     }
 
     @Override
