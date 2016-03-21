@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -20,12 +20,12 @@ import java.util.concurrent.TimeoutException;
  * A Writer that will wrap around the user-provided writer if the user also
  * provided an ExecutorService to the main PebbleEngine. A FutureWriter is
  * capable of handling Futures that will return a string.
- * 
+ *
  * It is not thread safe but that is okay. Each thread will have it's own
  * writer, provided by the "parallel" node; i.e. they will never share writers.
- * 
+ *
  * @author Mitchell
- * 
+ *
  */
 public class FutureWriter extends Writer {
 
@@ -99,9 +99,10 @@ public class FutureWriter extends Writer {
                 String result = future.get();
                 internalWriter.write(result);
                 internalWriter.flush();
-            } catch (InterruptedException | ExecutionException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                throw new IOException(e);
             }
         }
         orderedFutures.clear();
