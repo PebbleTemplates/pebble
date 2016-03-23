@@ -79,7 +79,7 @@ public class ForNode extends AbstractRenderableNode {
             int length = getIteratorSize(iterableEvaluation);
             int index = 0;
 
-            Map<String, Object> loop = new HashMap<>();
+            Map<String, Object> loop = null;
 
             boolean usingExecutorService = context.getExecutorService() != null;
 
@@ -91,20 +91,31 @@ public class ForNode extends AbstractRenderableNode {
                  * re-using the same one; it's imperative that each thread would
                  * get it's own distinct copy of the context.
                  */
-                if (usingExecutorService) {
+                if (index == 0 || usingExecutorService) {
                     loop = new HashMap<>();
+                    loop.put("first", index == 0);
+                    loop.put("last", index == length - 1);
+                    loop.put("length", length);
+                }else{
+
+                    // second iteration
+                    if(index == 1){
+                        loop.put("first", false);
+                    }
+
+                    // last iteration
+                    if(index == length - 1){
+                        loop.put("last", true);
+                    }
                 }
-                loop.put("last", index == length - 1);
-                loop.put("first", index == 0);
+
                 loop.put("revindex", length - index - 1);
                 loop.put("index", index++);
-                loop.put("length", length);
 
                 scopeChain.put("loop", loop);
 
                 scopeChain.put(variableName, iterator.next());
                 body.render(self, writer, context);
-
             }
 
             if (newScope) {
