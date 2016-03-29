@@ -30,6 +30,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ConcurrencyTest extends AbstractTest {
 
@@ -370,7 +371,55 @@ public class ConcurrencyTest extends AbstractTest {
         template.evaluate(multipleThreadResult);
 
         executor.shutdown();
-        
+
         assertEquals(singleThreadResult.toString(), multipleThreadResult.toString());
+    }
+
+    @Test
+    public void testConcurrentEvaluationWithException() throws PebbleException, IOException
+    {
+        PebbleEngine engine = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String templateSource =
+                  "{% for i in [1,2,3,4,5,6,7,8,9,10] %}"
+                +   "{% parallel %}"
+                +       "{{test(i)}}"
+                +   "{% endparallel %}"
+                + "{% endfor %}";
+
+        PebbleTemplate template = engine.getTemplate(templateSource);
+
+        StringWriter singleThreadResult = new StringWriter();
+
+        try
+        {
+            template.evaluate(singleThreadResult);
+            fail("Expecting the single thread evaluation to throw an exception");
+        }
+        catch (Exception ex)
+        {
+        }
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+
+        engine = new PebbleEngine.Builder().loader(new StringLoader()).executorService(executor).strictVariables(false).build();
+
+        template = engine.getTemplate(templateSource);
+
+        StringWriter multipleThreadResult = new StringWriter();
+
+        try
+        {
+            template.evaluate(multipleThreadResult);
+            fail("Expection the multi thread evaluation to throw an exception");
+        }
+        catch (Exception ex)
+        {
+        }
+
+        executor.shutdown();
+
+        assertEquals("Expection the result of multiple threads and single thread execution to match.",
+            singleThreadResult.toString(), multipleThreadResult.toString());
     }
 }
