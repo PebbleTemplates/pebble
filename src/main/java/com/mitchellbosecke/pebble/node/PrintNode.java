@@ -8,16 +8,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.utils.StringUtils;
+
+import java.io.IOException;
+import java.io.Writer;
 
 public class PrintNode extends AbstractRenderableNode {
 
@@ -33,12 +32,7 @@ public class PrintNode extends AbstractRenderableNode {
             PebbleException {
         Object var = expression.evaluate(self, context);
         if (var != null) {
-            if (var instanceof BigDecimal) {
-                writer.write(((BigDecimal) var).toPlainString());
-            }
-            else {
-                writer.write(var.toString());
-            }
+            writer.write(StringUtils.toString(var));
         }
     }
 

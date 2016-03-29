@@ -1,5 +1,7 @@
 package com.mitchellbosecke.pebble.utils;
 
+import java.math.BigDecimal;
+
 public class StringUtils {
 
     public static String ltrim(String input) {
@@ -16,5 +18,23 @@ public class StringUtils {
             i--;
         }
         return input.substring(0, i + 1);
+    }
+
+    /**
+     * Converts non-null objects into strings. It will use the toString() method
+     * of most objects but handles some known exceptions.
+     *
+     * @param var
+     * @return
+     */
+    public static String toString(Object var) {
+        if (var == null) {
+            throw new IllegalArgumentException("Var can not be null");
+        }
+        if (var instanceof BigDecimal) {
+            return ((BigDecimal) var).toPlainString();
+        } else {
+            return var.toString();
+        }
     }
 }

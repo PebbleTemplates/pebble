@@ -8,13 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.escaper;
 
+import com.coverity.security.Escape;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.coverity.security.Escape;
-import com.mitchellbosecke.pebble.extension.Filter;
 
 public class EscapeFilter implements Filter {
 
@@ -80,7 +81,7 @@ public class EscapeFilter implements Filter {
         if (inputObject == null || inputObject instanceof SafeString) {
             return inputObject;
         }
-        String input = inputObject.toString();
+        String input = StringUtils.toString(inputObject);
 
         String strategy = defaultStrategy;
 

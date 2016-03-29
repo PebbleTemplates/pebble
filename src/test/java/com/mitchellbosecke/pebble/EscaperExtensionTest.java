@@ -14,18 +14,19 @@ import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.escaper.EscapingStrategy;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class EscaperExtensionTest extends AbstractTest {
 
@@ -38,6 +39,24 @@ public class EscaperExtensionTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("&amp;&lt;&gt;&quot;&#39;", writer.toString());
+    }
+
+    @Test()
+    public void testPrintBigDecimal() throws PebbleException, IOException {
+
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        String source = "{{ num }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        BigDecimal num = new BigDecimal("1234E+4");
+        context.put("num", num);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals(num.toPlainString(), writer.toString());
+        assertNotEquals(num.toString(), writer.toString());
     }
 
     @Test
