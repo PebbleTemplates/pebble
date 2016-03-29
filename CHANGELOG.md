@@ -1,5 +1,7 @@
 ## v2.2.1 (Coming Soon)
 - **Security Fix**: Pebble was only escaping Strings; now it escapes the toString() output of all objects
+- [Official spring4 extension](https://github.com/PebbleTemplates/pebble-spring4)
+- [Official spring boot starter](https://github.com/PebbleTemplates/pebble-spring-boot-starter)
 - Bug fix: ConcurrentModificationException when importing macros in nested parallel blocks
 - Bug fix: Exceptions in parallel blocks were being swallowed
 - Bug fix: Obtaining a dynamic attribute of a variable was being incorrectly cached
