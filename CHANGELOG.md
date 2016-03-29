@@ -1,3 +1,11 @@
+## v2.2.1 (Coming Soon)
+- **Security Fix**: Pebble was only escaping Strings; now it escapes the toString() output of all objects
+- Bug fix: ConcurrentModificationException when importing macros in nested parallel blocks
+- Bug fix: Exceptions in parallel blocks were being swallowed
+- Bug fix: Obtaining a dynamic attribute of a variable was being incorrectly cached
+- Improved error reporting
+
+
 ## v2.2.0 (2016-03-06)
 - Added "merge" filter
 - Add support for strings to the "contains" operator
