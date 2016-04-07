@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ArraySyntaxTest extends AbstractTest {
 
@@ -330,6 +331,22 @@ public class ArraySyntaxTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, new HashMap<String, Object>());
         assertEquals("BobMariaJohn", writer.toString());
+    }
+
+    @Test
+    public void testForTagInvalidIterable() throws PebbleException, IOException {
+
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        String source = "{% set myVar = 'somevalue' %}{% for myVal in myVar %}{{ myVal }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        try {
+            template.evaluate(writer, new HashMap<String, Object>());
+            fail("Expected PebbleException");
+        } catch (PebbleException e) {
+            assertEquals("Not an iterable object. Value = [somevalue] (" + source + ":1)", e.getMessage());
+        }
     }
 
     @Test
