@@ -1,4 +1,4 @@
-## v2.2.1 (Coming Soon)
+## v2.2.1 (2018-03-28)
 - **Security Fix**: Pebble was only escaping Strings; now it escapes the toString() output of all objects
 - [Official spring4 extension](https://github.com/PebbleTemplates/pebble-spring4)
 - [Official spring boot starter](https://github.com/PebbleTemplates/pebble-spring-boot-starter)
