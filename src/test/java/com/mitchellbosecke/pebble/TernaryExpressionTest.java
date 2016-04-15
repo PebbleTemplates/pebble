@@ -10,9 +10,11 @@ package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
+import org.junit.experimental.categories.Categories.ExcludeCategory;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -231,4 +233,15 @@ public class TernaryExpressionTest extends AbstractTest {
         assertEquals("true", writer.toString());
     }
 
+    @Test
+    public void testUnaryNotExpressionNull() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        
+        String source = "{{ not a ? 'true' : 'false' }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        
+        Writer writer = new StringWriter();
+        template.evaluate(writer, new HashMap<String, Object>());
+        assertEquals("false", writer.toString());
+    }
 }
