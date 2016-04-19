@@ -731,7 +731,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("cd", writer.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -744,7 +744,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -872,7 +872,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("2", writer.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testSliceWithInvalidInputType() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -967,7 +967,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = PebbleException.class)
     public void testMergeListWithStringAndFail() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -979,7 +979,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = PebbleException.class)
     public void testMergeDifferentArraysAndFail() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
