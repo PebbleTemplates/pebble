@@ -50,7 +50,7 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
         Collections.addAll(arguments, args);
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, function);
-        return function.execute(namedArguments);
+        return function.execute(namedArguments, self, this.getLineNumber());
     }
 
     @Override
