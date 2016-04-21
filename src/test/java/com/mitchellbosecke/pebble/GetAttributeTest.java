@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,18 @@ public class GetAttributeTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}{{ object.name }}");
         Map<String, Object> context = new HashMap<>();
         context.put("object", new SimpleObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+    
+    @Test
+    public void testAttributePrimitiveAccess() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object[1] }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", Collections.singletonMap(Integer.valueOf(1), new SimpleObject()));
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
