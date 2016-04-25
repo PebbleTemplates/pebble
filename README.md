@@ -80,7 +80,7 @@ The output should result in the following:
 ## Contributing
 Currently looking for contributors! In particular we need help with new feature ideas, bug reports/fixes, API feedback, performance optimization, and IDE integration. Just one little commit and you'll be forever listed on the [contributors page](http://www.mitchellbosecke.com/pebble/contributing). No contribution is too small and contributing is super easy:
 
-* `git clone git@github.com:mbosecke/pebble.git`
+* `git clone git://github.com/PebbleTemplates/pebble.git`
 * Add feature or fix bug.
 * Add quick unit test
 * `mvn install`
