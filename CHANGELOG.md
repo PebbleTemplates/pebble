@@ -1,4 +1,8 @@
-## v2.2.1 (2018-03-28)
+## v2.2.2 (2016-07-03)
+- Improved error when attempting to iterate over a non-iterable object
+- [Updates to pebble-spring-boot-starter](https://github.com/PebbleTemplates/pebble-spring-boot-starter/blob/master/CHANGELOG.md)
+
+## v2.2.1 (2016-03-28)
 - **Security Fix**: Pebble was only escaping Strings; now it escapes the toString() output of all objects
 - [Official spring4 extension](https://github.com/PebbleTemplates/pebble-spring4)
 - [Official spring boot starter](https://github.com/PebbleTemplates/pebble-spring-boot-starter)
