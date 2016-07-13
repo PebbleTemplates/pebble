@@ -193,4 +193,41 @@ public class ScopeChain {
         return stack.getFirst().containsKey(variableName);
     }
 
+    /**
+     * Sets the value of a variable in the first scope in the chain that
+     * already contains the variable; adds a variable to the current scope
+     * if an existing variable is not found.
+     *
+     * @param key   The name of the variable
+     * @param value The value of the variable
+     */
+    public void set(String key, Object value) {
+        /*
+         * The majority of time, the requested variable will be in the first
+         * scope so we do a quick lookup in that scope before attempting to
+         * create an iterator, etc. This is solely for performance.
+         */
+        Scope scope = stack.getFirst();
+        if (scope.containsKey(key)) {
+            scope.put(key, value);
+            return;
+        }
+
+        Iterator<Scope> iterator = stack.iterator();
+
+        // account for the first lookup we did
+        iterator.next();
+
+        while (iterator.hasNext()) {
+            scope = iterator.next();
+
+            if (scope.isLocal() || scope.containsKey(key)) {
+                scope.put(key, value);
+                return;
+            }
+        }
+
+        // no existing variable, create a new one
+        put(key, value);
+    }
 }

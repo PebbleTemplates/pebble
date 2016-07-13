@@ -857,6 +857,26 @@ public class CoreTagsTest extends AbstractTest {
     }
 
     @Test
+    public void testReSetInForLoop() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{% set total = 0 %}{% for i in 1..1 %}{% for item in items %}{% set total = total + item.balance %}{% endfor %}{% endfor %}{{ total }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        List<Map<String,Object>> items = new ArrayList<>();
+        for (int i = 1; i < 4 ; ++i) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("balance", i);
+            items.add(item);
+        }
+        context.put("items", items);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("6", writer.toString());
+    }
+
+    @Test
     public void testVerbatim() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("{% verbatim %}{{ foo }}{{ bar }}{% endverbatim %}");
