@@ -5,9 +5,11 @@ import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
@@ -64,11 +66,11 @@ public class TestRelativePath extends AbstractTest {
      * Tests if relative includes work. Issue #162.
      */
     @Test
-    public void testPathWithBackslashesWithRelativePathWithForwardSlashes() throws PebbleException, IOException {
+    public void testPathWithBackslashesWithRelativePathWithForwardSlashes() throws PebbleException, IOException, URISyntaxException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
         URL url = getClass().getResource("/templates/relativepath/subdirectory1/template.forwardslashes.peb");
         PebbleTemplate template = pebble
-                .getTemplate(url.getPath().replace("/", "\\")); // ensure backslashes in all environments
+                .getTemplate(new File(url.toURI()).getPath().replace("/", "\\")); // ensure backslashes in all environments
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("included", writer.toString());
@@ -80,11 +82,11 @@ public class TestRelativePath extends AbstractTest {
      * @throws IOException
      */
     @Test
-    public void testPathWithForwardSlashesWithRelativePathWithBackwardSlashes() throws PebbleException, IOException {
+    public void testPathWithForwardSlashesWithRelativePathWithBackwardSlashes() throws PebbleException, IOException, URISyntaxException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
         URL url = getClass().getResource("/templates/relativepath/subdirectory1/template.backwardslashes.peb");
         PebbleTemplate template = pebble
-                .getTemplate(url.getPath().replace("\\", "/")); // ensure forward slashes in all environments
+                .getTemplate(new File(url.toURI()).getPath().replace("\\", "/")); // ensure forward slashes in all environments
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("included", writer.toString());
