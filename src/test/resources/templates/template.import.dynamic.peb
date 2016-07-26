@@ -1,0 +1,6 @@
+{# used by CoreTagsTest.testDynamicImport #}
+{# depending on the boolean variable modern, different macro files will be #}
+{# imported. Both macro files provide a macro named render_form. #}
+{% import modern ? "templates/template.import.dynamic.macro_ajax.peb" 
+        : "templates/template.import.dynamic.macro_classic.peb" %}
+{{ render_form() }}

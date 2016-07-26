@@ -1,0 +1,4 @@
+{# used by CoreTagsTest.testDynamicImport #}
+{% macro render_form() %}
+ajax macro
+{% endmacro %}
