@@ -733,6 +733,24 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("ajax macro" + LINE_SEPARATOR, writer.toString());
     }
 
+    @Test
+    public void testDynamicInclude() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.include.dynamic.peb");
+
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("admin", false);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("default footer", writer.toString());
+
+        context.put("admin", true);
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("admin footer", writer.toString());
+    }
+
     @Test(expected = PebbleException.class)
     public void testNonExistingMacroOrFunction() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
