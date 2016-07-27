@@ -15,6 +15,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -67,12 +68,12 @@ public class LoaderTest extends AbstractTest {
     }
 
     @Test
-    public void testFileLoader() throws PebbleException, IOException {
+    public void testFileLoader() throws PebbleException, IOException, URISyntaxException {
         Loader<?> loader = new FileLoader();
         loader.setSuffix(".suffix");
         PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
         URL url = getClass().getResource("/templates/template.loaderTest.peb");
-        PebbleTemplate template1 = engine.getTemplate(url.getPath());
+        PebbleTemplate template1 = engine.getTemplate(new File(url.toURI()).getPath());
         Writer writer1 = new StringWriter();
         template1.evaluate(writer1);
         assertEquals("SUCCESS", writer1.toString());
