@@ -714,6 +714,42 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("	<input name=\"company\" value=\"forcorp\" type=\"text\" />" + LINE_SEPARATOR,
                 writer.toString());
     }
+    
+    @Test
+    public void testDynamicImport() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.import.dynamic.peb");
+
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("modern", false);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("classic macro" + LINE_SEPARATOR, writer.toString());
+
+        context.put("modern", true);
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("ajax macro" + LINE_SEPARATOR, writer.toString());
+    }
+
+    @Test
+    public void testDynamicInclude() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.include.dynamic.peb");
+
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("admin", false);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("default footer", writer.toString());
+
+        context.put("admin", true);
+        writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("admin footer", writer.toString());
+    }
 
     @Test(expected = PebbleException.class)
     public void testNonExistingMacroOrFunction() throws PebbleException, IOException {

@@ -1,0 +1,4 @@
+{# used by CoreTagsTest.testDynamicInclude #}
+{# depending on the boolean variable admin, different templates will be included. #}
+{% include admin ? "templates/template.include.dynamic.adminFooter.peb" 
+        : "templates/template.include.dynamic.defaultFooter.peb" %}
