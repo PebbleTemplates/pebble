@@ -30,7 +30,7 @@ public class SetNode extends AbstractRenderableNode {
 
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
-        context.getScopeChain().put(name, value.evaluate(self, context));
+        context.getScopeChain().set(name, value.evaluate(self, context));
     }
 
     @Override
