@@ -31,5 +31,10 @@ public class ScopeChainTest extends AbstractTest {
         assertEquals("value2", scopeChain.get("key"));
         scopeChain.popScope();
         assertEquals("value2", scopeChain.get("key"));
+        scopeChain.pushLocalScope();
+        scopeChain.set("key", "value3");
+        assertEquals("value3", scopeChain.get("key"));
+        scopeChain.popScope();
+        assertEquals("value2", scopeChain.get("key"));
     }
 }

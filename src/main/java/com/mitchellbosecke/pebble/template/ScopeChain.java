@@ -208,7 +208,7 @@ public class ScopeChain {
          * create an iterator, etc. This is solely for performance.
          */
         Scope scope = stack.getFirst();
-        if (scope.containsKey(key)) {
+        if (scope.isLocal() || scope.containsKey(key)) {
             scope.put(key, value);
             return;
         }
