@@ -130,13 +130,10 @@ public class ScopeChain {
             // account for the first lookup we did
             iterator.next();
 
-            while (result == null && iterator.hasNext()) {
+            while (!scope.isLocal() && result == null && iterator.hasNext()) {
                 scope = iterator.next();
 
                 result = scope.get(key);
-                if (scope.isLocal()) {
-                    break;
-                }
             }
         }
 
@@ -168,14 +165,11 @@ public class ScopeChain {
         // account for the first lookup we did
         iterator.next();
 
-        while (iterator.hasNext()) {
+        while (!scope.isLocal() && iterator.hasNext()) {
             scope = iterator.next();
 
             if (scope.containsKey(key)) {
                 return true;
-            }
-            if (scope.isLocal()) {
-                break;
             }
         }
 
