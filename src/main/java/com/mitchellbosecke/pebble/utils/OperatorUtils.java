@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.utils;
 
+import com.mitchellbosecke.pebble.extension.escaper.SafeString;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Collection;
@@ -38,6 +40,8 @@ public class OperatorUtils {
 
     public static Object add(Object op1, Object op2) {
         if (op1 instanceof String || op2 instanceof String) {
+            return concatenateStrings(String.valueOf(op1), String.valueOf(op2));
+        } else if (op1 instanceof SafeString || op2 instanceof SafeString) {
             return concatenateStrings(String.valueOf(op1), String.valueOf(op2));
         } else if (op1 instanceof List) {
             return addToList((List<?>) op1, op2);
