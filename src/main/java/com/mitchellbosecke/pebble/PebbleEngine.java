@@ -254,9 +254,11 @@ public class PebbleEngine {
 
         private List<Extension> userProvidedExtensions = new ArrayList<>();
 
-        private Syntax syntax = new Syntax.Builder().build();
+        private Syntax syntax;
 
         private boolean strictVariables = false;
+        
+        private boolean enableNewLineTrimming = true;
 
         private Locale defaultLocale;
 
@@ -331,6 +333,29 @@ public class PebbleEngine {
          */
         public Builder strictVariables(boolean strictVariables) {
             this.strictVariables = strictVariables;
+            return this;
+        }
+        
+        /**
+         * Changes the <code>enableNewLineTrimming</code> setting of the PebbleEngine.
+         * The default value of this setting is "true".
+         * <p>
+         * If <code>enableNewLineTrimming</code> is set to false, then the
+         * first newline following a Pebble tag won't be trimmed. It is trimmed
+         * by default.
+         * </p>
+         * <p>
+         * For example, with <code>enableNewLineTrimming</code> left to true,
+         * <code>{{ key1\nkey2 }}</code> would result in
+         * <code>{{ val1val2 }}</code>. With <code>enableNewLineTrimming</code> 
+         * set to false, the result would be <code>{{ val1\nval2 }}</code>
+         * </p>
+         *
+         * @param enableNewLineTrimming Whether or not the newline should be trimmed.
+         * @return This builder object
+         */
+        public Builder enableNewLineTrimming(boolean enableNewLineTrimming) {
+            this.enableNewLineTrimming = enableNewLineTrimming;
             return this;
         }
 
@@ -467,6 +492,10 @@ public class PebbleEngine {
             } else {
                 templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
                 tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
+            }
+            
+            if(syntax == null) {
+                syntax = new Syntax.Builder().setEnableNewLineTrimming(enableNewLineTrimming).build();
             }
 
             return new PebbleEngine(loader, syntax, strictVariables, defaultLocale, tagCache, templateCache,
