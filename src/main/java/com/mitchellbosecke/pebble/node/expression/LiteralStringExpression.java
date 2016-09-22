@@ -39,4 +39,8 @@ public class LiteralStringExpression implements Expression<String> {
         return this.lineNumber;
     }
 
+    public String getValue() {
+        return value;
+    }
+
 }
