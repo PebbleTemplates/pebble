@@ -192,6 +192,16 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     /**
+     * Checks if a block exists
+     *
+     * @param blockName The name of the block
+     * @return Whether or not the block exists
+     */
+    public boolean hasBlock(String blockName) {
+        return blocks.containsKey(blockName);
+    }
+
+    /**
      * This method resolves the given relative path based on this template file
      * path.
      *
