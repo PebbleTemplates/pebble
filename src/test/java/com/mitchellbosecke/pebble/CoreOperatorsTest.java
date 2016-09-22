@@ -758,4 +758,26 @@ public class CoreOperatorsTest extends AbstractTest {
 
     }
 
+    /**
+     * Tests if the macro output SafeString concatenation is working.
+     */
+    @Test
+    public void testMacroSafeStringConcatenation() throws PebbleException, IOException {
+
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{% macro macro1() %}Bob{% endmacro %}\n"
+                      + "{% macro macro2() %}Maria{% endmacro %}\n"
+                      + "{% macro macro3() %}John{% endmacro %}\n"
+                      + "{{ (macro1() + macro2() + macro3()) | lower }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("bobmariajohn", writer.toString());
+
+    }
+
 }
