@@ -401,6 +401,10 @@ public class GetAttributeExpression implements Expression<Object> {
         return node;
     }
 
+    public Expression<?> getAttributeNameExpression() {
+        return attributeNameExpression;
+    }
+
     public ArgumentsNode getArgumentsNode() {
         return args;
     }
