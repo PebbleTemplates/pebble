@@ -109,7 +109,7 @@ public class NewlineTrimmingTest extends AbstractTest {
                                                         .enableNewLineTrimming(false)
                                                         .build();
 
-        PebbleTemplate template = pebble.getTemplate("{{param1}}\n}\n{{param2}}");
+        PebbleTemplate template = pebble.getTemplate("{{param1}}\n\n{{param2}}");
 
         Writer writer = new StringWriter();
 
@@ -119,7 +119,7 @@ public class NewlineTrimmingTest extends AbstractTest {
 
         template.evaluate(writer, params);
 
-        assertEquals("val1\n}\nval2", writer.toString());
+        assertEquals("val1\n\nval2", writer.toString());
     }
 
     @Test
