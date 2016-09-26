@@ -16,12 +16,12 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Returns the first element of a collection
+ * Obfuscates Strings. Use with {{ email | obfuscate | raw }}, where email is the string to obuscate.
  * 
  * @author Alexander Brandt
  *
  */
-public class EmailObfuscationFilter implements Filter {
+public class ObfuscateFilter implements Filter {
     @Override
     public List<String> getArgumentNames() {
         return Collections.emptyList();

@@ -97,7 +97,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("upper", new UpperFilter());
         filters.put("urlencode", new UrlEncoderFilter());
         filters.put("length", new LengthFilter());
-        filters.put("obfuscate", new EmailObfuscationFilter());
+        filters.put("obfuscate", new ObfuscateFilter());
         filters.put(ReplaceFilter.FILTER_NAME, new ReplaceFilter());
         filters.put(MergeFilter.FILTER_NAME, new MergeFilter());
         return filters;
