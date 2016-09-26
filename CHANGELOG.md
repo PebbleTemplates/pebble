@@ -1,3 +1,5 @@
+- Added "obfuscate" filter
+
 ## v2.2.2 (2016-07-03)
 - Improved error when attempting to iterate over a non-iterable object
 - [Updates to pebble-spring-boot-starter](https://github.com/PebbleTemplates/pebble-spring-boot-starter/blob/master/CHANGELOG.md)
