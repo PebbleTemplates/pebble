@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of Pebble.
  * 
- * Copyright (c) 2016 by Alexander Brandt
+ * Copyright (c) 2016 by Alexander Brandt, Sirthias
  * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
