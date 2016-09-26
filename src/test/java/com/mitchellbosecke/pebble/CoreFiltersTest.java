@@ -993,4 +993,51 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
+    @Test
+    public void testObfuscateRaw() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ email | obfuscate | raw }}");
+
+        String email = "email@domain.com";
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("email", email);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("&#101;m&#97;&#x69;&#x6c;&#x40;&#x64;&#111;&#x6d;&#x61;i&#110;&#x2e;&#99;o&#109;",
+                writer.toString());
+    }
+
+    @Test
+    public void testObfuscateWithoutRaw() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ email | obfuscate }}");
+
+        String email = "email@domain.com";
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("email", email);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("&amp;#101;m&amp;#97;&amp;#x69;&amp;#x6c;&amp;#x40;&amp;#x64;&amp;#111;&amp;#x6d;&amp;#x61;i&amp;#110;&amp;#x2e;&amp;#99;o&amp;#109;", writer.toString());
+    }
+
+    @Test
+    public void testObfuscateWithNullInput() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ email | obfuscate }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("email", null);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
+    }
+
 }
