@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * Obfuscates Strings. Use with {{ email | obfuscate | raw }}, where email is the string to obuscate.
  * 
- * @author Alexander Brandt
+ * @author Alexander Brandt, Sirthias
  *
  */
 public class ObfuscateFilter implements Filter {
