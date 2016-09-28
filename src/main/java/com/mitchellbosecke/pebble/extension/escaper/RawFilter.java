@@ -20,10 +20,8 @@ public class RawFilter implements Filter {
     }
 
     public Object apply(Object inputObject, Map<String, Object> args) {
-        if(inputObject instanceof String){
-            return new SafeString((String) inputObject);
-        }
-        return inputObject;
+        return inputObject == null ? null : new SafeString(inputObject.toString());
+
     }
 
 }
