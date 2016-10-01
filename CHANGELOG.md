@@ -1,3 +1,8 @@
+## v2.2.3 (2016-10-01)
+- Bug fix: Fix the use of the "set" tag within a for loop
+- Bug fix: Fix the concatenation of SafeString (ex. the output of two macros)
+- Added misc getters to various internal nodes 
+
 ## v2.2.2 (2016-07-03)
 - Improved error when attempting to iterate over a non-iterable object
 - [Updates to pebble-spring-boot-starter](https://github.com/PebbleTemplates/pebble-spring-boot-starter/blob/master/CHANGELOG.md)
