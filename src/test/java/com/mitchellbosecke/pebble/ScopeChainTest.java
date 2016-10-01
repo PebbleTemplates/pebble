@@ -13,9 +13,10 @@ import com.mitchellbosecke.pebble.template.ScopeChain;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class ScopeChainTest extends AbstractTest {
 
@@ -34,20 +35,6 @@ public class ScopeChainTest extends AbstractTest {
         scopeChain.set("key", "value3");
         assertEquals("value3", scopeChain.get("key"));
         scopeChain.popScope();
-    }
-
-    @Test
-    public void testLocalScopeAtTop() throws PebbleException, IOException {
-        ScopeChain scopeChain = new ScopeChain();
-        scopeChain.pushScope();
-        scopeChain.put("key", "value");
-        assertEquals("value", scopeChain.get("key"));
-        scopeChain.pushLocalScope();
-        assertEquals(false, scopeChain.containsKey("key"));
-        assertNull(scopeChain.get("key"));
-        scopeChain.put("key", "value2");
-        assertEquals(true, scopeChain.containsKey("key"));
-
         assertEquals("value2", scopeChain.get("key"));
     }
 }
