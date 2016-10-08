@@ -17,7 +17,12 @@ public class AddExpression extends BinaryExpression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-        return OperatorUtils.add(getLeftExpression().evaluate(self, context),
-                getRightExpression().evaluate(self, context));
+
+        try{
+            return OperatorUtils.add(getLeftExpression().evaluate(self, context),
+                    getRightExpression().evaluate(self, context));
+        }catch(Exception ex){
+            throw new PebbleException(ex, "Could not perform addition", getLineNumber(), self.getName());
+        }
     }
 }

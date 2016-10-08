@@ -440,7 +440,7 @@ public class ArraySyntaxTest extends AbstractTest {
         assertEquals("[0, 1, 2, 3]", writer.toString());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PebbleException.class)
     public void testAdditionOverloading3() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -478,7 +478,7 @@ public class ArraySyntaxTest extends AbstractTest {
         assertEquals("[1]", writer.toString());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PebbleException.class)
     public void testSubtractionOverloading3() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();

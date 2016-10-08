@@ -17,7 +17,11 @@ public class GreaterThanExpression extends BinaryExpression<Boolean> {
 
     @Override
     public Boolean evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
-        return OperatorUtils.gt(getLeftExpression().evaluate(self, context),
-                getRightExpression().evaluate(self, context));
+        try {
+            return OperatorUtils.gt(getLeftExpression().evaluate(self, context),
+                    getRightExpression().evaluate(self, context));
+        } catch (Exception ex) {
+            throw new PebbleException(ex, "Could not perform greater than comparison", getLineNumber(), self.getName());
+        }
     }
 }

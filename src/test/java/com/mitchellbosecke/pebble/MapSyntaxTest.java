@@ -294,7 +294,7 @@ public class MapSyntaxTest extends AbstractTest {
     }
 
     // no operator overloading for maps
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PebbleException.class)
     public void testAdditionOverloading() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -305,7 +305,7 @@ public class MapSyntaxTest extends AbstractTest {
         template.evaluate(writer, new HashMap<String, Object>());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PebbleException.class)
     public void testSubtractionOverloading() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
