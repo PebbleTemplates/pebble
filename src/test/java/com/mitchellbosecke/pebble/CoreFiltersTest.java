@@ -731,7 +731,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("cd", writer.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -744,7 +744,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -872,7 +872,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("2", writer.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PebbleException.class)
     public void testSliceWithInvalidInputType() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -892,16 +892,16 @@ public class CoreFiltersTest extends AbstractTest {
     public void testLengthFilterInputs() {
         LengthFilter filter = new LengthFilter();
 
-        assertEquals(0, filter.apply(null, null));
-        assertEquals(4, filter.apply("test", null));
-        assertEquals(0, filter.apply(Collections.EMPTY_LIST, null));
-        assertEquals(2, filter.apply(Arrays.asList("tttt", "ssss"), null));
-        assertEquals(2, filter.apply(Arrays.asList("tttt", "ssss").iterator(), null));
+        assertEquals(0, filter.apply(null, null, null, 0));
+        assertEquals(4, filter.apply("test", null, null, 0));
+        assertEquals(0, filter.apply(Collections.EMPTY_LIST, null, null, 0));
+        assertEquals(2, filter.apply(Arrays.asList("tttt", "ssss"), null, null, 0));
+        assertEquals(2, filter.apply(Arrays.asList("tttt", "ssss").iterator(), null, null, 0));
         Map<String, String> test = new HashMap<>();
         test.put("test", "test");
         test.put("other", "other");
         test.put("and_other", "other");
-        assertEquals(3, filter.apply(test, null));
+        assertEquals(3, filter.apply(test, null, null, 0));
     }
 
     /**
@@ -967,7 +967,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = PebbleException.class)
     public void testMergeListWithStringAndFail() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -979,7 +979,7 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = PebbleException.class)
     public void testMergeDifferentArraysAndFail() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 

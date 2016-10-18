@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Test;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class DefaultFilter implements Filter {
 
@@ -30,7 +31,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args) {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
 
         Object defaultObj = args.get("default");
 
