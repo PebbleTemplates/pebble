@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.*;
 import com.mitchellbosecke.pebble.node.expression.*;
 import com.mitchellbosecke.pebble.operator.*;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CoreExtension extends AbstractExtension {
+
+    private CoreExtension(){}
 
     @Override
     public List<TokenParser> getTokenParsers() {
@@ -141,6 +144,70 @@ public class CoreExtension extends AbstractExtension {
         List<NodeVisitorFactory> visitors = new ArrayList<>();
         visitors.add(new MacroAndBlockRegistrantNodeVisitorFactory());
         return visitors;
+    }
+
+    /**
+     * This {@link Builder} is used to enable/disable the default CoreExtensions
+     */
+    public static class Builder{
+
+        private final PebbleEngine.Builder parentBuilder;
+
+        private boolean enabled = true;
+
+        /**
+         * @param builder an instance of {@link PebbleEngine.Builder} that will be returned
+         *                when calling Builder{@link #and()}
+         */
+        public Builder(PebbleEngine.Builder builder){
+            this.parentBuilder = builder;
+        }
+
+        /**
+         * this method enables any {@link CoreExtension} functionality
+         *
+         * @return the {@link Builder} itself
+         */
+        public Builder enable(){
+            enabled = true;
+            return this;
+        }
+
+        /**
+         * this method disables any {@link CoreExtension} functionality
+         *
+         * @return the {@link Builder} itself
+         */
+        public Builder disable(){
+            enabled = false;
+            return this;
+        }
+
+        /**
+         * this method returns the original {@link PebbleEngine.Builder}
+         * for further configuration
+         *
+         * @return the {@link PebbleEngine.Builder} that called the {@link PebbleEngine.Builder#core()} method
+         */
+        public PebbleEngine.Builder and(){
+            return parentBuilder;
+        }
+
+        /**
+         * this methods builds the {@link CoreExtension} according to the
+         * configuration. If the extension was disabled it'll return an
+         * instance of {@link NoOpExtension}.
+         *
+         * @return either an {@link CoreExtension} or a {@link NoOpExtension}
+         */
+        public Extension build(){
+            if(enabled){
+                return new CoreExtension();
+            }else{
+                return new NoOpExtension();
+            }
+        }
+
     }
 
 }
