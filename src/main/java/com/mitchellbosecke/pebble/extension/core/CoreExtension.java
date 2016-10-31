@@ -12,7 +12,7 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.*;
 import com.mitchellbosecke.pebble.node.expression.*;
 import com.mitchellbosecke.pebble.operator.*;
-import com.mitchellbosecke.pebble.tokenParser.*;
+import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,26 +21,15 @@ import java.util.Map;
 
 public class CoreExtension extends AbstractExtension {
 
-    private CoreExtension(){}
+    private final List<TokenParser> tokenParsers;
+
+    private CoreExtension(List<TokenParser> tokenParsers){
+        this.tokenParsers = tokenParsers;
+    }
 
     @Override
     public List<TokenParser> getTokenParsers() {
-        ArrayList<TokenParser> parsers = new ArrayList<>();
-        parsers.add(new BlockTokenParser());
-        parsers.add(new ExtendsTokenParser());
-        parsers.add(new FilterTokenParser());
-        parsers.add(new FlushTokenParser());
-        parsers.add(new ForTokenParser());
-        parsers.add(new IfTokenParser());
-        parsers.add(new ImportTokenParser());
-        parsers.add(new IncludeTokenParser());
-        parsers.add(new MacroTokenParser());
-        parsers.add(new ParallelTokenParser());
-        parsers.add(new SetTokenParser());
-        parsers.add(new CacheTokenParser());
-
-        // verbatim tag is implemented directly in the LexerImpl
-        return parsers;
+        return tokenParsers;
     }
 
     @Override
@@ -149,18 +138,18 @@ public class CoreExtension extends AbstractExtension {
     /**
      * This {@link Builder} is used to enable/disable the default CoreExtensions
      */
-    public static class Builder{
-
-        private final PebbleEngine.Builder parentBuilder;
+    public static class Builder extends ChainableBuilder<PebbleEngine.Builder> {
 
         private boolean enabled = true;
+
+        private TokenParserBuilder tokenParserBuilder;
 
         /**
          * @param builder an instance of {@link PebbleEngine.Builder} that will be returned
          *                when calling Builder{@link #and()}
          */
         public Builder(PebbleEngine.Builder builder){
-            this.parentBuilder = builder;
+            super(builder);
         }
 
         /**
@@ -184,13 +173,15 @@ public class CoreExtension extends AbstractExtension {
         }
 
         /**
-         * this method returns the original {@link PebbleEngine.Builder}
-         * for further configuration
+         * retrieve a {@link TokenParserBuilder} to customize which TokenParser will be configured
          *
-         * @return the {@link PebbleEngine.Builder} that called the {@link PebbleEngine.Builder#core()} method
+         * @return a {@link TokenParserBuilder} to work with
          */
-        public PebbleEngine.Builder and(){
-            return parentBuilder;
+        public TokenParserBuilder tokenParsers() {
+            if(tokenParserBuilder == null) {
+                tokenParserBuilder = new TokenParserBuilder(this);
+            }
+            return tokenParserBuilder;
         }
 
         /**
@@ -202,7 +193,9 @@ public class CoreExtension extends AbstractExtension {
          */
         public Extension build(){
             if(enabled){
-                return new CoreExtension();
+                return new CoreExtension(
+                        tokenParsers().build()
+                );
             }else{
                 return new NoOpExtension();
             }

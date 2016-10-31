@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.NoOpExtension;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class CoreExtensionBuilderTest extends AbstractTest {
 
@@ -33,6 +33,14 @@ public class CoreExtensionBuilderTest extends AbstractTest {
                 .build();
 
         assertTrue("expected extension to be a NoOpExtension", extension instanceof NoOpExtension);
+    }
+
+    @Test
+    public void testBuilderApi() throws Exception {
+        Extension extension = new CoreExtension.Builder(null)
+                .tokenParsers()
+                    .and()
+                .build();
     }
 
 }
