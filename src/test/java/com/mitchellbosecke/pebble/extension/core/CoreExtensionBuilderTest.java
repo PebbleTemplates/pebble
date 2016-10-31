@@ -40,6 +40,18 @@ public class CoreExtensionBuilderTest extends AbstractTest {
         Extension extension = new CoreExtension.Builder(null)
                 .tokenParsers()
                     .and()
+                .unaryOperators()
+                    .and()
+                .binaryOperators()
+                    .and()
+                .filters()
+                    .and()
+                .tests()
+                    .and()
+                .functions()
+                    .and()
+                .nodeVisitors()
+                    .and()
                 .build();
     }
 
