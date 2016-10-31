@@ -19,12 +19,20 @@ import java.util.Map;
 
 public class I18nExtension extends AbstractExtension {
 
-    private I18nExtension(){}
+    private final Function i18nFunction;
+
+    private I18nExtension() {
+        this.i18nFunction = new i18nFunction();
+    }
+
+    private I18nExtension(Function i18nFunction) {
+        this.i18nFunction = i18nFunction;
+    }
 
     @Override
     public Map<String, Function> getFunctions() {
         Map<String, Function> functions = new HashMap<>();
-        functions.put("i18n", new i18nFunction());
+        functions.put("i18n", i18nFunction);
         return functions;
     }
 
@@ -36,6 +44,7 @@ public class I18nExtension extends AbstractExtension {
         private final PebbleEngine.Builder parentBuilder;
 
         private boolean enabled = true;
+        private Function i18nFunction = null;
 
         /**
          * @param builder an instance of {@link PebbleEngine.Builder} that will be returned
@@ -50,7 +59,7 @@ public class I18nExtension extends AbstractExtension {
          *
          * @return the {@link Builder} itself
          */
-        public Builder enable(){
+        public Builder enable() {
             enabled = true;
             return this;
         }
@@ -60,8 +69,17 @@ public class I18nExtension extends AbstractExtension {
          *
          * @return the {@link Builder} itself
          */
-        public Builder disable(){
+        public Builder disable() {
             enabled = false;
+            return this;
+        }
+
+        /**
+         * @param function a custom function to use as i18n function
+         * @return the {@link Builder} itself
+         */
+        public Builder useFunction(Function function) {
+            this.i18nFunction = function;
             return this;
         }
 
@@ -82,10 +100,14 @@ public class I18nExtension extends AbstractExtension {
          *
          * @return either an {@link I18nExtension} or a {@link NoOpExtension}
          */
-        public Extension build(){
+        public Extension build() {
             if(enabled){
-                return new I18nExtension();
-            }else{
+                if(this.i18nFunction != null) {
+                    return new I18nExtension(this.i18nFunction);
+                } else {
+                    return new I18nExtension();
+                }
+            } else {
                 return new NoOpExtension();
             }
         }
