@@ -2,6 +2,7 @@ package com.mitchellbosecke.pebble.extension.core;
 
 import com.mitchellbosecke.pebble.AbstractTest;
 import com.mitchellbosecke.pebble.extension.Extension;
+import com.mitchellbosecke.pebble.extension.NoOpExtension;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -13,30 +14,7 @@ public class CoreExtensionBuilderTest extends AbstractTest {
         Extension extension = new CoreExtension.Builder(null)
                 .build();
 
-        assertFalse(
-                "The built CoreExtension does not contain any TokenParser",
-                extension.getTokenParsers().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any UnaryOperator",
-                extension.getUnaryOperators().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any BinaryOperator",
-                extension.getBinaryOperators().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any Filter",
-                extension.getFilters().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any Test",
-                extension.getTests().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any NodeVisitorFactory",
-                extension.getNodeVisitors().isEmpty()
-        );
+        assertTrue("expected extension to be a CoreExtension", extension instanceof CoreExtension);
     }
 
     @Test
@@ -45,30 +23,7 @@ public class CoreExtensionBuilderTest extends AbstractTest {
                 .enable()
                 .build();
 
-        assertFalse(
-                "The built CoreExtension does not contain any TokenParser",
-                extension.getTokenParsers().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any UnaryOperator",
-                extension.getUnaryOperators().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any BinaryOperator",
-                extension.getBinaryOperators().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any Filter",
-                extension.getFilters().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any Test",
-                extension.getTests().isEmpty()
-        );
-        assertFalse(
-                "The built CoreExtension does not contain any NodeVisitorFactory",
-                extension.getNodeVisitors().isEmpty()
-        );
+        assertTrue("expected extension to be a CoreExtension", extension instanceof CoreExtension);
     }
 
     @Test
@@ -77,12 +32,7 @@ public class CoreExtensionBuilderTest extends AbstractTest {
                 .disable()
                 .build();
 
-        assertNull(extension.getTokenParsers());
-        assertNull(extension.getUnaryOperators());
-        assertNull(extension.getBinaryOperators());
-        assertNull(extension.getFilters());
-        assertNull(extension.getTests());
-        assertNull(extension.getNodeVisitors());
+        assertTrue("expected extension to be a NoOpExtension", extension instanceof NoOpExtension);
     }
 
 }
