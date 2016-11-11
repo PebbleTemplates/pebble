@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class EscaperExtensionTest extends AbstractTest {
-
     @Test
     public void testEscapeHtml() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -127,28 +126,6 @@ public class EscaperExtensionTest extends AbstractTest {
     }
 
     @Test
-    public void testRawFilter() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
-        PebbleTemplate template = pebble.getTemplate("{{ text | upper | raw }}");
-        Map<String, Object> context = new HashMap<>();
-        context.put("text", "<br />");
-        Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("<BR />", writer.toString());
-    }
-
-    @Test
-    public void testRawFilterNotBeingLast() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
-        PebbleTemplate template = pebble.getTemplate("{{ text | raw | upper}}");
-        Map<String, Object> context = new HashMap<>();
-        context.put("text", "<br />");
-        Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("&lt;BR /&gt;", writer.toString());
-    }
-
-    @Test
     public void testEscapeIntoAbbreviate() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("{{ text | escape | abbreviate(5)}}");
@@ -205,18 +182,6 @@ public class EscaperExtensionTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("<&lt;br&gt;>", writer.toString());
-    }
-
-    @Test
-    public void testRawFilterWithinAutoescapeToken() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
-                .autoEscaping(false).build();
-        PebbleTemplate template = pebble.getTemplate("{% autoescape 'html' %}{{ text|raw }}{% endautoescape %}");
-        Map<String, Object> context = new HashMap<>();
-        context.put("text", "<br />");
-        Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("<br />", writer.toString());
     }
 
     @Test
