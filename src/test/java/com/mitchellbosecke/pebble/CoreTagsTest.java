@@ -139,78 +139,7 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("yes", writer.toString());
     }
 
-    /**
-     * Issue #36
-     *
-     * @throws PebbleException
-     * @throws IOException
-     */
-    @Test
-    public void testIfTestAgainstNullVar() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if foobar %}true{% else %}false{% endif %}";
-        PebbleTemplate template = pebble.getTemplate(source);
-
-        Map<String, Object> context = new HashMap<>();
-        Writer writer = new StringWriter();
-
-        // "foobar" value not set at all yet
-
-        template.evaluate(writer, context);
-        assertEquals("false", writer.toString());
-
-        context.put("foobar", null);
-        writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("false", writer.toString());
-
-        context.put("foobar", false);
-        writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("false", writer.toString());
-
-        context.put("foobar", true);
-        writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("true", writer.toString());
-    }
-
-    @Test
-    public void testIfTestAgainstNullVarWithStrictVariables() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
-
-        String source = "{% if foobar %}true{% else %}false{% endif %}";
-        PebbleTemplate template = pebble.getTemplate(source);
-
-        Map<String, Object> context = new HashMap<>();
-        Writer writer;
-
-        // "foobar" value not set at all yet
-
-        try {
-            writer = new StringWriter();
-            template.evaluate(writer, context);
-            fail("Exception not thrown");
-        } catch (PebbleException e) {}
-
-        try {
-            writer = new StringWriter();
-            context.put("foobar", null);
-            template.evaluate(writer, context);
-            fail("Exception not thrown");
-        } catch (PebbleException e) {}
-
-        writer = new StringWriter();
-        context.put("foobar", false);
-        template.evaluate(writer, context);
-        assertEquals("false", writer.toString());
-
-        writer = new StringWriter();
-        context.put("foobar", true);
-        template.evaluate(writer, context);
-        assertEquals("true", writer.toString());
-    }
 
     @Test
     public void testFlush() throws PebbleException, IOException {
