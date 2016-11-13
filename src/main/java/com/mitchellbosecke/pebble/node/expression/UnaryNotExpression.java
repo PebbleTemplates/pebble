@@ -17,7 +17,13 @@ public class UnaryNotExpression extends UnaryExpression {
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
         Boolean result = (Boolean) getChildExpression().evaluate(self, context);
-        return !result;
+        if (context.isStrictVariables()){
+            if(result == null)
+                throw new PebbleException(null, "null value given to not() and strict variables is set to true", getLineNumber(), self.getName());
+            return !result;
+        } else {
+            return result == null || !result;
+        }
     }
 
 }

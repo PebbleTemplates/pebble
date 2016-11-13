@@ -54,6 +54,8 @@ public class IfNode extends AbstractRenderableNode {
                     } catch (ClassCastException ex) {
                         throw new PebbleException(ex, "Expected a Boolean in \"if\" statement", getLineNumber(), self.getName());
                     }
+                } else if(context.isStrictVariables()){
+                    throw new PebbleException(null, "null value given to if statement and strict variables is set to true", getLineNumber(), self.getName());
                 }
 
             } catch (RuntimeException ex) {
