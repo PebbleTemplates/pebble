@@ -1,3 +1,8 @@
+## v3.0.0 (future)
+- New signature for filters/functions/tests that accepts the PebbleTemplate, EvaluationContext, and line number
+- A "null" used as a boolean expression now throws an error if strict variables is true, treated as "false" otherwise
+- Improved error reporting
+
 ## v2.2.3 (2016-10-01)
 - Bug fix: Fix the use of the "set" tag within a for loop
 - Bug fix: Fix the concatenation of SafeString (ex. the output of two macros)
