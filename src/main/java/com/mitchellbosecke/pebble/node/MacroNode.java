@@ -72,7 +72,7 @@ public class MacroNode extends AbstractRenderableNode {
                 ScopeChain scopeChain = context.getScopeChain();
 
                 // scope for default arguments
-                scopeChain.pushLocalScope();
+                scopeChain.pushScope();
                 for (NamedArgumentNode arg : getArgs().getNamedArgs()) {
                     Expression<?> valueExpression = arg.getValueExpression();
                     if (valueExpression == null) {

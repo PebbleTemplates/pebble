@@ -21,13 +21,6 @@ import java.util.Map;
 public class Scope {
 
     /**
-     * A "local" scope ensures that
-     * the search for a particular variable will end at this scope
-     * whether or not it was found.
-     */
-    private final boolean isLocal;
-
-    /**
      * The map of variables known at this scope
      */
     private final Map<String, Object> backingMap;
@@ -36,11 +29,9 @@ public class Scope {
      * Constructor
      *
      * @param backingMap The backing map of variables
-     * @param isLocal    Whether this scope is local or not
      */
-    public Scope(Map<String, Object> backingMap, boolean isLocal) {
+    public Scope(Map<String, Object> backingMap) {
         this.backingMap = backingMap == null ? new HashMap<String, Object>() : backingMap;
-        this.isLocal = isLocal;
     }
 
     /**
@@ -61,16 +52,7 @@ public class Scope {
         Map<String, Object> backingMapCopy = new HashMap<>();
         backingMapCopy.putAll(backingMap);
 
-        return new Scope(backingMapCopy, isLocal);
-    }
-
-    /**
-     * Returns whether or not this scope is "local".
-     *
-     * @return boolean stating whether this scope is local or not.
-     */
-    public boolean isLocal() {
-        return isLocal;
+        return new Scope(backingMapCopy);
     }
 
     /**
