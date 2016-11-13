@@ -11,7 +11,8 @@ package com.mitchellbosecke.pebble.extension.escaper;
 import com.coverity.security.Escape;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class EscapeFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object inputObject, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) throws PebbleException {
+    public Object apply(Object inputObject, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
         if (inputObject == null || inputObject instanceof SafeString) {
             return inputObject;
         }

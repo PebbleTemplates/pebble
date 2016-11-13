@@ -13,9 +13,8 @@ import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.escaper.EscapingStrategy;
 import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -273,7 +272,7 @@ public class EscaperExtensionTest extends AbstractTest {
                 }
 
                 @Override
-                public Object execute(Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+                public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
                     return "<script>alert(\"injection\");</script>";
                 }
 

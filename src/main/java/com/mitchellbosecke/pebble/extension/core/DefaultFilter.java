@@ -8,14 +8,16 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.Test;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.extension.Test;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class DefaultFilter implements Filter {
 
@@ -31,12 +33,12 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
 
         Object defaultObj = args.get("default");
 
         Test emptyTest = new EmptyTest();
-        if (emptyTest.apply(input, new HashMap<String, Object>())) {
+        if (emptyTest.apply(input, new HashMap<String, Object>(), self, context, lineNumber)) {
             return defaultObj;
         }
         return input;

@@ -8,15 +8,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NamedArguments;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ArgumentsNode implements Node {
 
@@ -103,9 +103,6 @@ public class ArgumentsNode implements Node {
                 }
             }
         }
-
-        result.put("_self", self);
-        result.put("_context", context);
 
         return result;
     }

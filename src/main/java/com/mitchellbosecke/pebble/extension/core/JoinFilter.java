@@ -8,15 +8,16 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
  * Concatenates all entries of a collection, optionally glued together with a
@@ -39,7 +40,7 @@ public class JoinFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber)
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber)
             throws PebbleException {
         if (input == null) {
             return null;

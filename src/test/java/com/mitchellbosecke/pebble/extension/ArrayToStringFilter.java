@@ -8,11 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
  * Pretty-printing of java arrays
@@ -25,7 +26,7 @@ public class ArrayToStringFilter implements Filter {
     }
 
     @Override
-    public String apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+    public String apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
         if (input == null) {
             return null;
         }

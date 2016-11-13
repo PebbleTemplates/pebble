@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.extension.core;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -36,7 +36,7 @@ public class NumberFormatFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) throws PebbleException{
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException{
         if (input == null) {
             return null;
         }
@@ -46,7 +46,6 @@ public class NumberFormatFilter implements Filter {
 
         Number number = (Number) input;
 
-        EvaluationContext context = (EvaluationContext) args.get("_context");
         Locale locale = context.getLocale();
 
         if (args.get("format") != null) {

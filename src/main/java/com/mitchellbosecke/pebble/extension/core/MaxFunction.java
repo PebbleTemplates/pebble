@@ -8,12 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.utils.OperatorUtils;
+
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-import com.mitchellbosecke.pebble.utils.OperatorUtils;
 
 public class MaxFunction implements Function {
 
@@ -23,7 +24,7 @@ public class MaxFunction implements Function {
     }
 
     @Override
-    public Object execute(Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+    public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
         Object min = null;
 
         int i = 0;

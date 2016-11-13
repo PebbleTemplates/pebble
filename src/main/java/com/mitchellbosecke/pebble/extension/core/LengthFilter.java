@@ -1,7 +1,8 @@
 package com.mitchellbosecke.pebble.extension.core;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -17,7 +18,8 @@ public class LengthFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int
+            lineNumber) {
         if (input == null) {
             return 0;
         }

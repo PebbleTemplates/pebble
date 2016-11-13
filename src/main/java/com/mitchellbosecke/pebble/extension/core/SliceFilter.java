@@ -10,7 +10,8 @@ package com.mitchellbosecke.pebble.extension.core;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class SliceFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) throws PebbleException {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
 
         if (input == null) {
             return null;

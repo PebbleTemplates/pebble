@@ -55,9 +55,9 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
             } catch (AttributeNotFoundException e) {
                 input = null;
             }
-            return test.apply(input, namedArguments);
+            return test.apply(input, namedArguments, self, context, getLineNumber());
         } else {
-            return test.apply(getLeftExpression().evaluate(self, context), namedArguments);
+            return test.apply(getLeftExpression().evaluate(self, context), namedArguments, self, context, getLineNumber());
         }
 
     }

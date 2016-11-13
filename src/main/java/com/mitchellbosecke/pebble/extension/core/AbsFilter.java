@@ -8,14 +8,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class AbsFilter implements Filter {
 
@@ -25,7 +26,7 @@ public class AbsFilter implements Filter {
     }
 
     @Override
-    public Number apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber)
+    public Number apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber)
             throws PebbleException {
         if (input == null) {
             throw new PebbleException(null, "Can not pass null value to \"abs\" filter.", lineNumber, self.getName());

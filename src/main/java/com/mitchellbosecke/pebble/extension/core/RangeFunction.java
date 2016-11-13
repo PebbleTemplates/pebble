@@ -8,13 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
  * Range function to iterate over long or a string with a length of 1.
@@ -40,7 +41,7 @@ public class RangeFunction implements Function {
     }
 
     @Override
-    public Object execute(Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) throws PebbleException {
+    public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
         Object start = args.get(PARAM_START);
         Object end = args.get(PARAM_END);
         Object increment = (Object) args.get(PARAM_INCREMENT);

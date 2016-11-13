@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class  FunctionOrMacroInvocationExpression implements Expression<Object> {
+public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     private final String functionName;
 
@@ -44,13 +44,13 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
     }
 
     private Object applyFunction(PebbleTemplateImpl self, EvaluationContext context, Function function,
-            ArgumentsNode args) throws PebbleException {
+                                 ArgumentsNode args) throws PebbleException {
         List<Object> arguments = new ArrayList<>();
 
         Collections.addAll(arguments, args);
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, function);
-        return function.execute(namedArguments, self, this.getLineNumber());
+        return function.execute(namedArguments, self, context, this.getLineNumber());
     }
 
     @Override

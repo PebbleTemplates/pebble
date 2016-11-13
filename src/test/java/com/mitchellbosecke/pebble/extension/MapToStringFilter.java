@@ -8,13 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
  * There were changes in how HashMaps are serialized to strings between Java 7
@@ -32,7 +33,7 @@ public class MapToStringFilter implements Filter {
 
     @SuppressWarnings({ "unchecked" })
     @Override
-    public String apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+    public String apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
         if (input == null) {
             return null;
         }

@@ -8,12 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class SortFilter implements Filter {
 
@@ -24,7 +25,7 @@ public class SortFilter implements Filter {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public List<Comparable> apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+    public List<Comparable> apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
         if (input == null) {
             return null;
         }

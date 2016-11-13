@@ -12,7 +12,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -34,7 +34,7 @@ public class DateFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) throws PebbleException {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
         if (input == null) {
             return null;
         }
@@ -43,7 +43,6 @@ public class DateFilter implements Filter {
         DateFormat existingFormat = null;
         DateFormat intendedFormat = null;
 
-        EvaluationContext context = (EvaluationContext) args.get("_context");
         Locale locale = context.getLocale();
 
         intendedFormat = new SimpleDateFormat((String) args.get("format"), locale);

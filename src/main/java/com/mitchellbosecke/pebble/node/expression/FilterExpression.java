@@ -69,6 +69,6 @@ public class FilterExpression extends BinaryExpression<Object> {
             input = input.toString();
         }
 
-        return filter.apply(input, namedArguments, self, this.getLineNumber());
+        return filter.apply(input, namedArguments, self, context, this.getLineNumber());
     }
 }

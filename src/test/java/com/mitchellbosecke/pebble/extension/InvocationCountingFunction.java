@@ -1,9 +1,10 @@
 package com.mitchellbosecke.pebble.extension;
 
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
  * This function will count how many times it's been invoked (just testing
@@ -22,7 +23,7 @@ public class InvocationCountingFunction implements Function {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
+	public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
 		return ++invocationCount;
 	}
 
