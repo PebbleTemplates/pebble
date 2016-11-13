@@ -368,7 +368,7 @@ public class MapSyntaxTest extends AbstractTest {
     public void testContainsOperator2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'Freddie' %}true{% else %}false{% endif %}";
+        String source = "{% if not ( {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'Freddie') %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -380,7 +380,7 @@ public class MapSyntaxTest extends AbstractTest {
     public void testContainsOperator3() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'John' and not {'Freddie':'Mercury'} contains 'Bob' %}true{% else %}false{% endif %}";
+        String source = "{% if {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'John' and not ({'Freddie':'Mercury'} contains 'Bob') %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();

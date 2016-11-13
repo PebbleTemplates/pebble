@@ -599,12 +599,12 @@ public class ArraySyntaxTest extends AbstractTest {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not [0,1,2] contains 10 %}true{% endif %}";
+        String source = "{% if [0,1,2] contains 10 %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
         template.evaluate(writer, new HashMap<String, Object>());
-        assertEquals("true", writer.toString());
+        assertEquals("false", writer.toString());
     }
 
     @Test
@@ -612,7 +612,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if [0,1,2] contains 1 and not [0,1] contains 0 %}true{% else %}false{% endif %}";
+        String source = "{% if [0,1,2] contains 1 and not ([0,1] contains 0) %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();

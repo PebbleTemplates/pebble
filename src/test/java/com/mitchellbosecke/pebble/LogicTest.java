@@ -904,7 +904,7 @@ public class LogicTest extends AbstractTest {
         
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not names contains 'Cobra' %}yes{% else %}no{% endif %}";
+        String source = "{% if not (names contains 'Cobra') %}yes{% else %}no{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Map<String, Object> context = new HashMap<>();
