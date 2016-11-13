@@ -2,6 +2,7 @@
 - Java 8
 - Macros have access to all variables within the template and are no longer restricted to a "local scope"
 - New signature for filters/functions/tests that accepts the PebbleTemplate, EvaluationContext, and line number
+- Converted EvaluationContext to an interface with limited access to the underlying implementation
 - A "null" used as a boolean expression now throws an error if strict variables is true, treated as "false" otherwise
 - Improved error reporting
 
