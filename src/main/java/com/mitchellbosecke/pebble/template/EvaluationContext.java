@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import com.google.common.cache.Cache;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 

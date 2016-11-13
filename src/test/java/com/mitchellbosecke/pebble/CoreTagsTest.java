@@ -11,6 +11,7 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.loader.StringLoader;
@@ -538,7 +539,7 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("true", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test(expected = RuntimePebbleException.class)
     public void testCacheWithNoName() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
