@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
  * This class implements the 'replace' filter.
@@ -29,10 +31,10 @@ public class ReplaceFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args) {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) throws PebbleException{
         String data = input.toString();
         if (args.get(ARGUMENT_NAME) == null) {
-            throw new IllegalArgumentException(MessageFormat.format("The argument ''{0}'' is required.", ARGUMENT_NAME));
+            throw new PebbleException(null, MessageFormat.format("The argument ''{0}'' is required.", ARGUMENT_NAME), lineNumber, self.getName());
         }
         Map<?, ?> replacePair = (Map<?, ?>) args.get(ARGUMENT_NAME);
 

@@ -43,7 +43,7 @@ public class ExtendingPebbleTest extends AbstractTest {
                 }
 
                 @Override
-                public String apply(Object input, Map<String, Object> args) {
+                public String apply(Object input, Map<String, Object> args, PebbleTemplateImpl self, int lineNumber) {
                     EvaluationContext context = (EvaluationContext) args.get("_context");
                     PebbleTemplateImpl pebbleTemplate = (PebbleTemplateImpl) args.get("_self");
                     if (context != null && pebbleTemplate != null) {

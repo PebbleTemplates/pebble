@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -40,9 +40,9 @@ public class ContainsExpression extends BinaryExpression<Boolean> {
         } else if (leftValue instanceof String) {
             return String.valueOf(leftValue).contains(String.valueOf(rightValue));
         } else {
-            throw new IllegalArgumentException(
+            throw new PebbleException(null,
                     "Contains operator can only be used on Collections, Maps and arrays. Actual type was: "
-                            + leftValue.getClass().getName());
+                            + leftValue.getClass().getName(), this.getLineNumber(), self.getName());
         }
     }
 

@@ -208,7 +208,6 @@ public class ExpressionParser {
                 finalExpression = operatorNodeClass.newInstance();
                 finalExpression.setLineNumber(stream.current().getLineNumber());
             } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
                 throw new ParserException(e, "Error instantiating operator node [" + operatorNodeClass.getName() + "]",
                         token.getLineNumber(), stream.getFilename());
             }
