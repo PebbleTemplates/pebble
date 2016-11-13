@@ -23,10 +23,12 @@ public class AndExpression extends BinaryExpression<Boolean> {
             if (left == null || right == null)
                 throw new PebbleException(null, "null value used in and operator and strict variables is set to true", getLineNumber(), self.getName());
         } else {
-            if (left == null)
+            if (left == null) {
                 left = false;
-            if (right == null)
+            }
+            if (right == null) {
                 right = false;
+            }
         }
         return left && right;
     }
