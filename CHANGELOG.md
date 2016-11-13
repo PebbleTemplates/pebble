@@ -1,7 +1,13 @@
 ## v3.0.0 (future)
+- Java 8
 - New signature for filters/functions/tests that accepts the PebbleTemplate, EvaluationContext, and line number
 - A "null" used as a boolean expression now throws an error if strict variables is true, treated as "false" otherwise
 - Improved error reporting
+
+## v2.3.0 (future)
+- Upgrade SLF4J from 1.6.1 to 1.7.21
+- "raw" filter works for all variables, not just strings
+- Improved error reporting for binary operators
 
 ## v2.2.3 (2016-10-01)
 - Bug fix: Fix the use of the "set" tag within a for loop
