@@ -17,6 +17,6 @@ public interface Macro extends NamedArguments {
 
     String getName();
 
-    String call(PebbleTemplateImpl self, EvaluationContext context, Map<String, Object> args)
+    String call(PebbleTemplateImpl self, EvaluationContextImpl context, Map<String, Object> args)
             throws PebbleException;
 }

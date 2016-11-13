@@ -15,7 +15,7 @@ import java.io.Writer;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class BlockFunctionExpression implements Expression<String> {
@@ -30,7 +30,7 @@ public class BlockFunctionExpression implements Expression<String> {
     }
 
     @Override
-    public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         Writer writer = new StringWriter();
         String blockName = (String) blockNameExpression.evaluate(self, context);
         try {

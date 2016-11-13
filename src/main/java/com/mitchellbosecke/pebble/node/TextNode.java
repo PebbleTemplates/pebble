@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
@@ -38,7 +38,7 @@ public class TextNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         writer.write(data);
     }
 

@@ -12,7 +12,7 @@ import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.CacheTokenParser;
 
@@ -120,7 +120,7 @@ public class CacheNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
+    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContextImpl context)
             throws PebbleException, IOException {
         try {
             CacheKey key = new CacheKey((String) this.name.evaluate(self, context), context.getLocale());

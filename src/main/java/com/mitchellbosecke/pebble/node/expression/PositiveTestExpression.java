@@ -14,7 +14,7 @@ import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.extension.core.DefinedTest;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.TestInvocationExpression;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.util.Map;
@@ -24,7 +24,7 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
     private Test cachedTest;
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
 
         TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
         ArgumentsNode args = testInvocation.getArgs();

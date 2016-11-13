@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.node;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NamedArguments;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class ArgumentsNode implements Node {
      * @throws PebbleException
      *             Thrown if an expected name argument does not exist
      */
-    public Map<String, Object> getArgumentMap(PebbleTemplateImpl self, EvaluationContext context,
+    public Map<String, Object> getArgumentMap(PebbleTemplateImpl self, EvaluationContextImpl context,
             NamedArguments invocableWithNamedArguments) throws PebbleException {
         Map<String, Object> result = new HashMap<>();
         List<String> argumentNames = invocableWithNamedArguments.getArgumentNames();

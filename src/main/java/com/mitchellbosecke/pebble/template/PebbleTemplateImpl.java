@@ -71,23 +71,23 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     public void evaluate(Writer writer) throws PebbleException, IOException {
-        EvaluationContext context = initContext(null);
+        EvaluationContextImpl context = initContext(null);
         evaluate(writer, context);
     }
 
     public void evaluate(Writer writer, Locale locale) throws PebbleException, IOException {
-        EvaluationContext context = initContext(locale);
+        EvaluationContextImpl context = initContext(locale);
         evaluate(writer, context);
     }
 
     public void evaluate(Writer writer, Map<String, Object> map) throws PebbleException, IOException {
-        EvaluationContext context = initContext(null);
+        EvaluationContextImpl context = initContext(null);
         context.getScopeChain().pushScope(map);
         evaluate(writer, context);
     }
 
     public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
-        EvaluationContext context = initContext(locale);
+        EvaluationContextImpl context = initContext(locale);
         context.getScopeChain().pushScope(map);
         evaluate(writer, context);
     }
@@ -101,7 +101,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @throws PebbleException Thrown if any sort of template error occurs
      * @throws IOException     Thrown from the writer object
      */
-    private void evaluate(Writer writer, EvaluationContext context) throws PebbleException, IOException {
+    private void evaluate(Writer writer, EvaluationContextImpl context) throws PebbleException, IOException {
         if (context.getExecutorService() != null) {
             writer = new FutureWriter(writer);
         }
@@ -127,7 +127,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param locale The desired locale
      * @return The evaluation context
      */
-    private EvaluationContext initContext(Locale locale) {
+    private EvaluationContextImpl initContext(Locale locale) {
         locale = locale == null ? engine.getDefaultLocale() : locale;
 
         // globals
@@ -139,7 +139,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         // global vars provided from extensions
         scopeChain.pushScope(engine.getExtensionRegistry().getGlobalVariables());
 
-        EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
+        EvaluationContextImpl context = new EvaluationContextImpl(this, engine.isStrictVariables(), locale,
                 engine.getExtensionRegistry(), engine.getTagCache(), engine.getExecutorService(),
                 new ArrayList<PebbleTemplateImpl>(), scopeChain, null);
         return context;
@@ -153,7 +153,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @throws PebbleException Thrown if an error occurs while rendering the imported
      *                         template
      */
-    public void importTemplate(EvaluationContext context, String name) throws PebbleException {
+    public void importTemplate(EvaluationContextImpl context, String name) throws PebbleException {
         context.getImportedTemplates().add((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name)));
     }
 
@@ -168,10 +168,10 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @throws PebbleException Any error occurring during the compilation of the template
      * @throws IOException     Any error during the loading of the template
      */
-    public void includeTemplate(Writer writer, EvaluationContext context, String name, Map<?, ?> additionalVariables)
+    public void includeTemplate(Writer writer, EvaluationContextImpl context, String name, Map<?, ?> additionalVariables)
             throws PebbleException, IOException {
         PebbleTemplateImpl template = (PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(name));
-        EvaluationContext newContext = context.shallowCopyWithoutInheritanceChain(template);
+        EvaluationContextImpl newContext = context.shallowCopyWithoutInheritanceChain(template);
         ScopeChain scopeChain = newContext.getScopeChain();
         scopeChain.pushScope();
         for (Entry<?, ?> entry : additionalVariables.entrySet()) {
@@ -250,7 +250,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @throws PebbleException Thrown if an error occurs
      * @throws IOException     Thrown from the writer object
      */
-    public void block(Writer writer, EvaluationContext context, String blockName, boolean ignoreOverriden)
+    public void block(Writer writer, EvaluationContextImpl context, String blockName, boolean ignoreOverriden)
             throws PebbleException, IOException {
 
         Hierarchy hierarchy = context.getHierarchy();
@@ -289,7 +289,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @return The results of the macro invocation
      * @throws PebbleException An exception that may have occurred
      */
-    public SafeString macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden)
+    public SafeString macro(EvaluationContextImpl context, String macroName, ArgumentsNode args, boolean ignoreOverriden)
             throws PebbleException {
         SafeString result = null;
         boolean found = false;
@@ -337,7 +337,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         return result;
     }
 
-    public void setParent(EvaluationContext context, String parentName) throws PebbleException {
+    public void setParent(EvaluationContextImpl context, String parentName) throws PebbleException {
         context.getHierarchy()
                 .pushAncestor((PebbleTemplateImpl) engine.getTemplate(this.resolveRelativePath(parentName)));
     }

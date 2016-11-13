@@ -12,14 +12,14 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class ContainsExpression extends BinaryExpression<Boolean> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         Object leftValue = getLeftExpression().evaluate(self, context);
 
         if (leftValue == null) {
