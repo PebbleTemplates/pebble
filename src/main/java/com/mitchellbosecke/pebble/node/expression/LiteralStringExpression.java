@@ -43,4 +43,9 @@ public class LiteralStringExpression implements Expression<String> {
         return value;
     }
 
+    @Override
+    public String toString() {
+        return String.format("\"%s\"", value);
+    }
+
 }

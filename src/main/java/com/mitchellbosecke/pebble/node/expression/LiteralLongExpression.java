@@ -38,4 +38,9 @@ public class LiteralLongExpression implements Expression<Long> {
         return this.lineNumber;
     }
 
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+
 }

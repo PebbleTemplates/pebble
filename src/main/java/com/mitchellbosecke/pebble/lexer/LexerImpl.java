@@ -8,6 +8,17 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.lexer;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
@@ -15,12 +26,6 @@ import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.utils.Pair;
 import com.mitchellbosecke.pebble.utils.StringLengthComparator;
 import com.mitchellbosecke.pebble.utils.StringUtils;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This class reads the template input and builds single items out of it.
@@ -56,7 +61,9 @@ public final class LexerImpl implements Lexer {
     private ArrayList<Token> tokens;
 
     /**
-     * Make sure every opening bracket has a closing bracket.
+     * Represents the brackets we are currently inside ordered by how recently
+     * we encountered them. (i.e. peek() will return the most innermost bracket,
+     * getLast() will return the outermost)
      */
     private LinkedList<Pair<String, Integer>> brackets;
 
@@ -69,7 +76,7 @@ public final class LexerImpl implements Lexer {
     private LinkedList<State> states;
 
     private enum State {
-        DATA, EXECUTE, PRINT, COMMENT
+        DATA, EXECUTE, PRINT, COMMENT, STRING, STRING_INTERPOLATION
     }
 
     /**
@@ -87,10 +94,28 @@ public final class LexerImpl implements Lexer {
 
     private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
 
+    private static final Pattern REGEX_STRING_OPEN = Pattern.compile("^\"");
+    private static final Pattern REGEX_STRING_NON_INTERPOLATED_PART = Pattern
+            .compile("^[^#\"\\\\]*(?:(?:\\\\.|#(?!\\{))[^#\"\\\\]*)*", Pattern.DOTALL);
+
     // the negative lookbehind assertion is used to ignore escaped quotation
     // marks
     private static final Pattern REGEX_STRING = Pattern
             .compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))", Pattern.DOTALL);
+
+    /**
+     * Explanation: This regex is equivalent to the following (Java escaping
+     * removed)
+     *
+     * ^"([^#"\\]*(?:\\[^#"\\]*)*"|'([^'\\]*(?:\\.[^'\\]*)*'
+     *
+     * Meaning: Double quoted string containing no string interpolation, or a
+     * single quoted string. Complexity is due to ignoring escaped quotation
+     * marks
+     *
+     */
+    private static final Pattern REGEX_STRING_PLAIN = Pattern
+            .compile("^\"([^#\"\\\\]*(?:\\\\.[^#\"\\\\]*)*)\"|'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'", Pattern.DOTALL);
 
     private static final String PUNCTUATION = "()[]{}?:.,|=";
 
@@ -102,11 +127,15 @@ public final class LexerImpl implements Lexer {
     /**
      * Constructor
      *
-     * @param syntax          The primary syntax
-     * @param unaryOperators  The available unary operators
-     * @param binaryOperators The available binary operators
+     * @param syntax
+     *            The primary syntax
+     * @param unaryOperators
+     *            The available unary operators
+     * @param binaryOperators
+     *            The available binary operators
      */
-    public LexerImpl(Syntax syntax, Collection<UnaryOperator> unaryOperators, Collection<BinaryOperator> binaryOperators) {
+    public LexerImpl(Syntax syntax, Collection<UnaryOperator> unaryOperators,
+            Collection<BinaryOperator> binaryOperators) {
         this.syntax = syntax;
         this.unaryOperators = unaryOperators;
         this.binaryOperators = binaryOperators;
@@ -115,9 +144,12 @@ public final class LexerImpl implements Lexer {
     /**
      * This is the main method used to tokenize the raw contents of a template.
      *
-     * @param reader The reader provided from the Loader
-     * @param name   The name of the template (used for meaningful error messages)
-     * @throws ParserException Thrown from the Reader object
+     * @param reader
+     *            The reader provided from the Loader
+     * @param name
+     *            The name of the template (used for meaningful error messages)
+     * @throws ParserException
+     *             Thrown from the Reader object
      */
     @Override
     public TokenStream tokenize(Reader reader, String name) throws ParserException {
@@ -150,20 +182,26 @@ public final class LexerImpl implements Lexer {
          */
         while (this.source.length() > 0) {
             switch (this.state) {
-                case DATA:
-                    lexData();
-                    break;
-                case EXECUTE:
-                    lexExecute();
-                    break;
-                case PRINT:
-                    lexPrint();
-                    break;
-                case COMMENT:
-                    lexComment();
-                    break;
-                default:
-                    break;
+            case DATA:
+                lexData();
+                break;
+            case EXECUTE:
+                lexExecute();
+                break;
+            case PRINT:
+                lexPrint();
+                break;
+            case COMMENT:
+                lexComment();
+                break;
+            case STRING:
+                lexString();
+                break;
+            case STRING_INTERPOLATION:
+                lexStringInterpolation();
+                break;
+            default:
+                break;
             }
 
         }
@@ -179,6 +217,66 @@ public final class LexerImpl implements Lexer {
         }
 
         return new TokenStream(tokens, source.getFilename());
+    }
+
+    private void lexStringInterpolation() throws ParserException {
+        String lastBracket = brackets.peek().getLeft();
+        Matcher matcher = syntax.getRegexInterpolationClose().matcher(source);
+        if (syntax.getInterpolationOpenDelimiter().equals(lastBracket) && matcher.lookingAt()) {
+            brackets.pop();
+            pushToken(Token.Type.STRING_INTERPOLATION_END);
+            source.advance(matcher.end());
+            popState();
+        } else {
+            lexExpression();
+        }
+    }
+
+    private void lexString() throws ParserException {
+        Matcher matcher = this.syntax.getRegexInterpolationOpen().matcher(source);
+        if (matcher.lookingAt()) {
+            brackets.push(new Pair<>(syntax.getInterpolationOpenDelimiter(), source.getLineNumber()));
+            pushToken(Token.Type.STRING_INTERPOLATION_START);
+            source.advance(matcher.end());
+            pushState(State.STRING_INTERPOLATION);
+            return;
+        }
+
+        matcher = REGEX_STRING_NON_INTERPOLATED_PART.matcher(source);
+        if (matcher.lookingAt() && matcher.end() > 0) {
+            String token = source.substring(matcher.end());
+            source.advance(matcher.end());
+            pushToken(Token.Type.STRING, token);
+            return;
+        }
+
+        matcher = REGEX_STRING_OPEN.matcher(source);
+        if (matcher.lookingAt()) {
+            String expected = brackets.pop().getLeft();
+
+            if (source.charAt(0) != '"') {
+                throw new ParserException(null, String.format("Unclosed \"%s\"", expected), source.getLineNumber(),
+                        source.getFilename());
+            }
+
+            popState();
+            source.advance(matcher.end());
+        }
+    }
+
+    private String stripSlashes(String str) {
+        char quotationType = str.charAt(0);
+
+        // remove first and last quotation marks
+        str = str.substring(1, str.length() - 1);
+
+        // remove backslashes used to escape inner quotation marks
+        if (quotationType == '\'') {
+            str = str.replaceAll("\\\\(')", "$1");
+        } else if (quotationType == '"') {
+            str = str.replaceAll("\\\\(\")", "$1");
+        }
+        return str;
     }
 
     /**
@@ -380,7 +478,7 @@ public final class LexerImpl implements Lexer {
 
             // opening bracket
             if ("([{".indexOf(character) >= 0) {
-                brackets.push(new Pair<String, Integer>(character, source.getLineNumber()));
+                brackets.push(new Pair<>(character, source.getLineNumber()));
             }
 
             // closing bracket
@@ -407,26 +505,22 @@ public final class LexerImpl implements Lexer {
             return;
         }
 
-        // strings
-        matcher = REGEX_STRING.matcher(source);
+        // Plain (non-interpolated) string
+        matcher = REGEX_STRING_PLAIN.matcher(source);
         if (matcher.lookingAt()) {
             token = source.substring(matcher.end());
-
             source.advance(matcher.end());
-
-            char quotationType = token.charAt(0);
-
-            // remove first and last quotation marks
-            token = token.substring(1, token.length() - 1);
-
-            // remove backslashes used to escape inner quotation marks
-            if (quotationType == '\'') {
-                token = token.replaceAll("\\\\(')", "$1");
-            } else if (quotationType == '"') {
-                token = token.replaceAll("\\\\(\")", "$1");
-            }
-
+            token = stripSlashes(token);
             pushToken(Token.Type.STRING, token);
+            return;
+        }
+
+        // Interpolated strings
+        matcher = REGEX_STRING_OPEN.matcher(source);
+        if (matcher.lookingAt()) {
+            brackets.push(new Pair<>("\"", source.getLineNumber()));
+            pushState(State.STRING);
+            source.advance(matcher.end());
             return;
         }
 
@@ -503,7 +597,8 @@ public final class LexerImpl implements Lexer {
      * pass control to the overloaded method that will push this token into a
      * list of tokens that we are maintaining.
      *
-     * @param type The type of Token we are creating
+     * @param type
+     *            The type of Token we are creating
      */
     private Token pushToken(Token.Type type) {
         return pushToken(type, null);
@@ -513,8 +608,10 @@ public final class LexerImpl implements Lexer {
      * Create a Token of a certain type and value and push it into the list of
      * tokens that we are maintaining. `
      *
-     * @param type  The type of token we are creating
-     * @param value The value of the new token
+     * @param type
+     *            The type of token we are creating
+     * @param value
+     *            The value of the new token
      */
     private Token pushToken(Token.Type type, String value) {
         // ignore empty text tokens
@@ -531,7 +628,8 @@ public final class LexerImpl implements Lexer {
      * Pushes the current state onto the stack and then updates the current
      * state to the new state.
      *
-     * @param state The new state to use as the current state
+     * @param state
+     *            The new state to use as the current state
      */
     private void pushState(State state) {
         this.states.push(this.state);

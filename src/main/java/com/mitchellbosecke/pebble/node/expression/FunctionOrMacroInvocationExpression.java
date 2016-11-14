@@ -8,6 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -15,12 +20,7 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-public class  FunctionOrMacroInvocationExpression implements Expression<Object> {
+public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     private final String functionName;
 
@@ -69,6 +69,12 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
     @Override
     public int getLineNumber() {
         return this.lineNumber;
+    }
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return String.format("%s%s", functionName, args);
     }
 
 }

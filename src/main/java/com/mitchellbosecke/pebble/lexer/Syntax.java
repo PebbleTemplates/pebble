@@ -23,6 +23,10 @@ public final class Syntax {
 
     private final String delimiterPrintClose;
 
+    private final String delimiterInterpolationOpen;
+
+    private final String delimiterInterpolationClose;
+
     private final String whitespaceTrim;
 
     /**
@@ -40,6 +44,9 @@ public final class Syntax {
 
     private final Pattern regexTrailingWhitespaceTrim;
 
+    private final Pattern regexInterpolationOpen;
+    private final Pattern regexInterpolationClose;
+
     /**
      * Regular expressions used to find "verbatim" and "endverbatim" tags.
      */
@@ -51,7 +58,8 @@ public final class Syntax {
 
     public Syntax(final String delimiterCommentOpen, final String delimiterCommentClose,
             final String delimiterExecuteOpen, final String delimiterExecuteClose, final String delimiterPrintOpen,
-            final String delimiterPrintClose, final String whitespaceTrim) {
+            final String delimiterPrintClose, final String delimiterInterpolationOpen,
+            final String delimiterInterpolationClose, final String whitespaceTrim) {
         this.delimiterCommentClose = delimiterCommentClose;
         this.delimiterCommentOpen = delimiterCommentOpen;
         this.delimiterExecuteOpen = delimiterExecuteOpen;
@@ -59,6 +67,8 @@ public final class Syntax {
         this.delimiterPrintOpen = delimiterPrintOpen;
         this.delimiterPrintClose = delimiterPrintClose;
         this.whitespaceTrim = whitespaceTrim;
+        this.delimiterInterpolationClose = delimiterInterpolationClose;
+        this.delimiterInterpolationOpen = delimiterInterpolationOpen;
 
         // regexes used to find the individual delimiters
         this.regexPrintClose = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "?"
@@ -83,6 +93,9 @@ public final class Syntax {
         this.regexTrailingWhitespaceTrim = Pattern.compile("^\\s*" + Pattern.quote(whitespaceTrim) + "("
                 + Pattern.quote(delimiterPrintClose) + "|" + Pattern.quote(delimiterExecuteClose) + "|"
                 + Pattern.quote(delimiterCommentClose) + ")");
+
+        this.regexInterpolationOpen = Pattern.compile("^" + Pattern.quote(delimiterInterpolationOpen));
+        this.regexInterpolationClose = Pattern.compile("^\\s*" + Pattern.quote(delimiterInterpolationClose));
 
     }
 
@@ -128,6 +141,14 @@ public final class Syntax {
         return delimiterPrintClose;
     }
 
+    public String getInterpolationOpenDelimiter() {
+        return delimiterInterpolationOpen;
+    }
+
+    public String getInterpolationCloseDelimiter() {
+        return delimiterInterpolationClose;
+    }
+
     public String getWhitespaceTrim() {
         return whitespaceTrim;
     }
@@ -164,6 +185,14 @@ public final class Syntax {
         return regexVerbatimStart;
     }
 
+    Pattern getRegexInterpolationOpen() {
+        return regexInterpolationOpen;
+    }
+
+    Pattern getRegexInterpolationClose() {
+        return regexInterpolationClose;
+    }
+
     /**
      * Helper class to create new instances of {@link Syntax}.
      */
@@ -180,6 +209,10 @@ public final class Syntax {
         private String delimiterPrintOpen = "{{";
 
         private String delimiterPrintClose = "}}";
+
+        private String delimiterInterpolationOpen = "#{";
+
+        private String delimiterInterpolationClose = "}";
 
         private String whitespaceTrim = "-";
 
@@ -281,9 +314,26 @@ public final class Syntax {
             this.whitespaceTrim = whitespaceTrim;
         }
 
+        public String getInterpolationOpenDelimiter() {
+            return delimiterInterpolationOpen;
+        }
+
+        public void setInterpolationOpenDelimiter(String delimiterInterpolationOpen) {
+            this.delimiterInterpolationOpen = delimiterInterpolationOpen;
+        }
+
+        public String getInterpolationCloseDelimiter() {
+            return delimiterInterpolationClose;
+        }
+
+        public void setInterpolationCloseDelimiter(String delimiterInterpolationClose) {
+            this.delimiterInterpolationClose = delimiterInterpolationClose;
+        }
+
         public Syntax build() {
             return new Syntax(delimiterCommentOpen, delimiterCommentClose, delimiterExecuteOpen, delimiterExecuteClose,
-                    delimiterPrintOpen, delimiterPrintClose, whitespaceTrim);
+                    delimiterPrintOpen, delimiterPrintClose, delimiterInterpolationOpen, delimiterInterpolationClose,
+                    whitespaceTrim);
         }
     }
 
