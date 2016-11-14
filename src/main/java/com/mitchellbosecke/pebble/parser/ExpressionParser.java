@@ -316,8 +316,6 @@ public class ExpressionParser {
 
         case STRING:
         case STRING_INTERPOLATION_START:
-            // node = new LiteralStringExpression(token.getValue(),
-            // token.getLineNumber());
             node = parseStringExpression();
             break;
 
@@ -332,8 +330,9 @@ public class ExpressionParser {
     }
 
     private Expression<?> parseStringExpression() throws ParserException {
-
         List<Expression<?>> nodes = new ArrayList<>();
+
+        // Sequential strings are not OK, but strings can follow interpolation
         boolean nextCanBeString = true;
 
         while (true) {

@@ -63,7 +63,9 @@ public final class LexerImpl implements Lexer {
     /**
      * Represents the brackets we are currently inside ordered by how recently
      * we encountered them. (i.e. peek() will return the most innermost bracket,
-     * getLast() will return the outermost)
+     * getLast() will return the outermost). Brackets in this case includes
+     * double quotes. The String value of the pair is the bracket
+     * representation, and the Integer is the line number.
      */
     private LinkedList<Pair<String, Integer>> brackets;
 

@@ -63,7 +63,6 @@ public class StringInterpolationTest {
     @Test
     public void testInterpolationWithEscapedQuotes() throws PebbleException {
         String str = "{{ \"The cow says: #{\"\\\"moo\\\"\"}\" }}";
-        // String str = "{{ \"The cow says: \\\"moo\\\"\" }}";
         assertEquals("The cow says: \"moo\"", evaluate(str));
     }
 
@@ -113,6 +112,24 @@ public class StringInterpolationTest {
     }
 
     @Test
+    public void testStringWithNumberSigns() throws PebbleException {
+        String src = "{{ \"#bang #crash }!!\" }}";
+        assertEquals("#bang #crash }!!", evaluate(src));
+    }
+
+    @Test
+    public void testStringWithNumberSignsAndInterpolation() throws PebbleException {
+        String src = "{{ \"The cow said ##{'moo'}#\" }}";
+        assertEquals("The cow said #moo#", evaluate(src));
+    }
+
+    @Test
+    public void testWhitespaceBetweenNumberSignAndCurlyBrace() throws PebbleException {
+        String src = "{{ \"Green eggs and # {ham}\" }}";
+        assertEquals("Green eggs and # {ham}", evaluate(src));
+    }
+
+    @Test
     public void testStringInsideInterpolation() throws PebbleException {
         String src = "{{ \"Outer: #{ \"inner\" }\" }}";
         assertEquals("Outer: inner", evaluate(src));
@@ -140,6 +157,20 @@ public class StringInterpolationTest {
     public void testSequentialInterpolations1() throws PebbleException {
         String src = "{{ \"The #{'cow'} says #{'moo'} and jumps #{'over'} the #{'moon'}\"}}";
         assertEquals("The cow says moo and jumps over the moon", evaluate(src));
+    }
+
+    @Test
+    public void testVariableContainingInterplationSyntax() throws PebbleException {
+        String src = "{{ \"Hey #{name}\" }}";
+        Map<String, Object> ctx = new HashMap<>();
+        ctx.put("name", "#{1+1}");
+        assertEquals("Hey #{1+1}", evaluate(src, ctx));
+    }
+
+    @Test
+    public void testNewlineInInterpolation() throws PebbleException {
+        String src = "{{ \"Sum = #{ 'egg\negg'}\" }}";
+        assertEquals("Sum = egg\negg", evaluate(src));
     }
 
     private String evaluate(String template) throws PebbleException {
