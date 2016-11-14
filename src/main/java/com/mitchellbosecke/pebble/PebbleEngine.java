@@ -254,9 +254,11 @@ public class PebbleEngine {
 
         private List<Extension> userProvidedExtensions = new ArrayList<>();
 
-        private Syntax syntax = new Syntax.Builder().build();
+        private Syntax syntax;
 
         private boolean strictVariables = false;
+
+        private boolean enableNewLineTrimming = true;
 
         private Locale defaultLocale;
 
@@ -331,6 +333,28 @@ public class PebbleEngine {
          */
         public Builder strictVariables(boolean strictVariables) {
             this.strictVariables = strictVariables;
+            return this;
+        }
+
+        /**
+         * Changes the <code>newLineTrimming</code> setting of the PebbleEngine.
+         * The default value of this setting is "true".
+         * <p>
+         *      By default, Pebble will trim a newline that immediately follows
+         *      a Pebble tag. For example, <code>{{key1}}\n{{key2}}</code> will
+         *      have the newline removed.
+         * </p>
+         * <p>
+         * If <code>newLineTrimming</code> is set to false, then the
+         * first newline following a Pebble tag won't be trimmed.  All newlines
+         * will be preserved
+         * </p>
+         *
+         * @param enableNewLineTrimming Whether or not the newline should be trimmed.
+         * @return This builder object
+         */
+        public Builder newLineTrimming(boolean enableNewLineTrimming) {
+            this.enableNewLineTrimming = enableNewLineTrimming;
             return this;
         }
 
@@ -467,6 +491,10 @@ public class PebbleEngine {
             } else {
                 templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
                 tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
+            }
+
+            if(syntax == null) {
+                syntax = new Syntax.Builder().setEnableNewLineTrimming(enableNewLineTrimming).build();
             }
 
             return new PebbleEngine(loader, syntax, strictVariables, defaultLocale, tagCache, templateCache,
