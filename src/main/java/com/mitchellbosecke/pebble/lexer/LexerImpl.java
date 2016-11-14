@@ -94,25 +94,22 @@ public final class LexerImpl implements Lexer {
 
     private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
 
-    private static final Pattern REGEX_STRING_OPEN = Pattern.compile("^\"");
+    /**
+     * Matches a double quote
+     */
+    private static final Pattern REGEX_DOUBLEQUOTE = Pattern.compile("^\"");
+
+    /**
+     * Matches everything up to the first interpolation in a double quoted
+     * string
+     */
     private static final Pattern REGEX_STRING_NON_INTERPOLATED_PART = Pattern
             .compile("^[^#\"\\\\]*(?:(?:\\\\.|#(?!\\{))[^#\"\\\\]*)*", Pattern.DOTALL);
 
-    // the negative lookbehind assertion is used to ignore escaped quotation
-    // marks
-    private static final Pattern REGEX_STRING = Pattern
-            .compile("((\").*?(?<!\\\\)(\"))|((').*?(?<!\\\\)('))", Pattern.DOTALL);
-
     /**
-     * Explanation: This regex is equivalent to the following (Java escaping
-     * removed)
-     *
-     * ^"([^#"\\]*(?:\\[^#"\\]*)*"|'([^'\\]*(?:\\.[^'\\]*)*'
-     *
-     * Meaning: Double quoted string containing no string interpolation, or a
-     * single quoted string. Complexity is due to ignoring escaped quotation
-     * marks
-     *
+     * Matches single quoted strings and double quoted strings without
+     * interpolation. Extra complexity is due to ignoring escaped quotation
+     * marks.
      */
     private static final Pattern REGEX_STRING_PLAIN = Pattern
             .compile("^\"([^#\"\\\\]*(?:\\\\.[^#\"\\\\]*)*)\"|'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'", Pattern.DOTALL);
@@ -203,7 +200,6 @@ public final class LexerImpl implements Lexer {
             default:
                 break;
             }
-
         }
 
         // end of file token
@@ -233,6 +229,7 @@ public final class LexerImpl implements Lexer {
     }
 
     private void lexString() throws ParserException {
+        // interpolation
         Matcher matcher = this.syntax.getRegexInterpolationOpen().matcher(source);
         if (matcher.lookingAt()) {
             brackets.push(new Pair<>(syntax.getInterpolationOpenDelimiter(), source.getLineNumber()));
@@ -242,6 +239,7 @@ public final class LexerImpl implements Lexer {
             return;
         }
 
+        // regular string start (always full string if single quotes)
         matcher = REGEX_STRING_NON_INTERPOLATED_PART.matcher(source);
         if (matcher.lookingAt() && matcher.end() > 0) {
             String token = source.substring(matcher.end());
@@ -250,7 +248,8 @@ public final class LexerImpl implements Lexer {
             return;
         }
 
-        matcher = REGEX_STRING_OPEN.matcher(source);
+        // end of string (which may have contained interpolation)
+        matcher = REGEX_DOUBLEQUOTE.matcher(source);
         if (matcher.lookingAt()) {
             String expected = brackets.pop().getLeft();
 
@@ -262,21 +261,6 @@ public final class LexerImpl implements Lexer {
             popState();
             source.advance(matcher.end());
         }
-    }
-
-    private String stripSlashes(String str) {
-        char quotationType = str.charAt(0);
-
-        // remove first and last quotation marks
-        str = str.substring(1, str.length() - 1);
-
-        // remove backslashes used to escape inner quotation marks
-        if (quotationType == '\'') {
-            str = str.replaceAll("\\\\(')", "$1");
-        } else if (quotationType == '"') {
-            str = str.replaceAll("\\\\(\")", "$1");
-        }
-        return str;
     }
 
     /**
@@ -510,13 +494,13 @@ public final class LexerImpl implements Lexer {
         if (matcher.lookingAt()) {
             token = source.substring(matcher.end());
             source.advance(matcher.end());
-            token = stripSlashes(token);
+            token = unquoteAndUnescape(token);
             pushToken(Token.Type.STRING, token);
             return;
         }
 
         // Interpolated strings
-        matcher = REGEX_STRING_OPEN.matcher(source);
+        matcher = REGEX_DOUBLEQUOTE.matcher(source);
         if (matcher.lookingAt()) {
             brackets.push(new Pair<>("\"", source.getLineNumber()));
             pushState(State.STRING);
@@ -527,7 +511,26 @@ public final class LexerImpl implements Lexer {
         // we should have found something and returned by this point
         throw new ParserException(null, String.format("Unexpected character [%s]", source.charAt(0)),
                 source.getLineNumber(), source.getFilename());
+    }
 
+    /**
+     * This method assumes the provided {@code str} starts with a single or
+     * double quote. It removes the wrapping quotes, and un-escapes any quotes
+     * within the string.
+     */
+    private String unquoteAndUnescape(String str) {
+        char quotationType = str.charAt(0);
+
+        // remove first and last quotation marks
+        str = str.substring(1, str.length() - 1);
+
+        // remove backslashes used to escape inner quotation marks
+        if (quotationType == '\'') {
+            str = str.replaceAll("\\\\(')", "$1");
+        } else if (quotationType == '"') {
+            str = str.replaceAll("\\\\(\")", "$1");
+        }
+        return str;
     }
 
     private void checkForLeadingWhitespaceTrim(Token leadingToken) {

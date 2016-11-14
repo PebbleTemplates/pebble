@@ -18,24 +18,21 @@ import com.mitchellbosecke.pebble.loader.StringLoader;
 public class StringInterpolationTest {
 
     @Test
-    public void testSimpleVariableInterpolation() throws PebbleException, IOException {
+    public void testSimpleVariableInterpolation() throws PebbleException {
         String source = "{{ \"Hello, #{name}\" }}";
         Map<String, Object> ctx = new HashMap<>();
         ctx.put("name", "joe");
-        String evaluated = evaluate(source, ctx);
-
-        assertEquals("Hello, joe", evaluated);
+        assertEquals("Hello, joe", evaluate(source, ctx));
     }
 
     @Test
-    public void testExpressionInterpolation() throws PebbleException, IOException {
+    public void testExpressionInterpolation() throws PebbleException {
         String src = "{{ \"1 plus 2 equals #{1 + 2}\" }}";
-        String evaluated = evaluate(src);
-        assertEquals("1 plus 2 equals 3", evaluated);
+        assertEquals("1 plus 2 equals 3", evaluate(src));
     }
 
     @Test
-    public void testUnclosedInterpolation() throws PebbleException, IOException {
+    public void testUnclosedInterpolation() throws PebbleException {
         String src = "{{ \" #{ 1 +\" }}";
 
         try {
@@ -46,67 +43,123 @@ public class StringInterpolationTest {
     }
 
     @Test
-    public void testFunctionInInterpolation() throws PebbleException, IOException {
+    public void testDoubleClosedInterpolation() throws PebbleException {
+        String src = "{{ \"#{3}}\" }}";
+        assertEquals("3}", evaluate(src));
+    }
+
+    @Test
+    public void testFunctionInInterpolation() throws PebbleException {
         String src = "{{ \"Maximum: #{ max(5, 10) } \" }}";
-        String evaluated = evaluate(src);
-        assertEquals("Maximum: 10 ", evaluated);
+        assertEquals("Maximum: 10 ", evaluate(src));
     }
 
     @Test
-    public void testVerbatimInterpolation() throws PebbleException, IOException {
+    public void testVerbatimInterpolation() throws PebbleException {
         String src = "{% verbatim %}{{ \"Sum: #{ 1 + 2 }\" }}{% endverbatim %}";
-        String evaluated = evaluate(src);
-        assertEquals("{{ \"Sum: #{ 1 + 2 }\" }}", evaluated);
+        assertEquals("{{ \"Sum: #{ 1 + 2 }\" }}", evaluate(src));
     }
 
     @Test
-    public void testNestedInterpolation() throws PebbleException, IOException {
+    public void testInterpolationWithEscapedQuotes() throws PebbleException {
+        String str = "{{ \"The cow says: #{\"\\\"moo\\\"\"}\" }}";
+        // String str = "{{ \"The cow says: \\\"moo\\\"\" }}";
+        assertEquals("The cow says: \"moo\"", evaluate(str));
+    }
+
+    @Test
+    public void testNestedInterpolation0() throws PebbleException {
         String src = "{{ \"Nested: #{ outer + \" #{ inner }\" }\" }}";
         Map<String, Object> ctx = new HashMap<>();
         ctx.put("outer", "OUTER");
         ctx.put("inner", "INNER");
-        String evaluated = evaluate(src, ctx);
-        assertEquals("Nested: OUTER INNER", evaluated);
+        assertEquals("Nested: OUTER INNER", evaluate(src, ctx));
     }
 
     @Test
-    public void testNestedInterpolation1() throws PebbleException, IOException {
-        String src = "{{ \"Outer: #{ \"inner: #{ 3 + 4 }\"}\" }}";
-        assertEquals("Outer: inner: 7", evaluate(src));
+    public void testNestedInterpolation1() throws PebbleException {
+        String src = "{{ \"#{\"#{\"#{'hi'}\"}\"}\" }}";
+        assertEquals("hi", evaluate(src));
     }
 
     @Test
-    public void testNestedInterpolation2() throws PebbleException, IOException {
-        String src = "{{ \" Outer: #{ \"inner: #{ 3 + 4 }\"}\" }}";
-        assertEquals(" Outer: inner: 7", evaluate(src));
+    public void testInterpolationWhitespace0() throws PebbleException {
+        String src = "{{ \"Outer: #{3+4}\" }}";
+        assertEquals("Outer: 7", evaluate(src));
     }
 
     @Test
-    public void testNestedInterpolation3() throws PebbleException, IOException {
-        String src = "{{ \"Outer: #{ \"inner: #{ 3 + 4 } \"}\" }}";
-        assertEquals("Outer: inner: 7 ", evaluate(src));
+    public void testInterpolationWhitespace1() throws PebbleException {
+        String src = "{{ \"Outer: #{ 3 + 4 }\" }}";
+        assertEquals("Outer: 7", evaluate(src));
     }
 
     @Test
-    public void testStringInsideInterpolation() throws PebbleException, IOException {
+    public void testInterpolationWhitespace2() throws PebbleException {
+        String src = "{{ \"Outer:#{ 3 + 4 }\" }}";
+        assertEquals("Outer:7", evaluate(src));
+    }
+
+    @Test
+    public void testInterpolationWhitespace3() throws PebbleException {
+        String src = "{{ \"Outer:#{ 3 + 4 } \" }}";
+        assertEquals("Outer:7 ", evaluate(src));
+    }
+
+    @Test
+    public void testInterpolationWhitespace4() throws PebbleException {
+        String src = "{{ \"Outer:  #{ 3 + 4 }  \" }}";
+        assertEquals("Outer:  7  ", evaluate(src));
+    }
+
+    @Test
+    public void testStringInsideInterpolation() throws PebbleException {
         String src = "{{ \"Outer: #{ \"inner\" }\" }}";
-        String evaluated = evaluate(src);
-        assertEquals("Outer: inner", evaluated);
+        assertEquals("Outer: inner", evaluate(src));
     }
 
-    private String evaluate(String template) throws PebbleException, IOException {
+    @Test
+    public void testSingleQuoteNoInterpolation() throws PebbleException {
+        String src = "{{ '#{3}'}}";
+        assertEquals("#{3}", evaluate(src));
+    }
+
+    @Test
+    public void testSingleQuoteInsideInterpolation() throws PebbleException {
+        String src = "{{ \"The cow says: #{'moo' + '#{moo}'}\" }}";
+        assertEquals("The cow says: moo#{moo}", evaluate(src));
+    }
+
+    @Test
+    public void testSequentialInterpolations0() throws PebbleException {
+        String src = "{{ \"#{1+1}#{2+2}\" }}";
+        assertEquals("24", evaluate(src));
+    }
+
+    @Test
+    public void testSequentialInterpolations1() throws PebbleException {
+        String src = "{{ \"The #{'cow'} says #{'moo'} and jumps #{'over'} the #{'moon'}\"}}";
+        assertEquals("The cow says moo and jumps over the moon", evaluate(src));
+    }
+
+    private String evaluate(String template) throws PebbleException {
         return evaluate(template, null);
     }
 
-    private String evaluate(String template, Map<String, Object> context) throws PebbleException, IOException {
-        Writer writer = new StringWriter();
+    private String evaluate(String template, Map<String, Object> context) throws PebbleException {
+        try {
+            Writer writer = new StringWriter();
 
-        new PebbleEngine.Builder()
-                .loader(new StringLoader())
-                .strictVariables(false)
-                .build()
-                .getTemplate(template)
-                .evaluate(writer, context);
-        return writer.toString();
+            new PebbleEngine.Builder()
+                    .loader(new StringLoader())
+                    .strictVariables(false)
+                    .build()
+                    .getTemplate(template)
+                    .evaluate(writer, context);
+            return writer.toString();
+        } catch (IOException ex) {
+            fail("Unexpected IOException: " + ex.getMessage());
+            return null;
+        }
     }
 }
