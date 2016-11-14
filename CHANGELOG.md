@@ -1,3 +1,17 @@
+## v3.0.0 (future)
+- Java 8
+- Macros have access to all variables within the template and are no longer restricted to a "local scope"
+- New signature for filters/functions/tests that accepts the PebbleTemplate, EvaluationContext, and line number
+- Converted EvaluationContext to an interface with limited access to the underlying implementation
+- A "null" used as a boolean expression now throws an error if strict variables is true, treated as "false" otherwise
+- Improved error reporting
+
+## v2.3.0 (2016-11-13)
+- Upgrade SLF4J from 1.6.1 to 1.7.21
+- "raw" filter works for all variables, not just strings
+- Improved error reporting for binary operators
+- Added setting to disable the trimming of newlines after pebble tags
+
 ## v2.2.3 (2016-10-01)
 - Bug fix: Fix the use of the "set" tag within a for loop
 - Bug fix: Fix the concatenation of SafeString (ex. the output of two macros)
