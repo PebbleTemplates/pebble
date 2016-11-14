@@ -6,7 +6,7 @@
 - A "null" used as a boolean expression now throws an error if strict variables is true, treated as "false" otherwise
 - Improved error reporting
 
-## v2.3.0 (future)
+## v2.3.0 (2016-11-13)
 - Upgrade SLF4J from 1.6.1 to 1.7.21
 - "raw" filter works for all variables, not just strings
 - Improved error reporting for binary operators
