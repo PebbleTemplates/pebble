@@ -8,7 +8,10 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,11 +19,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class NewlineTrimmingTest extends AbstractTest {
 
@@ -47,14 +46,14 @@ public class NewlineTrimmingTest extends AbstractTest {
     public void testPrintForceToTrue() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .enableNewLineTrimming(true)
+                                                        .newLineTrimming(true)
                                                         .build();
 
         PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
 
         Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("param1", "val1");
         params.put("param2", "val2");
 
@@ -67,7 +66,7 @@ public class NewlineTrimmingTest extends AbstractTest {
     public void testPrintSetToFalse() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .enableNewLineTrimming(false)
+                                                        .newLineTrimming(false)
                                                         .build();
 
         PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
@@ -106,7 +105,7 @@ public class NewlineTrimmingTest extends AbstractTest {
     public void testPrintSetToFalseTwoNewlines() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .enableNewLineTrimming(false)
+                                                        .newLineTrimming(false)
                                                         .build();
 
         PebbleTemplate template = pebble.getTemplate("{{param1}}\n\n{{param2}}");
@@ -141,7 +140,7 @@ public class NewlineTrimmingTest extends AbstractTest {
     public void testCommentForceToTrue() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .enableNewLineTrimming(true)
+                                                        .newLineTrimming(true)
                                                         .build();
 
         PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
@@ -157,7 +156,7 @@ public class NewlineTrimmingTest extends AbstractTest {
     public void testCommentSetToFalse() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .enableNewLineTrimming(false)
+                                                        .newLineTrimming(false)
                                                         .build();
 
         PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
@@ -188,7 +187,7 @@ public class NewlineTrimmingTest extends AbstractTest {
     public void testExecuteForceToTrue() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .enableNewLineTrimming(true)
+                                                        .newLineTrimming(true)
                                                         .build();
 
         PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");
@@ -204,7 +203,7 @@ public class NewlineTrimmingTest extends AbstractTest {
     public void testExecuteSetToFalse() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .enableNewLineTrimming(false)
+                                                        .newLineTrimming(false)
                                                         .build();
 
         PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");

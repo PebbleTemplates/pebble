@@ -257,7 +257,7 @@ public class PebbleEngine {
         private Syntax syntax;
 
         private boolean strictVariables = false;
-        
+
         private boolean enableNewLineTrimming = true;
 
         private Locale defaultLocale;
@@ -335,26 +335,25 @@ public class PebbleEngine {
             this.strictVariables = strictVariables;
             return this;
         }
-        
+
         /**
-         * Changes the <code>enableNewLineTrimming</code> setting of the PebbleEngine.
+         * Changes the <code>newLineTrimming</code> setting of the PebbleEngine.
          * The default value of this setting is "true".
          * <p>
-         * If <code>enableNewLineTrimming</code> is set to false, then the
-         * first newline following a Pebble tag won't be trimmed. It is trimmed
-         * by default.
+         *      By default, Pebble will trim a newline that immediately follows
+         *      a Pebble tag. For example, <code>{{key1}}\n{{key2}}</code> will
+         *      have the newline removed.
          * </p>
          * <p>
-         * For example, with <code>enableNewLineTrimming</code> left to true,
-         * <code>{{ key1\nkey2 }}</code> would result in
-         * <code>{{ val1val2 }}</code>. With <code>enableNewLineTrimming</code> 
-         * set to false, the result would be <code>{{ val1\nval2 }}</code>
+         * If <code>newLineTrimming</code> is set to false, then the
+         * first newline following a Pebble tag won't be trimmed.  All newlines
+         * will be preserved
          * </p>
          *
          * @param enableNewLineTrimming Whether or not the newline should be trimmed.
          * @return This builder object
          */
-        public Builder enableNewLineTrimming(boolean enableNewLineTrimming) {
+        public Builder newLineTrimming(boolean enableNewLineTrimming) {
             this.enableNewLineTrimming = enableNewLineTrimming;
             return this;
         }
@@ -493,7 +492,7 @@ public class PebbleEngine {
                 templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
                 tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
             }
-            
+
             if(syntax == null) {
                 syntax = new Syntax.Builder().setEnableNewLineTrimming(enableNewLineTrimming).build();
             }

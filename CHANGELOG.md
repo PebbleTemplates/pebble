@@ -10,6 +10,7 @@
 - Upgrade SLF4J from 1.6.1 to 1.7.21
 - "raw" filter works for all variables, not just strings
 - Improved error reporting for binary operators
+- Added setting to disable the trimming of newlines after pebble tags
 
 ## v2.2.3 (2016-10-01)
 - Bug fix: Fix the use of the "set" tag within a for loop
