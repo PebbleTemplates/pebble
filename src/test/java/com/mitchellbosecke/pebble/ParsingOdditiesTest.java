@@ -10,9 +10,12 @@ package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,9 +28,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 
 public class ParsingOdditiesTest extends AbstractTest {
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testEscapeCharactersText() throws PebbleException, IOException {
@@ -68,22 +75,19 @@ public class ParsingOdditiesTest extends AbstractTest {
         assertEquals("2012/July/1", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testPositionalArgumentAfterNamedArguments() throws PebbleException, IOException, ParseException {
+        //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
                 .defaultLocale(Locale.ENGLISH).build();
 
         String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
-        PebbleTemplate template = pebble.getTemplate(source);
-        Map<String, Object> context = new HashMap<>();
-        DateFormat format = new SimpleDateFormat("yyyy-MMMM-d");
-        Date realDate = format.parse("2012-July-01");
-        context.put("stringDate", format.format(realDate));
+        thrown.expect(RuntimePebbleException.class);
+        thrown.expectCause(instanceOf(ParserException.class));
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("2012/July/1", writer.toString());
+        //Act + Assert
+        pebble.getTemplate(source);
     }
 
     @Test
@@ -147,15 +151,18 @@ public class ParsingOdditiesTest extends AbstractTest {
         assertEquals("test\ntest", writer.toString());
     }
 
-    @Test(expected = ParserException.class)
+    @Test
     public void testStringWithDifferentQuotationMarks() throws PebbleException, IOException {
+        //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        PebbleTemplate template = pebble.getTemplate("{{'test\"}}");
+        String source = "{{'test\"}}";
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer);
-        assertEquals("test", writer.toString());
+        thrown.expect(RuntimePebbleException.class);
+        thrown.expectCause(instanceOf(ParserException.class));
+
+        //Act + Assert
+        pebble.getTemplate(source);
     }
 
     @Test

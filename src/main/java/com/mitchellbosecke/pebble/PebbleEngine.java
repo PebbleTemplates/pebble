@@ -8,11 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
@@ -38,9 +41,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
+
+import static java.util.Objects.isNull;
 
 /**
  * The main class used for compiling templates. The PebbleEngine is responsible
@@ -117,43 +121,53 @@ public class PebbleEngine {
         try {
             final Object cacheKey = this.loader.createCacheKey(templateName);
 
-            result = templateCache.get(cacheKey, new Callable<PebbleTemplate>() {
-
-                public PebbleTemplateImpl call() throws Exception {
-
-                    LexerImpl lexer = new LexerImpl(syntax, extensionRegistry.getUnaryOperators().values(),
-                            extensionRegistry.getBinaryOperators().values());
-                    Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
-                    TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
-
-                    Parser parser = new ParserImpl(extensionRegistry.getUnaryOperators(),
-                            extensionRegistry.getBinaryOperators(), extensionRegistry.getTokenParsers());
-                    RootNode root = parser.parse(tokenStream);
-
-                    PebbleTemplateImpl instance = new PebbleTemplateImpl(self, root, templateName);
-
-                    for (NodeVisitorFactory visitorFactory : extensionRegistry.getNodeVisitors()) {
-                        visitorFactory.createVisitor(instance).visit(root);
+            if(isNull(templateCache)){
+                result = getPebbleTemplate(self, templateName, cacheKey);
+            }
+            else {
+                result = templateCache.get(cacheKey, k -> {
+                    try {
+                        return getPebbleTemplate(self, templateName, cacheKey);
+                    } catch (PebbleException e) {
+                        throw new RuntimePebbleException(e);
                     }
-
-                    return instance;
-                }
-            });
-        } catch (ExecutionException e) {
+                });
+            }
+        } catch (CompletionException e) {
             /*
-             * The execution exception is probably caused by a PebbleException
-             * being thrown in the above Callable. We will unravel it and throw
+             * The completion exception is probably caused by a PebbleException
+             * being thrown in the above function. We will unravel it and throw
              * the original PebbleException which is more helpful to the end
              * user.
              */
-            if (e.getCause() != null && e.getCause() instanceof PebbleException) {
-                throw (PebbleException) e.getCause();
+            if (e.getCause() != null && e.getCause() instanceof RuntimePebbleException) {
+                RuntimePebbleException runtimePebbleException = (RuntimePebbleException) e.getCause();
+                throw (PebbleException) runtimePebbleException.getCause();
             } else {
                 throw new PebbleException(e, String.format("An error occurred while compiling %s", templateName));
             }
         }
 
         return result;
+    }
+
+    private PebbleTemplate getPebbleTemplate(final PebbleEngine self, final String templateName, final Object cacheKey) throws LoaderException, ParserException {
+        LexerImpl lexer = new LexerImpl(syntax, extensionRegistry.getUnaryOperators().values(),
+                extensionRegistry.getBinaryOperators().values());
+        Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
+        TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
+
+        Parser parser = new ParserImpl(extensionRegistry.getUnaryOperators(),
+                extensionRegistry.getBinaryOperators(), extensionRegistry.getTokenParsers());
+        RootNode root = parser.parse(tokenStream);
+
+        PebbleTemplateImpl instance = new PebbleTemplateImpl(self, root, templateName);
+
+        for (NodeVisitorFactory visitorFactory : extensionRegistry.getNodeVisitors()) {
+            visitorFactory.createVisitor(instance).visit(root);
+        }
+
+        return instance;
     }
 
     /**
@@ -482,15 +496,15 @@ public class PebbleEngine {
             if (cacheActive) {
                 // default caches
                 if (templateCache == null) {
-                    templateCache = CacheBuilder.newBuilder().maximumSize(200).build();
+                    templateCache = Caffeine.newBuilder().maximumSize(200).build();
                 }
 
                 if (tagCache == null) {
-                    tagCache = CacheBuilder.newBuilder().maximumSize(200).build();
+                    tagCache = Caffeine.newBuilder().maximumSize(200).build();
                 }
             } else {
-                templateCache = CacheBuilder.newBuilder().maximumSize(0).build();
-                tagCache = CacheBuilder.newBuilder().maximumSize(0).build();
+                templateCache = null;
+                tagCache = null;
             }
 
             if(syntax == null) {
