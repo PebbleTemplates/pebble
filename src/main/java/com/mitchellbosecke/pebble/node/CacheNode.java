@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.CompletionException;
 
 import static java.util.Objects.isNull;
@@ -150,7 +149,7 @@ public class CacheNode extends AbstractRenderableNode {
         }
     }
 
-    private String render(final PebbleTemplateImpl self, final EvaluationContext context) throws PebbleException, IOException {
+    private String render(final PebbleTemplateImpl self, final EvaluationContextImpl context) throws PebbleException, IOException {
         StringWriter tempWriter = new StringWriter();
         CacheNode.this.body.render(self, tempWriter, context);
 
