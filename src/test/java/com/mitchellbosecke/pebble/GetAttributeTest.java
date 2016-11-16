@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.junit.Test;
@@ -577,6 +578,40 @@ public class GetAttributeTest extends AbstractTest {
         public String getStringFromBoolean(boolean bool) {
             return String.valueOf(bool);
         }
+    }
+    
+    public class DynamicAttributeProviderObject implements DynamicAttributeProvider {
+
+        @Override
+        public boolean canProvideDynamicAttribute(Object attributeName) {
+            
+            if("name".equals(attributeName)) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public Object getDynamicAttribute(Object attributeName) {
+            
+            if("name".equals(attributeName)) {
+                return "Steve";
+            }
+            return null;
+        }
+    }
+    
+    @Test
+    public void testAttributeProviderSimple() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new DynamicAttributeProviderObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello Steve", writer.toString());
     }
 
 }

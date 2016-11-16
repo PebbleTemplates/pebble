@@ -17,6 +17,7 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
@@ -30,8 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
- * following order: map entry, array item, list item, get method, is method, has
- * method, public method, public field.
+ * following order: {@link DynamicAttributeProvider}, map entry, array item, list item, 
+ * get method, is method, has method, public method, public field.
  *
  * @author Mitchell
  */
@@ -86,6 +87,16 @@ public class GetAttributeExpression implements Expression<Object> {
         Member member = object == null ? null : memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
 
         if (object != null && member == null) {
+            
+            /**
+             * Check if the the object can provide the attribute
+             * in a dynamic way.
+             */
+            if(object instanceof DynamicAttributeProvider) {
+                if(((DynamicAttributeProvider)object).canProvideDynamicAttribute(attributeName)) {
+                    return ((DynamicAttributeProvider)object).getDynamicAttribute(attributeNameValue);
+                }   
+            }
 
             /*
              * If, and only if, no arguments were provided does it make sense to
