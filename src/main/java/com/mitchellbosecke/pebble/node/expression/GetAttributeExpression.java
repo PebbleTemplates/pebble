@@ -87,16 +87,6 @@ public class GetAttributeExpression implements Expression<Object> {
         Member member = object == null ? null : memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
 
         if (object != null && member == null) {
-            
-            /**
-             * Check if the the object can provide the attribute
-             * in a dynamic way.
-             */
-            if(object instanceof DynamicAttributeProvider) {
-                if(((DynamicAttributeProvider)object).canProvideDynamicAttribute(attributeName)) {
-                    return ((DynamicAttributeProvider)object).getDynamicAttribute(attributeNameValue);
-                }   
-            }
 
             /*
              * If, and only if, no arguments were provided does it make sense to
@@ -167,6 +157,13 @@ public class GetAttributeExpression implements Expression<Object> {
                     argumentTypes[i] = null;
                 } else {
                     argumentTypes[i] = o.getClass();
+                }
+            }
+          
+            // check if the object is able to provide the attribute dynamically
+            if(object instanceof DynamicAttributeProvider) {
+                if(((DynamicAttributeProvider)object).canProvideDynamicAttribute(attributeName)) {
+                    return ((DynamicAttributeProvider)object).getDynamicAttribute(attributeNameValue, argumentValues);
                 }
             }
 

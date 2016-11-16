@@ -592,7 +592,7 @@ public class GetAttributeTest extends AbstractTest {
         }
 
         @Override
-        public Object getDynamicAttribute(Object attributeName) {
+        public Object getDynamicAttribute(Object attributeName, Object[] argumentValues) {
             
             if("name".equals(attributeName)) {
                 return "Steve";
@@ -613,5 +613,9 @@ public class GetAttributeTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("hello Steve", writer.toString());
     }
+    
+    
+    
+    
 
 }

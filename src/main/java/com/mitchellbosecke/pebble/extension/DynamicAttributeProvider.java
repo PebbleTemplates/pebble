@@ -17,6 +17,6 @@ public interface DynamicAttributeProvider {
      * Returns the attribute associated to the specified key
      * or <code>null</code> if not found.
      */
-    public Object getDynamicAttribute(Object attributeName);
+    public Object getDynamicAttribute(Object attributeName, Object[] argumentValues);
 
 }
