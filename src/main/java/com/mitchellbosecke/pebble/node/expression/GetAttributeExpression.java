@@ -31,8 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
- * following order: {@link DynamicAttributeProvider}, map entry, array item, list item, 
- * get method, is method, has method, public method, public field.
+ * following order: map entry, array item, list item, 
+ * {@link DynamicAttributeProvider}, get method, is method, has method, public method, 
+ * public field.
  *
  * @author Mitchell
  */
