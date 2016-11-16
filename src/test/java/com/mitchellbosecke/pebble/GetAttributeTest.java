@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -582,6 +583,15 @@ public class GetAttributeTest extends AbstractTest {
     
     public class DynamicAttributeProviderObject implements DynamicAttributeProvider {
 
+        public String getSurname() {
+            return "Doe";
+        }
+        
+        public String name = "Invalid";
+        public String getName() {
+            return name;
+        }
+        
         @Override
         public boolean canProvideDynamicAttribute(Object attributeName) {
             
@@ -595,17 +605,36 @@ public class GetAttributeTest extends AbstractTest {
         public Object getDynamicAttribute(Object attributeName, Object[] argumentValues) {
             
             if("name".equals(attributeName)) {
-                return "Steve";
+                
+                String name = "Steve";
+                if(argumentValues != null && argumentValues.length > 0) {
+                    name += " " + Arrays.toString(argumentValues);
+                }
+                return name;
             }
-            return null;
+            
+            return "Invalid";
         }
     }
     
     @Test
     public void testAttributeProviderSimple() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name }} {{ object.surname }}{{ object.invalidAttr }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new DynamicAttributeProviderObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello Steve Doe", writer.toString());
+    }
+    
+    @Test
+    public void testAttributeProviderEmptyArguments() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
-        PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name() }}");
         Map<String, Object> context = new HashMap<>();
         context.put("object", new DynamicAttributeProviderObject());
 
@@ -614,7 +643,18 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("hello Steve", writer.toString());
     }
     
-    
+    @Test
+    public void testAttributeProviderWithArguments() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name('abc', (40 + 2)) }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new DynamicAttributeProviderObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello Steve [abc, 42]", writer.toString());
+    }
     
     
 

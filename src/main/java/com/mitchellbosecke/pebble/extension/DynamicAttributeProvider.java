@@ -14,8 +14,7 @@ public interface DynamicAttributeProvider {
     public boolean canProvideDynamicAttribute(Object attributeName);
     
     /**
-     * Returns the attribute associated to the specified key
-     * or <code>null</code> if not found.
+     * Returns the attribute given the specified name and arguments.
      */
     public Object getDynamicAttribute(Object attributeName, Object[] argumentValues);
 
