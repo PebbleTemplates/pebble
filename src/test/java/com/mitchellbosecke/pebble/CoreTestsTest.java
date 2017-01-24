@@ -8,20 +8,23 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class CoreTestsTest extends AbstractTest {
 
@@ -258,6 +261,28 @@ public class CoreTestsTest extends AbstractTest {
         context.put("test", map);
         template.evaluate(writer, context);
         assertEquals("yesyes", writer.toString());
+    }
+    
+    /**
+     * Test Java8 LocalDateTime to produce a String in the format: 'dd-MM-yyyy HH:mm:ss'
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testLocalDateTimeFilter() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        String pattern="dd-MM-yyyy HH:mm:ss";
+        LocalDateTime ldt= LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        
+        String source = "{{myLocalDateTime|localDateTime(format='dd-MM-yyyy HH:mm:ss')}}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("myLocalDateTime", ldt);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals(ldt.format(formatter), writer.toString());
     }
 
 
