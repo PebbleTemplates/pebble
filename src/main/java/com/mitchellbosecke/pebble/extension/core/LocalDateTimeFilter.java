@@ -13,6 +13,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 /**
  * java.time.LocalDateTime Filter
+ * Default to DateTimeFormatter.ISO_DATE_TIME when no format/argument is provided
  * 
  * @author mboullouz <mohamed.boullouz@gmail.com>
  *
@@ -38,11 +39,11 @@ public class LocalDateTimeFilter implements Filter {
 	    LocalDateTime localDateTime = (LocalDateTime)input;
 	    String format= (String) args.get("format");
 	    DateTimeFormatter formatter;
-	    if(format==null || format.equals("")){
+	    if(format==null || format.equals("") || format.equals(" ")){
 	    	formatter = DateTimeFormatter.ISO_DATE_TIME;
 	    }
 	    else {
-		 formatter = DateTimeFormatter.ofPattern((String) args.get("format"));
+		 formatter = DateTimeFormatter.ofPattern(format);
 	    }
 		return localDateTime.format(formatter);
 	}

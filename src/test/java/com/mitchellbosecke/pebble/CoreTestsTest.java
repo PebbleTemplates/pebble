@@ -264,6 +264,26 @@ public class CoreTestsTest extends AbstractTest {
     }
     
     /**
+     * Test Java8 LocalDateTime to produce a String when no param defined
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testLocalDateTimeFilterNoFormatProvided() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+        LocalDateTime ldt= LocalDateTime.now();
+        
+        String source = "{{myLocalDateTime|localDateTime()}}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("myLocalDateTime", ldt);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals(ldt.format(DateTimeFormatter.ISO_DATE_TIME), writer.toString());
+    }
+    
+    /**
      * Test Java8 LocalDateTime to produce a String in the format: 'dd-MM-yyyy HH:mm:ss'
      * @throws PebbleException
      * @throws IOException
