@@ -413,6 +413,10 @@ public class ExpressionParser {
 
         Token testToken = stream.expect(Token.Type.NAME);
 
+        if (testToken.getValue().equals("divisible")) {
+            stream.next(); //skip 'by'
+        }
+
         ArgumentsNode args = null;
         if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
             args = this.parseArguments();

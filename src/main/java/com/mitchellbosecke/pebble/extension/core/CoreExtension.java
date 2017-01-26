@@ -112,6 +112,10 @@ public class CoreExtension extends AbstractExtension {
         tests.put("null", new NullTest());
         tests.put("odd", new OddTest());
         tests.put("defined", new DefinedTest());
+
+        DivisibleByTest divisibleByTest = new DivisibleByTest();
+        tests.put("divisible", divisibleByTest);
+        tests.put("divisibleby", divisibleByTest);
         return tests;
     }
 

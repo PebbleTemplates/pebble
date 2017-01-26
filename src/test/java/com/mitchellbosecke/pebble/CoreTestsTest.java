@@ -260,6 +260,25 @@ public class CoreTestsTest extends AbstractTest {
         assertEquals("yesyes", writer.toString());
     }
 
+    /**
+     * Tests if the test function 'divisible by' is working.
+     */
+    @Test
+    public void testDivisibleBy() throws PebbleException, IOException {
+        Loader<?> loader = new StringLoader();
+        PebbleEngine pebble = new PebbleEngine(loader);
+
+        String source = "{% if test is divisibleby(2) %}yes{% else %}no{% endif %}{% if test2 is divisible by(2) %}yes{% else %}no{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        Map<String, Object> context = new HashMap<>();
+        context.put("test",  4L);
+        context.put("test2", 3L);
+        template.evaluate(writer, context);
+        assertEquals("yesno", writer.toString());
+    }
+
 
 
 
