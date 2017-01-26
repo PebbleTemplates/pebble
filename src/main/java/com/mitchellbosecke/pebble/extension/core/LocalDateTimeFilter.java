@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
  */
 public class LocalDateTimeFilter implements Filter {
 	
-	 public static final String FILTER_NAME = "localDateTime";
+	public static final String FILTER_NAME = "localDateTime";
 
 	private final List<String> argumentNames = new ArrayList<>();
 
@@ -36,7 +36,14 @@ public class LocalDateTimeFilter implements Filter {
 	public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context,
 			int lineNumber) throws PebbleException {
 	    LocalDateTime localDateTime = (LocalDateTime)input;
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern((String) args.get("format"));
+	    String format= (String) args.get("format");
+	    DateTimeFormatter formatter;
+	    if(format==null || format.equals("")){
+	    	formatter = DateTimeFormatter.ISO_DATE_TIME;
+	    }
+	    else {
+		 formatter = DateTimeFormatter.ofPattern((String) args.get("format"));
+	    }
 		return localDateTime.format(formatter);
 	}
 
