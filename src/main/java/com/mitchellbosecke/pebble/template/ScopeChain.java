@@ -135,7 +135,7 @@ public class ScopeChain {
 
                 result = scope.get(key);
                 if (scope.isLocal()) {
-                    break;
+                    continue;
                 }
             }
         }
