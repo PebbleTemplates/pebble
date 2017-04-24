@@ -1,4 +1,4 @@
-#Pebble
+# Pebble
 
 Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org/). Its biggest feature is template inheritance which enables multiple templates to easily share common code. For more information please visit the [official website](http://www.mitchellbosecke.com/pebble).
 
@@ -78,7 +78,7 @@ The output should result in the following:
 ```
 
 ## Contributing
-Currently looking for contributors! In particular we need help with new feature ideas, bug reports/fixes, API feedback, performance optimization, and IDE integration. Just one little commit and you'll be forever listed on the [contributors page](http://www.mitchellbosecke.com/pebble/contributing). No contribution is too small and contributing is super easy:
+Currently looking for contributors! In particular we need help with new feature ideas, bug reports/fixes, API feedback, performance optimization, and IDE integration. See http://www.mitchellbosecke.com/pebble/contributing. No contribution is too small and contributing is super easy:
 
 * `git clone git://github.com/PebbleTemplates/pebble.git`
 * Add feature or fix bug.
