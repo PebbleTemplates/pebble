@@ -318,6 +318,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
                 if (template.hasMacro(macroName)) {
                     found = true;
                     result = template.macro(context, macroName, args, false);
+                    // If a macro was found and executed, dont search for more
+                    break;
                 }
             }
         }
