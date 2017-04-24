@@ -22,6 +22,11 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -121,6 +126,42 @@ public class CoreFiltersTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("07/01/20122012-July-12012/July/1", writer.toString());
     }
+
+    @Test
+    public void testDateJava8() throws ParseException, PebbleException, IOException
+    {
+        PebbleEngine pebble = new PebbleEngine
+            .Builder()
+            .loader(new StringLoader())
+            .strictVariables(false)
+            .defaultLocale(Locale.ENGLISH)
+            .build();
+
+        final LocalDateTime localDateTime = LocalDateTime.of(2017, 6, 30, 13, 30, 35, 0);
+        final ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.of("GMT+0100"));
+        final LocalDate localDate = localDateTime.toLocalDate();
+        final LocalTime localTime = localDateTime.toLocalTime();
+
+        StringBuilder source = new StringBuilder();
+        source
+            .append("{{ localDateTime | date }}")
+            .append("{{ localDateTime | date('yyyy-MM-dd HH:mm:ss') }}")
+            .append("{{ zonedDateTime | date('yyyy-MM-dd HH:mm:ssXXX') }}")
+            .append("{{ localDate | date('yyyy-MM-dd') }}")
+            .append("{{ localTime | date('HH:mm:ss') }}");
+
+        PebbleTemplate template = pebble.getTemplate(source.toString());
+        Map<String, Object> context = new HashMap<>();
+        context.put("localDateTime", localDateTime);
+        context.put("zonedDateTime", zonedDateTime);
+        context.put("localDate", localDate);
+        context.put("localTime", localTime);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("2017-06-30T13:30:352017-06-30 13:30:352017-06-30 13:30:35+01:002017-06-3013:30:35", writer.toString());
+    }
+
 
     @Test
     public void testDateWithNamedArguments() throws ParseException, PebbleException, IOException {
