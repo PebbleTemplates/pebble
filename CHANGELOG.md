@@ -11,6 +11,7 @@
 - Bugfix for variable which was accessible outside a loop (#250)
 - Syntax builder return itself for method chaining (#259)
 - Macros are called too often if included multiple times
+- Fix potential null pointer exception in PebbleException (#243)
 
 ## v2.3.0 (2016-11-13)
 - Upgrade SLF4J from 1.6.1 to 1.7.21
