@@ -1,10 +1,12 @@
 package com.mitchellbosecke.pebble.macro;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
 
 public class TestFilter implements Filter {
 
@@ -18,7 +20,7 @@ public class TestFilter implements Filter {
 	}
 
 	@Override
-	public Object apply(Object input, Map<String, Object> args) {
+	public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
 		String content = (String) input;
 		counter++;
 		content = content + "?" + "Hello";
