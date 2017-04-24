@@ -25,6 +25,6 @@ public class IterableTest implements Test {
     @Override
     public boolean apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
 
-        return input instanceof Iterable;
+        return input instanceof Iterable || input instanceof Object[];
     }
 }

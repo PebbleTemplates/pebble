@@ -199,9 +199,11 @@ public final class Syntax {
         /**
          * @param commentOpenDelimiter
          *            the commentOpenDelimiter to set
+         * @return This builder object
          */
-        public void setCommentOpenDelimiter(String commentOpenDelimiter) {
+        public Builder setCommentOpenDelimiter(String commentOpenDelimiter) {
             this.delimiterCommentOpen = commentOpenDelimiter;
+            return this;
         }
 
         /**
@@ -214,9 +216,11 @@ public final class Syntax {
         /**
          * @param commentCloseDelimiter
          *            the commentCloseDelimiter to set
+         * @return This builder object
          */
-        public void setCommentCloseDelimiter(String commentCloseDelimiter) {
+        public Builder setCommentCloseDelimiter(String commentCloseDelimiter) {
             this.delimiterCommentClose = commentCloseDelimiter;
+            return this;
         }
 
         /**
@@ -229,9 +233,11 @@ public final class Syntax {
         /**
          * @param executeOpenDelimiter
          *            the executeOpenDelimiter to set
+         * @return This builder object
          */
-        public void setExecuteOpenDelimiter(String executeOpenDelimiter) {
+        public Builder setExecuteOpenDelimiter(String executeOpenDelimiter) {
             this.delimiterExecuteOpen = executeOpenDelimiter;
+            return this;
         }
 
         /**
@@ -244,9 +250,11 @@ public final class Syntax {
         /**
          * @param executeCloseDelimiter
          *            the executeCloseDelimiter to set
+         * @return This builder object
          */
-        public void setExecuteCloseDelimiter(String executeCloseDelimiter) {
+        public Builder setExecuteCloseDelimiter(String executeCloseDelimiter) {
             this.delimiterExecuteClose = executeCloseDelimiter;
+            return this;
         }
 
         /**
@@ -259,9 +267,11 @@ public final class Syntax {
         /**
          * @param printOpenDelimiter
          *            the printOpenDelimiter to set
+         * @return This builder object
          */
-        public void setPrintOpenDelimiter(String printOpenDelimiter) {
+        public Builder setPrintOpenDelimiter(String printOpenDelimiter) {
             this.delimiterPrintOpen = printOpenDelimiter;
+            return this;
         }
 
         /**
@@ -274,17 +284,20 @@ public final class Syntax {
         /**
          * @param printCloseDelimiter
          *            the printCloseDelimiter to set
+         * @return This builder object
          */
-        public void setPrintCloseDelimiter(String printCloseDelimiter) {
+        public Builder setPrintCloseDelimiter(String printCloseDelimiter) {
             this.delimiterPrintClose = printCloseDelimiter;
+            return this;
         }
 
         public String getWhitespaceTrim() {
             return whitespaceTrim;
         }
 
-        public void setWhitespaceTrim(String whitespaceTrim) {
+        public Builder setWhitespaceTrim(String whitespaceTrim) {
             this.whitespaceTrim = whitespaceTrim;
+            return this;
         }
         
         public boolean isEnableNewLineTrimming() {
