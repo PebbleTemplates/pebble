@@ -37,7 +37,7 @@ public class ScopeChain {
      * @param map The map of variables used to initialize a scope.
      */
     public ScopeChain(Map<String, Object> map) {
-        Scope scope = new Scope(new HashMap<>(map), false);
+        Scope scope = new Scope(new HashMap<>(map));
         stack.push(scope);
     }
 
@@ -76,15 +76,7 @@ public class ScopeChain {
      * @param map The known variables of this scope.
      */
     public void pushScope(Map<String, Object> map) {
-        Scope scope = new Scope(map, false);
-        stack.push(scope);
-    }
-
-    /**
-     * Adds a new local scope to the scope chain
-     */
-    public void pushLocalScope() {
-        Scope scope = new Scope(new HashMap<String, Object>(), true);
+        Scope scope = new Scope(map);
         stack.push(scope);
     }
 
@@ -134,9 +126,6 @@ public class ScopeChain {
                 scope = iterator.next();
 
                 result = scope.get(key);
-                if (scope.isLocal()) {
-                    break;
-                }
             }
         }
 
@@ -174,9 +163,6 @@ public class ScopeChain {
             if (scope.containsKey(key)) {
                 return true;
             }
-            if (scope.isLocal()) {
-                break;
-            }
         }
 
         return false;
@@ -208,7 +194,7 @@ public class ScopeChain {
          * create an iterator, etc. This is solely for performance.
          */
         Scope scope = stack.getFirst();
-        if (scope.isLocal() || scope.containsKey(key)) {
+        if (scope.containsKey(key)) {
             scope.put(key, value);
             return;
         }
@@ -221,7 +207,7 @@ public class ScopeChain {
         while (iterator.hasNext()) {
             scope = iterator.next();
 
-            if (scope.isLocal() || scope.containsKey(key)) {
+            if (scope.containsKey(key)) {
                 scope.put(key, value);
                 return;
             }

@@ -7,7 +7,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.core.RangeFunction;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 /**
@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 public class RangeExpression extends BinaryExpression<Object> {
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         List<PositionalArgumentNode> positionalArgs = new ArrayList<>();
         positionalArgs.add(new PositionalArgumentNode(getLeftExpression()));
         positionalArgs.add(new PositionalArgumentNode(getRightExpression()));

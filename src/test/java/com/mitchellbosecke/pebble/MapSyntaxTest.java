@@ -10,10 +10,13 @@ package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,10 +24,14 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class MapSyntaxTest extends AbstractTest {
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testMapSyntax() throws PebbleException, IOException {
@@ -89,59 +96,74 @@ public class MapSyntaxTest extends AbstractTest {
         assertEquals("{key1=value1, key2=value2, key3=value3, key4=value4, key5=value5}", writer.toString());
     }
 
-    @Test(expected = ParserException.class)
+    @Test
     public void testIncompleteMapSyntax() throws PebbleException, IOException {
+        //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {,} }}";
-        PebbleTemplate template = pebble.getTemplate(source);
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        thrown.expect(RuntimePebbleException.class);
+        thrown.expectCause(instanceOf(ParserException.class));
+
+        //Act + Assert
+        pebble.getTemplate(source);
     }
 
-    @Test(expected = ParserException.class)
+    @Test
     public void testIncompleteMapSyntax2() throws PebbleException, IOException {
+        //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'key'} }}";
-        PebbleTemplate template = pebble.getTemplate(source);
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        thrown.expect(RuntimePebbleException.class);
+        thrown.expectCause(instanceOf(ParserException.class));
+
+        //Act + Assert
+        pebble.getTemplate(source);
     }
 
-    @Test(expected = ParserException.class)
+    @Test
     public void testIncompleteMapSyntax3() throws PebbleException, IOException {
+        //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'key':} }}";
-        PebbleTemplate template = pebble.getTemplate(source);
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        thrown.expect(RuntimePebbleException.class);
+        thrown.expectCause(instanceOf(ParserException.class));
+
+        //Act + Assert
+        pebble.getTemplate(source);
     }
 
-    @Test(expected = ParserException.class)
+    @Test
     public void testIncompleteMapSyntax4() throws PebbleException, IOException {
+        //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {:'value'} }}";
-        PebbleTemplate template = pebble.getTemplate(source);
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        thrown.expect(RuntimePebbleException.class);
+        thrown.expectCause(instanceOf(ParserException.class));
+
+        //Act + Assert
+        pebble.getTemplate(source);
     }
 
-    @Test(expected = ParserException.class)
+    @Test
     public void testIncompleteMapSyntax5() throws PebbleException, IOException {
+        //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ {'key':'value',} }}";
-        PebbleTemplate template = pebble.getTemplate(source);
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        thrown.expect(RuntimePebbleException.class);
+        thrown.expectCause(instanceOf(ParserException.class));
+
+        //Act + Assert
+        pebble.getTemplate(source);
     }
 
     @SuppressWarnings("serial")
@@ -368,7 +390,7 @@ public class MapSyntaxTest extends AbstractTest {
     public void testContainsOperator2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'Freddie' %}true{% else %}false{% endif %}";
+        String source = "{% if not ( {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'Freddie') %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -380,7 +402,7 @@ public class MapSyntaxTest extends AbstractTest {
     public void testContainsOperator3() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'John' and not {'Freddie':'Mercury'} contains 'Bob' %}true{% else %}false{% endif %}";
+        String source = "{% if {'Bob':'Marley','Maria':'Callas','John':'Cobra'} contains 'John' and not ({'Freddie':'Mercury'} contains 'Bob') %}true{% else %}false{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();

@@ -14,7 +14,6 @@ import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -43,10 +42,8 @@ public class ExtendingPebbleTest extends AbstractTest {
                 }
 
                 @Override
-                public String apply(Object input, Map<String, Object> args) {
-                    EvaluationContext context = (EvaluationContext) args.get("_context");
-                    PebbleTemplateImpl pebbleTemplate = (PebbleTemplateImpl) args.get("_self");
-                    if (context != null && pebbleTemplate != null) {
+                public String apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
+                    if (context != null && self != null) {
                         return "success";
                     } else {
                         return "failure";

@@ -10,6 +10,7 @@ package com.mitchellbosecke.pebble.extension.i18n;
 
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -30,12 +31,11 @@ public class i18nFunction implements Function {
     }
 
     @Override
-    public Object execute(Map<String, Object> args) {
+    public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
         String basename = (String) args.get("bundle");
         String key = (String) args.get("key");
         Object params = args.get("params");
 
-        EvaluationContext context = (EvaluationContext) args.get("_context");
         Locale locale = context.getLocale();
 
         ResourceBundle bundle = ResourceBundle.getBundle(basename, locale, new UTF8Control());

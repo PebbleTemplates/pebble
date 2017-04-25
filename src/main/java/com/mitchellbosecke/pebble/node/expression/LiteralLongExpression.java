@@ -10,7 +10,7 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class LiteralLongExpression implements Expression<Long> {
@@ -29,7 +29,7 @@ public class LiteralLongExpression implements Expression<Long> {
     }
 
     @Override
-    public Long evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Long evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         return value;
     }
 

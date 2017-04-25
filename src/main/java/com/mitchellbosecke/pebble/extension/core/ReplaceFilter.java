@@ -1,13 +1,16 @@
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.mitchellbosecke.pebble.extension.Filter;
 
 /**
  * This class implements the 'replace' filter.
@@ -29,10 +32,10 @@ public class ReplaceFilter implements Filter {
     }
 
     @Override
-    public Object apply(Object input, Map<String, Object> args) {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException{
         String data = input.toString();
         if (args.get(ARGUMENT_NAME) == null) {
-            throw new IllegalArgumentException(MessageFormat.format("The argument ''{0}'' is required.", ARGUMENT_NAME));
+            throw new PebbleException(null, MessageFormat.format("The argument ''{0}'' is required.", ARGUMENT_NAME), lineNumber, self.getName());
         }
         Map<?, ?> replacePair = (Map<?, ?>) args.get(ARGUMENT_NAME);
 

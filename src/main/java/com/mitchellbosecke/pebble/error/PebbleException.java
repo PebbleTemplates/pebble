@@ -35,7 +35,7 @@ public class PebbleException extends Exception {
      *
      * @return the line number on which the exception was thrown.
      */
-    public int getLineNumber() {
+    public Integer getLineNumber() {
         return this.lineNumber;
     }
 

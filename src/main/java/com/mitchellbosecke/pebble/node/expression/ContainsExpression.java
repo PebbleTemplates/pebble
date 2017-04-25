@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -12,14 +12,14 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class ContainsExpression extends BinaryExpression<Boolean> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         Object leftValue = getLeftExpression().evaluate(self, context);
 
         if (leftValue == null) {
@@ -40,9 +40,9 @@ public class ContainsExpression extends BinaryExpression<Boolean> {
         } else if (leftValue instanceof String) {
             return String.valueOf(leftValue).contains(String.valueOf(rightValue));
         } else {
-            throw new IllegalArgumentException(
+            throw new PebbleException(null,
                     "Contains operator can only be used on Collections, Maps and arrays. Actual type was: "
-                            + leftValue.getClass().getName());
+                            + leftValue.getClass().getName(), this.getLineNumber(), self.getName());
         }
     }
 

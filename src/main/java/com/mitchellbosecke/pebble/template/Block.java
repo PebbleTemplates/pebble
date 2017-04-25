@@ -17,6 +17,6 @@ public interface Block {
 
     String getName();
 
-    void evaluate(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
+    void evaluate(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws PebbleException,
             IOException;
 }

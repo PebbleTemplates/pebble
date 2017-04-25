@@ -20,7 +20,7 @@ import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.lang.reflect.*;
@@ -74,7 +74,7 @@ public class GetAttributeExpression implements Expression<Object> {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         Object object = node.evaluate(self, context);
         Object attributeNameValue = attributeNameExpression.evaluate(self, context);
         String attributeName = String.valueOf(attributeNameValue);
@@ -225,7 +225,7 @@ public class GetAttributeExpression implements Expression<Object> {
      * @return
      * @throws PebbleException
      */
-    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
 
         Object[] argumentValues;
 

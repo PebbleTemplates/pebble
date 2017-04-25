@@ -17,7 +17,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class FunctionOrMacroInvocationExpression implements Expression<Object> {
@@ -35,7 +35,7 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         Function function = context.getExtensionRegistry().getFunction(functionName);
         if (function != null) {
             return applyFunction(self, context, function, args);
@@ -43,14 +43,14 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
         return self.macro(context, functionName, args, false);
     }
 
-    private Object applyFunction(PebbleTemplateImpl self, EvaluationContext context, Function function,
-            ArgumentsNode args) throws PebbleException {
+    private Object applyFunction(PebbleTemplateImpl self, EvaluationContextImpl context, Function function,
+                                 ArgumentsNode args) throws PebbleException {
         List<Object> arguments = new ArrayList<>();
 
         Collections.addAll(arguments, args);
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, function);
-        return function.execute(namedArguments);
+        return function.execute(namedArguments, self, context, this.getLineNumber());
     }
 
     @Override

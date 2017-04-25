@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.node;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.StringUtils;
 
@@ -28,7 +28,7 @@ public class PrintNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException,
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException,
             PebbleException {
         Object var = expression.evaluate(self, context);
         if (var != null) {

@@ -13,7 +13,7 @@ import java.io.Writer;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public abstract class AbstractRenderableNode implements RenderableNode {
@@ -21,7 +21,7 @@ public abstract class AbstractRenderableNode implements RenderableNode {
     private int lineNumber;
 
     @Override
-    public abstract void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
+    public abstract void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
             throws PebbleException, IOException;
 
     @Override

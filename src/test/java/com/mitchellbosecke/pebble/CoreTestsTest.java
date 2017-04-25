@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
@@ -145,15 +146,16 @@ public class CoreTestsTest extends AbstractTest {
     public void testIterables() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if null is iterable() %}no{% else %}yes{% endif %}{% if obj1 is iterable() %}yes{% else %}no{% endif %}{% if obj2 is iterable() %}no{% else %}yes{% endif %}";
+        String source = "{% if null is iterable() %}no{% else %}yes{% endif %}{% if obj1 is iterable() %}yes{% else %}no{% endif %}{% if obj2 is iterable() %}no{% else %}yes{% endif %}{% if obj3 is iterable() %}yes{% else %}no{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
         context.put("obj1", new ArrayList<String>());
         context.put("obj2", new HashMap<String, Object>());
+        context.put("obj3", new String[]{});
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("yesyesyes", writer.toString());
+        assertEquals("yesyesyesyes", writer.toString());
     }
 
     @Test
@@ -180,7 +182,7 @@ public class CoreTestsTest extends AbstractTest {
     public void testNegativeTest() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not 2 is odd %}yes{% else %}no{% endif %}";
+        String source = "{% if not (2 is odd) %}yes{% else %}no{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -201,7 +203,7 @@ public class CoreTestsTest extends AbstractTest {
     public void testNegativeTestOnAttribute() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not classroom.students is empty %}yes{% else %}no{% endif %}";
+        String source = "{% if not (classroom.students is empty) %}yes{% else %}no{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
         context.put("classroom", new Classroom());
