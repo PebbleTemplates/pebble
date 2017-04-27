@@ -11,11 +11,11 @@ public interface DynamicAttributeProvider {
      * Returns <code>true</code> if the attribute can be
      * provided given the specified name.
      */
-    public boolean canProvideDynamicAttribute(Object attributeName);
+    boolean canProvideDynamicAttribute(Object attributeName);
     
     /**
      * Returns the attribute given the specified name and arguments.
      */
-    public Object getDynamicAttribute(Object attributeName, Object[] argumentValues);
+    Object getDynamicAttribute(Object attributeName, Object[] argumentValues);
 
 }

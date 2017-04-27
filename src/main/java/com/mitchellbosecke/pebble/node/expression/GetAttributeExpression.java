@@ -24,7 +24,12 @@ import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
-import java.lang.reflect.*;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,9 +88,17 @@ public class GetAttributeExpression implements Expression<Object> {
 
         Object result = null;
 
-        Object[] argumentValues = null;
+        Object[] argumentValues = this.getArgumentValues(self, context);
 
         Member member = object == null ? null : memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
+
+        // check if the object is able to provide the attribute dynamically
+        if(object != null && object instanceof DynamicAttributeProvider) {
+            DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
+            if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
+                return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
+            }
+        }
 
         if (object != null && member == null) {
 
@@ -149,7 +162,6 @@ public class GetAttributeExpression implements Expression<Object> {
              * turn args into an array of types and an array of values in order
              * to use them for our reflection calls
              */
-            argumentValues = getArgumentValues(self, context);
             Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
 
             for (int i = 0; i < argumentValues.length; i++) {
@@ -158,13 +170,6 @@ public class GetAttributeExpression implements Expression<Object> {
                     argumentTypes[i] = null;
                 } else {
                     argumentTypes[i] = o.getClass();
-                }
-            }
-          
-            // check if the object is able to provide the attribute dynamically
-            if(object instanceof DynamicAttributeProvider) {
-                if(((DynamicAttributeProvider)object).canProvideDynamicAttribute(attributeName)) {
-                    return ((DynamicAttributeProvider)object).getDynamicAttribute(attributeNameValue, argumentValues);
                 }
             }
 
@@ -176,9 +181,6 @@ public class GetAttributeExpression implements Expression<Object> {
         }
 
         if (object != null && member != null) {
-            if (argumentValues == null) {
-                argumentValues = getArgumentValues(self, context);
-            }
             result = invokeMember(object, member, argumentValues);
         } else if (context.isStrictVariables()) {
             if (object == null) {
