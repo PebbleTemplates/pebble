@@ -137,7 +137,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         ScopeChain scopeChain = new ScopeChain(globals);
 
         // global vars provided from extensions
-        scopeChain.pushScope(engine.getExtensionRegistry().getGlobalVariables());
+        scopeChain.pushScope(new HashMap<>(engine.getExtensionRegistry().getGlobalVariables()));
 
         EvaluationContext context = new EvaluationContext(this, engine.isStrictVariables(), locale,
                 engine.getExtensionRegistry(), engine.getTagCache(), engine.getExecutorService(),
