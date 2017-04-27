@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class ArgumentsNodeTest extends AbstractTest{
         }
         catch(PebbleException e) {
             Assert.assertEquals("{{ 'This is a test of the abbreviate filter' | abbreviate(16, 10) }}", e.getFileName());
-            Assert.assertEquals(1, e.getLineNumber());
+            Assert.assertEquals((Integer) 1, e.getLineNumber());
         }
 
     }

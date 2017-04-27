@@ -18,7 +18,11 @@ import com.mitchellbosecke.pebble.template.ScopeChain;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Represents a "for" loop within the template.
@@ -47,41 +51,28 @@ public class ForNode extends AbstractRenderableNode {
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
             throws PebbleException, IOException {
-        Object iterableEvaluation = iterableExpression.evaluate(self, context);
+        Object iterableEvaluation = this.iterableExpression.evaluate(self, context);
         Iterable<?> iterable = null;
 
         if (iterableEvaluation == null) {
             return;
         }
 
-        iterable = toIterable(iterableEvaluation);
+        iterable = this.toIterable(iterableEvaluation);
 
         if (iterable == null) {
             throw new PebbleException(null, "Not an iterable object. Value = [" + iterableEvaluation.toString() + "]",
-                getLineNumber(), self.getName());
+                    this.getLineNumber(), self.getName());
         }
 
         Iterator<?> iterator = iterable.iterator();
 
-        boolean newScope = false;
-
         if (iterator.hasNext()) {
 
             ScopeChain scopeChain = context.getScopeChain();
+            scopeChain.pushScope();
 
-            /*
-             * Only if there is a variable name conflict between one of the
-             * variables added by the for loop construct and an existing
-             * variable do we push another scope, otherwise we reuse the current
-             * scope for performance purposes.
-             */
-            if (scopeChain.currentScopeContainsVariable("loop") || scopeChain
-                    .currentScopeContainsVariable(variableName)) {
-                scopeChain.pushScope();
-                newScope = true;
-            }
-
-            int length = getIteratorSize(iterableEvaluation);
+            int length = this.getIteratorSize(iterableEvaluation);
             int index = 0;
 
             Map<String, Object> loop = null;
@@ -119,16 +110,14 @@ public class ForNode extends AbstractRenderableNode {
 
                 scopeChain.put("loop", loop);
 
-                scopeChain.put(variableName, iterator.next());
-                body.render(self, writer, context);
+                scopeChain.put(this.variableName, iterator.next());
+                this.body.render(self, writer, context);
             }
 
-            if (newScope) {
-                scopeChain.popScope();
-            }
+            scopeChain.popScope();
 
-        } else if (elseBody != null) {
-            elseBody.render(self, writer, context);
+        } else if (this.elseBody != null) {
+            this.elseBody.render(self, writer, context);
         }
 
     }
@@ -139,19 +128,19 @@ public class ForNode extends AbstractRenderableNode {
     }
 
     public String getIterationVariable() {
-        return variableName;
+        return this.variableName;
     }
 
     public Expression<?> getIterable() {
-        return iterableExpression;
+        return this.iterableExpression;
     }
 
     public BodyNode getBody() {
-        return body;
+        return this.body;
     }
 
     public BodyNode getElseBody() {
-        return elseBody;
+        return this.elseBody;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -186,12 +175,12 @@ public class ForNode extends AbstractRenderableNode {
 
                         @Override
                         public boolean hasNext() {
-                            return index < length;
+                            return this.index < this.length;
                         }
 
                         @Override
                         public Object next() {
-                            return Array.get(obj, index++);
+                            return Array.get(obj, this.index++);
                         }
 
                         @Override
