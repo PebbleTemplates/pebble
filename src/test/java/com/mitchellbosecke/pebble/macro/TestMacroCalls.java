@@ -1,6 +1,7 @@
 package com.mitchellbosecke.pebble.macro;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,7 +26,7 @@ public class TestMacroCalls {
 	 * @throws IOException
 	 */
     @Test
-    public void testmultipleMacroCalls() throws PebbleException, IOException {
+    public void testMultipleMacroCalls() throws PebbleException, IOException {
     	// Build a pebble engine with one configured filter ("testfilter" - TestFilter.java)
         PebbleEngine pebble = new PebbleEngine.Builder()
         		.extension(new PebbleExtension())
@@ -49,5 +50,19 @@ public class TestMacroCalls {
         
         // We expect, that the TestFilter was called 2x
         assertEquals(2, TestFilter.getCounter());
+    }
+
+    @Test
+    public void testInvalidMacro() throws IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().build();
+
+        try {
+            PebbleTemplate template = pebble.getTemplate("templates/macros/invalid.macro.peb");
+            Writer writer = new StringWriter();
+            template.evaluate(writer);
+        } catch (PebbleException e) {
+            assertNotNull(e.getLineNumber());
+            assertEquals(e.getLineNumber().intValue(), 2);
+        }
     }
 }
