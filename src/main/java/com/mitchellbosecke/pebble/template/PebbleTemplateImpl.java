@@ -9,13 +9,16 @@
 package com.mitchellbosecke.pebble.template;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -332,11 +335,30 @@ public class PebbleTemplateImpl implements PebbleTemplate {
                 result = parent.macro(context, macroName, args, true);
                 context.getHierarchy().descend();
             } else {
-                throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName));
+                try {
+                    int lineNo = findLineWithInvalidMacro(macroName);
+                    throw new PebbleException(null, String.format("Function or Macro [%s] does not exist.", macroName),
+                            lineNo, "");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         return result;
+    }
+
+    private int findLineWithInvalidMacro(String macroName) throws IOException, LoaderException {
+        BufferedReader reader = new BufferedReader(new StringReader(engine.getRawTemplate(name)));
+        int lineNo = 0;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            ++lineNo;
+            if (line.contains(macroName)) {
+                break;
+            }
+        }
+        return lineNo;
     }
 
     public void setParent(EvaluationContext context, String parentName) throws PebbleException {

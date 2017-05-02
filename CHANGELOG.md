@@ -14,6 +14,10 @@
 - Fix potential null pointer exception in PebbleException (#243)
 - Fix for accessing map via primitive (#196)
 
+## v2.3.1 (?)
+- Added new method getRawTemplate to PebbleEngine
+- Fixed info about line number when macro is invalid
+
 ## v2.3.0 (2016-11-13)
 - Upgrade SLF4J from 1.6.1 to 1.7.21
 - "raw" filter works for all variables, not just strings

@@ -33,6 +33,7 @@ import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,6 +88,37 @@ public class PebbleEngine {
         this.executorService = executorService;
         this.templateCache = templateCache;
         this.extensionRegistry = new ExtensionRegistry(extensions);
+    }
+
+    /**
+     * Returns a raw template without any parsing and compiling.
+     *
+     * @param templateName The name of the template
+     * @return String Text of the template
+     * @throws LoaderException Thrown if an error occurs while loading the template using current loader
+     */
+    public String getRawTemplate(final String templateName) throws LoaderException {
+        if (templateName == null) {
+            return null;
+        }
+
+        if (this.loader == null) {
+            throw new LoaderException(null, "Loader has not yet been specified.");
+        }
+
+        final Object cacheKey = this.loader.createCacheKey(templateName);
+        Reader templateReader = this.retrieveReaderFromLoader(this.loader, cacheKey);
+
+        StringBuilder text = new StringBuilder();
+        try {
+            int symbol;
+            while ((symbol = templateReader.read()) != -1) {
+                text.append((char) symbol);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return text.toString();
     }
 
     /**
