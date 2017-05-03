@@ -13,6 +13,7 @@
 - Macros are called too often if included multiple times
 - Fix potential null pointer exception in PebbleException (#243)
 - Fix for accessing map via primitive (#196)
+- Output filename and line number of non-existent macro
 
 ## v2.3.0 (2016-11-13)
 - Upgrade SLF4J from 1.6.1 to 1.7.21
