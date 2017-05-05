@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Test calls of macros
@@ -56,6 +57,7 @@ public class TestMacroCalls {
       PebbleTemplate template = pebble.getTemplate("templates/macros/invalid.macro.peb");
       Writer writer = new StringWriter();
       template.evaluate(writer);
+      fail("expected PebbleException");
     } catch (PebbleException e) {
       assertEquals(e.getLineNumber(), (Integer) 2);
       assertEquals(e.getFileName(), "templates/macros/invalid.macro.peb");
