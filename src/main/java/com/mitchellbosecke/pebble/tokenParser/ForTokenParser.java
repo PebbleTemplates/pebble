@@ -47,18 +47,19 @@ public class ForTokenParser extends AbstractTokenParser {
             stream.next();
             stream.expect(Token.Type.EXECUTE_END);
             elseBody = parser.subparse(decideForEnd);
-        } else if (stream.current().getValue() == null) {
+        }
+
+        if (stream.current().getValue() == null) {
             throw new ParserException(
                     null,
                     String.format("Unexpected end of template. Pebble was looking for the \"endfor\" tag"),
                     stream.current().getLineNumber(), stream.getFilename()
             );
+        } else {
+            // skip the 'endfor' token
+            stream.next();
+            stream.expect(Token.Type.EXECUTE_END);
         }
-
-        // skip the 'endfor' token
-        stream.next();
-
-        stream.expect(Token.Type.EXECUTE_END);
 
         return new ForNode(lineNumber, iterationVariable, iterable, body, elseBody);
     }
