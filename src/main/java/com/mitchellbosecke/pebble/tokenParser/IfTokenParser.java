@@ -45,6 +45,13 @@ public class IfTokenParser extends AbstractTokenParser {
         BodyNode elseBody = null;
         boolean end = false;
         while (!end) {
+            if (stream.current().getValue() == null) {
+                throw new ParserException(
+                        null,
+                        String.format("Unexpected end of template. Pebble was looking for the \"endif\" tag"),
+                        stream.current().getLineNumber(), stream.getFilename());
+            }
+
             switch (stream.current().getValue()) {
             case "else":
                 stream.next();
