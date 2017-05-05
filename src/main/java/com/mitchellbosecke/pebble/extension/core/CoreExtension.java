@@ -83,6 +83,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("abs", new AbsFilter());
         filters.put("capitalize", new CapitalizeFilter());
         filters.put("date", new DateFilter());
+        filters.put("timestamp", new TimestampFilter());
         filters.put("default", new DefaultFilter());
         filters.put("first", new FirstFilter());
         filters.put("join", new JoinFilter());

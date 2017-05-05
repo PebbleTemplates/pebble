@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class CoreFiltersTest extends AbstractTest {
 
@@ -100,6 +101,46 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testTimestamp()throws ParseException, PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
+
+        String source = "{{ time1 | timestamp('MM/dd/yyyy') }}-{{ time2 | timestamp('MM-dd-yyyy') }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("time1", 1459087599);
+        context.put("time2", 1459087599000l);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("03/27/2016-03-27-2016", writer.toString());
+    }
+
+    @Test
+    public void testTimestampWithWrongArgmentType()throws ParseException, PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
+                .defaultLocale(Locale.ENGLISH).build();
+
+        String source = "{{ time | timestamp('MM/dd/yyyy') }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+
+        context.put("time", "2012-July-01");
+
+        Writer writer = new StringWriter();
+        try {
+            template.evaluate(writer, context);
+            fail();
+        } catch (RuntimeException re){
+            assertEquals("timestamp filter only accept integer or long value", re.getMessage());
+        }
+
     }
 
     @Test
