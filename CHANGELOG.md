@@ -13,6 +13,7 @@
 - Macros are called too often if included multiple times
 - Fix potential null pointer exception in PebbleException (#243)
 - Fix for accessing map via primitive (#196)
+- Output filename and line number of non-existent macro
 - Fix for null pointer and index out of bounds exceptions when invalid or no endif/endfor tags are used in template (#266)
 
 ## v2.3.0 (2016-11-13)
