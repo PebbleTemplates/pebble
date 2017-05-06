@@ -36,11 +36,11 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
-        Function function = context.getExtensionRegistry().getFunction(functionName);
+        Function function = context.getExtensionRegistry().getFunction(this.functionName);
         if (function != null) {
-            return applyFunction(self, context, function, args);
+            return this.applyFunction(self, context, function, this.args);
         }
-        return self.macro(context, functionName, args, false);
+        return self.macro(context, this.functionName, this.args, false, this.lineNumber);
     }
 
     private Object applyFunction(PebbleTemplateImpl self, EvaluationContextImpl context, Function function,
@@ -59,11 +59,11 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
     }
 
     public String getFunctionName() {
-        return functionName;
+        return this.functionName;
     }
 
     public ArgumentsNode getArguments() {
-        return args;
+        return this.args;
     }
 
     @Override
