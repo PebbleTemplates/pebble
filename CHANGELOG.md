@@ -5,6 +5,8 @@
 - Converted EvaluationContext to an interface with limited access to the underlying implementation
 - A "null" used as a boolean expression now throws an error if strict variables is true, treated as "false" otherwise
 - Improved error reporting
+- Java8 Date API support on date filter
+- Replace guava cache with caffeine
 
 ## v2.4.0 (future release)
 - Add arrays support for iterable test (#254)
