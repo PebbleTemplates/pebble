@@ -53,6 +53,18 @@ public class GetAttributeTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
     }
+    
+    @Test
+    public void testAttributePrimitiveAccess() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object[1] }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", Collections.singletonMap(Integer.valueOf(1), new SimpleObject()));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
 
     @Test
     public void testMultiLayerAttributeNesting() throws PebbleException, IOException {
