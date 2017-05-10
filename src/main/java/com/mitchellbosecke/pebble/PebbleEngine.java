@@ -452,17 +452,37 @@ public class PebbleEngine {
         }
 
         /**
-         * Creates the PebbleEngine instance.
+         * Return the active escaper extension, usually for overriding the list of base extensions.
+         *
+         * @return The current escaper extension
+         */
+        public EscaperExtension getEscaperExtension() {
+            return escaperExtension;
+        }
+
+        /**
+         * Creates the PebbleEngine instance, with default base extensions.
          *
          * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
          */
         public PebbleEngine build() {
+            List<Extension> extensions = new ArrayList<>();
+            extensions.add(escaperExtension);
+            extensions.add(new I18nExtension());
+            return build(extensions);
+        }
+
+        /**
+         * Creates the PebbleEngine instance with a custom list of base extensions.
+         *
+         * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
+         */
+        public PebbleEngine build(List<Extension> baseExtensions) {
 
             // core extensions
             List<Extension> extensions = new ArrayList<>();
             extensions.add(new CoreExtension());
-            extensions.add(escaperExtension);
-            extensions.add(new I18nExtension());
+            extensions.addAll(baseExtensions);
             extensions.addAll(this.userProvidedExtensions);
 
             // default loader
