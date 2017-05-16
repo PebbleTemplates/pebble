@@ -90,8 +90,6 @@ public class GetAttributeExpression implements Expression<Object> {
 
         Object[] argumentValues = this.getArgumentValues(self, context);
 
-        Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
-
         // check if the object is able to provide the attribute dynamically
         if(object != null && object instanceof DynamicAttributeProvider) {
             DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
@@ -100,6 +98,7 @@ public class GetAttributeExpression implements Expression<Object> {
             }
         }
 
+        Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
         if (object != null && member == null) {
 
             /*
