@@ -17,6 +17,7 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
@@ -35,8 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
- * following order: map entry, array item, list item, get method, is method, has
- * method, public method, public field.
+ * following order: map entry, array item, list item,
+ * {@link DynamicAttributeProvider}, get method, is method, has method, public method,
+ * public field.
  *
  * @author Mitchell
  */
@@ -86,10 +88,17 @@ public class GetAttributeExpression implements Expression<Object> {
 
         Object result = null;
 
-        Object[] argumentValues = null;
+        Object[] argumentValues = this.getArgumentValues(self, context);
+
+        // check if the object is able to provide the attribute dynamically
+        if(object != null && object instanceof DynamicAttributeProvider) {
+            DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
+            if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
+                return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
+            }
+        }
 
         Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
-
         if (object != null && member == null) {
 
             /*
@@ -152,7 +161,6 @@ public class GetAttributeExpression implements Expression<Object> {
              * turn args into an array of types and an array of values in order
              * to use them for our reflection calls
              */
-            argumentValues = this.getArgumentValues(self, context);
             Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
 
             for (int i = 0; i < argumentValues.length; i++) {
@@ -172,9 +180,6 @@ public class GetAttributeExpression implements Expression<Object> {
         }
 
         if (object != null && member != null) {
-            if (argumentValues == null) {
-                argumentValues = this.getArgumentValues(self, context);
-            }
             result = this.invokeMember(object, member, argumentValues);
         } else if (context.isStrictVariables()) {
             if (object == null) {
