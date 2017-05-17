@@ -109,8 +109,8 @@ public class EvaluationContextImpl implements EvaluationContext {
      * @return A copy of the evaluation context
      */
     public EvaluationContextImpl shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
-        EvaluationContextImpl result = new EvaluationContextImpl(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, importedTemplates, scopeChain, null);
+        EvaluationContextImpl result = new EvaluationContextImpl(self, this.strictVariables, this.locale, this.extensionRegistry, this.tagCache,
+                this.executorService, this.importedTemplates, this.scopeChain, null);
         return result;
     }
 
@@ -123,8 +123,8 @@ public class EvaluationContextImpl implements EvaluationContext {
      * @return A copy of the evaluation context
      */
     public EvaluationContextImpl threadSafeCopy(PebbleTemplateImpl self) {
-        EvaluationContextImpl result = new EvaluationContextImpl(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, new ArrayList<>(importedTemplates), scopeChain.deepCopy(), hierarchy);
+        EvaluationContextImpl result = new EvaluationContextImpl(self, this.strictVariables, this.locale, this.extensionRegistry, this.tagCache,
+                this.executorService, new ArrayList<>(this.importedTemplates), this.scopeChain.deepCopy(), this.hierarchy);
         return result;
     }
 
@@ -135,7 +135,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      */
     @Override
     public boolean isStrictVariables() {
-        return strictVariables;
+        return this.strictVariables;
     }
 
     /**
@@ -145,7 +145,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      */
     @Override
     public Locale getLocale() {
-        return locale;
+        return this.locale;
     }
 
     /**
@@ -154,7 +154,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      * @return The extension registry
      */
     public ExtensionRegistry getExtensionRegistry() {
-        return extensionRegistry;
+        return this.extensionRegistry;
     }
 
     /**
@@ -163,7 +163,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      * @return The executor service if exists, or null
      */
     public ExecutorService getExecutorService() {
-        return executorService;
+        return this.executorService;
     }
 
     /**
@@ -181,7 +181,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      * @return The cache used for the "cache" tag
      */
     public Cache<BaseTagCacheKey, Object> getTagCache() {
-        return tagCache;
+        return this.tagCache;
     }
 
     /**
@@ -191,7 +191,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      * @return The scope chain.
      */
     public ScopeChain getScopeChain() {
-        return scopeChain;
+        return this.scopeChain;
     }
 
     /**
@@ -201,7 +201,11 @@ public class EvaluationContextImpl implements EvaluationContext {
      * @return The inheritance chain
      */
     public Hierarchy getHierarchy() {
-        return hierarchy;
+        return this.hierarchy;
     }
 
+    @Override
+    public Object getVariable(String key) {
+        return this.scopeChain.get(key);
+    }
 }

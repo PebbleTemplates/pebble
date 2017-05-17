@@ -10,4 +10,6 @@ public interface EvaluationContext {
     boolean isStrictVariables();
 
     Locale getLocale();
+
+    Object getVariable(String key);
 }
