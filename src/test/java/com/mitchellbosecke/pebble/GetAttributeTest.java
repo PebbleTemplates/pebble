@@ -11,14 +11,18 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -505,8 +509,8 @@ public class GetAttributeTest extends AbstractTest {
         public final Map<String, Object> map = new HashMap<>();
 
         {
-            map.put("SimpleObject2", new SimpleObject2());
-            map.put("SimpleObject6", new SimpleObject6());
+            this.map.put("SimpleObject2", new SimpleObject2());
+            this.map.put("SimpleObject6", new SimpleObject6());
         }
     }
 
@@ -579,4 +583,150 @@ public class GetAttributeTest extends AbstractTest {
         }
     }
 
+    public class DynamicAttributeProviderObject implements DynamicAttributeProvider {
+
+        public String getSurname() {
+            return "Doe";
+        }
+
+        public String name = "Invalid";
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean canProvideDynamicAttribute(Object attributeName) {
+
+            if("name".equals(attributeName)) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public Object getDynamicAttribute(Object attributeName, Object[] argumentValues) {
+
+            if("name".equals(attributeName)) {
+
+                String name = "Steve";
+                if(argumentValues != null && argumentValues.length > 0) {
+                    name += " " + Arrays.toString(argumentValues);
+                }
+                return name;
+            }
+
+            return "Invalid";
+        }
+    }
+
+    @Test
+    public void testAttributeProviderSimple() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name }} {{ object.surname }}{{ object.invalidAttr }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new DynamicAttributeProviderObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello Steve Doe", writer.toString());
+    }
+
+    @Test
+    public void testAttributeProviderEmptyArguments() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name() }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new DynamicAttributeProviderObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello Steve", writer.toString());
+    }
+
+    @Test
+    public void testAttributeProviderWithArguments() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.name('abc', (40 + 2)) }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new DynamicAttributeProviderObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello Steve [abc, 42]", writer.toString());
+    }
+
+
+
+    @Test
+    public void testAttributePrimitiveAccessWithEmptyMap() throws Exception {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate(String.format("hello {{ object[1].name }}"));
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new HashMap<>());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+
+        assertEquals("hello ", writer.toString());
+    }
+
+    @Test
+    public void testAttributePrimitiveAccessWithInteger() throws Exception {
+        String result = this.testAttributePrimitiveAccess(1);
+
+        assertEquals("hello Steve", result);
+    }
+
+    private String testAttributePrimitiveAccess(Number value) throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object[key].name }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("key", value);
+        context.put("object", Collections.singletonMap(value, new SimpleObject()));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+
+        return writer.toString();
+    }
+
+    @Test
+    public void testAttributePrimitiveAccessWithLong() throws Exception {
+        String result = this.testAttributePrimitiveAccess(1L);
+
+        assertEquals("hello Steve", result);
+    }
+
+    @Test
+    public void testAttributePrimitiveAccessWithDouble() throws Exception {
+        String result = this.testAttributePrimitiveAccess(1.05D);
+
+        assertEquals("hello Steve", result);
+    }
+
+    @Test
+    public void testAttributePrimitiveAccessWithFloat() throws Exception {
+        String result = this.testAttributePrimitiveAccess(1.05F);
+
+        assertEquals("hello Steve", result);
+    }
+
+    @Test
+    public void testAttributePrimitiveAccessWithShort() throws Exception {
+        String result = this.testAttributePrimitiveAccess((short) 1);
+
+        assertEquals("hello Steve", result);
+    }
+
+    @Test
+    public void testAttributePrimitiveAccessWithByte() throws Exception {
+        String result = this.testAttributePrimitiveAccess((byte) 1);
+
+        assertEquals("hello Steve", result);
+    }
 }

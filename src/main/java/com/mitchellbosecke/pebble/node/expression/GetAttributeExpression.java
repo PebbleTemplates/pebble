@@ -17,21 +17,28 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
-import java.lang.reflect.*;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
- * following order: map entry, array item, list item, get method, is method, has
- * method, public method, public field.
+ * following order: map entry, array item, list item,
+ * {@link DynamicAttributeProvider}, get method, is method, has method, public method,
+ * public field.
  *
  * @author Mitchell
  */
@@ -75,27 +82,34 @@ public class GetAttributeExpression implements Expression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
-        Object object = node.evaluate(self, context);
-        Object attributeNameValue = attributeNameExpression.evaluate(self, context);
+        Object object = this.node.evaluate(self, context);
+        Object attributeNameValue = this.attributeNameExpression.evaluate(self, context);
         String attributeName = String.valueOf(attributeNameValue);
 
         Object result = null;
 
-        Object[] argumentValues = null;
+        Object[] argumentValues = this.getArgumentValues(self, context);
 
-        Member member = object == null ? null : memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
+        // check if the object is able to provide the attribute dynamically
+        if(object != null && object instanceof DynamicAttributeProvider) {
+            DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
+            if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
+                return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
+            }
+        }
 
+        Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
         if (object != null && member == null) {
 
             /*
              * If, and only if, no arguments were provided does it make sense to
              * check maps/arrays/lists
              */
-            if (args == null) {
+            if (this.args == null) {
 
                 // first we check maps
-                if (object instanceof Map && ((Map<?, ?>) object).containsKey(attributeNameValue)) {
-                    return ((Map<?, ?>) object).get(attributeNameValue);
+                if (object instanceof Map) {
+                    return this.getObjectFromMap((Map<?, ?>) object, attributeNameValue);
                 }
 
                 try {
@@ -108,7 +122,7 @@ public class GetAttributeExpression implements Expression<Object> {
                             if (context.isStrictVariables()) {
                                 throw new AttributeNotFoundException(null,
                                         "Index out of bounds while accessing array with strict variables on.",
-                                        attributeName, lineNumber, filename);
+                                        attributeName, this.lineNumber, this.filename);
                             } else {
                                 return null;
                             }
@@ -129,7 +143,7 @@ public class GetAttributeExpression implements Expression<Object> {
                             if (context.isStrictVariables()) {
                                 throw new AttributeNotFoundException(null,
                                         "Index out of bounds while accessing array with strict variables on.",
-                                        attributeName, lineNumber, filename);
+                                        attributeName, this.lineNumber, this.filename);
                             } else {
                                 return null;
                             }
@@ -147,7 +161,6 @@ public class GetAttributeExpression implements Expression<Object> {
              * turn args into an array of types and an array of values in order
              * to use them for our reflection calls
              */
-            argumentValues = getArgumentValues(self, context);
             Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
 
             for (int i = 0; i < argumentValues.length; i++) {
@@ -159,23 +172,20 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
             }
 
-            member = reflect(object, attributeName, argumentTypes);
+            member = this.reflect(object, attributeName, argumentTypes);
             if (member != null) {
-                memberCache.put(new MemberCacheKey(object.getClass(), attributeName), member);
+                this.memberCache.put(new MemberCacheKey(object.getClass(), attributeName), member);
             }
 
         }
 
         if (object != null && member != null) {
-            if (argumentValues == null) {
-                argumentValues = getArgumentValues(self, context);
-            }
-            result = invokeMember(object, member, argumentValues);
+            result = this.invokeMember(object, member, argumentValues);
         } else if (context.isStrictVariables()) {
             if (object == null) {
 
-                if (node instanceof ContextVariableExpression) {
-                    final String rootPropertyName = ((ContextVariableExpression) node).getName();
+                if (this.node instanceof ContextVariableExpression) {
+                    final String rootPropertyName = ((ContextVariableExpression) this.node).getName();
                     throw new RootAttributeNotFoundException(null, String.format(
                             "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
                             rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
@@ -192,6 +202,37 @@ public class GetAttributeExpression implements Expression<Object> {
         }
         return result;
 
+    }
+
+    private Object getObjectFromMap(Map<?, ?> object, Object attributeNameValue) throws PebbleException {
+        if (object.isEmpty()) {
+            return null;
+        }
+        if (Number.class.isAssignableFrom(attributeNameValue.getClass())) {
+            Number keyAsNumber = (Number) attributeNameValue;
+
+            Class<?> keyClass = object.keySet().iterator().next().getClass();
+            Object key = this.cast(keyAsNumber, keyClass);
+            return object.get(key);
+        }
+        return object.get(attributeNameValue);
+    }
+
+    private Object cast(Number number, Class<?> desiredType) throws PebbleException {
+        if (desiredType == Long.class) {
+            return number.longValue();
+        } else if (desiredType == Integer.class) {
+            return number.intValue();
+        } else if (desiredType == Double.class) {
+            return number.doubleValue();
+        } else if (desiredType == Float.class) {
+            return number.floatValue();
+        } else if (desiredType == Short.class) {
+            return number.shortValue();
+        } else if (desiredType == Byte.class) {
+            return number.byteValue();
+        }
+        throw new PebbleException(null, String.format("type %s not supported for key %s", desiredType, number), this.getLineNumber(), this.filename);
     }
 
     /**
@@ -264,21 +305,21 @@ public class GetAttributeExpression implements Expression<Object> {
         String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
         // check get method
-        result = findMethod(clazz, "get" + attributeCapitalized, parameterTypes);
+        result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes);
 
         // check is method
         if (result == null) {
-            result = findMethod(clazz, "is" + attributeCapitalized, parameterTypes);
+            result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes);
         }
 
         // check has method
         if (result == null) {
-            result = findMethod(clazz, "has" + attributeCapitalized, parameterTypes);
+            result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes);
         }
 
         // check if attribute is a public method
         if (result == null) {
-            result = findMethod(clazz, attributeName, parameterTypes);
+            result = this.findMethod(clazz, attributeName, parameterTypes);
         }
 
         // public field
@@ -323,7 +364,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
             boolean compatibleTypes = true;
             for (int i = 0; i < types.length; i++) {
-                if (requiredTypes[i] != null && !widen(types[i]).isAssignableFrom(requiredTypes[i])) {
+                if (requiredTypes[i] != null && !this.widen(types[i]).isAssignableFrom(requiredTypes[i])) {
                     compatibleTypes = false;
                     break;
                 }
@@ -375,19 +416,19 @@ public class GetAttributeExpression implements Expression<Object> {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (o == null || this.getClass() != o.getClass()) return false;
 
             MemberCacheKey that = (MemberCacheKey) o;
 
-            if (!clazz.equals(that.clazz)) return false;
-            return attributeName.equals(that.attributeName);
+            if (!this.clazz.equals(that.clazz)) return false;
+            return this.attributeName.equals(that.attributeName);
 
         }
 
         @Override
         public int hashCode() {
-            int result = clazz.hashCode();
-            result = 31 * result + attributeName.hashCode();
+            int result = this.clazz.hashCode();
+            result = 31 * result + this.attributeName.hashCode();
             return result;
         }
     }
@@ -398,15 +439,15 @@ public class GetAttributeExpression implements Expression<Object> {
     }
 
     public Expression<?> getNode() {
-        return node;
+        return this.node;
     }
 
     public Expression<?> getAttributeNameExpression() {
-        return attributeNameExpression;
+        return this.attributeNameExpression;
     }
 
     public ArgumentsNode getArgumentsNode() {
-        return args;
+        return this.args;
     }
 
     @Override

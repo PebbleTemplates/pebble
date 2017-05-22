@@ -8,9 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
@@ -21,6 +18,9 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 import com.mitchellbosecke.pebble.utils.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IfTokenParser extends AbstractTokenParser {
 
@@ -38,25 +38,32 @@ public class IfTokenParser extends AbstractTokenParser {
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = parser.subparse(decideIfFork);
+        BodyNode body = parser.subparse(this.decideIfFork);
 
         conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
 
         BodyNode elseBody = null;
         boolean end = false;
         while (!end) {
+            if (stream.current().getValue() == null) {
+                throw new ParserException(
+                        null,
+                        "Unexpected end of template. Pebble was looking for the \"endif\" tag",
+                        stream.current().getLineNumber(), stream.getFilename());
+            }
+
             switch (stream.current().getValue()) {
             case "else":
                 stream.next();
                 stream.expect(Token.Type.EXECUTE_END);
-                elseBody = parser.subparse(decideIfEnd);
+                elseBody = parser.subparse(this.decideIfEnd);
                 break;
 
             case "elseif":
                 stream.next();
                 expression = parser.getExpressionParser().parseExpression();
                 stream.expect(Token.Type.EXECUTE_END);
-                body = parser.subparse(decideIfFork);
+                body = parser.subparse(this.decideIfFork);
                 conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
                 break;
 
@@ -67,7 +74,7 @@ public class IfTokenParser extends AbstractTokenParser {
             default:
                 throw new ParserException(
                         null,
-                        String.format("Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\""),
+                        "Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\"",
                         stream.current().getLineNumber(), stream.getFilename());
             }
         }

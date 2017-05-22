@@ -40,7 +40,7 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
         if (function != null) {
             return this.applyFunction(self, context, function, this.args);
         }
-        return self.macro(context, this.functionName, this.args, false);
+        return self.macro(context, this.functionName, this.args, false, this.lineNumber);
     }
 
     private Object applyFunction(PebbleTemplateImpl self, EvaluationContextImpl context, Function function,
