@@ -19,6 +19,7 @@
 - Output filename and line number of non-existent macro
 - Fix for null pointer and index out of bounds exceptions when invalid or no endif/endfor tags are used in template (#266)
 - Add DynamicAttributeProvider interface. When implemented by an object, tells the expression parser that this object is able to provide attributes dynamically, given their names and the potential arguments(#230)
+- Add rendering of single blocks, similar to the Twig renderBlock() method.
 
 ## v2.3.0 (2016-11-13)
 - Upgrade SLF4J from 1.6.1 to 1.7.21

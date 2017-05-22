@@ -64,6 +64,50 @@ public interface PebbleTemplate {
     void evaluate(Writer writer, Map<String, Object> context, Locale locale) throws PebbleException, IOException;
 
     /**
+     * Evaluate the template but only render the contents of a specific block.
+     *
+     * @param blockName The name of the template block to return.
+     * @param writer    The results of the evaluation are written to this writer.
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException     An IO exception during the evaluation
+     */
+    void evaluateBlock(String blockName, Writer writer) throws PebbleException, IOException;
+
+    /**
+     * Evaluate the template but only render the contents of a specific block.
+     *
+     * @param blockName The name of the template block to return.
+     * @param writer    The results of the evaluation are written to this writer.
+     * @param locale    The locale used during the evaluation of the template.
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException     An IO exception during the evaluation
+     */
+    void evaluateBlock(String blockName, Writer writer, Locale locale) throws PebbleException, IOException;
+
+    /**
+     * Evaluate the template but only render the contents of a specific block.
+     *
+     * @param blockName The name of the template block to return.
+     * @param writer    The results of the evaluation are written to this writer.
+     * @param context   The variables used during the evaluation of the template.
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException     An IO exception during the evaluation
+     */
+    void evaluateBlock(String blockName, Writer writer, Map<String, Object> context) throws PebbleException, IOException;
+
+    /**
+     * Evaluate the template but only render the contents of a specific block.
+     *
+     * @param blockName	The name of the template block to return.
+     * @param writer	The results of the evaluation are written to this writer.
+     * @param context	The variables used during the evaluation of the template.
+     * @param locale  	The locale used during the evaluation of the template.
+     * @throws PebbleException An exception with the evaluation of the template
+     * @throws IOException     An IO exception during the evaluation
+     */
+    void evaluateBlock(String blockName, Writer writer, Map<String, Object> context, Locale locale) throws PebbleException, IOException;
+
+    /**
      * Returns the name of the template
      *
      * @return The name of the template

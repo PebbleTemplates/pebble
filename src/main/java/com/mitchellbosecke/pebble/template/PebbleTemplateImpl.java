@@ -92,6 +92,40 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         this.evaluate(writer, context);
     }
 
+    public void evaluateBlock(String blockName, Writer writer) throws PebbleException, IOException {
+        EvaluationContextImpl context = this.initContext(null);
+        this.evaluate(new NoopWriter(), context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
+    public void evaluateBlock(String blockName, Writer writer, Locale locale) throws PebbleException, IOException {
+        EvaluationContextImpl context = this.initContext(locale);
+        this.evaluate(new NoopWriter(), context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
+    public void evaluateBlock(String blockName, Writer writer, Map<String, Object> map) throws PebbleException, IOException {
+        EvaluationContextImpl context = this.initContext(null);
+        context.getScopeChain().pushScope(map);
+        this.evaluate(new NoopWriter(), context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
+    public void evaluateBlock(String blockName, Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
+        EvaluationContextImpl context = this.initContext(locale);
+        context.getScopeChain().pushScope(map);
+        this.evaluate(new NoopWriter(), context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
     /**
      * This is the authoritative evaluate method. It will evaluate the template
      * starting at the root node.
@@ -139,10 +173,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         // global vars provided from extensions
         scopeChain.pushScope(this.engine.getExtensionRegistry().getGlobalVariables());
 
-        EvaluationContextImpl context = new EvaluationContextImpl(this, this.engine.isStrictVariables(), locale,
+        return new EvaluationContextImpl(this, this.engine.isStrictVariables(), locale,
                 this.engine.getExtensionRegistry(), this.engine.getTagCache(), this.engine.getExecutorService(),
                 new ArrayList<PebbleTemplateImpl>(), scopeChain, null);
-        return context;
     }
 
     /**
@@ -353,4 +386,14 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         return this.name;
     }
 
+    private static class NoopWriter extends Writer {
+        public void write(char[] cbuf, int off, int len) throws IOException {
+        }
+
+        public void flush() throws IOException {
+        }
+
+        public void close() throws IOException {
+        }
+    }
 }
