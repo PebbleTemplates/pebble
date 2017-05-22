@@ -67,6 +67,8 @@ public class PebbleEngine {
 
     private final ExtensionRegistry extensionRegistry;
 
+    private boolean enableTemplateCache = true;
+
     /**
      * Constructor for the Pebble Engine given an instantiated Loader. This
      * method does only load those userProvidedExtensions listed here.
@@ -116,6 +118,10 @@ public class PebbleEngine {
 
         try {
             final Object cacheKey = this.loader.createCacheKey(templateName);
+
+            if (!enableTemplateCache) {
+                templateCache.invalidate(cacheKey);
+            }
 
             result = templateCache.get(cacheKey, new Callable<PebbleTemplate>() {
 
@@ -198,6 +204,10 @@ public class PebbleEngine {
      */
     public boolean isStrictVariables() {
         return strictVariables;
+    }
+
+    public void setEnableTemplateCache(boolean enableTemplateCache) {
+        this.enableTemplateCache = enableTemplateCache;
     }
 
     /**
