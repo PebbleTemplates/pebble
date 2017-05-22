@@ -92,13 +92,37 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         this.evaluate(writer, context);
     }
 
+    public void evaluateBlock(String blockName, Writer writer) throws PebbleException, IOException {
+        EvaluationContext context = this.initContext(null);
+        this.evaluate(new NoopWriter(), context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
+    public void evaluateBlock(String blockName, Writer writer, Locale locale) throws PebbleException, IOException {
+        EvaluationContext context = this.initContext(locale);
+        this.evaluate(new NoopWriter(), context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
+    public void evaluateBlock(String blockName, Writer writer, Map<String, Object> map) throws PebbleException, IOException {
+        EvaluationContext context = this.initContext(null);
+        context.getScopeChain().pushScope(map);
+        this.evaluate(new NoopWriter(), context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
     public void evaluateBlock(String blockName, Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
         EvaluationContext context = this.initContext(locale);
         context.getScopeChain().pushScope(map);
-
         this.evaluate(new NoopWriter(), context);
-        this.block(writer, context, blockName, false);
 
+        this.block(writer, context, blockName, false);
         writer.flush();
     }
 
@@ -149,10 +173,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         // global vars provided from extensions
         scopeChain.pushScope(this.engine.getExtensionRegistry().getGlobalVariables());
 
-        EvaluationContext context = new EvaluationContext(this, this.engine.isStrictVariables(), locale,
+        return new EvaluationContext(this, this.engine.isStrictVariables(), locale,
                 this.engine.getExtensionRegistry(), this.engine.getTagCache(), this.engine.getExecutorService(),
                 new ArrayList<PebbleTemplateImpl>(), scopeChain, null);
-        return context;
     }
 
     /**
