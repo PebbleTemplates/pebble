@@ -8,17 +8,17 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
@@ -36,11 +36,11 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
-        Function function = context.getExtensionRegistry().getFunction(functionName);
+        Function function = context.getExtensionRegistry().getFunction(this.functionName);
         if (function != null) {
-            return applyFunction(self, context, function, args);
+            return this.applyFunction(self, context, function, this.args);
         }
-        return self.macro(context, functionName, args, false);
+        return self.macro(context, this.functionName, this.args, false);
     }
 
     private Object applyFunction(PebbleTemplateImpl self, EvaluationContextImpl context, Function function,
@@ -59,11 +59,11 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
     }
 
     public String getFunctionName() {
-        return functionName;
+        return this.functionName;
     }
 
     public ArgumentsNode getArguments() {
-        return args;
+        return this.args;
     }
 
     @Override
@@ -73,8 +73,7 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return String.format("%s%s", functionName, args);
+        return String.format("%s%s", this.functionName, this.args);
     }
 
 }

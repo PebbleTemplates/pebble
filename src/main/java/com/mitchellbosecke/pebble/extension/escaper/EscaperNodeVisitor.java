@@ -131,8 +131,9 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
      * of two {@link LiteralStringExpression}s.
      */
     private boolean isSafeConcatenateExpr(Expression<?> expr) {
-        if (!(expr instanceof ConcatenateExpression))
+        if (!(expr instanceof ConcatenateExpression)) {
             return false;
+        }
         ConcatenateExpression cexpr = (ConcatenateExpression) expr;
         return cexpr.getLeftExpression() instanceof LiteralStringExpression
                 && cexpr.getRightExpression() instanceof LiteralStringExpression;
