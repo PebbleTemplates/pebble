@@ -96,14 +96,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         EvaluationContext context = this.initContext(locale);
         context.getScopeChain().pushScope(map);
 
-        final Writer nowhere = new Writer() {
-            public void write(char[] cbuf, int off, int len) throws IOException {}
-            public void flush() throws IOException {}
-            public void close() throws IOException {}
-        };
-        this.evaluate(nowhere, context);
-
+        this.evaluate(new NoopWriter(), context);
         this.block(writer, context, blockName, false);
+
         writer.flush();
     }
 
@@ -368,4 +363,14 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         return this.name;
     }
 
+    private static class NoopWriter extends Writer {
+        public void write(char[] cbuf, int off, int len) throws IOException {
+        }
+
+        public void flush() throws IOException {
+        }
+
+        public void close() throws IOException {
+        }
+    }
 }
