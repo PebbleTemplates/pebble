@@ -8,17 +8,24 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.escaper;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.AutoEscapeNode;
 import com.mitchellbosecke.pebble.node.NamedArgumentNode;
 import com.mitchellbosecke.pebble.node.PrintNode;
-import com.mitchellbosecke.pebble.node.expression.*;
+import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.ConcatenateExpression;
+import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.node.expression.FilterExpression;
+import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
+import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
@@ -65,6 +72,7 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
     /**
      * Simply wraps the input expression with a {@link EscapeFilter}.
+     *
      * @param expression
      * @return
      */
@@ -77,7 +85,8 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         List<NamedArgumentNode> namedArgs = new ArrayList<>();
         if (!strategies.isEmpty() && strategies.peek() != null) {
             String strategy = strategies.peek();
-            namedArgs.add(new NamedArgumentNode("strategy", new LiteralStringExpression(strategy, expression.getLineNumber())));
+            namedArgs.add(new NamedArgumentNode("strategy",
+                    new LiteralStringExpression(strategy, expression.getLineNumber())));
         }
         ArgumentsNode args = new ArgumentsNode(null, namedArgs, expression.getLineNumber());
 
@@ -108,12 +117,26 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         // string literals are safe
         if (expression instanceof LiteralStringExpression) {
             safe = true;
-        }
-        else if (expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
+        } else if (expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
+            safe = true;
+        } else if (isSafeConcatenateExpr(expression)) {
             safe = true;
         }
 
         return safe;
+    }
+
+    /**
+     * Returns true if {@code expr} is a {@link ConcatenateExpression} made up
+     * of two {@link LiteralStringExpression}s.
+     */
+    private boolean isSafeConcatenateExpr(Expression<?> expr) {
+        if (!(expr instanceof ConcatenateExpression)) {
+            return false;
+        }
+        ConcatenateExpression cexpr = (ConcatenateExpression) expr;
+        return cexpr.getLeftExpression() instanceof LiteralStringExpression
+                && cexpr.getRightExpression() instanceof LiteralStringExpression;
     }
 
     public void pushAutoEscapeState(boolean auto) {

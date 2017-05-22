@@ -12,6 +12,13 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
  */
 public class ConcatenateExpression extends BinaryExpression<Object> {
 
+    public ConcatenateExpression() {
+    }
+
+    public ConcatenateExpression(Expression<?> left, Expression<?> right) {
+        super(left, right);
+    }
+
     @Override
     public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
 
@@ -26,6 +33,11 @@ public class ConcatenateExpression extends BinaryExpression<Object> {
         }
 
         return result.toString();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s + %s", getLeftExpression(), getRightExpression());
     }
 
 }

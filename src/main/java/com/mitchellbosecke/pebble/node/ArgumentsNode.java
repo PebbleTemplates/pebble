@@ -26,7 +26,8 @@ public class ArgumentsNode implements Node {
 
     private final int lineNumber;
 
-    public ArgumentsNode(List<PositionalArgumentNode> positionalArgs, List<NamedArgumentNode> namedArgs, int lineNumber) {
+    public ArgumentsNode(List<PositionalArgumentNode> positionalArgs, List<NamedArgumentNode> namedArgs,
+            int lineNumber) {
         this.positionalArgs = positionalArgs;
         this.namedArgs = namedArgs;
         this.lineNumber = lineNumber;
@@ -105,6 +106,11 @@ public class ArgumentsNode implements Node {
         }
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return positionalArgs.toString();
     }
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -24,7 +24,7 @@ public class TokenStream {
 
     /**
      * Constructor for a Token Stream
-     * 
+     *
      * @param tokens
      *            A collection of tokens
      * @param name
@@ -38,7 +38,7 @@ public class TokenStream {
 
     /**
      * Consumes and returns the next token in the stream.
-     * 
+     *
      * @return The next token
      */
     public Token next() {
@@ -49,7 +49,7 @@ public class TokenStream {
      * Checks the current token to see if it matches the provided type. If it
      * doesn't match this will throw a SyntaxException. This will consume a
      * token.
-     * 
+     *
      * @param type
      *            The type of token that we expect
      * @return Token The current token
@@ -64,7 +64,7 @@ public class TokenStream {
      * Checks the current token to see if it matches the provided type. If it
      * doesn't match this will throw a SyntaxException. This will consume a
      * token.
-     * 
+     *
      * @param type
      *            The type of token that we expect
      * @param value
@@ -97,7 +97,7 @@ public class TokenStream {
 
     /**
      * Returns the next token in the stream without consuming it.
-     * 
+     *
      * @return The next token
      */
     public Token peek() {
@@ -106,7 +106,7 @@ public class TokenStream {
 
     /**
      * Returns a future token in the stream without consuming any.
-     * 
+     *
      * @param number
      *            How many tokens to lookahead
      * @return The token we are peeking at
@@ -121,12 +121,12 @@ public class TokenStream {
 
     @Override
     public String toString() {
-        return tokens.toString();
+        return String.format("Current: %s. All: %s", current(), tokens);
     }
 
     /**
      * Looks at the current token. Does not consume the token.
-     * 
+     *
      * @return Token The current token
      */
     public Token current() {
@@ -139,7 +139,7 @@ public class TokenStream {
 
     /**
      * used for testing purposes
-     * 
+     *
      * @return List of tokens
      */
     public ArrayList<Token> getTokens() {

@@ -39,4 +39,9 @@ public class LiteralDoubleExpression implements Expression<Double> {
         return this.lineNumber;
     }
 
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+
 }

@@ -18,6 +18,16 @@ public abstract class BinaryExpression<T> implements Expression<T> {
 
     }
 
+    /**
+     * Sets the left and right expressions. This expression is assumed to be
+     * defined on the same line as the left expression.
+     */
+    public BinaryExpression(Expression<?> left, Expression<?> right) {
+        setLeft(left);
+        setRight(right);
+        setLineNumber(left.getLineNumber());
+    }
+
     private Expression<?> leftExpression;
 
     private Expression<?> rightExpression;

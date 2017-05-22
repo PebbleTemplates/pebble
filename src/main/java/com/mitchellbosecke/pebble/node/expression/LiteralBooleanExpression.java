@@ -39,4 +39,9 @@ public class LiteralBooleanExpression implements Expression<Boolean> {
         return this.lineNumber;
     }
 
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+
 }

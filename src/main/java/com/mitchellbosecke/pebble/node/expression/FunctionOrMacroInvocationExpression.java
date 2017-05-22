@@ -71,4 +71,9 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
         return this.lineNumber;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s%s", this.functionName, this.args);
+    }
+
 }

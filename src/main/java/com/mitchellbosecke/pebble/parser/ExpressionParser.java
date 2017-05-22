@@ -27,6 +27,7 @@ import com.mitchellbosecke.pebble.node.TestInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.ArrayExpression;
 import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
 import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
+import com.mitchellbosecke.pebble.node.expression.ConcatenateExpression;
 import com.mitchellbosecke.pebble.node.expression.ContextVariableExpression;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.node.expression.FilterExpression;
@@ -74,7 +75,7 @@ public class ExpressionParser {
      *            All the unary operators
      */
     public ExpressionParser(Parser parser, Map<String, BinaryOperator> binaryOperators,
-                            Map<String, UnaryOperator> unaryOperators) {
+            Map<String, UnaryOperator> unaryOperators) {
         this.parser = parser;
         this.binaryOperators = binaryOperators;
         this.unaryOperators = unaryOperators;
@@ -264,69 +265,117 @@ public class ExpressionParser {
 
         switch (token.getType()) {
 
-            case NAME:
-                switch (token.getValue()) {
+        case NAME:
+            switch (token.getValue()) {
 
-                    // a constant?
-                    case "true":
-                    case "TRUE":
-                        node = new LiteralBooleanExpression(true, token.getLineNumber());
-                        break;
-                    case "false":
-                    case "FALSE":
-                        node = new LiteralBooleanExpression(false, token.getLineNumber());
-                        break;
-                    case "none":
-                    case "NONE":
-                    case "null":
-                    case "NULL":
-                        node = new LiteralNullExpression(token.getLineNumber());
-                        break;
-
-                    default:
-
-                        // name of a function?
-                        if (stream.peek().test(Token.Type.PUNCTUATION, "(")) {
-                            node = new FunctionOrMacroNameNode(token.getValue(), stream.peek().getLineNumber());
-                        }
-
-                        // variable name
-                        else {
-                            node = new ContextVariableExpression(token.getValue(), token.getLineNumber());
-                        }
-                        break;
-                }
+            // a constant?
+            case "true":
+            case "TRUE":
+                node = new LiteralBooleanExpression(true, token.getLineNumber());
+                stream.next();
+                break;
+            case "false":
+            case "FALSE":
+                node = new LiteralBooleanExpression(false, token.getLineNumber());
+                stream.next();
+                break;
+            case "none":
+            case "NONE":
+            case "null":
+            case "NULL":
+                node = new LiteralNullExpression(token.getLineNumber());
+                stream.next();
                 break;
 
-            case NUMBER:
-                final String numberValue = token.getValue();
-                if (numberValue.contains(".")) {
-                    node = new LiteralDoubleExpression(Double.valueOf(numberValue), token.getLineNumber());
-                } else {
-                    node = new LiteralLongExpression(Long.valueOf(numberValue), token.getLineNumber());
-                }
-
-                break;
-
-            case STRING:
-                node = new LiteralStringExpression(token.getValue(), token.getLineNumber());
-                break;
-
-            // not found, syntax error
             default:
-                throw new ParserException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token.getType()
-                        .toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
+
+                // name of a function?
+                if (stream.peek().test(Token.Type.PUNCTUATION, "(")) {
+                    node = new FunctionOrMacroNameNode(token.getValue(), stream.peek().getLineNumber());
+                }
+
+                // variable name
+                else {
+                    node = new ContextVariableExpression(token.getValue(), token.getLineNumber());
+                }
+                stream.next();
+                break;
+            }
+            break;
+
+        case NUMBER:
+            final String numberValue = token.getValue();
+            if (numberValue.contains(".")) {
+                node = new LiteralDoubleExpression(Double.valueOf(numberValue), token.getLineNumber());
+            } else {
+                node = new LiteralLongExpression(Long.valueOf(numberValue), token.getLineNumber());
+            }
+            stream.next();
+            break;
+
+        case STRING:
+        case STRING_INTERPOLATION_START:
+            node = parseStringExpression();
+            break;
+
+        // not found, syntax error
+        default:
+            throw new ParserException(null, String.format("Unexpected token \"%s\" of value \"%s\"", token.getType()
+                    .toString(), token.getValue()), token.getLineNumber(), stream.getFilename());
         }
 
         // there may or may not be more to this expression - let's keep looking
-        stream.next();
         return parsePostfixExpression(node);
+    }
+
+    private Expression<?> parseStringExpression() throws ParserException {
+        List<Expression<?>> nodes = new ArrayList<>();
+
+        // Sequential strings are not OK, but strings can follow interpolation
+        boolean nextCanBeString = true;
+
+        while (true) {
+            if (nextCanBeString && stream.current().test(Token.Type.STRING)) {
+                Token token = stream.expect(Token.Type.STRING);
+                nodes.add(new LiteralStringExpression(token.getValue(), token.getLineNumber()));
+            } else if (stream.current().test(Token.Type.STRING_INTERPOLATION_START)) {
+                stream.expect(Token.Type.STRING_INTERPOLATION_START);
+                nodes.add(parseExpression());
+                stream.expect(Token.Type.STRING_INTERPOLATION_END);
+                nextCanBeString = true;
+            } else {
+                break;
+            }
+        }
+
+        Expression<?> first = nodes.remove(0);
+        if (nodes.isEmpty()) {
+            return first;
+        }
+
+        ConcatenateExpression expr, firstExpr;
+        expr = firstExpr = new ConcatenateExpression(first, null);
+
+        for (int i = 0; i < nodes.size(); i++) {
+            Expression<?> node = nodes.get(i);
+            if (i == nodes.size() - 1) {
+                expr.setRight(node);
+            } else {
+                ConcatenateExpression newExpr = new ConcatenateExpression(node, null);
+                expr.setRight(newExpr);
+                expr = newExpr;
+            }
+        }
+
+        return firstExpr;
     }
 
     @SuppressWarnings("unchecked")
     private Expression<?> parseTernaryExpression(Expression<?> expression) throws ParserException {
-        // if the next token isn't a ?, we're not dealing with a ternary expression
-        if (!stream.current().test(Token.Type.PUNCTUATION, "?")) return expression;
+        // if the next token isn't a ?, we're not dealing with a ternary
+        // expression
+        if (!stream.current().test(Token.Type.PUNCTUATION, "?"))
+            return expression;
 
         stream.next();
         Expression<?> expression2 = parseExpression();
@@ -383,10 +432,10 @@ public class ExpressionParser {
          * unique ways for the sake of performance.
          */
         switch (functionName) {
-            case "parent":
-                return new ParentFunctionExpression(parser.peekBlockStack(), stream.current().getLineNumber());
-            case "block":
-                return new BlockFunctionExpression(args, node.getLineNumber());
+        case "parent":
+            return new ParentFunctionExpression(parser.peekBlockStack(), stream.current().getLineNumber());
+        case "block":
+            return new BlockFunctionExpression(args, node.getLineNumber());
         }
 
         return new FunctionOrMacroInvocationExpression(functionName, args, node.getLineNumber());
@@ -454,7 +503,8 @@ public class ExpressionParser {
                 }
             }
 
-            node = new GetAttributeExpression(node, new LiteralStringExpression(token.getValue(), token.getLineNumber()), args,
+            node = new GetAttributeExpression(node,
+                    new LiteralStringExpression(token.getValue(), token.getLineNumber()), args,
                     stream.getFilename(), token.getLineNumber());
 
         } else if (stream.current().test(Token.Type.PUNCTUATION, "[")) {
@@ -515,7 +565,8 @@ public class ExpressionParser {
                 if (!namedArgs.isEmpty()) {
                     throw new ParserException(null,
                             "Positional arguments must be declared before any named arguments.", stream.current()
-                            .getLineNumber(), stream.getFilename());
+                                    .getLineNumber(),
+                            stream.getFilename());
                 }
                 positionalArgs.add(new PositionalArgumentNode(argumentValue));
             } else {
@@ -566,7 +617,7 @@ public class ExpressionParser {
         }
 
         // there's at least one expression in the array
-        List<Expression<?>> elements = new ArrayList<Expression<?>>();
+        List<Expression<?>> elements = new ArrayList<>();
         while (true) {
             Expression<?> expr = parseExpression();
             elements.add(expr);

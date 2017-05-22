@@ -52,4 +52,9 @@ public class ContextVariableExpression implements Expression<Object> {
         return lineNumber;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[%s]", name);
+    }
+
 }
