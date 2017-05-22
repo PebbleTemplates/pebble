@@ -1,0 +1,6 @@
+{# used by RenderSingleBlockTest.testRenderSingleExtendedBlock #}
+
+Text in the parent template that should not appear in either block
+
+{% block container_a %}{% block content_a %}{% endblock %} extended{% endblock %}
+{% block container_b %}{% block content_b %}{% endblock %} extended{% endblock %}

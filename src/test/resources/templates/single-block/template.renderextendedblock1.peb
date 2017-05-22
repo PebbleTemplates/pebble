@@ -1,0 +1,7 @@
+{# used by RenderSingleBlockTest.testRenderSingleExtendedBlock #}
+{% extends "./template.renderextendedblock2.peb" %}
+
+Text in the template that should not appear in either block
+
+{% block content_a %}Block A{% endblock %}
+{% block content_b %}Block B{% endblock %}
