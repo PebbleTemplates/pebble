@@ -92,6 +92,21 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         this.evaluate(writer, context);
     }
 
+    public void evaluateBlock(String blockName, Writer writer, Map<String, Object> map, Locale locale) throws PebbleException, IOException {
+        EvaluationContext context = this.initContext(locale);
+        context.getScopeChain().pushScope(map);
+
+        final Writer nowhere = new Writer() {
+            public void write(char[] cbuf, int off, int len) throws IOException {}
+            public void flush() throws IOException {}
+            public void close() throws IOException {}
+        };
+        this.evaluate(nowhere, context);
+
+        this.block(writer, context, blockName, false);
+        writer.flush();
+    }
+
     /**
      * This is the authoritative evaluate method. It will evaluate the template
      * starting at the root node.
