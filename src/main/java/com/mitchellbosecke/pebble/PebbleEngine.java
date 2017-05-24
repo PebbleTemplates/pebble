@@ -32,6 +32,7 @@ import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -252,6 +253,10 @@ public class PebbleEngine {
 
         private Loader<?> loader;
 
+        private CoreExtension.Builder coreExtensionBuilder;
+
+        private I18nExtension.Builder i18nExtensionBuilder;
+
         private List<Extension> userProvidedExtensions = new ArrayList<>();
 
         private Syntax syntax;
@@ -277,6 +282,31 @@ public class PebbleEngine {
          */
         public Builder() {
 
+        }
+
+        /**
+         * Gets the CoreBuilder which can be used to customize which
+         * core extensions will be loaded
+         *
+         * @return The core builder to configure core extensions
+         */
+        public CoreExtension.Builder core() {
+            if(coreExtensionBuilder == null){
+                 coreExtensionBuilder = new CoreExtension.Builder(this);
+            }
+            return coreExtensionBuilder;
+        }
+
+        /**
+         * Gets the I18nBuilder which can be used to disable the default i18n function
+         *
+         * @return The i18n builder to configure i18n extensions
+         */
+        public I18nExtension.Builder i18n() {
+            if(i18nExtensionBuilder == null){
+                i18nExtensionBuilder = new I18nExtension.Builder(this);
+            }
+            return i18nExtensionBuilder;
         }
 
         /**
@@ -460,9 +490,9 @@ public class PebbleEngine {
 
             // core extensions
             List<Extension> extensions = new ArrayList<>();
-            extensions.add(new CoreExtension());
+            extensions.add(core().build());
             extensions.add(escaperExtension);
-            extensions.add(new I18nExtension());
+            extensions.add(i18n().build());
             extensions.addAll(this.userProvidedExtensions);
 
             // default loader
@@ -501,4 +531,5 @@ public class PebbleEngine {
                     executorService, extensions);
         }
     }
+
 }

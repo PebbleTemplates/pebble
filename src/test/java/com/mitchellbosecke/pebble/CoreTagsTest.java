@@ -28,7 +28,7 @@ import static org.junit.Assert.fail;
 
 public class CoreTagsTest extends AbstractTest {
 
-    public static final String LINE_SEPARATOR = System.lineSeparator();
+    public static final String LINE_SEPARATOR = "\n";
 
     @Test
     public void testBlock() throws PebbleException, IOException {

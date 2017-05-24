@@ -8,126 +8,77 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.*;
-import com.mitchellbosecke.pebble.node.expression.*;
-import com.mitchellbosecke.pebble.operator.*;
-import com.mitchellbosecke.pebble.tokenParser.*;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
+import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CoreExtension extends AbstractExtension {
 
+    private final List<TokenParser> tokenParsers;
+
+    private final List<UnaryOperator> unaryOperators;
+
+    private final List<BinaryOperator> binaryOperators;
+
+    private final Map<String, Filter> filters;
+
+    private final Map<String, Test> tests;
+
+    private final Map<String, Function> functions;
+
+    private final List<NodeVisitorFactory> nodeVisitorFactories;
+
+    private CoreExtension(
+            List<TokenParser> tokenParsers,
+            List<UnaryOperator> unaryOperators,
+            List<BinaryOperator> binaryOperators,
+            Map<String, Filter> filters,
+            Map<String, Test> tests,
+            Map<String, Function> functions,
+            List<NodeVisitorFactory> nodeVisitorFactories
+            ){
+
+        this.tokenParsers = tokenParsers;
+        this.unaryOperators = unaryOperators;
+        this.binaryOperators = binaryOperators;
+        this.filters = filters;
+        this.tests = tests;
+        this.functions = functions;
+        this.nodeVisitorFactories = nodeVisitorFactories;
+    }
+
     @Override
     public List<TokenParser> getTokenParsers() {
-        ArrayList<TokenParser> parsers = new ArrayList<>();
-        parsers.add(new BlockTokenParser());
-        parsers.add(new ExtendsTokenParser());
-        parsers.add(new FilterTokenParser());
-        parsers.add(new FlushTokenParser());
-        parsers.add(new ForTokenParser());
-        parsers.add(new IfTokenParser());
-        parsers.add(new ImportTokenParser());
-        parsers.add(new IncludeTokenParser());
-        parsers.add(new MacroTokenParser());
-        parsers.add(new ParallelTokenParser());
-        parsers.add(new SetTokenParser());
-        parsers.add(new CacheTokenParser());
-
-        // verbatim tag is implemented directly in the LexerImpl
-        return parsers;
+        return tokenParsers;
     }
 
     @Override
     public List<UnaryOperator> getUnaryOperators() {
-        ArrayList<UnaryOperator> operators = new ArrayList<>();
-        operators.add(new UnaryOperatorImpl("not", 5, UnaryNotExpression.class));
-        operators.add(new UnaryOperatorImpl("+", 500, UnaryPlusExpression.class));
-        operators.add(new UnaryOperatorImpl("-", 500, UnaryMinusExpression.class));
-        return operators;
+        return unaryOperators;
     }
 
     @Override
     public List<BinaryOperator> getBinaryOperators() {
-        ArrayList<BinaryOperator> operators = new ArrayList<>();
-        operators.add(new BinaryOperatorImpl("or", 10, OrExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("and", 15, AndExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("is", 20, PositiveTestExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("is not", 20, NegativeTestExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("contains", 20, ContainsExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("==", 30, EqualsExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("equals", 30, EqualsExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("!=", 30, NotEqualsExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl(">", 30, GreaterThanExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("<", 30, LessThanExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl(">=", 30, GreaterThanEqualsExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("<=", 30, LessThanEqualsExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("+", 40, AddExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("-", 40, SubtractExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("*", 60, MultiplyExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("/", 60, DivideExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("%", 60, ModulusExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("|", 100, FilterExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("~", 110, ConcatenateExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("..", 120, RangeExpression.class, Associativity.LEFT));
-
-        return operators;
+        return binaryOperators;
     }
 
     @Override
     public Map<String, Filter> getFilters() {
-        Map<String, Filter> filters = new HashMap<>();
-        filters.put("abbreviate", new AbbreviateFilter());
-        filters.put("abs", new AbsFilter());
-        filters.put("capitalize", new CapitalizeFilter());
-        filters.put("date", new DateFilter());
-        filters.put("default", new DefaultFilter());
-        filters.put("first", new FirstFilter());
-        filters.put("join", new JoinFilter());
-        filters.put("last", new LastFilter());
-        filters.put("lower", new LowerFilter());
-        filters.put("numberformat", new NumberFormatFilter());
-        filters.put("slice", new SliceFilter());
-        filters.put("sort", new SortFilter());
-        filters.put("rsort", new RsortFilter());
-        filters.put("title", new TitleFilter());
-        filters.put("trim", new TrimFilter());
-        filters.put("upper", new UpperFilter());
-        filters.put("urlencode", new UrlEncoderFilter());
-        filters.put("length", new LengthFilter());
-        filters.put(ReplaceFilter.FILTER_NAME, new ReplaceFilter());
-        filters.put(MergeFilter.FILTER_NAME, new MergeFilter());
         return filters;
     }
 
     @Override
     public Map<String, Test> getTests() {
-        Map<String, Test> tests = new HashMap<>();
-        tests.put("empty", new EmptyTest());
-        tests.put("even", new EvenTest());
-        tests.put("iterable", new IterableTest());
-        tests.put("map", new MapTest());
-        tests.put("null", new NullTest());
-        tests.put("odd", new OddTest());
-        tests.put("defined", new DefinedTest());
         return tests;
     }
 
     @Override
     public Map<String, Function> getFunctions() {
-        Map<String, Function> functions = new HashMap<>();
-
-        /*
-         * For efficiency purposes, some core functions are individually parsed
-         * by our expression parser and compiled in their own unique way. This
-         * includes the block and parent functions.
-         */
-
-        functions.put("max", new MaxFunction());
-        functions.put("min", new MinFunction());
-        functions.put(RangeFunction.FUNCTION_NAME, new RangeFunction());
         return functions;
     }
 
@@ -138,9 +89,166 @@ public class CoreExtension extends AbstractExtension {
 
     @Override
     public List<NodeVisitorFactory> getNodeVisitors() {
-        List<NodeVisitorFactory> visitors = new ArrayList<>();
-        visitors.add(new MacroAndBlockRegistrantNodeVisitorFactory());
-        return visitors;
+        return nodeVisitorFactories;
+    }
+
+    /**
+     * This {@link Builder} is used to enable/disable the default CoreExtensions
+     */
+    public static class Builder extends ChainableBuilder<PebbleEngine.Builder> {
+
+        private boolean enabled = true;
+
+        private TokenParserBuilder tokenParserBuilder;
+
+        private UnaryOperatorBuilder unaryOperatorBuilder;
+
+        private BinaryOperatorBuilder binaryOperatorBuilder;
+
+        private FilterBuilder filterBuilder;
+
+        private TestBuilder testBuilder;
+
+        private FunctionBuilder functionBuilder;
+
+        private NodeVisitorsBuilder nodeVisitorsBuilder;
+
+        /**
+         * @param builder an instance of {@link PebbleEngine.Builder} that will be returned
+         *                when calling Builder{@link #and()}
+         */
+        public Builder(PebbleEngine.Builder builder){
+            super(builder);
+        }
+
+        /**
+         * this method enables any {@link CoreExtension} functionality
+         *
+         * @return the {@link Builder} itself
+         */
+        public Builder enable(){
+            enabled = true;
+            return this;
+        }
+
+        /**
+         * this method disables any {@link CoreExtension} functionality
+         *
+         * @return the {@link Builder} itself
+         */
+        public Builder disable(){
+            enabled = false;
+            return this;
+        }
+
+        /**
+         * retrieve a {@link TokenParserBuilder} to customize which {@link TokenParser} will be configured
+         *
+         * @return a {@link TokenParserBuilder} to work with
+         */
+        public TokenParserBuilder tokenParsers() {
+            if(tokenParserBuilder == null) {
+                tokenParserBuilder = new TokenParserBuilder(this);
+            }
+            return tokenParserBuilder;
+        }
+
+        /**
+         * retrieve a {@link UnaryOperatorBuilder} to customize which {@link UnaryOperator} will be configured
+         *
+         * @return a {@link UnaryOperatorBuilder} to work with
+         */
+        public UnaryOperatorBuilder unaryOperators() {
+            if(unaryOperatorBuilder == null) {
+                unaryOperatorBuilder = new UnaryOperatorBuilder(this);
+            }
+            return unaryOperatorBuilder;
+        }
+
+        /**
+         * retrieve a {@link BinaryOperatorBuilder} to customize which {@link BinaryOperator} will be configured
+         *
+         * @return a {@link BinaryOperatorBuilder} to work with
+         */
+        public BinaryOperatorBuilder binaryOperators() {
+            if(binaryOperatorBuilder == null) {
+                binaryOperatorBuilder = new BinaryOperatorBuilder(this);
+            }
+            return binaryOperatorBuilder;
+        }
+
+        /**
+         * retrieve a {@link FilterBuilder} to customize which {@link Filter} will be configured
+         *
+         * @return a {@link FilterBuilder} to work with
+         */
+        public FilterBuilder filters() {
+            if(filterBuilder == null) {
+                filterBuilder = new FilterBuilder(this);
+            }
+            return filterBuilder;
+        }
+
+        /**
+         * retrieve a {@link TestBuilder} to customize which {@link Test} will be configured
+         *
+         * @return a {@link TestBuilder} to work with
+         */
+        public TestBuilder tests() {
+            if(testBuilder == null) {
+                testBuilder = new TestBuilder(this);
+            }
+            return testBuilder;
+        }
+
+        /**
+         * retrieve a {@link FunctionBuilder} to customize which {@link Function} will be configured
+         *
+         * @return a {@link FunctionBuilder} to work with
+         */
+        public FunctionBuilder functions() {
+            if(functionBuilder == null) {
+                functionBuilder = new FunctionBuilder(this);
+            }
+            return functionBuilder;
+        }
+
+        /**
+         * retrieve a {@link NodeVisitorsBuilder} to customize which {@link NodeVisitorFactory} will be configured
+         *
+         * @return a {@link NodeVisitorsBuilder} to work with
+         */
+        public NodeVisitorsBuilder nodeVisitors() {
+            if(nodeVisitorsBuilder == null) {
+                nodeVisitorsBuilder = new NodeVisitorsBuilder(this);
+            }
+            return nodeVisitorsBuilder;
+        }
+
+
+        /**
+         * this methods builds the {@link CoreExtension} according to the
+         * configuration. If the extension was disabled it'll return an
+         * instance of {@link NoOpExtension}.
+         *
+         * @return either an {@link CoreExtension} or a {@link NoOpExtension}
+         */
+        public Extension build(){
+            if(enabled){
+                return new CoreExtension(
+                        tokenParsers().build(),
+                        unaryOperators().build(),
+                        binaryOperators().build(),
+                        filters().build(),
+                        tests().build(),
+                        functions().build(),
+                        nodeVisitors().build()
+                );
+            }else{
+                return new NoOpExtension();
+            }
+        }
+
     }
 
 }

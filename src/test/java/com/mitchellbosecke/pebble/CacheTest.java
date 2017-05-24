@@ -29,7 +29,7 @@ import static org.junit.Assert.assertFalse;
 
 public class CacheTest extends AbstractTest {
 
-	public static final String LINE_SEPARATOR = System.lineSeparator();
+	public static final String LINE_SEPARATOR = "\n";
 	
 	/**
 	 * There was once an issue where the cache was unable to differentiate
