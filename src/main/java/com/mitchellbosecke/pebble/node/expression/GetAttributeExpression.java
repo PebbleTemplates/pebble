@@ -22,6 +22,7 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.lang.reflect.AccessibleObject;
@@ -96,6 +97,12 @@ public class GetAttributeExpression implements Expression<Object> {
             if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
                 return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
             }
+        }
+        
+        // check if the object should provide the attribute by macro invocation
+        if (object != null && object instanceof MacroAttributeProvider) {
+            MacroAttributeProvider macroAttributeProvider = (MacroAttributeProvider) object;
+            return macroAttributeProvider.macro(context, attributeName, args, false, this.lineNumber);
         }
 
         Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));

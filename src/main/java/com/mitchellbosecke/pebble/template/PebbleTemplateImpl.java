@@ -14,11 +14,13 @@ import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
+import com.mitchellbosecke.pebble.utils.Pair;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -175,7 +177,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
         return new EvaluationContext(this, this.engine.isStrictVariables(), locale,
                 this.engine.getExtensionRegistry(), this.engine.getTagCache(), this.engine.getExecutorService(),
-                new ArrayList<PebbleTemplateImpl>(), scopeChain, null);
+                new ArrayList<PebbleTemplateImpl>(), new HashMap<String, PebbleTemplateImpl>(), scopeChain, null);
     }
 
     /**
@@ -188,6 +190,45 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      */
     public void importTemplate(EvaluationContext context, String name) throws PebbleException {
         context.getImportedTemplates().add((PebbleTemplateImpl) this.engine.getTemplate(this.resolveRelativePath(name)));
+    }
+    
+    /**
+     * Imports a named template.
+     *
+     * @param context The evaluation context
+     * @param name    The template name
+     * @param alias   The template alias 
+     * @throws PebbleException Thrown if an error occurs while rendering the imported
+     *                         template
+     */
+    public void importNamedTemplate(EvaluationContext context, String name, String alias) throws PebbleException {
+        context.addNamedImportedTemplates(alias, (PebbleTemplateImpl) this.engine.getTemplate(this.resolveRelativePath(name)));
+    }
+    
+    /**
+     * Imports named macros from specified template.
+     * 
+     * @param context     The evaluation context
+     * @param name        The template name
+     * @param namedMacros named macros
+     * @throws PebbleException
+     */
+    public void importNamedMacrosFromTemplate(EvaluationContext context, String name, List<Pair<String, String>> namedMacros) throws PebbleException {
+        PebbleTemplateImpl templateImpl = (PebbleTemplateImpl) this.engine.getTemplate(this.resolveRelativePath(name));
+        for (Pair<String, String> pair : namedMacros) {
+            Macro m = templateImpl.macros.get(pair.getRight());
+            registerMacro(pair.getLeft(), m);
+        }
+    }
+    
+    /**
+     * Returns a named template.
+     *
+     * @param context The evaluation context
+     * @param alias   The template alias 
+     */
+    public PebbleTemplateImpl getNamedImportedTemplate(EvaluationContext context, String alias) {
+        return context.getNamedImportedTemplate(alias);
     }
 
     /**
@@ -270,6 +311,19 @@ public class PebbleTemplateImpl implements PebbleTemplate {
             throw new PebbleException(null, "More than one macro can not share the same name: " + macro.getName());
         }
         this.macros.put(macro.getName(), macro);
+    }
+    
+    /**
+     * Registers a macro with alias
+     *
+     * @param macro The macro
+     * @throws PebbleException Throws exception if macro already exists with the same name
+     */
+    public void registerMacro(String alias, Macro macro) throws PebbleException {
+        if (this.macros.containsKey(alias)) {
+            throw new PebbleException(null, "More than one macro can not share the same name: " + alias);
+        }
+        this.macros.put(alias, macro);
     }
 
     /**

@@ -8,14 +8,17 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import com.google.common.cache.Cache;
-import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
-import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
+
+import com.google.common.cache.Cache;
+import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 
 /**
  * An evaluation context will store all stateful data that is necessary for the
@@ -69,6 +72,11 @@ public class EvaluationContext {
      * The imported templates are used to look up macros.
      */
     private final List<PebbleTemplateImpl> importedTemplates;
+    
+    /**
+     * The named imported templates are used to look up macros.
+     */
+    private final Map<String, PebbleTemplateImpl> namedImportedTemplates;
 
     /**
      * Constructor used to provide all final variables.
@@ -84,7 +92,8 @@ public class EvaluationContext {
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
                              ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
-                             ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates, ScopeChain scopeChain,
+                             ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates, 
+                             Map<String, PebbleTemplateImpl> namedImportedTemplates, ScopeChain scopeChain,
                              Hierarchy hierarchy) {
 
         if (hierarchy == null) {
@@ -97,6 +106,7 @@ public class EvaluationContext {
         this.tagCache = tagCache;
         this.executorService = executorService;
         this.importedTemplates = importedTemplates;
+        this.namedImportedTemplates = namedImportedTemplates;
         this.scopeChain = scopeChain;
         this.hierarchy = hierarchy;
     }
@@ -110,7 +120,7 @@ public class EvaluationContext {
      */
     public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, importedTemplates, scopeChain, null);
+                executorService, importedTemplates, namedImportedTemplates, scopeChain, null);
         return result;
     }
 
@@ -123,8 +133,8 @@ public class EvaluationContext {
      * @return A copy of the evaluation context
      */
     public EvaluationContext threadSafeCopy(PebbleTemplateImpl self) {
-        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, new ArrayList<>(importedTemplates), scopeChain.deepCopy(), hierarchy);
+        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache, executorService,
+                new ArrayList<>(importedTemplates), new HashMap<>(namedImportedTemplates), scopeChain.deepCopy(), hierarchy);
         return result;
     }
 
@@ -171,6 +181,22 @@ public class EvaluationContext {
      */
     public List<PebbleTemplateImpl> getImportedTemplates() {
         return this.importedTemplates;
+    }
+    
+    /**
+     * Returns the named imported template.
+     *
+     * @return the named imported template.
+     */
+    public PebbleTemplateImpl getNamedImportedTemplate(String alias) {
+        return this.namedImportedTemplates.get(alias);
+    }
+    
+    public void addNamedImportedTemplates(String alias, PebbleTemplateImpl template) throws PebbleException {
+        if (namedImportedTemplates.containsKey(alias)) {
+            throw new PebbleException(null, "More than one named template can not share the same name: " + alias);
+        }
+        this.namedImportedTemplates.put(alias, template);
     }
 
     /**
