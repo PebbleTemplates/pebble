@@ -17,7 +17,6 @@ public class UnaryNotExpression extends UnaryExpression {
     @Override
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
         Boolean result = (Boolean) getChildExpression().evaluate(self, context);
-        return !result;
+        return result != null ? !result : null;
     }
-
 }
