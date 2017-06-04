@@ -1,4 +1,4 @@
-#Pebble
+# Pebble
 
 Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org/). Its biggest feature is template inheritance which enables multiple templates to easily share common code. For more information please visit the [official website](http://www.mitchellbosecke.com/pebble).
 
@@ -11,7 +11,7 @@ First, add the following dependency to your pom.xml:
 <dependency>
 	<groupId>com.mitchellbosecke</groupId>
 	<artifactId>pebble</artifactId>
-	<version>2.3.0<version>
+	<version>2.4.0<version>
 </dependency>
 ```
 
