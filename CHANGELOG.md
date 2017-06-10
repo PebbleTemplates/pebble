@@ -9,7 +9,7 @@
 - Replace guava cache with caffeine
 - Add String Interpolation (#235)
 
-## v2.4.0 (future release)
+## v2.4.0 (2017-06-04)
 - Add arrays support for iterable test (#254)
 - Bugfix for variable which was accessible outside a loop (#250)
 - Syntax builder return itself for method chaining (#259)
