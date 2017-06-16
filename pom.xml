@@ -128,7 +128,41 @@
                         </goals>
                         <phase>site</phase>
                     </execution>
-                </executions>
+                </executions>						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-enforcer-plugin</artifactId>
+							<version>1.4.1</version>
+							<executions>
+								<execution>
+									<id>enforce-ban-duplicate-classes</id>
+									<goals>
+										<goal>enforce</goal>
+									</goals>
+									<configuration>
+										<rules>
+											<banDuplicateClasses>
+												<ignoreClasses>
+													<!-- example of ignoring one specific class -->
+													<!-- <ignoreClass>com.xyz.i18n.Messages</ignoreClass> -->
+													<!-- example of ignoring with wildcards -->
+													<!-- <ignoreClass>org.apache.commons.logging.*</ignoreClass> -->
+												</ignoreClasses>
+												<findAllDuplicates>true</findAllDuplicates>
+											</banDuplicateClasses>
+										</rules>
+										<fail>true</fail>
+									</configuration>
+								</execution>
+							</executions>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.mojo</groupId>
+									<artifactId>extra-enforcer-rules</artifactId>
+									<version>1.0-beta-6</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -137,6 +171,40 @@
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-enforcer-plugin</artifactId>
+							<version>1.4.1</version>
+							<executions>
+								<execution>
+									<id>enforce-ban-duplicate-classes</id>
+									<goals>
+										<goal>enforce</goal>
+									</goals>
+									<configuration>
+										<rules>
+											<banDuplicateClasses>
+												<ignoreClasses>
+													<!-- example of ignoring one specific class -->
+													<!-- <ignoreClass>com.xyz.i18n.Messages</ignoreClass> -->
+													<!-- example of ignoring with wildcards -->
+													<!-- <ignoreClass>org.apache.commons.logging.*</ignoreClass> -->
+												</ignoreClasses>
+												<findAllDuplicates>true</findAllDuplicates>
+											</banDuplicateClasses>
+										</rules>
+										<fail>true</fail>
+									</configuration>
+								</execution>
+							</executions>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.mojo</groupId>
+									<artifactId>extra-enforcer-rules</artifactId>
+									<version>1.0-beta-6</version>
+								</dependency>
+							</dependencies>
+						</plugin>
         </plugins>
     </build>
 

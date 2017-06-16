@@ -1,28 +1,12 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * <<<<<<< HEAD
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
- * =======
- * <p>
- * Copyright (c) 2014 by Mitchell Bösecke
- * <p>
- * >>>>>>> d6a41085fe86ce30f23d3b7929ad492343ff01b7
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
-
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
-import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
-import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.node.ArgumentsNode;
-import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
-import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -32,7 +16,20 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.extension.ResolvedAttribute;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
@@ -98,64 +95,29 @@ public class GetAttributeExpression implements Expression<Object> {
             }
         }
 
+        /*
+         * If, and only if, no arguments were provided does it make sense to
+         * check maps/arrays/lists
+         */
+        if (object != null && this.args == null) {
+
+            Optional<ResolvedAttribute> resolvedAttribute = resolveMap(object, attributeNameValue);
+
+            if (!resolvedAttribute.isPresent()) {
+                resolvedAttribute = resolveArray(object, attributeNameValue, context.isStrictVariables());
+            }
+
+            if (!resolvedAttribute.isPresent()) {
+                resolvedAttribute = resolveList(object, attributeNameValue, context.isStrictVariables());
+            }
+
+            if (resolvedAttribute.isPresent()) {
+                return resolvedAttribute.get().get();
+            }
+        }
+        
         Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
         if (object != null && member == null) {
-
-            /*
-             * If, and only if, no arguments were provided does it make sense to
-             * check maps/arrays/lists
-             */
-            if (this.args == null) {
-
-                // first we check maps
-                if (object instanceof Map) {
-                    return this.getObjectFromMap((Map<?, ?>) object, attributeNameValue);
-                }
-
-                try {
-
-                    // then we check arrays
-                    if (object.getClass().isArray()) {
-                        int index = Integer.parseInt(attributeName);
-                        int length = Array.getLength(object);
-                        if (index < 0 || index >= length) {
-                            if (context.isStrictVariables()) {
-                                throw new AttributeNotFoundException(null,
-                                        "Index out of bounds while accessing array with strict variables on.",
-                                        attributeName, this.lineNumber, this.filename);
-                            } else {
-                                return null;
-                            }
-                        }
-                        return Array.get(object, index);
-                    }
-
-                    // then lists
-                    if (object instanceof List) {
-
-                        @SuppressWarnings("unchecked")
-                        List<Object> list = (List<Object>) object;
-
-                        int index = Integer.parseInt(attributeName);
-                        int length = list.size();
-
-                        if (index < 0 || index >= length) {
-                            if (context.isStrictVariables()) {
-                                throw new AttributeNotFoundException(null,
-                                        "Index out of bounds while accessing array with strict variables on.",
-                                        attributeName, this.lineNumber, this.filename);
-                            } else {
-                                return null;
-                            }
-                        }
-
-                        return list.get(index);
-                    }
-                } catch (NumberFormatException ex) {
-                    // do nothing
-                }
-
-            }
 
             /*
              * turn args into an array of types and an array of values in order
@@ -202,6 +164,99 @@ public class GetAttributeExpression implements Expression<Object> {
         }
         return result;
 
+    }
+
+    private Optional<ResolvedAttribute> resolveList(Object object, Object attributeNameValue, boolean strictVariables) throws AttributeNotFoundException {
+        // then lists
+        if (object instanceof List) {
+            String attributeName = String.valueOf(attributeNameValue);
+
+            @SuppressWarnings("unchecked")
+            final List<Object> list = (List<Object>) object;
+
+            Optional<Integer> optIndex = asIndex(attributeName);
+            if (optIndex.isPresent()) {
+                final int index = optIndex.get();
+                int length = list.size();
+    
+                if (index < 0 || index >= length) {
+                    if (strictVariables) {
+                        throw new AttributeNotFoundException(null,
+                                "Index out of bounds while accessing array with strict variables on.",
+                                attributeName, this.lineNumber, this.filename);
+                    } else {
+                        return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
+                            @Override
+                            public Object get() throws PebbleException {
+                                return null;
+                            }
+                        });
+                    }
+                }
+    
+                return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
+                    @Override
+                    public Object get() throws PebbleException {
+                        return list.get(index);
+                    }
+                });
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<ResolvedAttribute> resolveArray(final Object object, Object attributeNameValue, boolean isStrictVariables) throws AttributeNotFoundException {
+        if (object.getClass().isArray()) {
+            String attributeName = String.valueOf(attributeNameValue);
+            Optional<Integer> optIndex = asIndex(attributeName);
+            if (optIndex.isPresent()) {
+                final int index = optIndex.get();
+                int length = Array.getLength(object);
+                if (index < 0 || index >= length) {
+                    if (isStrictVariables) {
+                        throw new AttributeNotFoundException(null,
+                                "Index out of bounds while accessing array with strict variables on.",
+                                attributeName, this.lineNumber, this.filename);
+                    } else {
+                        return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
+                            @Override
+                            public Object get() throws PebbleException {
+                                return null;
+                            }
+                        });
+                    }
+                }
+                return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
+                    @Override
+                    public Object get() throws PebbleException {
+                        return Array.get(object, index);
+                    }
+                });
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Integer> asIndex(String attributeName) {
+        try {
+            return Optional.of(Integer.parseInt(attributeName));
+        } catch (NumberFormatException nx) {
+            
+        }
+        return Optional.empty();
+    }
+
+    private Optional<ResolvedAttribute> resolveMap(final Object object, final Object attributeNameValue) {
+        if (object instanceof Map) {
+            return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
+                
+                @Override
+                public Object get() throws PebbleException {
+                    return getObjectFromMap((Map<?, ?>) object, attributeNameValue);
+                }
+            });
+        }
+        return Optional.empty();
     }
 
     private Object getObjectFromMap(Map<?, ?> object, Object attributeNameValue) throws PebbleException {
