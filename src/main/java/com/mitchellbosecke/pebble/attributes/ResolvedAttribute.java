@@ -1,4 +1,4 @@
-package com.mitchellbosecke.pebble.extension;
+package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 
