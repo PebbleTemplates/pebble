@@ -16,11 +16,7 @@ public class MemberResolver implements AttributeResolver {
     private final ConcurrentHashMap<MemberCacheKey, Member> memberCache;
 
     public MemberResolver() {
-        /*
-         * I dont imagine that users will often give different types to the same
-         * template so we will give this cache a pretty small initial capacity.
-         */
-        this.memberCache = new ConcurrentHashMap<>(2, 0.9f, 1);
+        this.memberCache = new ConcurrentHashMap<>(100, 0.9f, 1);
     }
     
     @Override
