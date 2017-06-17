@@ -88,7 +88,6 @@ public class GetAttributeExpression implements Expression<Object> {
         final String attributeName = String.valueOf(attributeNameValue);
         final Object[] argumentValues = this.getArgumentValues(self, context);
 
-
         if (object == null && context.isStrictVariables()) {
             if (this.node instanceof ContextVariableExpression) {
                 final String rootPropertyName = ((ContextVariableExpression) this.node).getName();
@@ -101,26 +100,18 @@ public class GetAttributeExpression implements Expression<Object> {
             }
         }
         
-        if (object != null) {
 
-            Optional<ResolvedAttribute> resolvedAttribute=Optional.absent();
-            
-            resolvedAttribute = DefaultAttributeResolver.getInstance()
-                .resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), filename, this.lineNumber);
-            
-            if (!resolvedAttribute.isPresent()) {
-                resolvedAttribute = resolveMemberCall(object, attributeName, argumentValues);
-            }
-            
-            if (resolvedAttribute.isPresent()) {
-                return resolvedAttribute.get().get();
-            } 
-            
-            if (context.isStrictVariables()) {
-                throw new AttributeNotFoundException(null, String.format(
-                        "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                        attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
-            }
+        Optional<ResolvedAttribute> resolvedAttribute = DefaultAttributeResolver.getInstance()
+            .resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), filename, this.lineNumber);
+        
+        if (resolvedAttribute.isPresent()) {
+            return resolvedAttribute.get().evaluate();
+        } 
+        
+        if (context.isStrictVariables()) {
+            throw new AttributeNotFoundException(null, String.format(
+                    "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                    attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
         }
 
         return null;
@@ -135,7 +126,7 @@ public class GetAttributeExpression implements Expression<Object> {
             return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
                 
                 @Override
-                public Object get() throws PebbleException {
+                public Object evaluate() throws PebbleException {
                     return invokeMember(object, member, argumentValues);
                 }
             });

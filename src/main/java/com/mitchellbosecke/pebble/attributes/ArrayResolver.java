@@ -26,7 +26,7 @@ public class ArrayResolver implements AttributeResolver {
                         } else {
                             return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
                                 @Override
-                                public Object get() throws PebbleException {
+                                public Object evaluate() throws PebbleException {
                                     return null;
                                 }
                             });
@@ -34,7 +34,7 @@ public class ArrayResolver implements AttributeResolver {
                     }
                     return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
                         @Override
-                        public Object get() throws PebbleException {
+                        public Object evaluate() throws PebbleException {
                             return Array.get(instance, index);
                         }
                     });

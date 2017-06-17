@@ -18,7 +18,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
             .add(new ArrayResolver())
             .add(new ListResolver())
             
-//            .add(new MemberResolver())
+            .add(new MemberResolver())
             .build();
     
     private DefaultAttributeResolver() {

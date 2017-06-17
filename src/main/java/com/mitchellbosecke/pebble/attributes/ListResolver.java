@@ -31,7 +31,7 @@ public class ListResolver implements AttributeResolver {
                         } else {
                             return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
                                 @Override
-                                public Object get() throws PebbleException {
+                                public Object evaluate() throws PebbleException {
                                     return null;
                                 }
                             });
@@ -40,7 +40,7 @@ public class ListResolver implements AttributeResolver {
         
                     return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
                         @Override
-                        public Object get() throws PebbleException {
+                        public Object evaluate() throws PebbleException {
                             return list.get(index);
                         }
                     });
