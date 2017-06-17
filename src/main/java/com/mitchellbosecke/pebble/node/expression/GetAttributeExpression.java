@@ -86,41 +86,98 @@ public class GetAttributeExpression implements Expression<Object> {
     public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
         final Object object = this.node.evaluate(self, context);
         final Object attributeNameValue = this.attributeNameExpression.evaluate(self, context);
-        String attributeName = String.valueOf(attributeNameValue);
+        final String attributeName = String.valueOf(attributeNameValue);
+        final Object[] argumentValues = this.getArgumentValues(self, context);
 
-        Object result = null;
 
-        Object[] argumentValues = this.getArgumentValues(self, context);
-
-        // check if the object is able to provide the attribute dynamically
-        if(object != null && object instanceof DynamicAttributeProvider) {
-            DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
-            if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
-                return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
-            }
-        }
-
-        /*
-         * If, and only if, no arguments were provided does it make sense to
-         * check maps/arrays/lists
-         */
-        if (object != null && this.args == null) {
-
-            Optional<ResolvedAttribute> resolvedAttribute = resolveMap(object, attributeNameValue);
-
-            if (!resolvedAttribute.isPresent()) {
-                resolvedAttribute = resolveArray(object, attributeNameValue, context.isStrictVariables());
-            }
-
-            if (!resolvedAttribute.isPresent()) {
-                resolvedAttribute = resolveList(object, attributeNameValue, context.isStrictVariables());
-            }
-
-            if (resolvedAttribute.isPresent()) {
-                return resolvedAttribute.get().get();
+        if (object == null && context.isStrictVariables()) {
+            if (this.node instanceof ContextVariableExpression) {
+                final String rootPropertyName = ((ContextVariableExpression) this.node).getName();
+                throw new RootAttributeNotFoundException(null, String.format(
+                        "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
+                        rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
+            } else {
+                throw new RootAttributeNotFoundException(null,
+                        "Attempt to get attribute of null object and strict variables is set to true.", attributeName, this.lineNumber, this.filename);
             }
         }
         
+        if (object != null) {
+
+            Optional<ResolvedAttribute> resolvedAttribute=Optional.absent();
+            
+            // check if the object is able to provide the attribute dynamically
+            if (!resolvedAttribute.isPresent()) {
+                if(object instanceof DynamicAttributeProvider) {
+                    final DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
+                    if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
+                        resolvedAttribute=Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
+                            
+                            @Override
+                            public Object get() throws PebbleException {
+                                return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
+                            }
+                        });
+                    }
+                }
+            }
+            
+            
+            if (this.args == null) {
+                /*
+                 * If, and only if, no arguments were provided does it make sense to
+                 * check maps/arrays/lists
+                 */
+                if (!resolvedAttribute.isPresent()) {
+                    resolvedAttribute = resolveMap(object, attributeNameValue);
+                }
+    
+                if (!resolvedAttribute.isPresent()) {
+                    resolvedAttribute = resolveArray(object, attributeNameValue, context.isStrictVariables());
+                }
+    
+                if (!resolvedAttribute.isPresent()) {
+                    resolvedAttribute = resolveList(object, attributeNameValue, context.isStrictVariables());
+                }
+            }
+            
+            if (!resolvedAttribute.isPresent()) {
+                resolvedAttribute = resolveMemberCall(object, attributeName, argumentValues);
+            }
+            
+            if (resolvedAttribute.isPresent()) {
+                return resolvedAttribute.get().get();
+            } 
+            
+            if (context.isStrictVariables()) {
+                throw new AttributeNotFoundException(null, String.format(
+                        "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                        attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
+            }
+        }
+
+        return null;
+
+    }
+
+    private Optional<ResolvedAttribute> resolveMemberCall(final Object object, String attributeName, final Object[] argumentValues) {
+        
+        final Member member = memberOf(object, attributeName, argumentValues);
+
+        if (object != null && member != null) {
+            return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
+                
+                @Override
+                public Object get() throws PebbleException {
+                    return invokeMember(object, member, argumentValues);
+                }
+            });
+        }
+        
+        return Optional.absent();
+    }
+
+    private Member memberOf(final Object object, String attributeName, final Object[] argumentValues) {
         Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
         if (object != null && member == null) {
 
@@ -145,30 +202,9 @@ public class GetAttributeExpression implements Expression<Object> {
             }
 
         }
-
-        if (object != null && member != null) {
-            result = this.invokeMember(object, member, argumentValues);
-        } else if (context.isStrictVariables()) {
-            if (object == null) {
-
-                if (this.node instanceof ContextVariableExpression) {
-                    final String rootPropertyName = ((ContextVariableExpression) this.node).getName();
-                    throw new RootAttributeNotFoundException(null, String.format(
-                            "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
-                            rootPropertyName), rootPropertyName, this.lineNumber, this.filename);
-                } else {
-                    throw new RootAttributeNotFoundException(null,
-                            "Attempt to get attribute of null object and strict variables is set to true.", attributeName, this.lineNumber, this.filename);
-                }
-
-            } else {
-                throw new AttributeNotFoundException(null, String.format(
-                        "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                        attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
-            }
-        }
-        return result;
-
+        
+        final Member resultingMember = member;
+        return resultingMember;
     }
 
     private Optional<ResolvedAttribute> resolveList(Object object, Object attributeNameValue, boolean strictVariables) throws AttributeNotFoundException {
