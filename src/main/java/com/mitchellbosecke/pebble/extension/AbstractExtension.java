@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.extension;
 import java.util.List;
 import java.util.Map;
 
+import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
@@ -54,6 +55,11 @@ public abstract class AbstractExtension implements Extension {
 
     @Override
     public List<NodeVisitorFactory> getNodeVisitors() {
+        return null;
+    }
+    
+    @Override
+    public List<AttributeResolver> getAttributeResolver() {
         return null;
     }
 }

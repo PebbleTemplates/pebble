@@ -100,9 +100,7 @@ public class GetAttributeExpression implements Expression<Object> {
             }
         }
         
-
-        Optional<ResolvedAttribute> resolvedAttribute = DefaultAttributeResolver.getInstance()
-            .resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), filename, this.lineNumber);
+        Optional<ResolvedAttribute> resolvedAttribute = DefaultAttributeResolver.resolve(context.getExtensionRegistry().getAttributeResolver(), object, attributeNameValue, argumentValues, context.isStrictVariables(), filename, this.lineNumber);
         
         if (resolvedAttribute.isPresent()) {
             return resolvedAttribute.get().evaluate();

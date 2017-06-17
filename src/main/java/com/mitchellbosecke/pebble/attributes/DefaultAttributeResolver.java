@@ -28,8 +28,23 @@ public class DefaultAttributeResolver implements AttributeResolver {
     @Override
     public Optional<ResolvedAttribute> resolve(Object instance, Object attribute, Object[] argumentValues,
             boolean isStrictVariables, String filename, int lineNumber) throws PebbleException {
+        return resolveWith(resolvers, instance, attribute, argumentValues, isStrictVariables, filename, lineNumber);
+    }
+
+    public static Optional<ResolvedAttribute> resolve(Iterable<? extends AttributeResolver> customResolver, Object instance, Object attribute, Object[] argumentValues,
+            boolean isStrictVariables, String filename, int lineNumber) throws PebbleException {
+        Optional<ResolvedAttribute> resolved = resolveWith(customResolver, instance, attribute, argumentValues, isStrictVariables, filename, lineNumber);
+        if (resolved.isPresent()) {
+            return resolved;
+        };
+        return INSTANCE.resolve(instance, attribute, argumentValues, isStrictVariables, filename, lineNumber);
+    }
+
+    private static Optional<ResolvedAttribute> resolveWith(Iterable<? extends AttributeResolver> list, Object instance,
+            Object attribute, Object[] argumentValues, boolean isStrictVariables, String filename, int lineNumber)
+            throws PebbleException {
         if (instance!=null) {
-            for (AttributeResolver resolver : resolvers) {
+            for (AttributeResolver resolver : list) {
                 Optional<ResolvedAttribute> resolved = resolver.resolve(instance, attribute, argumentValues, isStrictVariables, filename, lineNumber);
                 if (resolved.isPresent()) {
                     return resolved;
@@ -38,10 +53,4 @@ public class DefaultAttributeResolver implements AttributeResolver {
         }
         return Optional.absent();
     }
-    
-    
-    public static DefaultAttributeResolver getInstance() {
-        return INSTANCE;
-    }
-
 }

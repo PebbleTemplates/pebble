@@ -11,6 +11,7 @@ package com.mitchellbosecke.pebble.extension;
 import java.util.List;
 import java.util.Map;
 
+import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
@@ -75,4 +76,11 @@ public interface Extension {
      * @return a list of node visitors
      */
     List<NodeVisitorFactory> getNodeVisitors();
+    
+    /**
+     * AttributeResolver will resolve instance attributes 
+     * 
+     * @return a list of attribute resolver
+     */
+    List<AttributeResolver> getAttributeResolver();
 }
