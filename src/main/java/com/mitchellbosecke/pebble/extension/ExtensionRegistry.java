@@ -1,10 +1,15 @@
 package com.mitchellbosecke.pebble.extension;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-
-import java.util.*;
 
 /**
  * Storage for the extensions and the components retrieved
@@ -17,48 +22,50 @@ public class ExtensionRegistry {
     /**
      * Extensions
      */
-    private HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
+    private final HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
 
     /**
      * Unary operators used during the lexing phase.
      */
-    private Map<String, UnaryOperator> unaryOperators = new HashMap<>();
+    private final Map<String, UnaryOperator> unaryOperators = new HashMap<>();
 
     /**
      * Binary operators used during the lexing phase.
      */
-    private Map<String, BinaryOperator> binaryOperators = new HashMap<>();
+    private final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
 
     /**
      * Token parsers used during the parsing phase.
      */
-    private Map<String, TokenParser> tokenParsers = new HashMap<>();
+    private final Map<String, TokenParser> tokenParsers = new HashMap<>();
 
     /**
      * Node visitors available during the parsing phase.
      */
-    private List<NodeVisitorFactory> nodeVisitors = new ArrayList<>();
+    private final List<NodeVisitorFactory> nodeVisitors = new ArrayList<>();
 
     /**
      * Filters used during the evaluation phase.
      */
-    private Map<String, Filter> filters = new HashMap<>();
+    private final Map<String, Filter> filters = new HashMap<>();
 
     /**
      * Tests used during the evaluation phase.
      */
-    private Map<String, Test> tests = new HashMap<>();
+    private final Map<String, Test> tests = new HashMap<>();
 
     /**
      * Functions used during the evaluation phase.
      */
-    private Map<String, Function> functions = new HashMap<>();
+    private final Map<String, Function> functions = new HashMap<>();
 
     /**
      * Global variables available during the evaluation phase.
      */
-    private Map<String, Object> globalVariables = new HashMap<>();
+    private final Map<String, Object> globalVariables = new HashMap<>();
 
+    private final List<AttributeResolver> attributeResolver = new ArrayList<>();
+    
     public ExtensionRegistry(Collection<? extends Extension> extensions) {
 
         for (Extension extension : extensions) {
@@ -121,6 +128,12 @@ public class ExtensionRegistry {
             if (nodeVisitors != null) {
                 this.nodeVisitors.addAll(nodeVisitors);
             }
+            
+            // attribute resolver
+            List<AttributeResolver> attributeResolvers = extension.getAttributeResolver();
+            if (attributeResolvers!=null) {
+                this.attributeResolver.addAll(attributeResolvers);
+            }
         }
     }
 
@@ -154,6 +167,10 @@ public class ExtensionRegistry {
 
     public Map<String, TokenParser> getTokenParsers() {
         return this.tokenParsers;
+    }
+    
+    public List<AttributeResolver> getAttributeResolver() {
+        return this.attributeResolver;
     }
 
     /*
