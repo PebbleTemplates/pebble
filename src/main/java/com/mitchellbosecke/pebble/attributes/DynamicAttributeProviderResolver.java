@@ -17,7 +17,7 @@ public class DynamicAttributeProviderResolver implements AttributeResolver {
                 return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
                     
                     @Override
-                    public Object get() throws PebbleException {
+                    public Object evaluate() throws PebbleException {
                         return dynamicAttributeProvider.getDynamicAttribute(attribute, argumentValues);
                     }
                 });

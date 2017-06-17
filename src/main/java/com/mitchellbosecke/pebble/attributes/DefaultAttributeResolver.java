@@ -18,10 +18,10 @@ public class DefaultAttributeResolver implements AttributeResolver {
              */
             new MapResolver(),
             new ArrayResolver(),
-            new ListResolver()
+            new ListResolver(),
             
-//            .add(new MemberResolver())
-    ));
+            new MemberResolver()
+            ));
     
     private DefaultAttributeResolver() {
         

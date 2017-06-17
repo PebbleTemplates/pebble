@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,7 +31,7 @@ public class MemberResolver implements AttributeResolver {
         try {
             return resolveMemberCall(instance, String.valueOf(attribute), argumentValues);
         } catch (RuntimeException rx) {
-            throw new RuntimeException("something went wrong: "+instance+"."+attribute+" ("+filename+":"+lineNumber+")");
+            throw new RuntimeException("error on "+instance+"."+attribute+" ("+filename+":"+lineNumber+")");
         }
     }
     
@@ -41,7 +43,7 @@ public class MemberResolver implements AttributeResolver {
             return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
                 
                 @Override
-                public Object get() throws PebbleException {
+                public Object evaluate() throws PebbleException {
                     return invokeMember(object, member, argumentValues);
                 }
             });
@@ -52,12 +54,15 @@ public class MemberResolver implements AttributeResolver {
 
 
     private Member memberOf(final Object object, String attributeName, final Object[] nullableArgumentValues) {
-        Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
+        Object[] argumentValues=nullableArgumentValues;
+        if (argumentValues==null) {
+            argumentValues=new Object[0];
+        }
+        
+        MemberCacheKey key = new MemberCacheKey(object.getClass(), attributeName, argumentValues);
+        
+        Member member = object == null ? null : this.memberCache.get(key);
         if (object != null && member == null) {
-            Object[] argumentValues=nullableArgumentValues;
-            if (argumentValues==null) {
-                argumentValues=new Object[0];
-            }
             /*
              * turn args into an array of types and an array of values in order
              * to use them for our reflection calls
@@ -75,7 +80,7 @@ public class MemberResolver implements AttributeResolver {
 
             member = reflect(object, attributeName, argumentTypes);
             if (member != null) {
-                this.memberCache.put(new MemberCacheKey(object.getClass(), attributeName), member);
+                this.memberCache.put(key, member);
             }
 
         }
@@ -102,7 +107,7 @@ public class MemberResolver implements AttributeResolver {
             }
 
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("error invoking "+member+" with "+Arrays.asList(classesOf(argumentValues)),e);
         }
         return result;
     }
@@ -224,33 +229,66 @@ public class MemberResolver implements AttributeResolver {
         return result;
     }
 
-    private class MemberCacheKey {
+    private static Class<?>[] classesOf(Object[] arguments) {
+        if (arguments!=null) {
+            Class<?>[] classes=new Class[arguments.length];
+            for (int i=0;i<classes.length;i++) {
+                classes[i]=arguments[i] != null ? arguments[i].getClass() : Void.class;
+            }
+            return classes;
+        }
+        return new Class[0];
+    }
+    
+    private static class MemberCacheKey {
         private final Class<?> clazz;
         private final String attributeName;
+        private final List<Class<?>> argumentClasses;
 
-        private MemberCacheKey(Class<?> clazz, String attributeName) {
+        private MemberCacheKey(Class<?> clazz, String attributeName, Object[] arguments) {
             this.clazz = clazz;
             this.attributeName = attributeName;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || this.getClass() != o.getClass()) return false;
-
-            MemberCacheKey that = (MemberCacheKey) o;
-
-            if (!this.clazz.equals(that.clazz)) return false;
-            return this.attributeName.equals(that.attributeName);
-
+            this.argumentClasses = Arrays.asList(classesOf(arguments));
         }
 
         @Override
         public int hashCode() {
-            int result = this.clazz.hashCode();
-            result = 31 * result + this.attributeName.hashCode();
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((argumentClasses == null) ? 0 : argumentClasses.hashCode());
+            result = prime * result + ((attributeName == null) ? 0 : attributeName.hashCode());
+            result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
             return result;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            MemberCacheKey other = (MemberCacheKey) obj;
+            if (argumentClasses == null) {
+                if (other.argumentClasses != null)
+                    return false;
+            } else if (!argumentClasses.equals(other.argumentClasses))
+                return false;
+            if (attributeName == null) {
+                if (other.attributeName != null)
+                    return false;
+            } else if (!attributeName.equals(other.attributeName))
+                return false;
+            if (clazz == null) {
+                if (other.clazz != null)
+                    return false;
+            } else if (!clazz.equals(other.clazz))
+                return false;
+            return true;
+        }
+
+        
     }
 
 }
