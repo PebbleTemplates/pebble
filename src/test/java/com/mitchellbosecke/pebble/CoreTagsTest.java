@@ -863,6 +863,22 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("TWO" + LINE_SEPARATOR + "ONE" + LINE_SEPARATOR + "TWO" + LINE_SEPARATOR, writer.toString());
     }
 
+    /**
+     * Ensures that an include with a variable override works even if a null value is passed.
+     *
+     * @throws PebbleException
+     * @throws IOException
+     */
+    @Test
+    public void testIncludeOverridesVariable() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.includeOverrideVariable1.peb");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("One: one (overridden)" + LINE_SEPARATOR + "Two: ", writer.toString());
+    }
+
     @Test
     public void testSet() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
