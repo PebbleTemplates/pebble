@@ -45,9 +45,8 @@ public class IncludeNode extends AbstractRenderableNode {
         if (templateName == null) {
             throw new PebbleException(
                     null,
-                    String.format(
-                            "The template name in an include tag evaluated to NULL. If the template name is static, make sure to wrap it in quotes.",
-                            templateName), getLineNumber(), self.getName());
+                    "The template name in an include tag evaluated to NULL. If the template name is static, make sure to wrap it in quotes.",
+                    getLineNumber(), self.getName());
         }
         self.includeTemplate(writer, context, templateName, map);
     }
