@@ -15,11 +15,6 @@ import java.util.*;
 public class ExtensionRegistry {
 
     /**
-     * Extensions
-     */
-    private HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
-
-    /**
      * Unary operators used during the lexing phase.
      */
     private Map<String, UnaryOperator> unaryOperators = new HashMap<>();
@@ -62,8 +57,6 @@ public class ExtensionRegistry {
     public ExtensionRegistry(Collection<? extends Extension> extensions) {
 
         for (Extension extension : extensions) {
-            this.extensions.put(extension.getClass(), extension);
-
             // token parsers
             List<TokenParser> tokenParsers = extension.getTokenParsers();
             if (tokenParsers != null) {
@@ -155,17 +148,4 @@ public class ExtensionRegistry {
     public Map<String, TokenParser> getTokenParsers() {
         return this.tokenParsers;
     }
-
-    /*
-    @SuppressWarnings("unchecked")
-    public <T extends Extension> T getExtension(Class<T> clazz) {
-        return (T) this.extensions.get(clazz);
-    }
-
-
-
-    public HashMap<Class<? extends Extension>, Extension> getExtensions() {
-        return extensions;
-    }
-    */
 }
