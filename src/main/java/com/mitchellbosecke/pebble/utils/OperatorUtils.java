@@ -69,11 +69,11 @@ public class OperatorUtils {
     }
 
     public static boolean equals(Object op1, Object op2) {
-        if (op1 != null && op1 instanceof Number && op2 != null && op2 instanceof Number) {
+        if (op1 instanceof Number && op2 instanceof Number) {
             return wideningConversionBinaryComparison(op1, op2, Comparison.EQUALS);
-        } else if (op1 != null && op1 instanceof Enum<?> && op2 != null && op2 instanceof String) {
+        } else if (op1 instanceof Enum<?> && op2 instanceof String) {
             return compareEnum((Enum<?>) op1, (String) op2);
-        } else if (op2 != null && op2 instanceof Enum<?> && op1 != null && op1 instanceof String) {
+        } else if (op2 instanceof Enum<?> && op1 instanceof String) {
             return compareEnum((Enum<?>) op2, (String) op1);
         } else {
             return ((op1 == op2) || ((op1 != null) && op1.equals(op2)));
@@ -299,4 +299,4 @@ public class OperatorUtils {
             throw new RuntimeException("Bug in OperatorUtils in pebble library");
         }
     }
-} 
+}
