@@ -208,7 +208,7 @@ public class GetAttributeExpression implements Expression<Object> {
         if (object.isEmpty()) {
             return null;
         }
-        if (Number.class.isAssignableFrom(attributeNameValue.getClass())) {
+        if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
             Number keyAsNumber = (Number) attributeNameValue;
 
             Class<?> keyClass = object.keySet().iterator().next().getClass();
