@@ -15,15 +15,32 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
+/**
+ * Date filter supports formatting of java.util.Date and dates/times from the java.time package. For valid {@link Date}
+ * formats, see {@link SimpleDateFormat}. For valid <code>java.time.*</code> formats, see {@link DateTimeFormatter}.
+ * <p>
+ * Supports
+ * <ul>
+ * <li>{@link Date}
+ * <li>{@link java.time.LocalDate}
+ * <li>{@link java.time.LocalDateTime}
+ * <li>{@link java.time.ZonedDateTime}
+ * </ul>
+ */
 public class DateFilter implements Filter {
 
+    public static final String FILTER_NAME = "date";
+    private final static String ARG_FORMAT = "format";
+    private final static String ARG_EXISTING_FORMAT = "existingFormat";
     private final List<String> argumentNames = new ArrayList<>();
 
     public DateFilter() {
-        argumentNames.add("format");
-        argumentNames.add("existingFormat");
+        argumentNames.add(ARG_FORMAT);
+        argumentNames.add(ARG_EXISTING_FORMAT);
     }
 
     @Override
@@ -33,21 +50,42 @@ public class DateFilter implements Filter {
 
     @Override
     public Object apply(Object input, Map<String, Object> args) {
+
         if (input == null) {
             return null;
         }
-        Date date = null;
-
-        DateFormat existingFormat = null;
-        DateFormat intendedFormat = null;
 
         EvaluationContext context = (EvaluationContext) args.get("_context");
         Locale locale = context.getLocale();
+        String format = (String) args.get(ARG_FORMAT);
+        Object existingFormat = args.get(ARG_EXISTING_FORMAT);
 
-        intendedFormat = new SimpleDateFormat((String) args.get("format"), locale);
+        if (input instanceof Date || input instanceof String) {
+            return new SafeString(formatDate(input, locale, format, existingFormat));
+        }
 
-        if (args.get("existingFormat") != null) {
-            existingFormat = new SimpleDateFormat((String) args.get("existingFormat"), locale);
+        if (input instanceof TemporalAccessor) {
+            return new SafeString(formatTemporalAccessor((TemporalAccessor) input, locale, format));
+        }
+
+        throw new RuntimeException(
+                "Could not format date. Must be java.util.Date or implement java.time.temporal.TemporalAccessor");
+    }
+
+    private String formatTemporalAccessor(TemporalAccessor input, Locale locale, String formatString) {
+        DateTimeFormatter intendedFormat = DateTimeFormatter.ofPattern(formatString, locale);
+        return intendedFormat.format(input);
+    }
+
+    private String formatDate(Object input, Locale locale, String formatString, Object existingFormatString) {
+
+        Date date;
+
+        DateFormat existingFormat;
+        DateFormat intendedFormat = new SimpleDateFormat(formatString, locale);
+
+        if (existingFormatString != null) {
+            existingFormat = new SimpleDateFormat((String) existingFormatString, locale);
             try {
                 date = existingFormat.parse((String) input);
             } catch (ParseException e) {
@@ -57,6 +95,8 @@ public class DateFilter implements Filter {
             date = (Date) input;
         }
 
-        return new SafeString(intendedFormat.format(date));
+        return intendedFormat.format(date);
+
     }
 }
+
