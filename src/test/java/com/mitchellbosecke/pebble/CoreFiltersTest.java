@@ -200,7 +200,7 @@ public class CoreFiltersTest extends AbstractTest {
     }
 
     @Test
-    public void testDateWithZonedLocalTime() throws ParseException, PebbleException, IOException {
+    public void testDateWithZonedDateTime() throws ParseException, PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{{ zonedDateTime | date(\"MM/dd/yyyy h:mm:ss a z\") }}";
