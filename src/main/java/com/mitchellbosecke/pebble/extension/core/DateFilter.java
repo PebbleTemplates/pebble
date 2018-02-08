@@ -42,6 +42,7 @@ public class DateFilter implements Filter {
         DateFormat intendedFormat = null;
 
         EvaluationContext context = (EvaluationContext) args.get("_context");
+        
         Locale locale = context.getLocale();
 
         intendedFormat = new SimpleDateFormat((String) args.get("format"), locale);
@@ -54,7 +55,15 @@ public class DateFilter implements Filter {
                 throw new RuntimeException("Could not parse date", e);
             }
         } else {
-            date = (Date) input;
+        	if (input instanceof Date) {
+        		date = (Date) input;
+        	} else if (input instanceof Number) {
+        		date = new Date(((Number) input).longValue());
+        	} else {
+        		throw new IllegalArgumentException(String.format(
+	        				"Unsupported argument type: %s (value: %s)",  
+	        				input.getClass().getName(), input.toString()));
+        	}
         }
 
         return new SafeString(intendedFormat.format(date));
