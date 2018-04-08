@@ -14,7 +14,6 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.template.ScopeChain;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
@@ -39,6 +38,12 @@ public class ForNode extends AbstractRenderableNode {
 
     private final BodyNode elseBody;
 
+    class Control extends Object {
+        protected int value = -1;
+        public Control(int value){ this.value = value; }
+        public Control() {}
+    }
+    
     public ForNode(int lineNumber, String variableName, Expression<?> iterableExpression, BodyNode body,
             BodyNode elseBody) {
         super(lineNumber);
@@ -51,9 +56,9 @@ public class ForNode extends AbstractRenderableNode {
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
             throws PebbleException, IOException {
-        Object iterableEvaluation = this.iterableExpression.evaluate(self, context);
+        final Object iterableEvaluation = this.iterableExpression.evaluate(self, context);
         Iterable<?> iterable = null;
-
+        
         if (iterableEvaluation == null) {
             return;
         }
@@ -71,12 +76,21 @@ public class ForNode extends AbstractRenderableNode {
 
             ScopeChain scopeChain = context.getScopeChain();
             scopeChain.pushScope();
-
-            int length = this.getIteratorSize(iterableEvaluation);
+            
+            final Control length = new Control() {
+                @Override
+                public String toString() {
+                    if ( this.value == -1 )   {
+                        this.value = getIteratorSize(iterableEvaluation);
+                    }
+                    return String.valueOf(value);
+                }
+            };
+            
             int index = 0;
-
+            
             Map<String, Object> loop = null;
-
+            
             boolean usingExecutorService = context.getExecutorService() != null;
 
             while (iterator.hasNext()) {
@@ -90,27 +104,30 @@ public class ForNode extends AbstractRenderableNode {
                 if (index == 0 || usingExecutorService) {
                     loop = new HashMap<>();
                     loop.put("first", index == 0);
-                    loop.put("last", index == length - 1);
+                    loop.put("last", !iterator.hasNext());
                     loop.put("length", length);
-                }else{
-
+                } else if (index == 1) {
                     // second iteration
-                    if(index == 1){
-                        loop.put("first", false);
+                    loop.put("first", false);
+                }
+                
+                Control revindex = new Control(index) {
+                    @Override
+                    public String toString() {
+                        return String.valueOf( Integer.valueOf(length.toString()) - this.value -1);
                     }
+                };
+                
+                loop.put("revindex", revindex);
+                loop.put("index", index++);
+                scopeChain.put("loop", loop);
+                scopeChain.put(this.variableName, iterator.next());
 
-                    // last iteration
-                    if(index == length - 1){
-                        loop.put("last", true);
-                    }
+                // last iteration
+                if( !iterator.hasNext() ){
+                    loop.put("last", true);
                 }
 
-                loop.put("revindex", length - index - 1);
-                loop.put("index", index++);
-
-                scopeChain.put("loop", loop);
-
-                scopeChain.put(this.variableName, iterator.next());
                 this.body.render(self, writer, context);
             }
 

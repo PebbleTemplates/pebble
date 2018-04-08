@@ -27,10 +27,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import org.junit.Test;
 
 public class CoreTagsTest extends AbstractTest {
 
@@ -195,6 +195,47 @@ public class CoreTagsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("[3]02Alex11Bob[3]20John", writer.toString());
     }
+
+    @Test
+    public void testForWithIterable() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{% for user in users %}{% if loop.first %}[first]{% endif %}{% if loop.last %}[last]{% endif %}{{ loop.index }}{{ user.username }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        Iterable<User> users = new Iterable<User>() {
+            @Override
+            public Iterator<User> iterator() {
+                return new Iterator<User>() {
+
+                    User[] fixture = new User[]{ new User("Alex"), new User("Bob"), new User("John") };
+                    int pos = 0;
+
+                    @Override
+                    public boolean hasNext() {
+                        return pos < fixture.length;
+                    }
+
+                    @Override
+                    public User next() {
+                        return fixture[pos++];
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+                };
+            }
+        };
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("users", users);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("[first]0Alex1Bob[last]2John", writer.toString());
+    }
+
 
     @Test
     public void testForWithMap() throws PebbleException, IOException {

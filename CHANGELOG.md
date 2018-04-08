@@ -16,6 +16,7 @@
 - Handle null values passed to an include statement (#283)
 - Fix performance regression issues (#326, #328)
 - Add Reverse filter (#315) 
+- Make "loop.length" and "loop.revindex" be lazy evaluated (#279)
 
 ## v2.4.0 (2017-06-04)
 - Add arrays support for iterable test (#254)
