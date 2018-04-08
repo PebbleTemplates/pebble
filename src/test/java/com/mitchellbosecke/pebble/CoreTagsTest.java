@@ -23,14 +23,15 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.junit.Test;
 
 public class CoreTagsTest extends AbstractTest {
 
@@ -202,29 +203,24 @@ public class CoreTagsTest extends AbstractTest {
 
         String source = "{% for user in users %}{% if loop.first %}[first]{% endif %}{% if loop.last %}[last]{% endif %}{{ loop.index }}{{ user.username }}{% endfor %}";
         PebbleTemplate template = pebble.getTemplate(source);
-        Iterable<User> users = new Iterable<User>() {
+        Iterable<User> users = () -> new Iterator<User>() {
+
+            User[] fixture = new User[]{new User("Alex"), new User("Bob"), new User("John")};
+            int pos = 0;
+
             @Override
-            public Iterator<User> iterator() {
-                return new Iterator<User>() {
+            public boolean hasNext() {
+                return this.pos < this.fixture.length;
+            }
 
-                    User[] fixture = new User[]{ new User("Alex"), new User("Bob"), new User("John") };
-                    int pos = 0;
+            @Override
+            public User next() {
+                return this.fixture[this.pos++];
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        return pos < fixture.length;
-                    }
-
-                    @Override
-                    public User next() {
-                        return fixture[pos++];
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         };
 
