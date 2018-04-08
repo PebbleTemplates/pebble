@@ -22,6 +22,7 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -151,6 +152,66 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testDateWithLocalDate() throws ParseException, PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{{ localDate | date(\"MM/dd/yyyy\") }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("localDate", LocalDate.of(1977, 2, 2));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("02/02/1977", writer.toString());
+    }
+
+    @Test
+    public void testDateWithLocalDateTime() throws ParseException, PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{{ localDateTime | date(\"MM/dd/yyyy h:mm:ss a\") }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("localDateTime", LocalDateTime.of(1977, 2, 2, 2, 0, 0));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("02/02/1977 2:00:00 AM", writer.toString());
+    }
+
+    @Test
+    public void testDateWithLocalTime() throws ParseException, PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{{ localTime | date(\"h:mm:ss a\") }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("localTime", LocalTime.of(14, 30, 59));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("2:30:59 PM", writer.toString());
+    }
+
+    @Test
+    public void testDateWithZonedDateTime() throws ParseException, PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{{ zonedDateTime | date(\"MM/dd/yyyy h:mm:ss a z\") }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("zonedDateTime", ZonedDateTime.of(1977, 2, 2, 14, 30, 59, 0, ZoneId.of("UTC")));
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("02/02/1977 2:30:59 PM UTC", writer.toString());
     }
 
     @Test
