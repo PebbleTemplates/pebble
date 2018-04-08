@@ -113,34 +113,34 @@ public class ScopeChain {
      * @return The value of the variable
      */
     public Object get(String key) {
-        Object result;
-
         /*
          * The majority of time, the requested variable will be in the first
          * scope so we do a quick lookup in that scope before attempting to
          * create an iterator, etc. This is solely for performance.
+         * null values must not be handled as "not present".
          */
         Scope scope = stack.getFirst();
-        result = scope.get(key);
+        if (scope.containsKey(key)) {
+            return scope.get(key);
+        }
 
-        if (result == null) {
+        Iterator<Scope> iterator = stack.iterator();
+        // account for the first lookup we did
+        iterator.next();
 
-            Iterator<Scope> iterator = stack.iterator();
+        while (iterator.hasNext()) {
+            scope = iterator.next();
 
-            // account for the first lookup we did
-            iterator.next();
+            if (scope.containsKey(key)) {
+                return scope.get(key);
+            }
 
-            while (result == null && iterator.hasNext()) {
-                scope = iterator.next();
-
-                result = scope.get(key);
-                if (scope.isLocal()) {
-                    break;
-                }
+            if (scope.isLocal()) {
+                return null;
             }
         }
 
-        return result;
+        return null;
     }
 
     /**
