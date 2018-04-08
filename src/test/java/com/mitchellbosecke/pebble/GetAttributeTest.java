@@ -85,6 +85,20 @@ public class GetAttributeTest extends AbstractTest {
     }
 
     @Test
+    public void testHashmapAttributeWithArgumentOfNull() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
+        PebbleTemplate template = pebble.getTemplate("hello {{ object[missingContextProperty] }}");
+        Map<String, Object> context = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
+        map.put("name", "Steve");
+        context.put("object", map);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello ", writer.toString());
+    }
+
+    @Test
     public void testMethodAttribute() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
@@ -553,7 +567,7 @@ public class GetAttributeTest extends AbstractTest {
 
         assertEquals("1 1 2 true", writer.toString());
     }
-    
+
     @Test
     public void testBeanMethodWithNullArgument() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
