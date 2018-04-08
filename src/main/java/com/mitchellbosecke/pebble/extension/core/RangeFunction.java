@@ -51,21 +51,22 @@ public class RangeFunction implements Function {
             throw new PebbleException(null, "The increment of the range function must be a number " + increment,
                     lineNumber, self.getName());
         }
-
-        Long incrementNum = ((Number) increment).longValue();
+        
+        long incrementNum = ((Number) increment).longValue();
 
         List<Object> results = new ArrayList<>();
         // Iterating over Number
         if (start instanceof Number && end instanceof Number) {
-            Long startNum = ((Number) start).longValue();
-            Long endNum = ((Number) end).longValue();
+            long startNum = ((Number) start).longValue();
+            long endNum = ((Number) end).longValue();
 
             if (incrementNum > 0) {
-                for (Long i = startNum; i <= endNum; i += incrementNum) {
+                for (long i = startNum; i <= endNum; i += incrementNum) {
                     results.add(i);
                 }
-            } else if (incrementNum < 0) {
-                for (Long i = startNum; i >= endNum; i += incrementNum) {
+            }
+            else if (incrementNum < 0) {
+                for (long i = startNum; i >= endNum; i += incrementNum) {
                     results.add(i);
                 }
             } else {

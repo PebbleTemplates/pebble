@@ -90,14 +90,6 @@ public class GetAttributeExpression implements Expression<Object> {
 
         Object[] argumentValues = this.getArgumentValues(self, context);
 
-        // check if the object is able to provide the attribute dynamically
-        if(object != null && object instanceof DynamicAttributeProvider) {
-            DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
-            if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
-                return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
-            }
-        }
-
         Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
         if (object != null && member == null) {
 
@@ -157,6 +149,14 @@ public class GetAttributeExpression implements Expression<Object> {
 
             }
 
+            // check if the object is able to provide the attribute dynamically
+            if(object instanceof DynamicAttributeProvider) {
+                DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
+                if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
+                    return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
+                }
+            }
+
             /*
              * turn args into an array of types and an array of values in order
              * to use them for our reflection calls
@@ -208,7 +208,7 @@ public class GetAttributeExpression implements Expression<Object> {
         if (object.isEmpty()) {
             return null;
         }
-        if (Number.class.isAssignableFrom(attributeNameValue.getClass())) {
+        if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
             Number keyAsNumber = (Number) attributeNameValue;
 
             Class<?> keyClass = object.keySet().iterator().next().getClass();

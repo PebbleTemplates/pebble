@@ -24,4 +24,9 @@ public class SafeString {
 	public boolean equals(Object o) {
 		return o instanceof SafeString && this.content.equals(((SafeString) o).content);
 	}
+
+	@Override
+	public int hashCode() {
+		return (content == null) ? 0 : content.hashCode();
+	}
 }
