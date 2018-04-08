@@ -10,7 +10,7 @@ package com.mitchellbosecke.pebble;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -59,7 +59,7 @@ public class PebbleEngine {
 
     private final Locale defaultLocale;
 
-    private final Cache<BaseTagCacheKey, Object> tagCache;
+    private final Cache<CacheKey, Object> tagCache;
 
     private final ExecutorService executorService;
 
@@ -76,7 +76,7 @@ public class PebbleEngine {
      * @param extensions The userProvidedExtensions which should be loaded.
      */
     private PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
-                         Cache<BaseTagCacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
+                         Cache<CacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
                          ExecutorService executorService, Collection<? extends Extension> extensions) {
 
         this.loader = loader;
@@ -241,7 +241,7 @@ public class PebbleEngine {
      *
      * @return The tag cache
      */
-    public Cache<BaseTagCacheKey, Object> getTagCache() {
+    public Cache<CacheKey, Object> getTagCache() {
         return this.tagCache;
     }
 
@@ -268,7 +268,7 @@ public class PebbleEngine {
 
         private boolean cacheActive = true;
 
-        private Cache<BaseTagCacheKey, Object> tagCache;
+        private Cache<CacheKey, Object> tagCache;
 
         private EscaperExtension escaperExtension = new EscaperExtension();
 
@@ -400,7 +400,7 @@ public class PebbleEngine {
          * @param tagCache The tag cache
          * @return This builder object
          */
-        public Builder tagCache(Cache<BaseTagCacheKey, Object> tagCache) {
+        public Builder tagCache(Cache<CacheKey, Object> tagCache) {
             this.tagCache = tagCache;
             return this;
         }
