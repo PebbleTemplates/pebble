@@ -356,6 +356,23 @@ public class CoreFiltersTest extends AbstractTest {
     }
 
     @Test
+    public void testReverseFilter() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{% for word in words|reverse %}{{ word }} {% endfor %}");
+        List<String> words = new ArrayList<>();
+        words.add("one");
+        words.add("two");
+        words.add("three");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("words", words);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("three two one ", writer.toString());
+    }
+
+    @Test
     public void testTitle() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
