@@ -150,9 +150,9 @@ public class GetAttributeExpression implements Expression<Object> {
             }
 
             // check if the object is able to provide the attribute dynamically
-            if(object instanceof DynamicAttributeProvider) {
+            if (object instanceof DynamicAttributeProvider) {
                 DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
-                if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
+                if (dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
                     return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
                 }
             }

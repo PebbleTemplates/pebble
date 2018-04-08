@@ -84,19 +84,19 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("hello Steve", writer.toString());
     }
 
-    @Test
-    public void testHashmapAttributeWithArgumentOfNull() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
-        PebbleTemplate template = pebble.getTemplate("hello {{ object[missingContextProperty] }}");
-        Map<String, Object> context = new HashMap<>();
-        Map<String, String> map = new HashMap<>();
-        map.put("name", "Steve");
-        context.put("object", map);
+  @Test
+  public void testHashmapAttributeWithArgumentOfNull() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
+    PebbleTemplate template = pebble.getTemplate("hello {{ object[missingContextProperty] }}");
+    Map<String, Object> context = new HashMap<>();
+    Map<String, String> map = new HashMap<>();
+    map.put("name", "Steve");
+    context.put("object", map);
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("hello ", writer.toString());
-    }
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello ", writer.toString());
+  }
 
     @Test
     public void testMethodAttribute() throws PebbleException, IOException {
@@ -605,16 +605,13 @@ public class GetAttributeTest extends AbstractTest {
 
         public String name = "Invalid";
         public String getName() {
-            return name;
+          return this.name;
         }
 
         @Override
         public boolean canProvideDynamicAttribute(Object attributeName) {
 
-            if("name".equals(attributeName)) {
-                return true;
-            }
-            return false;
+          return "name".equals(attributeName);
         }
 
         @Override

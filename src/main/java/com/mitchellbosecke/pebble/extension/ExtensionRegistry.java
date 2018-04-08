@@ -4,7 +4,11 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Storage for the extensions and the components retrieved
