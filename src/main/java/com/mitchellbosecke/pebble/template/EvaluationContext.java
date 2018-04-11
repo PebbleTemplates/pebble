@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import com.google.common.cache.Cache;
-import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 
@@ -61,7 +61,7 @@ public class EvaluationContext {
     /**
      * The tag cache
      */
-    private final Cache<BaseTagCacheKey, Object> tagCache;
+    private final Cache<CacheKey, Object> tagCache;
 
     /**
      * The user-provided ExecutorService (can be null).
@@ -91,8 +91,8 @@ public class EvaluationContext {
      * @param tagCache          The cache used by the "cache" tag
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
-                             ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
-                             ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates, 
+                             ExtensionRegistry extensionRegistry, Cache<CacheKey, Object> tagCache,
+                             ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates,
                              Map<String, PebbleTemplateImpl> namedImportedTemplates, ScopeChain scopeChain,
                              Hierarchy hierarchy) {
 
@@ -204,7 +204,7 @@ public class EvaluationContext {
      *
      * @return The cache used for the "cache" tag
      */
-    public Cache<BaseTagCacheKey, Object> getTagCache() {
+    public Cache<CacheKey, Object> getTagCache() {
         return tagCache;
     }
 

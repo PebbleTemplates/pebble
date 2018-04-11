@@ -93,6 +93,7 @@ public class CoreExtension extends AbstractExtension {
         filters.put("slice", new SliceFilter());
         filters.put("sort", new SortFilter());
         filters.put("rsort", new RsortFilter());
+        filters.put("reverse", new ReverseFilter());
         filters.put("title", new TitleFilter());
         filters.put("trim", new TrimFilter());
         filters.put("upper", new UpperFilter());
