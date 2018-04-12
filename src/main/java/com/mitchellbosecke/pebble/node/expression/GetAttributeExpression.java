@@ -90,12 +90,6 @@ public class GetAttributeExpression implements Expression<Object> {
         Object result = null;
 
         Object[] argumentValues = this.getArgumentValues(self, context);
-        
-        // check if the object should provide the attribute by macro invocation
-        if (object != null && object instanceof MacroAttributeProvider) {
-            MacroAttributeProvider macroAttributeProvider = (MacroAttributeProvider) object;
-            return macroAttributeProvider.macro(context, attributeName, args, false, this.lineNumber);
-        }
 
         Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
         if (object != null && member == null) {
@@ -162,6 +156,12 @@ public class GetAttributeExpression implements Expression<Object> {
                 if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
                     return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
                 }
+            }
+            
+            // check if the object should provide the attribute by macro invocation
+            if (object instanceof MacroAttributeProvider) {
+                MacroAttributeProvider macroAttributeProvider = (MacroAttributeProvider) object;
+                return macroAttributeProvider.macro(context, attributeName, args, false, this.lineNumber);
             }
 
             /*
