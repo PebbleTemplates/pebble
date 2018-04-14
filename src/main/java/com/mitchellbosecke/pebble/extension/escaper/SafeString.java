@@ -17,7 +17,7 @@ public class SafeString {
 
 	@Override
 	public String toString() {
-		return content;
+    return this.content;
 	}
 
 	@Override
@@ -25,8 +25,8 @@ public class SafeString {
 		return o instanceof SafeString && this.content.equals(((SafeString) o).content);
 	}
 
-	@Override
-	public int hashCode() {
-		return (content == null) ? 0 : content.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return (this.content == null) ? 0 : this.content.hashCode();
+  }
 }

@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class MapExpression implements Expression<Map<?, ?>> {
@@ -44,7 +44,7 @@ public class MapExpression implements Expression<Map<?, ?>> {
     }
 
     @Override
-    public Map<?, ?> evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Map<?, ?> evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         Map<Object, Object> returnEntries = new HashMap<>(Long.valueOf(Math.round(Math.ceil(entries.size() / 0.75)))
                 .intValue());
         for (Entry<Expression<?>, Expression<?>> entry : entries.entrySet()) {

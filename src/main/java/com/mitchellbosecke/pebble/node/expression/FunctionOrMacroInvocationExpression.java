@@ -12,7 +12,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class  FunctionOrMacroInvocationExpression implements Expression<Object> {
+public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
     private final String functionName;
 
@@ -35,7 +35,7 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         Function function = context.getExtensionRegistry().getFunction(this.functionName);
         if (function != null) {
             return this.applyFunction(self, context, function, this.args);
@@ -43,14 +43,14 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
         return self.macro(context, this.functionName, this.args, false, this.lineNumber);
     }
 
-    private Object applyFunction(PebbleTemplateImpl self, EvaluationContext context, Function function,
-            ArgumentsNode args) throws PebbleException {
+    private Object applyFunction(PebbleTemplateImpl self, EvaluationContextImpl context, Function function,
+                                 ArgumentsNode args) throws PebbleException {
         List<Object> arguments = new ArrayList<>();
 
         Collections.addAll(arguments, args);
 
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, function);
-        return function.execute(namedArguments);
+        return function.execute(namedArguments, self, context, this.getLineNumber());
     }
 
     @Override
@@ -69,6 +69,11 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
     @Override
     public int getLineNumber() {
         return this.lineNumber;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s%s", this.functionName, this.args);
     }
 
 }

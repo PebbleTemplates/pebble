@@ -10,7 +10,7 @@ package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class LiteralDoubleExpression implements Expression<Double> {
@@ -30,13 +30,18 @@ public class LiteralDoubleExpression implements Expression<Double> {
     }
 
     @Override
-    public Double evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Double evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         return value;
     }
 
     @Override
     public int getLineNumber() {
         return this.lineNumber;
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
     }
 
 }

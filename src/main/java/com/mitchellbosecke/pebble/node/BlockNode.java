@@ -14,7 +14,7 @@ import java.io.Writer;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.Block;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class BlockNode extends AbstractRenderableNode {
@@ -34,7 +34,7 @@ public class BlockNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(final PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
+    public void render(final PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws PebbleException,
             IOException {
         self.block(writer, context, name, false);
     }
@@ -53,7 +53,7 @@ public class BlockNode extends AbstractRenderableNode {
             }
 
             @Override
-            public void evaluate(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
+            public void evaluate(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
                     throws PebbleException, IOException {
                 body.render(self, writer, context);
 

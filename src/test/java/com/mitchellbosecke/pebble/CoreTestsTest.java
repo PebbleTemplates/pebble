@@ -182,7 +182,7 @@ public class CoreTestsTest extends AbstractTest {
     public void testNegativeTest() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not 2 is odd %}yes{% else %}no{% endif %}";
+        String source = "{% if not (2 is odd) %}yes{% else %}no{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -203,7 +203,7 @@ public class CoreTestsTest extends AbstractTest {
     public void testNegativeTestOnAttribute() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        String source = "{% if not classroom.students is empty %}yes{% else %}no{% endif %}";
+        String source = "{% if not (classroom.students is empty) %}yes{% else %}no{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
         context.put("classroom", new Classroom());

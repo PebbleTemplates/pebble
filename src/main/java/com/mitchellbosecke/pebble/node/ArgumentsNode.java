@@ -8,15 +8,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NamedArguments;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ArgumentsNode implements Node {
 
@@ -26,7 +26,8 @@ public class ArgumentsNode implements Node {
 
     private final int lineNumber;
 
-    public ArgumentsNode(List<PositionalArgumentNode> positionalArgs, List<NamedArgumentNode> namedArgs, int lineNumber) {
+    public ArgumentsNode(List<PositionalArgumentNode> positionalArgs, List<NamedArgumentNode> namedArgs,
+            int lineNumber) {
         this.positionalArgs = positionalArgs;
         this.namedArgs = namedArgs;
         this.lineNumber = lineNumber;
@@ -60,7 +61,7 @@ public class ArgumentsNode implements Node {
      * @throws PebbleException
      *             Thrown if an expected name argument does not exist
      */
-    public Map<String, Object> getArgumentMap(PebbleTemplateImpl self, EvaluationContext context,
+    public Map<String, Object> getArgumentMap(PebbleTemplateImpl self, EvaluationContextImpl context,
             NamedArguments invocableWithNamedArguments) throws PebbleException {
         Map<String, Object> result = new HashMap<>();
         List<String> argumentNames = invocableWithNamedArguments.getArgumentNames();
@@ -104,10 +105,12 @@ public class ArgumentsNode implements Node {
             }
         }
 
-        result.put("_self", self);
-        result.put("_context", context);
-
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return positionalArgs.toString();
     }
 
 }

@@ -7,6 +7,7 @@
 - Improved error reporting
 - Java8 Date API support on date filter
 - Replace guava cache with caffeine
+- Add String Interpolation (#235)
 
 ## v2.4.1 (2018-xx-xx)
 - Handle all Iterables and Arrays in JoinFilter (#273)

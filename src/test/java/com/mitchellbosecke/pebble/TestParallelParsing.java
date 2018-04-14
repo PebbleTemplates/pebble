@@ -8,7 +8,7 @@ import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.AbstractTokenParser;
@@ -147,7 +147,7 @@ public class TestParallelParsing extends AbstractTest {
                 }
 
                 @Override
-                public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
+                public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
                         throws PebbleException, IOException {
                     // Do nothing.
                 }

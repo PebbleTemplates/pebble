@@ -10,7 +10,7 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class ParallelNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
+    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContextImpl context)
             throws IOException, PebbleException {
 
         ExecutorService es = context.getExecutorService();
@@ -66,7 +66,7 @@ public class ParallelNode extends AbstractRenderableNode {
             
         } else {
 
-            final EvaluationContext contextCopy = context.threadSafeCopy(self);
+            final EvaluationContextImpl contextCopy = context.threadSafeCopy(self);
 
             final StringWriter newStringWriter = new StringWriter();
             final Writer newFutureWriter = new FutureWriter(newStringWriter);

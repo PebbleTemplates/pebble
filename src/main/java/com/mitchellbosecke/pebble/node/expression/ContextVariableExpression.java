@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.template.ScopeChain;
 
@@ -36,7 +36,7 @@ public class ContextVariableExpression implements Expression<Object> {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
         ScopeChain scopeChain = context.getScopeChain();
         Object result = scopeChain.get(name);
         if (result == null && context.isStrictVariables() && !scopeChain.containsKey(name)) {
@@ -50,6 +50,11 @@ public class ContextVariableExpression implements Expression<Object> {
     @Override
     public int getLineNumber() {
         return lineNumber;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s]", name);
     }
 
 }

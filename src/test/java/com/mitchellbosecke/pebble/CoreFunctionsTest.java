@@ -120,7 +120,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("20", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunction() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -134,7 +134,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("012345", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunctionIncrement2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -148,7 +148,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("0246810", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunctionDecrement2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -162,8 +162,8 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("1086420", writer.toString());
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+
+    @Test(expected = PebbleException.class)
     public void testRangeFunctionIncrement0() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -175,7 +175,7 @@ public class CoreFunctionsTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
     }
-    
+
     @Test
     public void testRangeFunctionChar() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -189,7 +189,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("abcde", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunctionCharIncrement2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -203,7 +203,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("ace", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunctionCharDecrement2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -217,8 +217,8 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("fdb", writer.toString());
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+
+    @Test(expected = PebbleException.class)
     public void testRangeFunctionCharIncrement0() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -230,7 +230,7 @@ public class CoreFunctionsTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
     }
-    
+
     @Test
     public void testRangeFunctionLongVariable() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -260,7 +260,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("012345", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunctionIntegerVariable() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -275,7 +275,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("012345", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunctionIncrementIntegerVariable() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
@@ -291,7 +291,7 @@ public class CoreFunctionsTest extends AbstractTest {
         template.evaluate(writer, context);
         assertEquals("024", writer.toString());
     }
-    
+
     @Test
     public void testRangeFunctionIncrementDoubleVariable() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();

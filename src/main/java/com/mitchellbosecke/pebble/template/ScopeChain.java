@@ -37,8 +37,8 @@ public class ScopeChain {
      * @param map The map of variables used to initialize a scope.
      */
     public ScopeChain(Map<String, Object> map) {
-        Scope scope = new Scope(new HashMap<>(map), false);
-        stack.push(scope);
+        Scope scope = new Scope(new HashMap<>(map));
+        this.stack.push(scope);
     }
 
     /**
@@ -57,7 +57,7 @@ public class ScopeChain {
     public ScopeChain deepCopy() {
         ScopeChain copy = new ScopeChain();
 
-        for (Scope originalScope : stack) {
+        for (Scope originalScope : this.stack) {
             copy.stack.add(originalScope.shallowCopy());
         }
         return copy;
@@ -67,7 +67,7 @@ public class ScopeChain {
      * Adds an empty non-local scope to the scope chain
      */
     public void pushScope() {
-        pushScope(new HashMap<String, Object>());
+        this.pushScope(new HashMap<String, Object>());
     }
 
     /**
@@ -76,23 +76,15 @@ public class ScopeChain {
      * @param map The known variables of this scope.
      */
     public void pushScope(Map<String, Object> map) {
-        Scope scope = new Scope(map, false);
-        stack.push(scope);
-    }
-
-    /**
-     * Adds a new local scope to the scope chain
-     */
-    public void pushLocalScope() {
-        Scope scope = new Scope(new HashMap<String, Object>(), true);
-        stack.push(scope);
+        Scope scope = new Scope(map);
+        this.stack.push(scope);
     }
 
     /**
      * Pops the most recent scope from the scope chain.
      */
     public void popScope() {
-        stack.pop();
+        this.stack.pop();
     }
 
     /**
@@ -102,7 +94,7 @@ public class ScopeChain {
      * @param value The value of the variable
      */
     public void put(String key, Object value) {
-        stack.peek().put(key, value);
+        this.stack.peek().put(key, value);
     }
 
     /**
@@ -119,12 +111,12 @@ public class ScopeChain {
          * create an iterator, etc. This is solely for performance.
          * null values must not be handled as "not present".
          */
-        Scope scope = stack.getFirst();
+        Scope scope = this.stack.getFirst();
         if (scope.containsKey(key)) {
             return scope.get(key);
         }
 
-        Iterator<Scope> iterator = stack.iterator();
+        Iterator<Scope> iterator = this.stack.iterator();
         // account for the first lookup we did
         iterator.next();
 
@@ -133,10 +125,6 @@ public class ScopeChain {
 
             if (scope.containsKey(key)) {
                 return scope.get(key);
-            }
-
-            if (scope.isLocal()) {
-                return null;
             }
         }
 
@@ -158,12 +146,12 @@ public class ScopeChain {
          * scope so we do a quick lookup in that scope before attempting to
          * create an iterator, etc. This is solely for performance.
          */
-        Scope scope = stack.getFirst();
+        Scope scope = this.stack.getFirst();
         if (scope.containsKey(key)) {
             return true;
         }
 
-        Iterator<Scope> iterator = stack.iterator();
+        Iterator<Scope> iterator = this.stack.iterator();
 
         // account for the first lookup we did
         iterator.next();
@@ -173,9 +161,6 @@ public class ScopeChain {
 
             if (scope.containsKey(key)) {
                 return true;
-            }
-            if (scope.isLocal()) {
-                break;
             }
         }
 
@@ -190,7 +175,7 @@ public class ScopeChain {
      * @return Whether or not the variable exists in the current scope
      */
     public boolean currentScopeContainsVariable(String variableName) {
-        return stack.getFirst().containsKey(variableName);
+        return this.stack.getFirst().containsKey(variableName);
     }
 
     /**
@@ -207,13 +192,13 @@ public class ScopeChain {
          * scope so we do a quick lookup in that scope before attempting to
          * create an iterator, etc. This is solely for performance.
          */
-        Scope scope = stack.getFirst();
-        if (scope.isLocal() || scope.containsKey(key)) {
+        Scope scope = this.stack.getFirst();
+        if (scope.containsKey(key)) {
             scope.put(key, value);
             return;
         }
 
-        Iterator<Scope> iterator = stack.iterator();
+        Iterator<Scope> iterator = this.stack.iterator();
 
         // account for the first lookup we did
         iterator.next();
@@ -221,13 +206,13 @@ public class ScopeChain {
         while (iterator.hasNext()) {
             scope = iterator.next();
 
-            if (scope.isLocal() || scope.containsKey(key)) {
+            if (scope.containsKey(key)) {
                 scope.put(key, value);
                 return;
             }
         }
 
         // no existing variable, create a new one
-        put(key, value);
+        this.put(key, value);
     }
 }

@@ -8,10 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Test;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Test;
 
 public class NullTest implements Test {
 
@@ -21,7 +23,8 @@ public class NullTest implements Test {
     }
 
     @Override
-    public boolean apply(Object input, Map<String, Object> args) {
+    public boolean apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int
+            lineNumber) {
         return input == null;
     }
 }

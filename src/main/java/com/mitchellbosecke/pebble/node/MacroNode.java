@@ -11,10 +11,7 @@ package com.mitchellbosecke.pebble.node;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
-import com.mitchellbosecke.pebble.template.Macro;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-import com.mitchellbosecke.pebble.template.ScopeChain;
+import com.mitchellbosecke.pebble.template.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -38,7 +35,7 @@ public class MacroNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws PebbleException,
             IOException {
         // do nothing
     }
@@ -66,13 +63,13 @@ public class MacroNode extends AbstractRenderableNode {
             }
 
             @Override
-            public String call(PebbleTemplateImpl self, EvaluationContext context, Map<String, Object> macroArgs)
+            public String call(PebbleTemplateImpl self, EvaluationContextImpl context, Map<String, Object> macroArgs)
                     throws PebbleException {
                 Writer writer = new StringWriter();
                 ScopeChain scopeChain = context.getScopeChain();
 
                 // scope for default arguments
-                scopeChain.pushLocalScope();
+                scopeChain.pushScope();
                 for (NamedArgumentNode arg : getArgs().getNamedArgs()) {
                     Expression<?> valueExpression = arg.getValueExpression();
                     if (valueExpression == null) {

@@ -1,5 +1,8 @@
 package com.mitchellbosecke.pebble.extension.core;
+
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +22,7 @@ public class ReverseFilter implements Filter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public List apply(Object input, Map<String, Object> args) {
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
         if (input == null) {
             return null;
         }

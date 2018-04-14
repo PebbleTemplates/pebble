@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of Pebble.
- * 
+ *
  * Copyright (c) 2014 by Mitchell Bösecke
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
@@ -19,7 +19,7 @@ public class Token {
     private int lineNumber;
 
     public enum Type {
-        EOF, TEXT, EXECUTE_START, EXECUTE_END, PRINT_START, PRINT_END, NAME, NUMBER, STRING, OPERATOR, PUNCTUATION
+        EOF, TEXT, EXECUTE_START, EXECUTE_END, PRINT_START, PRINT_END, NAME, NUMBER, STRING, OPERATOR, PUNCTUATION, STRING_INTERPOLATION_START, STRING_INTERPOLATION_END
     }
 
     public Token(Type type, String value, int lineNumber) {

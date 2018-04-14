@@ -13,7 +13,7 @@ import java.io.Writer;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class ImportNode extends AbstractRenderableNode {
@@ -26,7 +26,7 @@ public class ImportNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws PebbleException {
         self.importTemplate(context, (String) importExpression.evaluate(self, context));
     }
 
