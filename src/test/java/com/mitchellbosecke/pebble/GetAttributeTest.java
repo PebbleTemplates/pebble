@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
@@ -109,6 +110,32 @@ public class GetAttributeTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("hello Steve", writer.toString());
+    }
+
+    @Test
+    public void testMethodAttributeWhenAccessingClassWithStrictVariableOff() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.class }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", "some string");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello ", writer.toString());
+    }
+
+    @Test(expected = ClassAccessException.class)
+    public void testMethodAttributeWhenAccessingClassWithStrictVariableOn() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.class }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", "some string");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello ", writer.toString());
     }
 
     /**
@@ -557,7 +584,7 @@ public class GetAttributeTest extends AbstractTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ obj.getStringFromLong(1) }} {{ obj.getStringFromLongs(1,2) }}"
-            + " {{ obj.getStringFromBoolean(true) }}");
+                + " {{ obj.getStringFromBoolean(true) }}");
 
         Map<String, Object> context = new HashMap<>();
         context.put("obj", new PrimitiveArguments());

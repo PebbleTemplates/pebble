@@ -15,6 +15,7 @@
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
@@ -195,9 +196,13 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
 
             } else {
-                throw new AttributeNotFoundException(null, String.format(
-                        "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                        attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
+                if (attributeName.equals("class") || attributeName.equals("getClass")) {
+                    throw new ClassAccessException(this.lineNumber, this.filename);
+                } else {
+                    throw new AttributeNotFoundException(null, String.format(
+                            "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                            attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
+                }
             }
         }
         return result;
@@ -347,6 +352,10 @@ public class GetAttributeExpression implements Expression<Object> {
      * @return
      */
     private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes) {
+        if (name.equals("getClass")) {
+            return null;
+        }
+
         Method result = null;
 
         Method[] candidates = clazz.getMethods();
