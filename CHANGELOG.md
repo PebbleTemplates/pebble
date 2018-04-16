@@ -16,7 +16,8 @@
 - Fix performance regression issues (#326, #328)
 - Add Reverse filter (#315) 
 - Make "loop.length" and "loop.revindex" be lazy evaluated (#279)
-- Fixed security issue which allowed to execute shell command (by having access to Java's Class object)
+- Fixed security issue which allowed to execute shell command (by having access to Java's Class object) (#329)
+- Throw ParserException when endBlock not found (#308)
 
 ## v2.4.0 (2017-06-04)
 - Add arrays support for iterable test (#254)
