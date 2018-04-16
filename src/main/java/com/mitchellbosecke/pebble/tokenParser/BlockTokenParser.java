@@ -56,7 +56,12 @@ public class BlockTokenParser extends AbstractTokenParser {
         });
         parser.popBlockStack();
 
-        // skip the 'endblock' token
+
+        //check endblock us exist with block or not
+        Token endblock = stream.current();
+        if(!endblock.test(Token.Type.NAME, "endblock")) throw new ParserException(null, "endblock tag should be present with block tag starting line number ",
+        		token.getLineNumber(), stream.getFilename());
+     // skip the 'endblock' token
         stream.next();
 
         // check if user included block name in endblock
