@@ -8,7 +8,7 @@
 - Java8 Date API support on date filter
 - Replace guava cache with caffeine
 
-## v2.4.1 (2018-xx-xx)
+## v2.5.0 (2018-xx-xx)
 - Handle all Iterables and Arrays in JoinFilter (#273)
 - Fix NPE in GetAttributeExpression (#299)
 - Remove redundant null check before calling operator "instanceof" in OperatorUtils. (#298)
