@@ -1,18 +1,8 @@
-# Pebble
+# Pebble ![Continuous Integration](https://api.travis-ci.org/PebbleTemplates/pebble.svg?branch=master)
 
 Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org/). It separates itself from the crowd with it's inheritance feature and it's easy-to-read syntax. It ships with built-in autoescaping for security, and it includes integrated support for internationalization.
 
 For more information please visit the [wiki](https://github.com/PebbleTemplates/pebble/wiki).
-
-## Contributing
-Currently looking for contributors! In particular we need help with new feature ideas, bug reports/fixes, API feedback, performance optimization, and IDE integration. Just one little commit and you'll be forever listed on the [contributors page](http://www.mitchellbosecke.com/pebble/contributing). No contribution is too small and contributing is super easy:
-
-* `git clone git://github.com/PebbleTemplates/pebble.git`
-* Add feature or fix bug.
-* Add quick unit test
-* `mvn install`
-* Submit pull request!
-
 
 ## License
 
@@ -47,5 +37,3 @@ Currently looking for contributors! In particular we need help with new feature 
     THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-![Continuous Integration](https://api.travis-ci.org/PebbleTemplates/pebble.svg?branch=master)
