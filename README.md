@@ -3,8 +3,7 @@
 Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org/). Its biggest feature is template inheritance which enables multiple templates to easily share common code. For more information please visit the [official website](http://www.mitchellbosecke.com/pebble).
 
 ## Basic Usage
-For more information on installation and configuration, see [the installation guide](http://www.mitchellbosecke.com/pebble/documentation/guide/installation).
-For more information on basic usage, see [the basic usage guide](http://www.mitchellbosecke.com/pebble/documentation/guide/basic-usage).
+For more information, please visit the [wiki](https://github.com/PebbleTemplates/pebble/wiki)
 
 First, add the following dependency to your pom.xml:
 ```XML
