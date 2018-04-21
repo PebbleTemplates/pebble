@@ -1,6 +1,6 @@
 # Pebble
 
-Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org/). Its biggest feature is template inheritance which enables multiple templates to easily share common code. 
+Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org/). It separates itself from the crowd with it's inheritance feature and it's easy-to-read syntax. It ships with built-in autoescaping for security, and it includes integrated support for internationalization.
 
 For more information please visit the [wiki](https://github.com/PebbleTemplates/pebble/wiki).
 
