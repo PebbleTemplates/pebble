@@ -8,6 +8,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.error.ClassAccessException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -84,6 +93,20 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("hello Steve", writer.toString());
     }
 
+  @Test
+  public void testHashmapAttributeWithArgumentOfNull() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
+    PebbleTemplate template = pebble.getTemplate("hello {{ object[missingContextProperty] }}");
+    Map<String, Object> context = new HashMap<>();
+    Map<String, String> map = new HashMap<>();
+    map.put("name", "Steve");
+    context.put("object", map);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello ", writer.toString());
+  }
+
     @Test
     public void testMethodAttribute() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
@@ -95,6 +118,32 @@ public class GetAttributeTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("hello Steve", writer.toString());
+    }
+
+    @Test
+    public void testMethodAttributeWhenAccessingClassWithStrictVariableOff() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.class }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", "some string");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello ", writer.toString());
+    }
+
+    @Test(expected = ClassAccessException.class)
+    public void testMethodAttributeWhenAccessingClassWithStrictVariableOn() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.class }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", "some string");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello ", writer.toString());
     }
 
     /**
@@ -543,7 +592,7 @@ public class GetAttributeTest extends AbstractTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ obj.getStringFromLong(1) }} {{ obj.getStringFromLongs(1,2) }}"
-            + " {{ obj.getStringFromBoolean(true) }}");
+                + " {{ obj.getStringFromBoolean(true) }}");
 
         Map<String, Object> context = new HashMap<>();
         context.put("obj", new PrimitiveArguments());
@@ -553,7 +602,7 @@ public class GetAttributeTest extends AbstractTest {
 
         assertEquals("1 1 2 true", writer.toString());
     }
-    
+
     @Test
     public void testBeanMethodWithNullArgument() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
@@ -591,16 +640,13 @@ public class GetAttributeTest extends AbstractTest {
 
         public String name = "Invalid";
         public String getName() {
-            return name;
+          return this.name;
         }
 
         @Override
         public boolean canProvideDynamicAttribute(Object attributeName) {
 
-            if("name".equals(attributeName)) {
-                return true;
-            }
-            return false;
+          return "name".equals(attributeName);
         }
 
         @Override

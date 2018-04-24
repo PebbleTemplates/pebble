@@ -15,12 +15,18 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 import static org.junit.Assert.assertEquals;
@@ -142,7 +148,7 @@ public class CoreTagsTest extends AbstractTest {
 
 
     @Test
-    public void testIfWhenInvalidOrNoEndifTag() throws PebbleException, IOException {
+    public void testIfWhenInvalidOrNoEndifTag() throws PebbleException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         String source = "{% if variable %}smth{ endif %}";
         try {
@@ -192,6 +198,42 @@ public class CoreTagsTest extends AbstractTest {
     }
 
     @Test
+    public void testForWithIterable() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{% for user in users %}{% if loop.first %}[first]{% endif %}{% if loop.last %}[last]{% endif %}{{ loop.index }}{{ user.username }}{% endfor %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        Iterable<User> users = () -> new Iterator<User>() {
+
+            User[] fixture = new User[]{new User("Alex"), new User("Bob"), new User("John")};
+            int pos = 0;
+
+            @Override
+            public boolean hasNext() {
+                return this.pos < this.fixture.length;
+            }
+
+            @Override
+            public User next() {
+                return this.fixture[this.pos++];
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("users", users);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("[first]0Alex1Bob[last]2John", writer.toString());
+    }
+
+
+    @Test
     public void testForWithMap() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -236,7 +278,7 @@ public class CoreTagsTest extends AbstractTest {
     }
 
     @Test
-    public void testForWhenInvalidOrNoEndforTag() throws PebbleException, IOException {
+    public void testForWhenInvalidOrNoEndforTag() throws PebbleException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         String source = "{% for i in 'a'..5 %}{{i}}% endfor %}";
         try {
@@ -483,7 +525,7 @@ public class CoreTagsTest extends AbstractTest {
         private String value;
 
         public String getValue() {
-            return value;
+            return this.value;
         }
 
         public void setValue(String value) {
@@ -502,7 +544,7 @@ public class CoreTagsTest extends AbstractTest {
         private String value;
 
         public String getValue() {
-            return value;
+            return this.value;
         }
 
         public void setValue(String value) {
@@ -689,6 +731,19 @@ public class CoreTagsTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("TWO" + LINE_SEPARATOR + "ONE" + LINE_SEPARATOR + "TWO" + LINE_SEPARATOR, writer.toString());
+    }
+
+    /**
+     * Ensures that an include with a variable override works even if a null value is passed.
+     */
+    @Test
+    public void testIncludeOverridesVariable() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+        PebbleTemplate template = pebble.getTemplate("templates/template.includeOverrideVariable1.peb");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("One: one (overridden)" + LINE_SEPARATOR + "Two: ", writer.toString());
     }
 
     @Test
@@ -916,7 +971,7 @@ public class CoreTagsTest extends AbstractTest {
         }
 
         public String getUsername() {
-            return username;
+            return this.username;
         }
     }
 
@@ -925,7 +980,7 @@ public class CoreTagsTest extends AbstractTest {
         private List<User> users = new ArrayList<>();
 
         public List<User> getUsers() {
-            return users;
+            return this.users;
         }
 
         public void setUsers(List<User> users) {
@@ -939,12 +994,12 @@ public class CoreTagsTest extends AbstractTest {
 
         @Override
         public void flush() {
-            buffers.add(this.getBuffer().toString());
+            this.buffers.add(this.getBuffer().toString());
             super.flush();
         }
 
         public List<String> getFlushedBuffers() {
-            return buffers;
+            return this.buffers;
         }
     }
 }

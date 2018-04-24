@@ -11,7 +11,7 @@ package com.mitchellbosecke.pebble;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -63,7 +63,7 @@ public class PebbleEngine {
 
     private final Locale defaultLocale;
 
-    private final Cache<BaseTagCacheKey, Object> tagCache;
+  private final Cache<CacheKey, Object> tagCache;
 
     private final ExecutorService executorService;
 
@@ -80,7 +80,7 @@ public class PebbleEngine {
      * @param extensions The userProvidedExtensions which should be loaded.
      */
     private PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
-                         Cache<BaseTagCacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
+                         Cache<CacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
                          ExecutorService executorService, Collection<? extends Extension> extensions) {
 
         this.loader = loader;
@@ -121,13 +121,13 @@ public class PebbleEngine {
         try {
             final Object cacheKey = this.loader.createCacheKey(templateName);
 
-            if(isNull(templateCache)){
-                result = getPebbleTemplate(self, templateName, cacheKey);
+          if (isNull(this.templateCache)) {
+            result = this.getPebbleTemplate(self, templateName, cacheKey);
             }
             else {
-                result = templateCache.get(cacheKey, k -> {
+            result = this.templateCache.get(cacheKey, k -> {
                     try {
-                        return getPebbleTemplate(self, templateName, cacheKey);
+                      return this.getPebbleTemplate(self, templateName, cacheKey);
                     } catch (PebbleException e) {
                         throw new RuntimePebbleException(e);
                     }
@@ -152,18 +152,18 @@ public class PebbleEngine {
     }
 
     private PebbleTemplate getPebbleTemplate(final PebbleEngine self, final String templateName, final Object cacheKey) throws LoaderException, ParserException {
-        LexerImpl lexer = new LexerImpl(syntax, extensionRegistry.getUnaryOperators().values(),
-                extensionRegistry.getBinaryOperators().values());
+      LexerImpl lexer = new LexerImpl(this.syntax, this.extensionRegistry.getUnaryOperators().values(),
+              this.extensionRegistry.getBinaryOperators().values());
         Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
         TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
 
-        Parser parser = new ParserImpl(extensionRegistry.getUnaryOperators(),
-                extensionRegistry.getBinaryOperators(), extensionRegistry.getTokenParsers());
+      Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
+              this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers());
         RootNode root = parser.parse(tokenStream);
 
         PebbleTemplateImpl instance = new PebbleTemplateImpl(self, root, templateName);
 
-        for (NodeVisitorFactory visitorFactory : extensionRegistry.getNodeVisitors()) {
+      for (NodeVisitorFactory visitorFactory : this.extensionRegistry.getNodeVisitors()) {
             visitorFactory.createVisitor(instance).visit(root);
         }
 
@@ -193,7 +193,7 @@ public class PebbleEngine {
      * @return The loader
      */
     public Loader<?> getLoader() {
-        return loader;
+      return this.loader;
     }
 
     /**
@@ -202,7 +202,7 @@ public class PebbleEngine {
      * @return The template cache
      */
     public Cache<Object, PebbleTemplate> getTemplateCache() {
-        return templateCache;
+      return this.templateCache;
     }
 
     /**
@@ -211,7 +211,7 @@ public class PebbleEngine {
      * @return The strict variables setting
      */
     public boolean isStrictVariables() {
-        return strictVariables;
+      return this.strictVariables;
     }
 
     /**
@@ -220,7 +220,7 @@ public class PebbleEngine {
      * @return The default locale
      */
     public Locale getDefaultLocale() {
-        return defaultLocale;
+      return this.defaultLocale;
     }
 
     /**
@@ -229,7 +229,7 @@ public class PebbleEngine {
      * @return The executor service
      */
     public ExecutorService getExecutorService() {
-        return executorService;
+      return this.executorService;
     }
 
     /**
@@ -247,7 +247,7 @@ public class PebbleEngine {
      * @return The extension registry
      */
     public ExtensionRegistry getExtensionRegistry() {
-        return extensionRegistry;
+      return this.extensionRegistry;
     }
 
     /**
@@ -255,7 +255,7 @@ public class PebbleEngine {
      *
      * @return The tag cache
      */
-    public Cache<BaseTagCacheKey, Object> getTagCache() {
+    public Cache<CacheKey, Object> getTagCache() {
         return this.tagCache;
     }
 
@@ -282,7 +282,7 @@ public class PebbleEngine {
 
         private boolean cacheActive = true;
 
-        private Cache<BaseTagCacheKey, Object> tagCache;
+      private Cache<CacheKey, Object> tagCache;
 
         private EscaperExtension escaperExtension = new EscaperExtension();
 
@@ -414,7 +414,7 @@ public class PebbleEngine {
          * @param tagCache The tag cache
          * @return This builder object
          */
-        public Builder tagCache(Cache<BaseTagCacheKey, Object> tagCache) {
+        public Builder tagCache(Cache<CacheKey, Object> tagCache) {
             this.tagCache = tagCache;
             return this;
         }
@@ -426,7 +426,7 @@ public class PebbleEngine {
          * @return This builder object
          */
         public Builder autoEscaping(boolean autoEscaping) {
-            escaperExtension.setAutoEscaping(autoEscaping);
+          this.escaperExtension.setAutoEscaping(autoEscaping);
             return this;
         }
 
@@ -437,7 +437,7 @@ public class PebbleEngine {
          * @return This builder object
          */
         public Builder defaultEscapingStrategy(String strategy) {
-            escaperExtension.setDefaultStrategy(strategy);
+          this.escaperExtension.setDefaultStrategy(strategy);
             return this;
         }
 
@@ -449,7 +449,7 @@ public class PebbleEngine {
          * @return This builder object
          */
         public Builder addEscapingStrategy(String name, EscapingStrategy strategy) {
-            escaperExtension.addEscapingStrategy(name, strategy);
+          this.escaperExtension.addEscapingStrategy(name, strategy);
             return this;
         }
 
@@ -475,44 +475,44 @@ public class PebbleEngine {
             // core extensions
             List<Extension> extensions = new ArrayList<>();
             extensions.add(new CoreExtension());
-            extensions.add(escaperExtension);
+          extensions.add(this.escaperExtension);
             extensions.add(new I18nExtension());
             extensions.addAll(this.userProvidedExtensions);
 
             // default loader
-            if (loader == null) {
+          if (this.loader == null) {
                 List<Loader<?>> defaultLoadingStrategies = new ArrayList<>();
                 defaultLoadingStrategies.add(new ClasspathLoader());
                 defaultLoadingStrategies.add(new FileLoader());
-                loader = new DelegatingLoader(defaultLoadingStrategies);
+            this.loader = new DelegatingLoader(defaultLoadingStrategies);
             }
 
             // default locale
-            if (defaultLocale == null) {
-                defaultLocale = Locale.getDefault();
+          if (this.defaultLocale == null) {
+            this.defaultLocale = Locale.getDefault();
             }
 
 
-            if (cacheActive) {
+          if (this.cacheActive) {
                 // default caches
-                if (templateCache == null) {
-                    templateCache = Caffeine.newBuilder().maximumSize(200).build();
+            if (this.templateCache == null) {
+              this.templateCache = Caffeine.newBuilder().maximumSize(200).build();
                 }
 
-                if (tagCache == null) {
-                    tagCache = Caffeine.newBuilder().maximumSize(200).build();
+            if (this.tagCache == null) {
+              this.tagCache = Caffeine.newBuilder().maximumSize(200).build();
                 }
             } else {
-                templateCache = null;
-                tagCache = null;
+            this.templateCache = null;
+            this.tagCache = null;
             }
 
-            if(syntax == null) {
-                syntax = new Syntax.Builder().setEnableNewLineTrimming(enableNewLineTrimming).build();
+          if (this.syntax == null) {
+            this.syntax = new Syntax.Builder().setEnableNewLineTrimming(this.enableNewLineTrimming).build();
             }
 
-            return new PebbleEngine(loader, syntax, strictVariables, defaultLocale, tagCache, templateCache,
-                    executorService, extensions);
+          return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale, this.tagCache, this.templateCache,
+                  this.executorService, extensions);
         }
     }
 }

@@ -11,6 +11,12 @@ import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Storage for the extensions and the components retrieved
  * from the various extensions.
@@ -18,11 +24,6 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
  * Created by mitch_000 on 2015-11-28.
  */
 public class ExtensionRegistry {
-
-    /**
-     * Extensions
-     */
-    private final HashMap<Class<? extends Extension>, Extension> extensions = new HashMap<>();
 
     /**
      * Unary operators used during the lexing phase.
@@ -65,12 +66,10 @@ public class ExtensionRegistry {
     private final Map<String, Object> globalVariables = new HashMap<>();
 
     private final List<AttributeResolver> attributeResolver = new ArrayList<>();
-    
+
     public ExtensionRegistry(Collection<? extends Extension> extensions) {
 
         for (Extension extension : extensions) {
-            this.extensions.put(extension.getClass(), extension);
-
             // token parsers
             List<TokenParser> tokenParsers = extension.getTokenParsers();
             if (tokenParsers != null) {
@@ -128,7 +127,7 @@ public class ExtensionRegistry {
             if (nodeVisitors != null) {
                 this.nodeVisitors.addAll(nodeVisitors);
             }
-            
+
             // attribute resolver
             List<AttributeResolver> attributeResolvers = extension.getAttributeResolver();
             if (attributeResolvers!=null) {
@@ -168,21 +167,8 @@ public class ExtensionRegistry {
     public Map<String, TokenParser> getTokenParsers() {
         return this.tokenParsers;
     }
-    
+
     public List<AttributeResolver> getAttributeResolver() {
         return this.attributeResolver;
     }
-
-    /*
-    @SuppressWarnings("unchecked")
-    public <T extends Extension> T getExtension(Class<T> clazz) {
-        return (T) this.extensions.get(clazz);
-    }
-
-
-
-    public HashMap<Class<? extends Extension>, Extension> getExtensions() {
-        return extensions;
-    }
-    */
 }

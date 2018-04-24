@@ -44,7 +44,7 @@ public class RangeFunction implements Function {
     public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
         Object start = args.get(PARAM_START);
         Object end = args.get(PARAM_END);
-        Object increment = (Object) args.get(PARAM_INCREMENT);
+      Object increment = args.get(PARAM_INCREMENT);
         if (increment == null) {
             increment = 1L;
         } else if (!(increment instanceof Number)) {
@@ -52,20 +52,20 @@ public class RangeFunction implements Function {
                     lineNumber, self.getName());
         }
 
-        Long incrementNum = ((Number) increment).longValue();
+      long incrementNum = ((Number) increment).longValue();
 
         List<Object> results = new ArrayList<>();
         // Iterating over Number
         if (start instanceof Number && end instanceof Number) {
-            Long startNum = ((Number) start).longValue();
-            Long endNum = ((Number) end).longValue();
+          long startNum = ((Number) start).longValue();
+          long endNum = ((Number) end).longValue();
 
             if (incrementNum > 0) {
-                for (Long i = startNum; i <= endNum; i += incrementNum) {
+              for (long i = startNum; i <= endNum; i += incrementNum) {
                     results.add(i);
                 }
             } else if (incrementNum < 0) {
-                for (Long i = startNum; i >= endNum; i += incrementNum) {
+              for (long i = startNum; i >= endNum; i += incrementNum) {
                     results.add(i);
                 }
             } else {

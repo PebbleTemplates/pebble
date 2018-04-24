@@ -1,0 +1,4 @@
+{# used by CoreTagsTest.testIncludeOverridesVariable #}
+One: {{ one }}
+
+Two: {{ two }}

@@ -17,11 +17,16 @@ public class SafeString {
 
 	@Override
 	public String toString() {
-		return content;
+    return this.content;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		return o instanceof SafeString && this.content.equals(((SafeString) o).content);
 	}
+
+  @Override
+  public int hashCode() {
+    return (this.content == null) ? 0 : this.content.hashCode();
+  }
 }
