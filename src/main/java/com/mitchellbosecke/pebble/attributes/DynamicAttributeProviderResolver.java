@@ -1,9 +1,9 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import java.util.Optional;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
+
+import java.util.Optional;
 
 // check if the object is able to provide the attribute dynamically
 public class DynamicAttributeProviderResolver implements AttributeResolver {
@@ -14,13 +14,7 @@ public class DynamicAttributeProviderResolver implements AttributeResolver {
         if(instance instanceof DynamicAttributeProvider) {
             final DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) instance;
             if(dynamicAttributeProvider.canProvideDynamicAttribute(attribute)) {
-                return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
-                    
-                    @Override
-                    public Object evaluate() throws PebbleException {
-                        return dynamicAttributeProvider.getDynamicAttribute(attribute, argumentValues);
-                    }
-                });
+                return Optional.of(() -> dynamicAttributeProvider.getDynamicAttribute(attribute, argumentValues));
             }
         }
         

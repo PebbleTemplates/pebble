@@ -1,9 +1,9 @@
 package com.mitchellbosecke.pebble.attributes;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+
 import java.util.Map;
 import java.util.Optional;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
 
 public class MapResolver implements AttributeResolver {
 
@@ -12,13 +12,7 @@ public class MapResolver implements AttributeResolver {
             boolean isStrictVariables, final String filename, final int lineNumber) throws PebbleException {
         if (argumentValues==null) {
             if (instance instanceof Map) {
-                return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
-                    
-                    @Override
-                    public Object evaluate() throws PebbleException {
-                        return getObjectFromMap((Map<?, ?>) instance, attribute, filename, lineNumber);
-                    }
-                });
+                return Optional.of(() -> getObjectFromMap((Map<?, ?>) instance, attribute, filename, lineNumber));
             }
         }
         return Optional.empty();
@@ -28,7 +22,7 @@ public class MapResolver implements AttributeResolver {
         if (object.isEmpty()) {
             return null;
         }
-        if (Number.class.isAssignableFrom(attributeNameValue.getClass())) {
+        if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
             Number keyAsNumber = (Number) attributeNameValue;
     
             Class<?> keyClass = object.keySet().iterator().next().getClass();

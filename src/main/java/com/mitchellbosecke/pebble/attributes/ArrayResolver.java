@@ -1,10 +1,10 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import java.lang.reflect.Array;
-import java.util.Optional;
-
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
+
+import java.lang.reflect.Array;
+import java.util.Optional;
 
 public class ArrayResolver implements AttributeResolver {
 
@@ -24,20 +24,10 @@ public class ArrayResolver implements AttributeResolver {
                                     "Index out of bounds while accessing array with strict variables on.",
                                     attributeName, lineNumber, filename);
                         } else {
-                            return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
-                                @Override
-                                public Object evaluate() throws PebbleException {
-                                    return null;
-                                }
-                            });
+                            return Optional.of(() -> null);
                         }
                     }
-                    return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
-                        @Override
-                        public Object evaluate() throws PebbleException {
-                            return Array.get(instance, index);
-                        }
-                    });
+                    return Optional.of(() -> Array.get(instance, index));
                 }
             }
         }

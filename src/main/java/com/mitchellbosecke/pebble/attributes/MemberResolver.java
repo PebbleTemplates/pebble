@@ -1,5 +1,9 @@
 package com.mitchellbosecke.pebble.attributes;
 
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.error.ClassAccessException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,8 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-
 public class MemberResolver implements AttributeResolver {
 
     private final ConcurrentHashMap<MemberCacheKey, Member> memberCache;
@@ -19,44 +21,48 @@ public class MemberResolver implements AttributeResolver {
     public MemberResolver() {
         this.memberCache = new ConcurrentHashMap<>(100, 0.9f, 1);
     }
-    
+
     @Override
-    public Optional<ResolvedAttribute> resolve(final Object instance, Object attribute, final Object[] argumentValues,
+    public Optional<ResolvedAttribute> resolve(Object instance, Object attribute, Object[] argumentValues,
             boolean isStrictVariables, String filename, int lineNumber) throws PebbleException {
 
-        try {
-            return resolveMemberCall(instance, String.valueOf(attribute), argumentValues);
-        } catch (RuntimeException rx) {
-            throw new RuntimeException("error on "+instance+"."+attribute+" ("+filename+":"+lineNumber+")");
-        }
+      return resolveMemberCall(instance, String.valueOf(attribute), argumentValues, isStrictVariables, filename, lineNumber);
     }
-    
-    private Optional<ResolvedAttribute> resolveMemberCall(final Object object, String attributeName, final Object[] argumentValues) {
-        
+
+    private Optional<ResolvedAttribute> resolveMemberCall(Object object,
+                                                          String attributeName,
+                                                          Object[] argumentValues,
+                                                          boolean isStrictVariables,
+                                                          String filename,
+                                                          int lineNumber) throws PebbleException {
+
         final Member member = memberOf(object, attributeName, argumentValues);
 
         if (object != null && member != null) {
-            return Optional.<ResolvedAttribute>of(new ResolvedAttribute() {
-                
-                @Override
-                public Object evaluate() throws PebbleException {
-                    return invokeMember(object, member, argumentValues);
-                }
-            });
+            return Optional.of(() -> invokeMember(object, member, argumentValues));
         }
-        
+        else if (isStrictVariables) {
+          if (attributeName.equals("class") || attributeName.equals("getClass")) {
+            throw new ClassAccessException(lineNumber, filename);
+          } else {
+            throw new AttributeNotFoundException(null, String.format(
+                "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                attributeName, object.getClass().getName()), attributeName, lineNumber, filename);
+          }
+        }
+
         return Optional.empty();
     }
 
 
-    private Member memberOf(final Object object, String attributeName, final Object[] nullableArgumentValues) {
+    private Member memberOf(Object object, String attributeName, Object[] nullableArgumentValues) {
         Object[] argumentValues=nullableArgumentValues;
-        if (argumentValues==null) {
-            argumentValues=new Object[0];
+        if (argumentValues == null) {
+            argumentValues = new Object[0];
         }
-        
+
         MemberCacheKey key = new MemberCacheKey(object.getClass(), attributeName, argumentValues);
-        
+
         Member member = object == null ? null : this.memberCache.get(key);
         if (object != null && member == null) {
             /*
@@ -80,7 +86,7 @@ public class MemberResolver implements AttributeResolver {
             }
 
         }
-        
+
         final Member resultingMember = member;
         return resultingMember;
     }
@@ -120,7 +126,7 @@ public class MemberResolver implements AttributeResolver {
 
         Class<?> clazz = object.getClass();
 
-        Member result = null;
+        Member result;
 
         // capitalize first letter of attribute for the following attempts
         String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
@@ -168,6 +174,10 @@ public class MemberResolver implements AttributeResolver {
      * @return
      */
     private static Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes) {
+        if (name.equals("getClass")) {
+            return null;
+        }
+
         Method result = null;
 
         Method[] candidates = clazz.getMethods();
@@ -235,7 +245,7 @@ public class MemberResolver implements AttributeResolver {
         }
         return new Class[0];
     }
-    
+
     private static class MemberCacheKey {
         private final Class<?> clazz;
         private final String attributeName;
@@ -284,7 +294,7 @@ public class MemberResolver implements AttributeResolver {
             return true;
         }
 
-        
+
     }
 
 }
