@@ -1,9 +1,14 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import java.util.Optional;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 
+import java.util.Optional;
+
 public interface AttributeResolver {
-    Optional<ResolvedAttribute> resolve(final Object instance, final Object attribute, final Object[] argumentValues, final boolean isStrictVariables, final String filename, final int lineNumber) throws PebbleException;
+  Optional<ResolvedAttribute> resolve(Object instance,
+                                      Object attribute,
+                                      Object[] argumentValues,
+                                      boolean isStrictVariables,
+                                      String filename,
+                                      int lineNumber) throws PebbleException;
 }

@@ -8,10 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.List;
-import java.util.Optional;
-
-import com.mitchellbosecke.pebble.attributes.DefaultAttributeResolver;
+import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.attributes.ResolvedAttribute;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -23,6 +20,8 @@ import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
@@ -77,12 +76,13 @@ public class GetAttributeExpression implements Expression<Object> {
                         "Attempt to get attribute of null object and strict variables is set to true.", attributeName, this.lineNumber, this.filename);
             }
         }
-        
-        Optional<ResolvedAttribute> resolvedAttribute = DefaultAttributeResolver.resolve(context.getExtensionRegistry().getAttributeResolver(), object, attributeNameValue, argumentValues, context.isStrictVariables(), filename, this.lineNumber);
-        
-        if (resolvedAttribute.isPresent()) {
-            return resolvedAttribute.get().evaluate();
-        } 
+
+        for (AttributeResolver attributeResolver: context.getExtensionRegistry().getAttributeResolver()) {
+            Optional<ResolvedAttribute> resolvedAttribute = attributeResolver.resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), this.filename, this.lineNumber);
+            if (resolvedAttribute.isPresent()) {
+                return resolvedAttribute.get().evaluate();
+            }
+        }
         
         if (context.isStrictVariables()) {
             throw new AttributeNotFoundException(null, String.format(
@@ -91,7 +91,6 @@ public class GetAttributeExpression implements Expression<Object> {
         }
 
         return null;
-
     }
 
     /**

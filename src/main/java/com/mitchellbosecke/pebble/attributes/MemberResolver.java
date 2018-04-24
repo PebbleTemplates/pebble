@@ -23,9 +23,12 @@ public class MemberResolver implements AttributeResolver {
     }
 
     @Override
-    public Optional<ResolvedAttribute> resolve(Object instance, Object attribute, Object[] argumentValues,
-            boolean isStrictVariables, String filename, int lineNumber) throws PebbleException {
-
+    public Optional<ResolvedAttribute> resolve(Object instance,
+                                               Object attribute,
+                                               Object[] argumentValues,
+                                               boolean isStrictVariables,
+                                               String filename,
+                                               int lineNumber) throws PebbleException {
       return resolveMemberCall(instance, String.valueOf(attribute), argumentValues, isStrictVariables, filename, lineNumber);
     }
 

@@ -1,11 +1,5 @@
 package com.mitchellbosecke.pebble.extension;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -130,7 +124,7 @@ public class ExtensionRegistry {
 
             // attribute resolver
             List<AttributeResolver> attributeResolvers = extension.getAttributeResolver();
-            if (attributeResolvers!=null) {
+            if (attributeResolvers != null) {
                 this.attributeResolver.addAll(attributeResolvers);
             }
         }
