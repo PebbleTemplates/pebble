@@ -36,8 +36,7 @@ public class IfNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
-            IOException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
 
         boolean satisfied = false;
         for (Pair<Expression<?>, BodyNode> ifStatement : conditionsWithBodies) {

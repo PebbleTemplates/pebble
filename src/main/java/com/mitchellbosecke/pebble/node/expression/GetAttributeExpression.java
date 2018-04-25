@@ -82,7 +82,7 @@ public class GetAttributeExpression implements Expression<Object> {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         Object object = this.node.evaluate(self, context);
         Object attributeNameValue = this.attributeNameExpression.evaluate(self, context);
         String attributeName = String.valueOf(attributeNameValue);
@@ -209,7 +209,7 @@ public class GetAttributeExpression implements Expression<Object> {
 
     }
 
-    private Object getObjectFromMap(Map<?, ?> object, Object attributeNameValue) throws PebbleException {
+    private Object getObjectFromMap(Map<?, ?> object, Object attributeNameValue) {
         if (object.isEmpty()) {
             return null;
         }
@@ -223,7 +223,7 @@ public class GetAttributeExpression implements Expression<Object> {
         return object.get(attributeNameValue);
     }
 
-    private Object cast(Number number, Class<?> desiredType) throws PebbleException {
+    private Object cast(Number number, Class<?> desiredType) {
         if (desiredType == Long.class) {
             return number.longValue();
         } else if (desiredType == Integer.class) {
@@ -269,9 +269,8 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param self
      * @param context
      * @return
-     * @throws PebbleException
      */
-    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContext context) {
 
         Object[] argumentValues;
 

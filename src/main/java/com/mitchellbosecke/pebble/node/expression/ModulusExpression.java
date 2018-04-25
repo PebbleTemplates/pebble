@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.utils.OperatorUtils;
 public class ModulusExpression extends BinaryExpression<Object> {
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         try {
             return OperatorUtils.mod(getLeftExpression().evaluate(self, context),
                     getRightExpression().evaluate(self, context));

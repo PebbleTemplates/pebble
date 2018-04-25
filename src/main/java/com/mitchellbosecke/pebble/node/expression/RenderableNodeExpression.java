@@ -8,14 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * This class wraps a {@link RenderableNode} into an expression. This is used by
@@ -37,7 +37,7 @@ public class RenderableNodeExpression extends UnaryExpression {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         Writer writer = new StringWriter();
         try {
             node.render(self, writer, context);

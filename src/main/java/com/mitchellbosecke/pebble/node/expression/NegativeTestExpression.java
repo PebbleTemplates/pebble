@@ -8,14 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class NegativeTestExpression extends PositiveTestExpression {
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         return !((Boolean) super.evaluate(self, context));
     }
 }

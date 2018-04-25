@@ -8,17 +8,17 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.node.expression.MapExpression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
 
 public class IncludeNode extends AbstractRenderableNode {
 
@@ -33,8 +33,7 @@ public class IncludeNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException,
-            IOException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
         String templateName = (String) includeExpression.evaluate(self, context);
 
         Map<?, ?> map = Collections.emptyMap();
