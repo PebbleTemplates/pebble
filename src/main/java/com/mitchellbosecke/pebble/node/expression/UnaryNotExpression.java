@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 public class UnaryNotExpression extends UnaryExpression {
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         Boolean result = (Boolean) getChildExpression().evaluate(self, context);
         if (context.isStrictVariables()){
             if(result == null)

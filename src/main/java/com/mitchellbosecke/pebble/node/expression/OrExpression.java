@@ -16,7 +16,7 @@ public class OrExpression extends BinaryExpression<Boolean> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         Boolean left = ((Expression<Boolean>) getLeftExpression()).evaluate(self, context);
         Boolean right = ((Expression<Boolean>) getRightExpression()).evaluate(self, context);
         if(context.isStrictVariables()){

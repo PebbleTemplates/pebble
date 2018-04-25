@@ -8,18 +8,18 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.Collection;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.Collection;
+import java.util.Map;
 
 public class ContainsExpression extends BinaryExpression<Boolean> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         Object leftValue = getLeftExpression().evaluate(self, context);
 
         if (leftValue == null) {

@@ -47,8 +47,7 @@ public class CacheNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContextImpl context)
-            throws PebbleException, IOException {
+    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContextImpl context) throws IOException {
         try {
             final String body;
             Cache tagCache = context.getTagCache();

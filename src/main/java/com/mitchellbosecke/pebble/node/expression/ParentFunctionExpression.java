@@ -30,7 +30,7 @@ public class ParentFunctionExpression implements Expression<String> {
     }
 
     @Override
-    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         Writer writer = new StringWriter();
         try {
             Hierarchy hierarchy = context.getHierarchy();

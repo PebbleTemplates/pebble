@@ -33,7 +33,7 @@ public class FilterExpression extends BinaryExpression<Object> {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
 
         FilterInvocationExpression filterInvocation = (FilterInvocationExpression) getRightExpression();
         ArgumentsNode args = filterInvocation.getArgs();

@@ -8,14 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ArrayExpression implements Expression<List<?>> {
 
@@ -42,7 +41,7 @@ public class ArrayExpression implements Expression<List<?>> {
     }
 
     @Override
-    public List<?> evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public List<?> evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         List<Object> returnValues = new ArrayList<>(values.size());
         for (int i = 0; i < values.size(); i++) {
             Expression<?> expr = values.get(i);

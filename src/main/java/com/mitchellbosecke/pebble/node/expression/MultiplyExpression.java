@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.utils.OperatorUtils;
 public class MultiplyExpression extends BinaryExpression<Object> {
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         try {
             return OperatorUtils.multiply(getLeftExpression().evaluate(self, context),
                     getRightExpression().evaluate(self, context));

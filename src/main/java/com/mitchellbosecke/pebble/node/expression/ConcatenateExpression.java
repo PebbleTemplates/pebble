@@ -1,6 +1,5 @@
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -20,7 +19,7 @@ public class ConcatenateExpression extends BinaryExpression<Object> {
     }
 
     @Override
-    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
 
         Object left = getLeftExpression().evaluate(self, context);
         Object right = getRightExpression().evaluate(self, context);

@@ -33,8 +33,7 @@ public class IncludeNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws PebbleException,
-            IOException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
       String templateName = (String) this.includeExpression.evaluate(self, context);
 
         Map<?, ?> map = Collections.emptyMap();

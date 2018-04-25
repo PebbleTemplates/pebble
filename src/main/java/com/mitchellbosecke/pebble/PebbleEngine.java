@@ -99,9 +99,8 @@ public class PebbleEngine {
      *
      * @param templateName The name of the template
      * @return PebbleTemplate The compiled version of the template
-     * @throws PebbleException Thrown if an error occurs while parsing the template.
      */
-    public PebbleTemplate getTemplate(final String templateName) throws PebbleException {
+    public PebbleTemplate getTemplate(final String templateName) {
 
         /*
          * template name will be null if user uses the extends tag with an
