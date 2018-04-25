@@ -20,7 +20,8 @@ public class MapResolver implements AttributeResolver {
     return Optional.empty();
   }
 
-  private static Object getObjectFromMap(Map<?, ?> object, Object attributeNameValue,
+  private static Object getObjectFromMap(Map<?, ?> object,
+                                         Object attributeNameValue,
                                          String filename,
                                          int lineNumber) throws PebbleException {
     if (object.isEmpty()) {

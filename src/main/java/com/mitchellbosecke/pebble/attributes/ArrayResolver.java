@@ -21,7 +21,7 @@ public class ArrayResolver implements AttributeResolver {
       String attributeName = String.valueOf(attribute);
       Optional<Integer> optIndex = asIndex(attributeName);
       if (optIndex.isPresent()) {
-        final int index = optIndex.get();
+        int index = optIndex.get();
         int length = Array.getLength(instance);
         if (index < 0 || index >= length) {
           if (isStrictVariables) {
