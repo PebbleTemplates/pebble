@@ -8,15 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.template;
 
-import java.util.Map;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NamedArguments;
+
+import java.util.Map;
 
 public interface Macro extends NamedArguments {
 
     String getName();
 
-    String call(PebbleTemplateImpl self, EvaluationContextImpl context, Map<String, Object> args)
-            throws PebbleException;
+    String call(PebbleTemplateImpl self, EvaluationContextImpl context, Map<String, Object> args);
 }

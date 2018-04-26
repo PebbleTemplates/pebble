@@ -13,7 +13,7 @@ public class MapResolver implements AttributeResolver {
                                              Object[] argumentValues,
                                              boolean isStrictVariables,
                                              String filename,
-                                             int lineNumber) throws PebbleException {
+                                             int lineNumber) {
     if (argumentValues == null && instance instanceof Map) {
       return Optional.of(() -> getObjectFromMap((Map<?, ?>) instance, attribute, filename, lineNumber));
     }

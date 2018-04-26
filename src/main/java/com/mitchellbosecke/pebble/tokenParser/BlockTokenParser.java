@@ -20,7 +20,7 @@ import com.mitchellbosecke.pebble.parser.StoppingCondition;
 public class BlockTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+    public RenderableNode parse(Token token, Parser parser) {
         TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 

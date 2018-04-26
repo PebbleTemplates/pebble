@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-import com.mitchellbosecke.pebble.error.PebbleException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,7 @@ public class ListResolver implements AttributeResolver {
                                              Object[] argumentValues,
                                              boolean isStrictVariables,
                                              String filename,
-                                             int lineNumber) throws PebbleException {
+                                             int lineNumber) {
     if (argumentValues == null && instance instanceof List) {
       String attributeName = String.valueOf(attribute);
 

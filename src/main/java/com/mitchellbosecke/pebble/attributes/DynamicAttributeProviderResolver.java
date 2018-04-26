@@ -1,6 +1,5 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 
 import java.util.Optional;
@@ -13,7 +12,7 @@ public class DynamicAttributeProviderResolver implements AttributeResolver {
                                              Object[] argumentValues,
                                              boolean isStrictVariables,
                                              String filename,
-                                             int lineNumber) throws PebbleException {
+                                             int lineNumber) {
     if (instance instanceof DynamicAttributeProvider) {
       DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) instance;
       if (dynamicAttributeProvider.canProvideDynamicAttribute(attribute)) {

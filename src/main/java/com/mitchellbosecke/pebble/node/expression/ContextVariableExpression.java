@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
@@ -36,7 +35,7 @@ public class ContextVariableExpression implements Expression<Object> {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         ScopeChain scopeChain = context.getScopeChain();
         Object result = scopeChain.get(name);
         if (result == null && context.isStrictVariables() && !scopeChain.containsKey(name)) {

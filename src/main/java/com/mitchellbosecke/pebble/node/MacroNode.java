@@ -8,10 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.template.*;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
+import com.mitchellbosecke.pebble.template.Macro;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.ScopeChain;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -35,8 +37,7 @@ public class MacroNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws PebbleException,
-            IOException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         // do nothing
     }
 
@@ -63,8 +64,7 @@ public class MacroNode extends AbstractRenderableNode {
             }
 
             @Override
-            public String call(PebbleTemplateImpl self, EvaluationContextImpl context, Map<String, Object> macroArgs)
-                    throws PebbleException {
+            public String call(PebbleTemplateImpl self, EvaluationContextImpl context, Map<String, Object> macroArgs) {
                 Writer writer = new StringWriter();
                 ScopeChain scopeChain = context.getScopeChain();
 

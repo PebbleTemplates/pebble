@@ -8,11 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.lexer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class TokenStream {
 
@@ -53,10 +53,8 @@ public class TokenStream {
      * @param type
      *            The type of token that we expect
      * @return Token The current token
-     * @throws ParserException
-     *             Throws exception if expectation fails
      */
-    public Token expect(Token.Type type) throws ParserException {
+    public Token expect(Token.Type type) {
         return expect(type, null);
     }
 
@@ -70,10 +68,8 @@ public class TokenStream {
      * @param value
      *            The expected value of the token
      * @return Token The current token
-     * @throws ParserException
-     *             Thrown if expectation fails
      */
-    public Token expect(Token.Type type, String value) throws ParserException {
+    public Token expect(Token.Type type, String value) {
         Token token = tokens.get(current);
 
         boolean success = true;

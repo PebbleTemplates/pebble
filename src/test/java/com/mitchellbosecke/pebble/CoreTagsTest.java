@@ -12,7 +12,6 @@ package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -30,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CoreTagsTest extends AbstractTest {
@@ -155,12 +153,10 @@ public class CoreTagsTest extends AbstractTest {
             pebble.getTemplate(source);
 
             fail("Should fail due to invalid endif tag");
-        } catch (RuntimePebbleException ex) {
-            assertTrue(ex.getCause() instanceof ParserException);
-            ParserException parserException = (ParserException) ex.getCause();
-            assertEquals(parserException.getPebbleMessage(), "Unexpected end of template. Pebble was looking for the \"endif\" tag");
-            assertEquals(parserException.getLineNumber(), (Integer) 1);
-            assertEquals(parserException.getFileName(), source);
+        } catch (ParserException ex) {
+            assertEquals(ex.getPebbleMessage(), "Unexpected end of template. Pebble was looking for the \"endif\" tag");
+            assertEquals(ex.getLineNumber(), (Integer) 1);
+            assertEquals(ex.getFileName(), source);
         }
     }
 
@@ -285,12 +281,10 @@ public class CoreTagsTest extends AbstractTest {
             pebble.getTemplate(source);
 
             fail("Should fail due to invalid endfor tag");
-        } catch (RuntimePebbleException ex) {
-            assertTrue(ex.getCause() instanceof ParserException);
-            ParserException parserException = (ParserException) ex.getCause();
-            assertEquals(parserException.getPebbleMessage(), "Unexpected end of template. Pebble was looking for the \"endfor\" tag");
-            assertEquals(parserException.getLineNumber(), (Integer) 1);
-            assertEquals(parserException.getFileName(), source);
+        } catch (ParserException ex) {
+            assertEquals(ex.getPebbleMessage(), "Unexpected end of template. Pebble was looking for the \"endfor\" tag");
+            assertEquals(ex.getLineNumber(), (Integer) 1);
+            assertEquals(ex.getFileName(), source);
         }
     }
 
@@ -505,7 +499,7 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("true", writer.toString());
     }
 
-    @Test(expected = RuntimePebbleException.class)
+    @Test(expected = PebbleException.class)
     public void testCacheWithNoName() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 

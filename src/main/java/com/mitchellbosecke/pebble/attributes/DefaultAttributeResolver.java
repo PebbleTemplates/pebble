@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-import com.mitchellbosecke.pebble.error.PebbleException;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +22,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
                                              Object[] argumentValues,
                                              boolean isStrictVariables,
                                              String filename,
-                                             int lineNumber) throws PebbleException {
+                                             int lineNumber) {
     if (instance != null) {
       for (AttributeResolver resolver : this.resolvers) {
         Optional<ResolvedAttribute> resolved = resolver.resolve(instance, attribute, argumentValues, isStrictVariables, filename, lineNumber);

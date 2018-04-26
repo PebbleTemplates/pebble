@@ -99,9 +99,8 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param self
      * @param context
      * @return
-     * @throws PebbleException
      */
-    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContextImpl context) {
 
         Object[] argumentValues;
 

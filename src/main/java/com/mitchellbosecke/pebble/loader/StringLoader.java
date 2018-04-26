@@ -8,8 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
-import com.mitchellbosecke.pebble.error.LoaderException;
-
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -21,7 +19,7 @@ import java.io.StringReader;
 public class StringLoader implements Loader<String> {
 
     @Override
-    public Reader getReader(String templateName) throws LoaderException {
+    public Reader getReader(String templateName) {
         return new StringReader(templateName);
     }
 

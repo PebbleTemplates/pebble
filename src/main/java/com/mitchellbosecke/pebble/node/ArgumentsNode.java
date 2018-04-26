@@ -58,11 +58,9 @@ public class ArgumentsNode implements Node {
      * @param invocableWithNamedArguments
      *            The named arguments object
      * @return Returns a map representaion of the arguments
-     * @throws PebbleException
-     *             Thrown if an expected name argument does not exist
      */
     public Map<String, Object> getArgumentMap(PebbleTemplateImpl self, EvaluationContextImpl context,
-            NamedArguments invocableWithNamedArguments) throws PebbleException {
+            NamedArguments invocableWithNamedArguments) {
         Map<String, Object> result = new HashMap<>();
         List<String> argumentNames = invocableWithNamedArguments.getArgumentNames();
 

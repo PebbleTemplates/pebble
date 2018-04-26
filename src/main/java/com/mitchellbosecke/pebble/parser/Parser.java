@@ -8,16 +8,15 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
-import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 
 public interface Parser {
 
-    RootNode parse(TokenStream stream) throws ParserException;
+    RootNode parse(TokenStream stream);
 
-    BodyNode subparse() throws ParserException;
+    BodyNode subparse();
 
     /**
      * Provides the stream of tokens which ultimately need to be "parsed" into
@@ -33,9 +32,8 @@ public interface Parser {
      *
      * @param stopCondition The condition to stop parsing a segment of the template.
      * @return A node representing the parsed section
-     * @throws ParserException Thrown if a parsing error occurs.
      */
-    BodyNode subparse(StoppingCondition stopCondition) throws ParserException;
+    BodyNode subparse(StoppingCondition stopCondition);
 
     ExpressionParser getExpressionParser();
 

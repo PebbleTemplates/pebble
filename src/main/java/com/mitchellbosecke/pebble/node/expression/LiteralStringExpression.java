@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -30,7 +29,7 @@ public class LiteralStringExpression implements Expression<String> {
     }
 
     @Override
-    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) throws PebbleException {
+    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
         return value;
     }
 

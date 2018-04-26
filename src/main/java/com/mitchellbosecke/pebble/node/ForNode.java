@@ -14,6 +14,7 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.template.ScopeChain;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
@@ -54,10 +55,9 @@ public class ForNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
-            throws PebbleException, IOException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         final Object iterableEvaluation = this.iterableExpression.evaluate(self, context);
-        Iterable<?> iterable = null;
+        Iterable<?> iterable;
         
         if (iterableEvaluation == null) {
             return;

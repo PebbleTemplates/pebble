@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-import com.mitchellbosecke.pebble.error.PebbleException;
 
 import java.lang.reflect.Array;
 import java.util.Optional;
@@ -16,7 +15,7 @@ public class ArrayResolver implements AttributeResolver {
                                              Object[] argumentValues,
                                              boolean isStrictVariables,
                                              String filename,
-                                             int lineNumber) throws PebbleException {
+                                             int lineNumber) {
     if (argumentValues == null && instance.getClass().isArray()) {
       String attributeName = String.valueOf(attribute);
       Optional<Integer> optIndex = asIndex(attributeName);

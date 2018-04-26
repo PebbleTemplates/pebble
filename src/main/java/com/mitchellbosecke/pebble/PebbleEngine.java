@@ -14,8 +14,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
@@ -42,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.Objects.isNull;
@@ -100,9 +97,8 @@ public class PebbleEngine {
      *
      * @param templateName The name of the template
      * @return PebbleTemplate The compiled version of the template
-     * @throws PebbleException Thrown if an error occurs while parsing the template.
      */
-    public PebbleTemplate getTemplate(final String templateName) throws PebbleException {
+    public PebbleTemplate getTemplate(final String templateName) {
 
         /*
          * template name will be null if user uses the extends tag with an
@@ -119,34 +115,13 @@ public class PebbleEngine {
         final PebbleEngine self = this;
         PebbleTemplate result;
 
-        try {
-            final Object cacheKey = this.loader.createCacheKey(templateName);
+        final Object cacheKey = this.loader.createCacheKey(templateName);
 
-          if (isNull(this.templateCache)) {
-            result = this.getPebbleTemplate(self, templateName, cacheKey);
-            }
-            else {
-            result = this.templateCache.get(cacheKey, k -> {
-                    try {
-                      return this.getPebbleTemplate(self, templateName, cacheKey);
-                    } catch (PebbleException e) {
-                        throw new RuntimePebbleException(e);
-                    }
-                });
-            }
-        } catch (CompletionException e) {
-            /*
-             * The completion exception is probably caused by a PebbleException
-             * being thrown in the above function. We will unravel it and throw
-             * the original PebbleException which is more helpful to the end
-             * user.
-             */
-            if (e.getCause() != null && e.getCause() instanceof RuntimePebbleException) {
-                RuntimePebbleException runtimePebbleException = (RuntimePebbleException) e.getCause();
-                throw (PebbleException) runtimePebbleException.getCause();
-            } else {
-                throw new PebbleException(e, String.format("An error occurred while compiling %s", templateName));
-            }
+        if (isNull(this.templateCache)) {
+          result = this.getPebbleTemplate(self, templateName, cacheKey);
+        }
+        else {
+          result = this.templateCache.get(cacheKey, k -> this.getPebbleTemplate(self, templateName, cacheKey));
         }
 
         return result;
@@ -178,9 +153,8 @@ public class PebbleEngine {
      * @param loader   the loader to use fetch the reader.
      * @param cacheKey the cache key to use.
      * @return the reader object.
-     * @throws LoaderException thrown when the template could not be loaded.
      */
-    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, Object cacheKey) throws LoaderException {
+    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, Object cacheKey) {
         // We make sure within getTemplate() that we use only the same key for
         // the same loader and hence we can be sure that the cast is safe.
         @SuppressWarnings("unchecked")

@@ -10,9 +10,7 @@ package com.mitchellbosecke.pebble.lexer;
 
 import java.io.Reader;
 
-import com.mitchellbosecke.pebble.error.ParserException;
-
 public interface Lexer {
 
-    TokenStream tokenize(Reader templateReader, String name) throws ParserException;
+    TokenStream tokenize(Reader templateReader, String name);
 }

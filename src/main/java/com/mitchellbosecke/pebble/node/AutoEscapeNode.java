@@ -8,13 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.io.IOException;
+import java.io.Writer;
 
 public class AutoEscapeNode extends AbstractRenderableNode {
 
@@ -32,8 +31,7 @@ public class AutoEscapeNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws PebbleException,
-            IOException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         body.render(self, writer, context);
     }
 
