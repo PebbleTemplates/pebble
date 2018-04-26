@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
@@ -44,8 +43,7 @@ public class ParallelNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
-            throws IOException, PebbleException {
+    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context) throws IOException {
 
         ExecutorService es = context.getExecutorService();
 

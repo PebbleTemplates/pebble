@@ -25,7 +25,7 @@ import java.util.List;
 public class IfTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+    public RenderableNode parse(Token token, Parser parser) {
         TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 

@@ -8,12 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
+import com.mitchellbosecke.pebble.error.LoaderException;
+
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.mitchellbosecke.pebble.error.LoaderException;
 
 /**
  * This loader will delegate control to a list of children loaders. This is the
@@ -53,7 +53,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
 
 
     @Override
-    public Reader getReader(DelegatingLoaderCacheKey cacheKey) throws LoaderException {
+    public Reader getReader(DelegatingLoaderCacheKey cacheKey) {
 
         Reader reader = null;
 
@@ -77,8 +77,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
         return reader;
     }
 
-    private <T> Reader getReaderInner(Loader<T> delegatingLoader, Object cacheKey)
-            throws LoaderException {
+    private <T> Reader getReaderInner(Loader<T> delegatingLoader, Object cacheKey) {
 
         // This unchecked cast is ok, because we ensure that the type of the
         // cache key corresponds to the loader when we create the key.

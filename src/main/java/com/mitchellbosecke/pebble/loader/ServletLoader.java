@@ -2,11 +2,17 @@ package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.utils.PathUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.ServletContext;
-import java.io.*;
 
 /**
  * Loader that uses a servlet context to find templates.
@@ -32,7 +38,7 @@ public class ServletLoader implements Loader<String> {
     }
 
     @Override
-    public Reader getReader(String templateName) throws LoaderException {
+    public Reader getReader(String templateName) {
 
         InputStreamReader isr = null;
         Reader reader = null;
