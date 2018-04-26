@@ -147,11 +147,9 @@ public final class LexerImpl implements Lexer {
      *            The reader provided from the Loader
      * @param name
      *            The name of the template (used for meaningful error messages)
-     * @throws ParserException
-     *             Thrown from the Reader object
      */
     @Override
-    public TokenStream tokenize(Reader reader, String name) throws ParserException {
+    public TokenStream tokenize(Reader reader, String name) {
 
         // operator regex
         buildOperatorRegex();
@@ -270,10 +268,8 @@ public final class LexerImpl implements Lexer {
      * meaningful delimiters. We are currently looking for the next "open" or
      * "start" delimiter, ex. the opening comment delimiter, or the opening
      * variable delimiter.
-     *
-     * @throws ParserException
      */
-    private void lexData() throws ParserException {
+    private void lexData() {
         // find the next start delimiter
         Matcher matcher = this.syntax.getRegexStartDelimiters().matcher(source);
         boolean match = matcher.find();
@@ -339,10 +335,8 @@ public final class LexerImpl implements Lexer {
 
     /**
      * Tokenizes between execute delimiters.
-     *
-     * @throws ParserException
      */
-    private void lexExecute() throws ParserException {
+    private void lexExecute() {
 
         // check for the trailing whitespace trim character
         checkForTrailingWhitespaceTrim();
@@ -361,10 +355,8 @@ public final class LexerImpl implements Lexer {
 
     /**
      * Tokenizes between print delimiters.
-     *
-     * @throws ParserException
      */
-    private void lexPrint() throws ParserException {
+    private void lexPrint() {
 
         // check for the trailing whitespace trim character
         checkForTrailingWhitespaceTrim();
@@ -386,10 +378,8 @@ public final class LexerImpl implements Lexer {
      * <p>
      * Simply find the closing delimiter for the comment and move the cursor to
      * that point.
-     *
-     * @throws ParserException
      */
-    private void lexComment() throws ParserException {
+    private void lexComment() {
 
         // all we need to do is find the end of the comment.
         Matcher matcher = this.syntax.getRegexCommentClose().matcher(source);
@@ -418,10 +408,8 @@ public final class LexerImpl implements Lexer {
     /**
      * Tokenizing an expression which can be found within both execute and print
      * regions.
-     *
-     * @throws ParserException
      */
-    private void lexExpression() throws ParserException {
+    private void lexExpression() {
         String token;
 
         // whitespace
@@ -558,10 +546,8 @@ public final class LexerImpl implements Lexer {
 
     /**
      * Implementation of the "verbatim" tag
-     *
-     * @throws ParserException
      */
-    private void lexVerbatimData(Matcher verbatimStartMatcher) throws ParserException {
+    private void lexVerbatimData(Matcher verbatimStartMatcher) {
 
         // move cursor past the opening verbatim tag
         source.advance(verbatimStartMatcher.end());

@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
@@ -61,9 +60,7 @@ public interface TokenParser {
      * @param parser
      *            the parser which should be used to parse the token
      * @return A node representation of the token
-     * @throws ParserException
-     *             Thrown if an error occurs while parsing the token
      */
-    RenderableNode parse(Token token, Parser parser) throws ParserException;
+    RenderableNode parse(Token token, Parser parser);
 
 }

@@ -152,9 +152,8 @@ public class PebbleEngine {
      * @param loader   the loader to use fetch the reader.
      * @param cacheKey the cache key to use.
      * @return the reader object.
-     * @throws LoaderException thrown when the template could not be loaded.
      */
-    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, Object cacheKey) throws LoaderException {
+    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, Object cacheKey) {
         // We make sure within getTemplate() that we use only the same key for
         // the same loader and hence we can be sure that the cast is safe.
         @SuppressWarnings("unchecked")

@@ -10,10 +10,15 @@ package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.utils.PathUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Uses a classloader to find templates located on the classpath.
@@ -44,7 +49,7 @@ public class ClasspathLoader implements Loader<String> {
     }
 
     @Override
-    public Reader getReader(String templateName) throws LoaderException {
+    public Reader getReader(String templateName) {
 
         InputStreamReader isr = null;
         Reader reader = null;
