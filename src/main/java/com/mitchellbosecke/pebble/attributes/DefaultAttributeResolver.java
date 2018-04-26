@@ -1,12 +1,11 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
-
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.empty;
 
 public class DefaultAttributeResolver implements AttributeResolver {
   private final List<AttributeResolver> resolvers = unmodifiableList(asList(
@@ -24,24 +23,12 @@ public class DefaultAttributeResolver implements AttributeResolver {
                                              String filename,
                                              int lineNumber) {
     if (instance != null) {
-      for (AttributeResolver resolver : this.resolvers) {
-        Optional<ResolvedAttribute> resolved = resolver.resolve(instance, attribute, argumentValues, isStrictVariables, filename, lineNumber);
-        if (resolved.isPresent()) {
-          return resolved;
-        }
-      }
+      return this.resolvers.stream()
+              .map(resolver -> resolver.resolve(instance, attribute, argumentValues, isStrictVariables, filename, lineNumber))
+              .filter(Optional::isPresent)
+              .findFirst()
+              .orElse(empty());
     }
-
-    if (isStrictVariables) {
-      String attributeName = String.valueOf(attribute);
-      throw new AttributeNotFoundException(null, String.format(
-          "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-          attributeName,
-          instance != null ? instance.getClass().getName(): null),
-          attributeName,
-          lineNumber,
-          filename);
-    }
-    return Optional.empty();
+    return empty();
   }
 }

@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.attributes.ResolvedAttribute;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -77,13 +76,29 @@ public class GetAttributeExpression implements Expression<Object> {
             }
         }
 
-        for (AttributeResolver attributeResolver: context.getExtensionRegistry().getAttributeResolver()) {
-            Optional<ResolvedAttribute> resolvedAttribute = attributeResolver.resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), this.filename, this.lineNumber);
-            if (resolvedAttribute.isPresent()) {
-                return resolvedAttribute.get().evaluate();
-            }
+        Optional<ResolvedAttribute> resolvedAttribute = context.getExtensionRegistry().getAttributeResolver().stream()
+                .map(attributeResolver -> attributeResolver.resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), this.filename, this.lineNumber))
+                .filter(Optional::isPresent)
+                .findFirst()
+                .map(Optional::get);
+
+        if (resolvedAttribute.isPresent()) {
+            return resolvedAttribute.get().evaluate();
         }
-        
+
+        if (context.isStrictVariables()) {
+            throw new AttributeNotFoundException(null, String.format(
+                    "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                    attributeName,
+                    object != null ? object.getClass().getName(): null),
+                    attributeName,
+                    this.lineNumber,
+                    this.filename);
+        }
+        return null;
+    }
+
+    private Object checkStrictVariableOrElseReturnNull(EvaluationContextImpl context, Object object, String attributeName) {
         if (context.isStrictVariables()) {
             throw new AttributeNotFoundException(null, String.format(
                     "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
