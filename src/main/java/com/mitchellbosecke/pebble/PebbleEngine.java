@@ -14,8 +14,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
@@ -41,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.Objects.isNull;
@@ -117,34 +114,13 @@ public class PebbleEngine {
         final PebbleEngine self = this;
         PebbleTemplate result;
 
-        try {
-            final Object cacheKey = this.loader.createCacheKey(templateName);
+        final Object cacheKey = this.loader.createCacheKey(templateName);
 
-          if (isNull(this.templateCache)) {
-            result = this.getPebbleTemplate(self, templateName, cacheKey);
-            }
-            else {
-            result = this.templateCache.get(cacheKey, k -> {
-                    try {
-                      return this.getPebbleTemplate(self, templateName, cacheKey);
-                    } catch (PebbleException e) {
-                        throw new RuntimePebbleException(e);
-                    }
-                });
-            }
-        } catch (CompletionException e) {
-            /*
-             * The completion exception is probably caused by a PebbleException
-             * being thrown in the above function. We will unravel it and throw
-             * the original PebbleException which is more helpful to the end
-             * user.
-             */
-            if (e.getCause() != null && e.getCause() instanceof RuntimePebbleException) {
-                RuntimePebbleException runtimePebbleException = (RuntimePebbleException) e.getCause();
-                throw (PebbleException) runtimePebbleException.getCause();
-            } else {
-                throw new PebbleException(e, String.format("An error occurred while compiling %s", templateName));
-            }
+        if (isNull(this.templateCache)) {
+          result = this.getPebbleTemplate(self, templateName, cacheKey);
+        }
+        else {
+          result = this.templateCache.get(cacheKey, k -> this.getPebbleTemplate(self, templateName, cacheKey));
         }
 
         return result;

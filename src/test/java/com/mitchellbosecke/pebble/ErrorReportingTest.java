@@ -11,9 +11,9 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -37,9 +37,8 @@ public class ErrorReportingTest extends AbstractTest {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        thrown.expect(RuntimePebbleException.class);
+        thrown.expect(ParserException.class);
         thrown.expectMessage(endsWith(":7)"));
-        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
         pebble.getTemplate("test\n\n\ntest\ntest\ntest\n{% error %}\ntest");
@@ -50,9 +49,8 @@ public class ErrorReportingTest extends AbstractTest {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
-        thrown.expect(RuntimePebbleException.class);
+        thrown.expect(ParserException.class);
         thrown.expectMessage(endsWith(":6)"));
-        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
         pebble.getTemplate("test\r\n\r\ntest\r\ntest\r\ntest\r\n{% error %}\r\ntest");

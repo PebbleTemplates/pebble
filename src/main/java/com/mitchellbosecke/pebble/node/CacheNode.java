@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
@@ -58,8 +57,6 @@ public class CacheNode extends AbstractRenderableNode {
                 body = (String) context.getTagCache().get(key, k -> {
                     try {
                         return this.render(self, context);
-                    } catch (PebbleException e) {
-                        throw new RuntimePebbleException(e);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -17,7 +16,7 @@ import static java.util.Locale.CANADA;
 import static org.junit.Assert.assertEquals;
 
 public class RenderWithoutEndBlockTest extends AbstractTest {
-  @Test(expected = RuntimePebbleException.class)
+  @Test(expected = PebbleException.class)
     public void testRenderWithoutEndBlock() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -26,8 +25,6 @@ public class RenderWithoutEndBlockTest extends AbstractTest {
 
         Writer writer_a = new StringWriter();
         template.evaluateBlock("block_a", writer_a);
-
-
   }
 
 	@Test
@@ -47,7 +44,7 @@ public class RenderWithoutEndBlockTest extends AbstractTest {
 
     }
 
-  @Test(expected = RuntimePebbleException.class)
+  @Test(expected = PebbleException.class)
     public void testRenderWithoutEndBlockWithLocale() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -79,7 +76,7 @@ public class RenderWithoutEndBlockTest extends AbstractTest {
         assertEquals("Block B", writer_b.toString());
     }
 
-  @Test(expected = RuntimePebbleException.class)
+  @Test(expected = PebbleException.class)
     public void testRenderWithoutEndBlockWithContext() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -119,7 +116,7 @@ public class RenderWithoutEndBlockTest extends AbstractTest {
     }
 
 
-  @Test(expected = RuntimePebbleException.class)
+  @Test(expected = PebbleException.class)
     public void testRenderWithoutEndBlockWithContextAndLocale() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 

@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class StringInterpolationTest {
         assertEquals("1 plus 2 equals 3", evaluate(src));
     }
 
-    @Test(expected = RuntimePebbleException.class)
+    @Test(expected = PebbleException.class)
     public void testUnclosedInterpolation() throws Exception {
         String src = "{{ \" #{ 1 +\" }}";
 
