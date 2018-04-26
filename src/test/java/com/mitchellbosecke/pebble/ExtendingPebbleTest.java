@@ -8,27 +8,65 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
+import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
 public class ExtendingPebbleTest extends AbstractTest {
 
-    private final class CustomExtension extends AbstractExtension {
+    /**
+     * Issue #51
+     */
+    @Test
+    public void testFilterWithoutArgumentsCanAccessEvaluationContext() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder()
+                .loader(new StringLoader())
+                .strictVariables(false)
+                .extension(new CustomExtensionWithFilter())
+                .build();
 
+        PebbleTemplate template = pebble.getTemplate("{{ 'test' | noArgumentsButCanAccessContext }}");
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer);
+        assertEquals("success", writer.toString());
+    }
+
+    @Test
+    public void testCustomAttributeResolverEvaluateFirst() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder()
+                .loader(new StringLoader())
+                .strictVariables(false)
+                .extension(new CustomExtensionWithAttributeResolver())
+                .build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ person.name }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("person", new SimplePerson());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello customAttributeResolver", writer.toString());
+    }
+
+    private static final class CustomExtensionWithFilter extends AbstractExtension {
         @Override
         public Map<String, Filter> getFilters() {
 
@@ -55,18 +93,18 @@ public class ExtendingPebbleTest extends AbstractTest {
         }
     }
 
-    /**
-     * Issue #51
-     */
-    @Test
-    public void testFilterWithoutArgumentsCanAccessEvaluationContext() throws PebbleException, IOException {
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
-                .extension(new CustomExtension()).build();
+    private static final class CustomExtensionWithAttributeResolver extends AbstractExtension {
+        @Override
+        public List<AttributeResolver> getAttributeResolver() {
 
-        PebbleTemplate template = pebble.getTemplate("{{ 'test' | noArgumentsButCanAccessContext }}");
+            List<AttributeResolver> attributeResolvers = new ArrayList<>();
+            attributeResolvers.add((instance, attribute, argumentValues, isStrictVariables, filename, lineNumber) ->
+                    Optional.of(() -> "customAttributeResolver"));
+            return attributeResolvers;
+        }
+    }
 
-        Writer writer = new StringWriter();
-        template.evaluate(writer);
-        assertEquals("success", writer.toString());
+    private static class SimplePerson {
+        public final String name = "Bob";
     }
 }

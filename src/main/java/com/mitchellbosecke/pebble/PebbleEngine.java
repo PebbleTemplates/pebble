@@ -17,6 +17,7 @@ import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
+import com.mitchellbosecke.pebble.extension.core.AttributeResolverExtension;
 import com.mitchellbosecke.pebble.extension.core.CoreExtension;
 import com.mitchellbosecke.pebble.extension.escaper.EscaperExtension;
 import com.mitchellbosecke.pebble.extension.escaper.EscapingStrategy;
@@ -446,12 +447,13 @@ public class PebbleEngine {
          */
         public PebbleEngine build() {
 
-            // core extensions
-            List<Extension> extensions = new ArrayList<>();
-            extensions.add(new CoreExtension());
+          // core extensions
+          List<Extension> extensions = new ArrayList<>();
+          extensions.add(new CoreExtension());
           extensions.add(this.escaperExtension);
-            extensions.add(new I18nExtension());
-            extensions.addAll(this.userProvidedExtensions);
+          extensions.add(new I18nExtension());
+          extensions.addAll(this.userProvidedExtensions);
+          extensions.add(new AttributeResolverExtension());
 
             // default loader
           if (this.loader == null) {
