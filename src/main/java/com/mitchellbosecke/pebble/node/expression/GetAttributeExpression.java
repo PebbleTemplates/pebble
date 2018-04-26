@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
+import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.attributes.ResolvedAttribute;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -20,7 +21,6 @@ import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Used to get an attribute from an object. It will look up attributes in the
@@ -76,14 +76,11 @@ public class GetAttributeExpression implements Expression<Object> {
             }
         }
 
-        Optional<ResolvedAttribute> resolvedAttribute = context.getExtensionRegistry().getAttributeResolver().stream()
-                .map(attributeResolver -> attributeResolver.resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), this.filename, this.lineNumber))
-                .filter(Optional::isPresent)
-                .findFirst()
-                .map(Optional::get);
-
-        if (resolvedAttribute.isPresent()) {
-            return resolvedAttribute.get().evaluate();
+        for (AttributeResolver attributeResolver: context.getExtensionRegistry().getAttributeResolver()) {
+            ResolvedAttribute resolvedAttribute = attributeResolver.resolve(object, attributeNameValue, argumentValues, context.isStrictVariables(), this.filename, this.lineNumber);
+            if (resolvedAttribute != null) {
+                return resolvedAttribute.evaluate();
+            }
         }
 
         if (context.isStrictVariables()) {
@@ -95,16 +92,6 @@ public class GetAttributeExpression implements Expression<Object> {
                     this.lineNumber,
                     this.filename);
         }
-        return null;
-    }
-
-    private Object checkStrictVariableOrElseReturnNull(EvaluationContextImpl context, Object object, String attributeName) {
-        if (context.isStrictVariables()) {
-            throw new AttributeNotFoundException(null, String.format(
-                    "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                    attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
-        }
-
         return null;
     }
 
@@ -120,7 +107,7 @@ public class GetAttributeExpression implements Expression<Object> {
         Object[] argumentValues;
 
         if (this.args == null) {
-            argumentValues = null; //new Object[0];
+            argumentValues = null;
         } else {
             List<PositionalArgumentNode> args = this.args.getPositionalArgs();
 

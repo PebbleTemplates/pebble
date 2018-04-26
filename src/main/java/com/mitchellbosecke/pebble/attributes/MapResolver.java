@@ -3,44 +3,37 @@ package com.mitchellbosecke.pebble.attributes;
 import com.mitchellbosecke.pebble.error.PebbleException;
 
 import java.util.Map;
-import java.util.Optional;
 
 public class MapResolver implements AttributeResolver {
 
   @Override
-  public Optional<ResolvedAttribute> resolve(Object instance,
-                                             Object attribute,
-                                             Object[] argumentValues,
-                                             boolean isStrictVariables,
-                                             String filename,
-                                             int lineNumber) {
+  public ResolvedAttribute resolve(Object instance,
+                                   Object attributeNameValue,
+                                   Object[] argumentValues,
+                                   boolean isStrictVariables,
+                                   String filename,
+                                   int lineNumber) {
     if (argumentValues == null && instance instanceof Map) {
-      return Optional.of(() -> getObjectFromMap((Map<?, ?>) instance, attribute, filename, lineNumber));
+      Map<?, ?> object = (Map<?, ?>) instance;
+      if (object.isEmpty()) {
+        return null;
+      }
+      if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
+        Number keyAsNumber = (Number) attributeNameValue;
+
+        Class<?> keyClass = object.keySet().iterator().next().getClass();
+        Object key = this.cast(keyAsNumber, keyClass, filename, lineNumber);
+        return () -> object.get(key);
+      }
+      return () -> object.get(attributeNameValue);
     }
-    return Optional.empty();
+    return null;
   }
 
-  private static Object getObjectFromMap(Map<?, ?> object,
-                                         Object attributeNameValue,
-                                         String filename,
-                                         int lineNumber) throws PebbleException {
-    if (object.isEmpty()) {
-      return null;
-    }
-    if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
-      Number keyAsNumber = (Number) attributeNameValue;
-
-      Class<?> keyClass = object.keySet().iterator().next().getClass();
-      Object key = cast(keyAsNumber, keyClass, filename, lineNumber);
-      return object.get(key);
-    }
-    return object.get(attributeNameValue);
-  }
-
-  private static Object cast(Number number,
-                             Class<?> desiredType,
-                             String filename,
-                             int lineNumber) throws PebbleException {
+  private Object cast(Number number,
+                      Class<?> desiredType,
+                      String filename,
+                      int lineNumber) {
     if (desiredType == Long.class) {
       return number.longValue();
     } else if (desiredType == Integer.class) {

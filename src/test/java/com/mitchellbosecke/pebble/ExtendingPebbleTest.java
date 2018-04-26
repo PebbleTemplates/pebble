@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
@@ -99,7 +98,7 @@ public class ExtendingPebbleTest extends AbstractTest {
 
             List<AttributeResolver> attributeResolvers = new ArrayList<>();
             attributeResolvers.add((instance, attribute, argumentValues, isStrictVariables, filename, lineNumber) ->
-                    Optional.of(() -> "customAttributeResolver"));
+                    () -> "customAttributeResolver");
             return attributeResolvers;
         }
     }

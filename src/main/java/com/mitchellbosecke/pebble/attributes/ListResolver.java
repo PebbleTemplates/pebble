@@ -3,43 +3,45 @@ package com.mitchellbosecke.pebble.attributes;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
-
-import static java.util.Optional.empty;
 
 public class ListResolver implements AttributeResolver {
 
   @Override
-  public Optional<ResolvedAttribute> resolve(Object instance,
-                                             Object attribute,
-                                             Object[] argumentValues,
-                                             boolean isStrictVariables,
-                                             String filename,
-                                             int lineNumber) {
+  public ResolvedAttribute resolve(Object instance,
+                                   Object attributeNameValue,
+                                   Object[] argumentValues,
+                                   boolean isStrictVariables,
+                                   String filename,
+                                   int lineNumber) {
     if (argumentValues == null && instance instanceof List) {
-      String attributeName = String.valueOf(attribute);
+      String attributeName = String.valueOf(attributeNameValue);
 
       @SuppressWarnings("unchecked") List<Object> list = (List<Object>) instance;
 
-      Optional<Integer> optIndex = ArrayResolver.asIndex(attributeName);
-      if (optIndex.isPresent()) {
-        int index = optIndex.get();
-        int length = list.size();
+      int index = this.getIndex(attributeName);
+      int length = list.size();
 
-        if (index < 0 || index >= length) {
-          if (isStrictVariables) {
-            throw new AttributeNotFoundException(null,
-                "Index out of bounds while accessing array with strict variables on.",
-                attributeName, lineNumber, filename);
-          } else {
-            return Optional.of(() -> null);
-          }
+      if (index < 0 || index >= length) {
+        if (isStrictVariables) {
+          throw new AttributeNotFoundException(null,
+                  "Index out of bounds while accessing array with strict variables on.",
+                  attributeName, lineNumber, filename);
+        } else {
+          return () -> null;
         }
-
-        return Optional.of(() -> list.get(index));
       }
+
+      return () -> list.get(index);
     }
-    return empty();
+    return null;
   }
 
+  private int getIndex(String attributeName) {
+    try {
+      return Integer.parseInt(attributeName);
+    }
+    catch (NumberFormatException e) {
+      return -1;
+    }
+  }
 }
