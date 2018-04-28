@@ -13,7 +13,6 @@ import com.mitchellbosecke.pebble.attributes.ResolvedAttribute;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
-import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
@@ -25,7 +24,7 @@ import java.util.List;
 /**
  * Used to get an attribute from an object. It will look up attributes in the
  * following order: map entry, array item, list item,
- * {@link DynamicAttributeProvider}, get method, is method, has method, public method,
+ * get method, is method, has method, public method,
  * public field.
  *
  * @author Mitchell

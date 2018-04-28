@@ -4,7 +4,6 @@ public class DefaultAttributeResolver implements AttributeResolver {
   private final AttributeResolver mapResolver = new MapResolver();
   private final AttributeResolver arrayResolver = new ArrayResolver();
   private final AttributeResolver listResolver = new ListResolver();
-  private final DynamicAttributeProviderResolver dynamicAttributeProviderResolver = new DynamicAttributeProviderResolver();
   private final MemberResolver memberResolver = new MemberResolver();
 
   @Override
@@ -34,11 +33,6 @@ public class DefaultAttributeResolver implements AttributeResolver {
       }
 
       resolved = this.listResolver.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
-      if (resolved != null) {
-        return resolved;
-      }
-
-      resolved = this.dynamicAttributeProviderResolver.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
       if (resolved != null) {
         return resolved;
       }
