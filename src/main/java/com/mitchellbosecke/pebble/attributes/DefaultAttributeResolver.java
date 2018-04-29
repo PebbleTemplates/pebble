@@ -1,10 +1,16 @@
 package com.mitchellbosecke.pebble.attributes;
 
+import com.mitchellbosecke.pebble.error.ClassAccessException;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
 public class DefaultAttributeResolver implements AttributeResolver {
-  private final AttributeResolver mapResolver = new MapResolver();
-  private final AttributeResolver arrayResolver = new ArrayResolver();
-  private final AttributeResolver listResolver = new ListResolver();
-  private final MemberResolver memberResolver = new MemberResolver();
+  private final MemberCacheUtils memberCacheUtils = new MemberCacheUtils();
 
   @Override
   public ResolvedAttribute resolve(Object instance,
@@ -14,34 +20,58 @@ public class DefaultAttributeResolver implements AttributeResolver {
                                    String filename,
                                    int lineNumber) {
     if (instance != null) {
-      ResolvedAttribute resolved;
-      if (this.memberResolver.getMember(instance, String.valueOf(attributeNameValue)) != null) {
-        resolved = this.memberResolver.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
-        if (resolved != null) {
-          return resolved;
+      String attributeName = String.valueOf(attributeNameValue);
+
+      Member member = memberCacheUtils.getMember(instance, attributeName);
+      if (member == null) {
+        if (argumentValues == null) {
+
+          // first we check maps
+          if (instance instanceof Map) {
+            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
+          }
+
+          // then we check arrays
+          if (instance.getClass().isArray()) {
+            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
+          }
+
+          // then lists
+          if (instance instanceof List) {
+            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
+          }
         }
+
+        member = memberCacheUtils.cacheMember(instance, attributeName, argumentValues);
       }
 
-      resolved = this.mapResolver.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
-      if (resolved != null) {
-        return resolved;
+      if (member != null) {
+        Member finalMember = member;
+        return () -> this.invokeMember(instance, finalMember, argumentValues);
       }
 
-      resolved = this.arrayResolver.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
-      if (resolved != null) {
-        return resolved;
-      }
-
-      resolved = this.listResolver.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
-      if (resolved != null) {
-        return resolved;
-      }
-
-      resolved = this.memberResolver.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
-      if (resolved != null) {
-        return resolved;
+      if (isStrictVariables && (attributeName.equals("class") || attributeName.equals("getClass"))) {
+        throw new ClassAccessException(lineNumber, filename);
       }
     }
     return null;
+  }
+
+  /**
+   * Invoke the "Member" that was found via reflection.
+   */
+  private Object invokeMember(Object object, Member member, Object[] argumentValues) {
+    Object result = null;
+    try {
+      if (member instanceof Method) {
+        result = ((Method) member).invoke(object, argumentValues);
+      } else if (member instanceof Field) {
+        result = ((Field) member).get(object);
+      }
+
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+    return result;
   }
 }

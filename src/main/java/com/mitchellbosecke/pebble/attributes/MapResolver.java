@@ -5,6 +5,10 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import java.util.Map;
 
 public class MapResolver implements AttributeResolver {
+  public static final MapResolver INSTANCE = new MapResolver();
+
+  private MapResolver() {
+  }
 
   @Override
   public ResolvedAttribute resolve(Object instance,
@@ -13,21 +17,18 @@ public class MapResolver implements AttributeResolver {
                                    boolean isStrictVariables,
                                    String filename,
                                    int lineNumber) {
-    if (argumentValues == null && instance instanceof Map) {
-      Map<?, ?> object = (Map<?, ?>) instance;
-      if (object.isEmpty()) {
-        return null;
-      }
-      if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
-        Number keyAsNumber = (Number) attributeNameValue;
-
-        Class<?> keyClass = object.keySet().iterator().next().getClass();
-        Object key = this.cast(keyAsNumber, keyClass, filename, lineNumber);
-        return () -> object.get(key);
-      }
-      return () -> object.get(attributeNameValue);
+    Map<?, ?> object = (Map<?, ?>) instance;
+    if (object.isEmpty()) {
+      return null;
     }
-    return null;
+    if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
+      Number keyAsNumber = (Number) attributeNameValue;
+
+      Class<?> keyClass = object.keySet().iterator().next().getClass();
+      Object key = this.cast(keyAsNumber, keyClass, filename, lineNumber);
+      return () -> object.get(key);
+    }
+    return () -> object.get(attributeNameValue);
   }
 
   private Object cast(Number number,

@@ -1,63 +1,39 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import com.mitchellbosecke.pebble.error.ClassAccessException;
-
 import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemberResolver implements AttributeResolver {
-
+public class MemberCacheUtils {
   private final ConcurrentHashMap<MemberCacheKey, Member> memberCache = new ConcurrentHashMap<>(100, 0.9f, 1);
 
-  @Override
-  public ResolvedAttribute resolve(Object instance,
-                                   Object attributeNameValue,
-                                   Object[] argumentValues,
-                                   boolean isStrictVariables,
-                                   String filename,
-                                   int lineNumber) {
-    String attributeName = String.valueOf(attributeNameValue);
-    Member member = this.getMember(instance, attributeName);
-    if (member == null) {
-      if (argumentValues == null) {
-        argumentValues = new Object[0];
-      }
-      Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
-
-      for (int i = 0; i < argumentValues.length; i++) {
-        Object o = argumentValues[i];
-        if (o == null) {
-          argumentTypes[i] = null;
-        } else {
-          argumentTypes[i] = o.getClass();
-        }
-      }
-
-      member = this.reflect(instance, attributeName, argumentTypes);
-      if (member != null) {
-        this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName), member);
-      }
-    }
-
-    if (member != null) {
-      Member finalMember = member;
-      Object[] finalArgumentValues = argumentValues;
-      return () -> invokeMember(instance, finalMember, finalArgumentValues);
-    } else if (isStrictVariables) {
-      if (attributeName.equals("class") || attributeName.equals("getClass")) {
-        throw new ClassAccessException(lineNumber, filename);
-      }
-    }
-
-    return null;
+  Member getMember(Object instance, String attributeName) {
+    return this.memberCache.get(new MemberCacheKey(instance.getClass(), attributeName));
   }
 
-  Member getMember(Object instance, String attributeName) {
-    return instance == null ? null : this.memberCache.get(new MemberCacheKey(instance.getClass(), attributeName));
+  Member cacheMember(Object instance,
+                     String attributeName,
+                     Object[] argumentValues) {
+    if (argumentValues == null) {
+      argumentValues = new Object[0];
+    }
+    Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
+
+    for (int i = 0; i < argumentValues.length; i++) {
+      Object o = argumentValues[i];
+      if (o == null) {
+        argumentTypes[i] = null;
+      } else {
+        argumentTypes[i] = o.getClass();
+      }
+    }
+
+    Member member = this.reflect(instance, attributeName, argumentTypes);
+    if (member != null) {
+      this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName), member);
+    }
+    return member;
   }
 
   /**
@@ -162,21 +138,6 @@ public class MemberResolver implements AttributeResolver {
       result = Byte.class;
     } else if (clazz == boolean.class) {
       result = Boolean.class;
-    }
-    return result;
-  }
-
-  private Object invokeMember(Object instance, Member member, Object[] argumentValues) {
-    Object result = null;
-    try {
-      if (member instanceof Method) {
-        result = ((Method) member).invoke(instance, argumentValues);
-      } else if (member instanceof Field) {
-        result = ((Field) member).get(instance);
-      }
-
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      throw new RuntimeException(e);
     }
     return result;
   }
