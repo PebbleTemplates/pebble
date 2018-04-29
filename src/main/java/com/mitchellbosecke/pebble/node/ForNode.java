@@ -8,21 +8,21 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.template.ScopeChain;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Represents a "for" loop within the template.
@@ -39,12 +39,6 @@ public class ForNode extends AbstractRenderableNode {
 
     private final BodyNode elseBody;
 
-    class Control extends Object {
-        protected int value = -1;
-        public Control(int value){ this.value = value; }
-        public Control() {}
-    }
-    
     public ForNode(int lineNumber, String variableName, Expression<?> iterableExpression, BodyNode body,
             BodyNode elseBody) {
         super(lineNumber);
@@ -57,13 +51,12 @@ public class ForNode extends AbstractRenderableNode {
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
         final Object iterableEvaluation = this.iterableExpression.evaluate(self, context);
-        Iterable<?> iterable;
-        
+
         if (iterableEvaluation == null) {
             return;
         }
 
-        iterable = this.toIterable(iterableEvaluation);
+        Iterable<?> iterable = this.toIterable(iterableEvaluation);
 
         if (iterable == null) {
             throw new PebbleException(null, "Not an iterable object. Value = [" + iterableEvaluation.toString() + "]",
@@ -76,30 +69,31 @@ public class ForNode extends AbstractRenderableNode {
 
             ScopeChain scopeChain = context.getScopeChain();
             scopeChain.pushScope();
-            
+
             final Control length = new Control() {
+
                 @Override
-                public String toString() {
-                    if ( this.value == -1 )   {
+                protected int getValue() {
+                    if (this.value == -1) {
                         this.value = getIteratorSize(iterableEvaluation);
                     }
-                    return String.valueOf(value);
+                    return this.value;
                 }
             };
-            
+
             int index = 0;
-            
+
             Map<String, Object> loop = null;
-            
+
             boolean usingExecutorService = context.getExecutorService() != null;
 
             while (iterator.hasNext()) {
 
                 /*
-                 * If the user is using an executor service (i.e. parallel node), we
-                 * must create a new map with every iteration instead of
-                 * re-using the same one; it's imperative that each thread would
-                 * get it's own distinct copy of the context.
+                 * If the user is using an executor service (i.e. parallel
+                 * node), we must create a new map with every iteration instead
+                 * of re-using the same one; it's imperative that each thread
+                 * would get it's own distinct copy of the context.
                  */
                 if (index == 0 || usingExecutorService) {
                     loop = new HashMap<>();
@@ -110,21 +104,25 @@ public class ForNode extends AbstractRenderableNode {
                     // second iteration
                     loop.put("first", false);
                 }
-                
-                Control revindex = new Control(index) {
+
+                Control revindex = new Control() {
+
                     @Override
-                    public String toString() {
-                        return String.valueOf( Integer.valueOf(length.toString()) - this.value -1);
+                    protected int getValue() {
+                        if (this.value == -1) {
+                            this.value = length.getValue() - this.value - 1;
+                        }
+                        return this.value;
                     }
                 };
-                
+
                 loop.put("revindex", revindex);
                 loop.put("index", index++);
                 scopeChain.put("loop", loop);
                 scopeChain.put(this.variableName, iterator.next());
 
                 // last iteration
-                if( !iterator.hasNext() ){
+                if (!iterator.hasNext()) {
                     loop.put("last", true);
                 }
 
@@ -162,75 +160,133 @@ public class ForNode extends AbstractRenderableNode {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private Iterable<Object> toIterable(final Object obj) {
-
         Iterable<Object> result = null;
 
         if (obj instanceof Iterable<?>) {
-
             result = (Iterable<Object>) obj;
-
         } else if (obj instanceof Map) {
-
             // raw type
             result = ((Map) obj).entrySet();
-
         } else if (obj.getClass().isArray()) {
-
-            if (Array.getLength(obj) == 0) {
-                return new ArrayList<>(0);
-            }
-
-            result = new Iterable<Object>() {
-
-                @Override
-                public Iterator<Object> iterator() {
-                    return new Iterator<Object>() {
-
-                        private int index = 0;
-
-                        private final int length = Array.getLength(obj);
-
-                        @Override
-                        public boolean hasNext() {
-                            return this.index < this.length;
-                        }
-
-                        @Override
-                        public Object next() {
-                            return Array.get(obj, this.index++);
-                        }
-
-                        @Override
-                        public void remove() {
-                            throw new UnsupportedOperationException();
-                        }
-                    };
-                }
-            };
+            result = new ArrayIterable(obj);
+        } else if (obj instanceof Enumeration) {
+            result = new EnumerationIterable((Enumeration) obj);
         }
 
         return result;
     }
 
     private int getIteratorSize(Object iterable) {
-        if (iterable == null) {
-            return 0;
-        }
+        int size = 0;
+
         if (iterable instanceof Collection) {
-            return ((Collection<?>) iterable).size();
+            size = ((Collection<?>) iterable).size();
         } else if (iterable instanceof Map) {
-            return ((Map<?, ?>) iterable).size();
+            size = ((Map<?, ?>) iterable).size();
+        } else if (iterable instanceof Iterable) {
+            Iterator<?> it = ((Iterable<?>) iterable).iterator();
+            while (it.hasNext()) {
+                size++;
+                it.next();
+            }
         } else if (iterable.getClass().isArray()) {
-            return Array.getLength(iterable);
+            size = Array.getLength(iterable);
+        } else if (iterable instanceof Enumeration) {
+            Enumeration<?> enumeration = (Enumeration<?>) iterable;
+            while (enumeration.hasMoreElements()) {
+                size++;
+                enumeration.nextElement();
+            }
         }
 
-        // assumed to be of type Iterator
-        Iterator<?> it = ((Iterable<?>) iterable).iterator();
-        int size = 0;
-        while (it.hasNext()) {
-            size++;
-            it.next();
-        }
         return size;
     }
+
+    /**
+     * Holds an index that will be accessible during the iteration
+     */
+    private class Control extends Object {
+
+        protected int value = -1;
+
+        protected int getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(getValue());
+        }
+    }
+
+    /**
+     * Adapts an array to an Iterable
+     */
+    private class ArrayIterable implements Iterable<Object> {
+
+        private Object obj;
+
+        public ArrayIterable(Object array) {
+            this.obj = array;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<Object>() {
+
+                private int index = 0;
+
+                private final int length = Array.getLength(obj);
+
+                @Override
+                public boolean hasNext() {
+                    return this.index < this.length;
+                }
+
+                @Override
+                public Object next() {
+                    return Array.get(obj, this.index++);
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
+    /**
+     * Adapts an Enumeration to an Iterable
+     */
+    private class EnumerationIterable implements Iterable<Object> {
+
+        private Enumeration<Object> obj;
+
+        public EnumerationIterable(Enumeration<Object> enumeration) {
+            this.obj = enumeration;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<Object>() {
+
+                @Override
+                public boolean hasNext() {
+                    return obj.hasMoreElements();
+                }
+
+                @Override
+                public Object next() {
+                    return obj.nextElement();
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
 }
