@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import java.util.Map;
 
 public class MapResolver implements AttributeResolver {
-  public static final MapResolver INSTANCE = new MapResolver();
+  static final MapResolver INSTANCE = new MapResolver();
 
   private MapResolver() {
   }

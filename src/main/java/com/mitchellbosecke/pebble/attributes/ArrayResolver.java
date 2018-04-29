@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import java.lang.reflect.Array;
 
 public class ArrayResolver implements AttributeResolver {
-  public static final ArrayResolver INSTANCE = new ArrayResolver();
+  static final ArrayResolver INSTANCE = new ArrayResolver();
 
   private ArrayResolver() {
   }

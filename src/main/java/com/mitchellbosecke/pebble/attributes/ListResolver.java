@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import java.util.List;
 
 public class ListResolver implements AttributeResolver {
-  public static final ListResolver INSTANCE = new ListResolver();
+  static final ListResolver INSTANCE = new ListResolver();
 
   private ListResolver() {
   }
