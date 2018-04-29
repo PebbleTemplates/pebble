@@ -8,6 +8,8 @@
 - Java8 Date API support on date filter
 - Replace guava cache with caffeine
 - Add String Interpolation (#235)
+- Add the possibility to extend attribute access (#258)
+- Remove DynamicAttributeProvider
 
 ## v2.5.0 (2018-xx-xx)
 - Handle all Iterables and Arrays in JoinFilter (#273)

@@ -1,6 +1,7 @@
 package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class ListResolver implements AttributeResolver {
   public ResolvedAttribute resolve(Object instance,
                                    Object attributeNameValue,
                                    Object[] argumentValues,
-                                   boolean isStrictVariables,
+                                   EvaluationContextImpl context,
                                    String filename,
                                    int lineNumber) {
     String attributeName = String.valueOf(attributeNameValue);
@@ -25,7 +26,7 @@ public class ListResolver implements AttributeResolver {
     int length = list.size();
 
     if (index < 0 || index >= length) {
-      if (isStrictVariables) {
+      if (context.isStrictVariables()) {
         throw new AttributeNotFoundException(null,
                 "Index out of bounds while accessing array with strict variables on.",
                 attributeName, lineNumber, filename);

@@ -1,6 +1,7 @@
 package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class MapResolver implements AttributeResolver {
   public ResolvedAttribute resolve(Object instance,
                                    Object attributeNameValue,
                                    Object[] argumentValues,
-                                   boolean isStrictVariables,
+                                   EvaluationContextImpl context,
                                    String filename,
                                    int lineNumber) {
     Map<?, ?> object = (Map<?, ?>) instance;

@@ -1,6 +1,7 @@
 package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.ClassAccessException;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +17,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
   public ResolvedAttribute resolve(Object instance,
                                    Object attributeNameValue,
                                    Object[] argumentValues,
-                                   boolean isStrictVariables,
+                                   EvaluationContextImpl context,
                                    String filename,
                                    int lineNumber) {
     if (instance != null) {
@@ -28,17 +29,17 @@ public class DefaultAttributeResolver implements AttributeResolver {
 
           // first we check maps
           if (instance instanceof Map) {
-            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
+            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, context, filename, lineNumber);
           }
 
           // then we check arrays
           if (instance.getClass().isArray()) {
-            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
+            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, context, filename, lineNumber);
           }
 
           // then lists
           if (instance instanceof List) {
-            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, isStrictVariables, filename, lineNumber);
+            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, context, filename, lineNumber);
           }
         }
 
@@ -50,7 +51,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
         return () -> this.invokeMember(instance, finalMember, argumentValues);
       }
 
-      if (isStrictVariables && (attributeName.equals("class") || attributeName.equals("getClass"))) {
+      if (context.isStrictVariables() && (attributeName.equals("class") || attributeName.equals("getClass"))) {
         throw new ClassAccessException(lineNumber, filename);
       }
     }
