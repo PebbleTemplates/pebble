@@ -39,6 +39,18 @@ public class ForNode extends AbstractRenderableNode {
 
     private final BodyNode elseBody;
 
+    class Control extends Object {
+
+        protected int value = -1;
+
+        public Control(int value) {
+            this.value = value;
+        }
+
+        public Control() {
+        }
+    }
+
     public ForNode(int lineNumber, String variableName, Expression<?> iterableExpression, BodyNode body,
             BodyNode elseBody) {
         super(lineNumber);
@@ -51,12 +63,13 @@ public class ForNode extends AbstractRenderableNode {
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException {
         final Object iterableEvaluation = this.iterableExpression.evaluate(self, context);
+        Iterable<?> iterable;
 
         if (iterableEvaluation == null) {
             return;
         }
 
-        Iterable<?> iterable = this.toIterable(iterableEvaluation);
+        iterable = this.toIterable(iterableEvaluation);
 
         if (iterable == null) {
             throw new PebbleException(null, "Not an iterable object. Value = [" + iterableEvaluation.toString() + "]",
@@ -73,11 +86,11 @@ public class ForNode extends AbstractRenderableNode {
             final Control length = new Control() {
 
                 @Override
-                protected int getValue() {
+                public String toString() {
                     if (this.value == -1) {
                         this.value = getIteratorSize(iterableEvaluation);
                     }
-                    return this.value;
+                    return String.valueOf(value);
                 }
             };
 
@@ -105,14 +118,11 @@ public class ForNode extends AbstractRenderableNode {
                     loop.put("first", false);
                 }
 
-                Control revindex = new Control() {
+                Control revindex = new Control(index) {
 
                     @Override
-                    protected int getValue() {
-                        if (this.value == -1) {
-                            this.value = length.getValue() - this.value - 1;
-                        }
-                        return this.value;
+                    public String toString() {
+                        return String.valueOf(Integer.valueOf(length.toString()) - this.value - 1);
                     }
                 };
 
@@ -160,6 +170,7 @@ public class ForNode extends AbstractRenderableNode {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private Iterable<Object> toIterable(final Object obj) {
+
         Iterable<Object> result = null;
 
         if (obj instanceof Iterable<?>) {
@@ -177,46 +188,33 @@ public class ForNode extends AbstractRenderableNode {
     }
 
     private int getIteratorSize(Object iterable) {
-        int size = 0;
-
+        if (iterable == null) {
+            return 0;
+        }
         if (iterable instanceof Collection) {
-            size = ((Collection<?>) iterable).size();
+            return ((Collection<?>) iterable).size();
         } else if (iterable instanceof Map) {
-            size = ((Map<?, ?>) iterable).size();
-        } else if (iterable instanceof Iterable) {
-            Iterator<?> it = ((Iterable<?>) iterable).iterator();
-            while (it.hasNext()) {
-                size++;
-                it.next();
-            }
+            return ((Map<?, ?>) iterable).size();
         } else if (iterable.getClass().isArray()) {
-            size = Array.getLength(iterable);
+            return Array.getLength(iterable);
         } else if (iterable instanceof Enumeration) {
             Enumeration<?> enumeration = (Enumeration<?>) iterable;
+            int size = 0;
             while (enumeration.hasMoreElements()) {
                 size++;
                 enumeration.nextElement();
             }
+            return size;
         }
 
+        // assumed to be of type Iterator
+        Iterator<?> it = ((Iterable<?>) iterable).iterator();
+        int size = 0;
+        while (it.hasNext()) {
+            size++;
+            it.next();
+        }
         return size;
-    }
-
-    /**
-     * Holds an index that will be accessible during the iteration
-     */
-    private class Control extends Object {
-
-        protected int value = -1;
-
-        protected int getValue() {
-            return value;
-        }
-
-        @Override
-        public String toString() {
-            return String.valueOf(getValue());
-        }
     }
 
     /**
