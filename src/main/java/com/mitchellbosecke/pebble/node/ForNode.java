@@ -18,8 +18,8 @@ import com.mitchellbosecke.pebble.template.ScopeChain;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,11 +40,17 @@ public class ForNode extends AbstractRenderableNode {
     private final BodyNode elseBody;
 
     class Control extends Object {
+
         protected int value = -1;
-        public Control(int value){ this.value = value; }
-        public Control() {}
+
+        public Control(int value) {
+            this.value = value;
+        }
+
+        public Control() {
+        }
     }
-    
+
     public ForNode(int lineNumber, String variableName, Expression<?> iterableExpression, BodyNode body,
             BodyNode elseBody) {
         super(lineNumber);
@@ -58,7 +64,7 @@ public class ForNode extends AbstractRenderableNode {
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         final Object iterableEvaluation = this.iterableExpression.evaluate(self, context);
         Iterable<?> iterable;
-        
+
         if (iterableEvaluation == null) {
             return;
         }
@@ -76,30 +82,31 @@ public class ForNode extends AbstractRenderableNode {
 
             ScopeChain scopeChain = context.getScopeChain();
             scopeChain.pushScope();
-            
+
             final Control length = new Control() {
+
                 @Override
                 public String toString() {
-                    if ( this.value == -1 )   {
+                    if (this.value == -1) {
                         this.value = getIteratorSize(iterableEvaluation);
                     }
                     return String.valueOf(value);
                 }
             };
-            
+
             int index = 0;
-            
+
             Map<String, Object> loop = null;
-            
+
             boolean usingExecutorService = context.getExecutorService() != null;
 
             while (iterator.hasNext()) {
 
                 /*
-                 * If the user is using an executor service (i.e. parallel node), we
-                 * must create a new map with every iteration instead of
-                 * re-using the same one; it's imperative that each thread would
-                 * get it's own distinct copy of the context.
+                 * If the user is using an executor service (i.e. parallel
+                 * node), we must create a new map with every iteration instead
+                 * of re-using the same one; it's imperative that each thread
+                 * would get it's own distinct copy of the context.
                  */
                 if (index == 0 || usingExecutorService) {
                     loop = new HashMap<>();
@@ -110,21 +117,22 @@ public class ForNode extends AbstractRenderableNode {
                     // second iteration
                     loop.put("first", false);
                 }
-                
+
                 Control revindex = new Control(index) {
+
                     @Override
                     public String toString() {
-                        return String.valueOf( Integer.valueOf(length.toString()) - this.value -1);
+                        return String.valueOf(Integer.valueOf(length.toString()) - this.value - 1);
                     }
                 };
-                
+
                 loop.put("revindex", revindex);
                 loop.put("index", index++);
                 scopeChain.put("loop", loop);
                 scopeChain.put(this.variableName, iterator.next());
 
                 // last iteration
-                if( !iterator.hasNext() ){
+                if (!iterator.hasNext()) {
                     loop.put("last", true);
                 }
 
@@ -166,47 +174,14 @@ public class ForNode extends AbstractRenderableNode {
         Iterable<Object> result = null;
 
         if (obj instanceof Iterable<?>) {
-
             result = (Iterable<Object>) obj;
-
         } else if (obj instanceof Map) {
-
             // raw type
             result = ((Map) obj).entrySet();
-
         } else if (obj.getClass().isArray()) {
-
-            if (Array.getLength(obj) == 0) {
-                return new ArrayList<>(0);
-            }
-
-            result = new Iterable<Object>() {
-
-                @Override
-                public Iterator<Object> iterator() {
-                    return new Iterator<Object>() {
-
-                        private int index = 0;
-
-                        private final int length = Array.getLength(obj);
-
-                        @Override
-                        public boolean hasNext() {
-                            return this.index < this.length;
-                        }
-
-                        @Override
-                        public Object next() {
-                            return Array.get(obj, this.index++);
-                        }
-
-                        @Override
-                        public void remove() {
-                            throw new UnsupportedOperationException();
-                        }
-                    };
-                }
-            };
+            result = new ArrayIterable(obj);
+        } else if (obj instanceof Enumeration) {
+            result = new EnumerationIterable((Enumeration) obj);
         }
 
         return result;
@@ -222,6 +197,14 @@ public class ForNode extends AbstractRenderableNode {
             return ((Map<?, ?>) iterable).size();
         } else if (iterable.getClass().isArray()) {
             return Array.getLength(iterable);
+        } else if (iterable instanceof Enumeration) {
+            Enumeration<?> enumeration = (Enumeration<?>) iterable;
+            int size = 0;
+            while (enumeration.hasMoreElements()) {
+                size++;
+                enumeration.nextElement();
+            }
+            return size;
         }
 
         // assumed to be of type Iterator
@@ -233,4 +216,75 @@ public class ForNode extends AbstractRenderableNode {
         }
         return size;
     }
+
+    /**
+     * Adapts an array to an Iterable
+     */
+    private class ArrayIterable implements Iterable<Object> {
+
+        private Object obj;
+
+        public ArrayIterable(Object array) {
+            this.obj = array;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<Object>() {
+
+                private int index = 0;
+
+                private final int length = Array.getLength(obj);
+
+                @Override
+                public boolean hasNext() {
+                    return this.index < this.length;
+                }
+
+                @Override
+                public Object next() {
+                    return Array.get(obj, this.index++);
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
+    /**
+     * Adapts an Enumeration to an Iterable
+     */
+    private class EnumerationIterable implements Iterable<Object> {
+
+        private Enumeration<Object> obj;
+
+        public EnumerationIterable(Enumeration<Object> enumeration) {
+            this.obj = enumeration;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<Object>() {
+
+                @Override
+                public boolean hasNext() {
+                    return obj.hasMoreElements();
+                }
+
+                @Override
+                public Object next() {
+                    return obj.nextElement();
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
 }
