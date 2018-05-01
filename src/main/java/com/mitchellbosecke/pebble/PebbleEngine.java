@@ -279,7 +279,7 @@ public class PebbleEngine {
 
         private EscaperExtension escaperExtension = new EscaperExtension();
 
-        private boolean allowGetClass = true;
+        private boolean allowGetClass;
 
         /**
          * Creates the builder.
