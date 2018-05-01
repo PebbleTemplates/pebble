@@ -8,10 +8,51 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
-import com.mitchellbosecke.pebble.extension.*;
-import com.mitchellbosecke.pebble.node.expression.*;
-import com.mitchellbosecke.pebble.operator.*;
-import com.mitchellbosecke.pebble.tokenParser.*;
+import com.mitchellbosecke.pebble.extension.AbstractExtension;
+import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
+import com.mitchellbosecke.pebble.extension.Test;
+import com.mitchellbosecke.pebble.node.expression.AddExpression;
+import com.mitchellbosecke.pebble.node.expression.AndExpression;
+import com.mitchellbosecke.pebble.node.expression.ConcatenateExpression;
+import com.mitchellbosecke.pebble.node.expression.ContainsExpression;
+import com.mitchellbosecke.pebble.node.expression.DivideExpression;
+import com.mitchellbosecke.pebble.node.expression.EqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.FilterExpression;
+import com.mitchellbosecke.pebble.node.expression.GreaterThanEqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.GreaterThanExpression;
+import com.mitchellbosecke.pebble.node.expression.LessThanEqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.LessThanExpression;
+import com.mitchellbosecke.pebble.node.expression.ModulusExpression;
+import com.mitchellbosecke.pebble.node.expression.MultiplyExpression;
+import com.mitchellbosecke.pebble.node.expression.NegativeTestExpression;
+import com.mitchellbosecke.pebble.node.expression.NotEqualsExpression;
+import com.mitchellbosecke.pebble.node.expression.OrExpression;
+import com.mitchellbosecke.pebble.node.expression.PositiveTestExpression;
+import com.mitchellbosecke.pebble.node.expression.RangeExpression;
+import com.mitchellbosecke.pebble.node.expression.SubtractExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryMinusExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryNotExpression;
+import com.mitchellbosecke.pebble.node.expression.UnaryPlusExpression;
+import com.mitchellbosecke.pebble.operator.Associativity;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.BinaryOperatorImpl;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperatorImpl;
+import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.CacheTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.FilterTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.FlushTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.ForTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.IfTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.ImportTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.IncludeTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.ParallelTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +84,7 @@ public class CoreExtension extends AbstractExtension {
     @Override
     public List<UnaryOperator> getUnaryOperators() {
         ArrayList<UnaryOperator> operators = new ArrayList<>();
-        operators.add(new UnaryOperatorImpl("not", 5, UnaryNotExpression.class));
+        operators.add(new UnaryOperatorImpl("not", 10, UnaryNotExpression.class));
         operators.add(new UnaryOperatorImpl("+", 500, UnaryPlusExpression.class));
         operators.add(new UnaryOperatorImpl("-", 500, UnaryMinusExpression.class));
         return operators;
@@ -52,8 +93,8 @@ public class CoreExtension extends AbstractExtension {
     @Override
     public List<BinaryOperator> getBinaryOperators() {
         ArrayList<BinaryOperator> operators = new ArrayList<>();
-        operators.add(new BinaryOperatorImpl("or", 10, OrExpression.class, Associativity.LEFT));
-        operators.add(new BinaryOperatorImpl("and", 15, AndExpression.class, Associativity.LEFT));
+        operators.add(new BinaryOperatorImpl("or", 1, OrExpression.class, Associativity.LEFT));
+        operators.add(new BinaryOperatorImpl("and", 5, AndExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("is", 20, PositiveTestExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("is not", 20, NegativeTestExpression.class, Associativity.LEFT));
         operators.add(new BinaryOperatorImpl("contains", 20, ContainsExpression.class, Associativity.LEFT));

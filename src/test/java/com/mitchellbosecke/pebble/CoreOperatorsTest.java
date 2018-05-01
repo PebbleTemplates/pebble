@@ -8,7 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import com.mitchellbosecke.pebble.utils.Pair;
+
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,12 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import com.mitchellbosecke.pebble.utils.Pair;
+import static org.junit.Assert.assertEquals;
 
 public class CoreOperatorsTest extends AbstractTest {
 
@@ -219,6 +219,34 @@ public class CoreOperatorsTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("noyes", writer.toString());
+    }
+
+    @Test
+    public void testNotOperatorPrecedence() throws IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{% if not item.falsy and not item.truthy %}This should not be displayed{% else %}All's good{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("item", new Item());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("All's good", writer.toString());
+    }
+
+    @Test
+    public void testNotOperatorWithParenthesisPrecedence() throws IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{% if (not item.falsy) and (not item.truthy) %}This should not be displayed{% else %}All's good{% endif %}";
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("item", new Item());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("All's good", writer.toString());
     }
 
     @Test
