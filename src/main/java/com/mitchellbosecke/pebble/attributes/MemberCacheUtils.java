@@ -1,5 +1,8 @@
 package com.mitchellbosecke.pebble.attributes;
 
+import com.mitchellbosecke.pebble.error.ClassAccessException;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -14,7 +17,10 @@ public class MemberCacheUtils {
 
   Member cacheMember(Object instance,
                      String attributeName,
-                     Object[] argumentValues) {
+                     Object[] argumentValues,
+                     EvaluationContextImpl context,
+                     String filename,
+                     int lineNumber) {
     if (argumentValues == null) {
       argumentValues = new Object[0];
     }
@@ -29,7 +35,7 @@ public class MemberCacheUtils {
       }
     }
 
-    Member member = this.reflect(instance, attributeName, argumentTypes);
+    Member member = this.reflect(instance, attributeName, argumentTypes, filename, lineNumber, context.isAllowGetClass());
     if (member != null) {
       this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName), member);
     }
@@ -39,7 +45,7 @@ public class MemberCacheUtils {
   /**
    * Performs the actual reflection to obtain a "Member" from a class.
    */
-  private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes) {
+  private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, String filename, int lineNumber, boolean allowGetClass) {
 
     Class<?> clazz = object.getClass();
 
@@ -47,21 +53,21 @@ public class MemberCacheUtils {
     String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
     // check get method
-    Member result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes);
+    Member result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, filename, lineNumber, allowGetClass);
 
     // check is method
     if (result == null) {
-      result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes);
+      result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, filename, lineNumber, allowGetClass);
     }
 
     // check has method
     if (result == null) {
-      result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes);
+      result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, filename, lineNumber, allowGetClass);
     }
 
     // check if attribute is a public method
     if (result == null) {
-      result = this.findMethod(clazz, attributeName, parameterTypes);
+      result = this.findMethod(clazz, attributeName, parameterTypes, filename, lineNumber, allowGetClass);
     }
 
     // public field
@@ -83,8 +89,11 @@ public class MemberCacheUtils {
    * Finds an appropriate method by comparing if parameter types are
    * compatible. This is more relaxed than class.getMethod.
    */
-  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes) {
+  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, String filename, int lineNumber, boolean allowGetClass) {
     if (name.equals("getClass")) {
+      if (!allowGetClass) {
+        throw new ClassAccessException(lineNumber, filename);
+      }
       return null;
     }
 

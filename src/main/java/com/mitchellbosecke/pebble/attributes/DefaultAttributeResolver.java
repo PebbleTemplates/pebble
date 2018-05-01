@@ -43,7 +43,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
           }
         }
 
-        member = memberCacheUtils.cacheMember(instance, attributeName, argumentValues);
+        member = memberCacheUtils.cacheMember(instance, attributeName, argumentValues, context, filename, lineNumber);
       }
 
       if (member != null) {

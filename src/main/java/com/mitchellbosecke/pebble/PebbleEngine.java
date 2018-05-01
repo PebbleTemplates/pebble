@@ -69,6 +69,8 @@ public class PebbleEngine {
 
     private final ExtensionRegistry extensionRegistry;
 
+    private final boolean allowGetClass;
+
     /**
      * Constructor for the Pebble Engine given an instantiated Loader. This
      * method does only load those userProvidedExtensions listed here.
@@ -77,9 +79,15 @@ public class PebbleEngine {
      * @param syntax     the syntax to use for parsing the templates.
      * @param extensions The userProvidedExtensions which should be loaded.
      */
-    private PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
-                         Cache<CacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
-                         ExecutorService executorService, Collection<? extends Extension> extensions) {
+    private PebbleEngine(Loader<?> loader,
+                         Syntax syntax,
+                         boolean strictVariables,
+                         Locale defaultLocale,
+                         Cache<CacheKey, Object> tagCache,
+                         Cache<Object, PebbleTemplate> templateCache,
+                         ExecutorService executorService,
+                         Collection<? extends Extension> extensions,
+                         boolean allowGetClass) {
 
         this.loader = loader;
         this.syntax = syntax;
@@ -89,6 +97,7 @@ public class PebbleEngine {
         this.executorService = executorService;
         this.templateCache = templateCache;
         this.extensionRegistry = new ExtensionRegistry(extensions);
+        this.allowGetClass = allowGetClass;
     }
 
     /**
@@ -235,6 +244,15 @@ public class PebbleEngine {
     }
 
     /**
+     * Returns toggle to enable/disable getClass access
+     *
+     * @return toggle to enable/disable getClass access
+     */
+    public boolean isAllowGetClass() {
+        return this.allowGetClass;
+    }
+
+    /**
      * A builder to configure and construct an instance of a PebbleEngine.
      */
     public static class Builder {
@@ -257,9 +275,11 @@ public class PebbleEngine {
 
         private boolean cacheActive = true;
 
-      private Cache<CacheKey, Object> tagCache;
+        private Cache<CacheKey, Object> tagCache;
 
         private EscaperExtension escaperExtension = new EscaperExtension();
+
+        private boolean allowGetClass = true;
 
         /**
          * Creates the builder.
@@ -441,6 +461,17 @@ public class PebbleEngine {
         }
 
         /**
+         * Enable/disable getClass access for attributes
+         *
+         * @param allowGetClass toggle to enable/disable getClass access
+         * @return This builder object
+         */
+        public Builder allowGetClass(boolean allowGetClass) {
+            this.allowGetClass = allowGetClass;
+            return this;
+        }
+
+        /**
          * Creates the PebbleEngine instance.
          *
          * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
@@ -488,7 +519,7 @@ public class PebbleEngine {
             }
 
           return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale, this.tagCache, this.templateCache,
-                  this.executorService, extensions);
+                  this.executorService, extensions, this.allowGetClass);
         }
     }
 }
