@@ -14,7 +14,7 @@
 
 	<name>Pebble</name>
 	<description>Templating engine for Java.</description>
-	<url>http://www.mitchellbosecke.com/pebble</url>
+	<url>http://pebbletemplates.io</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -86,7 +86,7 @@
 					</excludes>
 					<header>
 			            <![CDATA[
-			                <a href="http://www.mitchellbosecke.com/pebble" target="_blank">Home</a>
+			                <a href="http://pebbletemplates.io" target="_blank">Home</a>
 			            ]]>
 					</header>
 				</configuration>
