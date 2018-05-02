@@ -8,14 +8,14 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mitchellbosecke</groupId>
+    <groupId>io.pebbletemplates</groupId>
     <artifactId>pebble</artifactId>
     <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Pebble</name>
     <description>Templating engine for Java.</description>
-    <url>http://www.mitchellbosecke.com/pebble</url>
+    <url>http://pebbletemplates.io</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,7 +87,7 @@
                     </excludes>
                     <header>
                         <![CDATA[
-			                <a href="http://www.mitchellbosecke.com/pebble" target="_blank">Home</a>
+			                <a href="http://pebbletemplates.io" target="_blank">Home</a>
 			            ]]>
                     </header>
                 </configuration>
@@ -247,9 +247,9 @@
     </dependencies>
 
     <scm>
-        <connection>scm:git:git://github.com/mbosecke/pebble.git</connection>
-        <developerConnection>scm:git:git@github.com:mbosecke/pebble.git</developerConnection>
-        <url>http://github.com/mbosecke/pebble.git</url>
+        <connection>scm:git:git://github.com/PebbleTemplates/pebble.git</connection>
+        <developerConnection>scm:git:git@github.com:PebbleTemplates/pebble.git</developerConnection>
+        <url>https://github.com/PebbleTemplates/pebble.git</url>
         <tag>HEAD</tag>
     </scm>
 </project>
