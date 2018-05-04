@@ -196,13 +196,9 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
 
             } else {
-                if (attributeName.equals("class") || attributeName.equals("getClass")) {
-                    throw new ClassAccessException(this.lineNumber, this.filename);
-                } else {
-                    throw new AttributeNotFoundException(null, String.format(
-                            "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
-                            attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
-                }
+                throw new AttributeNotFoundException(null, String.format(
+                        "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                        attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
             }
         }
         return result;
@@ -351,11 +347,8 @@ public class GetAttributeExpression implements Expression<Object> {
      * @return
      */
     private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, boolean allowGetClass) {
-        if (name.equals("getClass")) {
-            if (!allowGetClass) {
-                throw new ClassAccessException(this.lineNumber, this.filename);
-            }
-            return null;
+        if (!allowGetClass && name.equals("getClass")) {
+            throw new ClassAccessException(this.lineNumber, this.filename);
         }
 
         Method result = null;

@@ -15,7 +15,6 @@ import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -112,77 +111,143 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("hello Steve", writer.toString());
     }
 
+    /**
+     * Make sure we are properly accounting for getting the class object from an Object in all situations:
+     *
+     * | AllowGetClass | Strict Variables | Access Type | Result  |
+     * | ------------- | ---------------- | ----------- | ------- |
+     * | true          | false            | property    | allowed |
+     * | true          | false            | method      | allowed |
+     * | true          | true             | property    | allowed |
+     * | true          | true             | method      | allowed |
+     * | false         | false            | property    | throw   |
+     * | false         | false            | method      | throw   |
+     * | false         | true             | property    | throw   |
+     * | false         | true             | method      | throw   |
+     *
+     * @throws PebbleException
+     * @throws IOException
+     */
+
     @Test
-    public void testMethodAttributeWhenAccessingClassWithStrictVariableOffAndAllowGetClass() throws PebbleException, IOException {
+    public void testAccessingClass_AllowGetClassOn_StrictVariableOff_Property() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                .strictVariables(false)
                 .allowGetClass(true)
+                .strictVariables(false)
                 .build();
 
-        PebbleTemplate template = pebble.getTemplate("hello {{ object.class }}");
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
         Map<String, Object> context = new HashMap<>();
-        context.put("object", "some string");
+        context.put("object", new SimpleObject());
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("hello ", writer.toString());
+        assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
     }
 
-    @Test(expected = ClassAccessException.class)
-    public void testMethodAttributeWhenAccessingClassWithStrictVariableOnAndAllowGetClass() throws PebbleException, IOException {
+    @Test
+    public void testAccessingClass_AllowGetClassOn_StrictVariableOff_Method() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+                .allowGetClass(true)
+                .strictVariables(false)
+                .build();
+
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new SimpleObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
+    }
+
+    @Test
+    public void testAccessingClass_AllowGetClassOn_StrictVariableOn_Property() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+                .allowGetClass(true)
                 .strictVariables(true)
-                .allowGetClass(true)
                 .build();
 
-        PebbleTemplate template = pebble.getTemplate("hello {{ object.class }}");
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
         Map<String, Object> context = new HashMap<>();
-        context.put("object", "some string");
+        context.put("object", new SimpleObject());
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
+        assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
     }
 
-    @Test(expected = ClassAccessException.class)
-    public void testMethodAttributeWhenAccessingGetClassWithStrictVariableOnAndAllowGetClass() throws PebbleException, IOException {
+    @Test
+    public void testAccessingClass_AllowGetClassOn_StrictVariableOn_Method() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+                .allowGetClass(true)
                 .strictVariables(true)
-                .allowGetClass(true)
                 .build();
 
-        PebbleTemplate template = pebble.getTemplate("hello {{ object.getClass }}");
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
         Map<String, Object> context = new HashMap<>();
-        context.put("object", "some string");
+        context.put("object", new SimpleObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
+    }
+
+    @Test(expected = ClassAccessException.class)
+    public void testAccessingClass_AllowGetClassOff_StrictVariableOff_Property() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+                .allowGetClass(false)
+                .strictVariables(false)
+                .build();
+
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new SimpleObject());
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
     }
 
     @Test(expected = ClassAccessException.class)
-    public void testMethodAttributeWhenAccessingClassWithStrictVariableOffAndDontAllowGetClass() throws PebbleException, IOException {
+    public void testAccessingClass_AllowGetClassOff_StrictVariableOff_Method() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                .strictVariables(false)
                 .allowGetClass(false)
+                .strictVariables(false)
                 .build();
 
-        PebbleTemplate template = pebble.getTemplate("hello {{ object.class }}");
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
         Map<String, Object> context = new HashMap<>();
-        context.put("object", "some string");
+        context.put("object", new SimpleObject());
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
     }
 
     @Test(expected = ClassAccessException.class)
-    public void testMethodAttributeWhenAccessingGetClassWithStrictVariableOffAndDontAllowGetClass() throws PebbleException, IOException {
+    public void testAccessingClass_AllowGetClassOff_StrictVariableOn_Property() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                .strictVariables(false)
                 .allowGetClass(false)
+                .strictVariables(true)
                 .build();
 
-        PebbleTemplate template = pebble.getTemplate("hello {{ object.getClass }}");
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
         Map<String, Object> context = new HashMap<>();
-        context.put("object", "some string");
+        context.put("object", new SimpleObject());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test(expected = ClassAccessException.class)
+    public void testAccessingClass_AllowGetClassOff_StrictVariableOn_Method() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+                .allowGetClass(false)
+                .strictVariables(true)
+                .build();
+
+        PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new SimpleObject());
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
