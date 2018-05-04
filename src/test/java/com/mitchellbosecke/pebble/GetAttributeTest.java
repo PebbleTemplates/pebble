@@ -120,8 +120,8 @@ public class GetAttributeTest extends AbstractTest {
      * | true          | false            | method      | allowed |
      * | true          | true             | property    | allowed |
      * | true          | true             | method      | allowed |
-     * | false         | false            | property    | null    |
-     * | false         | false            | method      | null    |
+     * | false         | false            | property    | throw   |
+     * | false         | false            | method      | throw   |
      * | false         | true             | property    | throw   |
      * | false         | true             | method      | throw   |
      *
@@ -193,7 +193,7 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
     }
 
-    @Test
+    @Test(expected = ClassAccessException.class)
     public void testAccessingClass_AllowGetClassOff_StrictVariableOff_Property() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
                 .allowGetClass(false)
@@ -206,10 +206,9 @@ public class GetAttributeTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("hello []", writer.toString());
     }
 
-    @Test
+    @Test(expected = ClassAccessException.class)
     public void testAccessingClass_AllowGetClassOff_StrictVariableOff_Method() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
                 .allowGetClass(false)
@@ -222,7 +221,6 @@ public class GetAttributeTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        assertEquals("hello []", writer.toString());
     }
 
     @Test(expected = ClassAccessException.class)

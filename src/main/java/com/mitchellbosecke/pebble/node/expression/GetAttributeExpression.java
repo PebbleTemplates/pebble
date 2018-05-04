@@ -173,7 +173,7 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
             }
 
-            member = this.reflect(object, attributeName, argumentTypes, context.isAllowGetClass(), context.isStrictVariables());
+            member = this.reflect(object, attributeName, argumentTypes, context.isAllowGetClass());
             if (member != null) {
                 this.memberCache.put(new MemberCacheKey(object.getClass(), attributeName), member);
             }
@@ -299,7 +299,7 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param parameterTypes
      * @return
      */
-    private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, boolean allowGetClass, boolean strictVariables) {
+    private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, boolean allowGetClass) {
 
         Class<?> clazz = object.getClass();
 
@@ -309,21 +309,21 @@ public class GetAttributeExpression implements Expression<Object> {
         String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
         // check get method
-        result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, allowGetClass, strictVariables);
+        result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, allowGetClass);
 
         // check is method
         if (result == null) {
-            result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, allowGetClass, strictVariables);
+            result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, allowGetClass);
         }
 
         // check has method
         if (result == null) {
-            result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, allowGetClass, strictVariables);
+            result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, allowGetClass);
         }
 
         // check if attribute is a public method
         if (result == null) {
-            result = this.findMethod(clazz, attributeName, parameterTypes, allowGetClass, strictVariables);
+            result = this.findMethod(clazz, attributeName, parameterTypes, allowGetClass);
         }
 
         // public field
@@ -350,15 +350,10 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param requiredTypes
      * @return
      */
-    private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, boolean allowGetClass, boolean strictVariables) {
+    private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, boolean allowGetClass) {
         if (name.equals("getClass")) {
             if (!allowGetClass) {
-                if(strictVariables) {
-                    throw new ClassAccessException(this.lineNumber, this.filename);
-                }
-                else {
-                    return null;
-                }
+                throw new ClassAccessException(this.lineNumber, this.filename);
             }
         }
 
