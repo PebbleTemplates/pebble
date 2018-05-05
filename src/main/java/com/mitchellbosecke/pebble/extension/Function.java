@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -16,7 +15,6 @@ import java.util.Map;
 
 public interface Function extends NamedArguments {
 
-    Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws
-            PebbleException;
+    Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber);
 
 }

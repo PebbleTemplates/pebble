@@ -68,7 +68,7 @@ public class CacheNode extends AbstractRenderableNode {
         }
     }
 
-    private String render(final PebbleTemplateImpl self, final EvaluationContextImpl context) throws PebbleException, IOException {
+    private String render(final PebbleTemplateImpl self, final EvaluationContextImpl context) throws IOException {
         StringWriter tempWriter = new StringWriter();
         CacheNode.this.body.render(self, tempWriter, context);
 

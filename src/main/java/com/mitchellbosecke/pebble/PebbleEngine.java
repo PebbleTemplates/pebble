@@ -136,7 +136,7 @@ public class PebbleEngine {
         return result;
     }
 
-    private PebbleTemplate getPebbleTemplate(final PebbleEngine self, final String templateName, final Object cacheKey) throws LoaderException, ParserException {
+    private PebbleTemplate getPebbleTemplate(final PebbleEngine self, final String templateName, final Object cacheKey) {
       LexerImpl lexer = new LexerImpl(this.syntax, this.extensionRegistry.getUnaryOperators().values(),
               this.extensionRegistry.getBinaryOperators().values());
         Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);

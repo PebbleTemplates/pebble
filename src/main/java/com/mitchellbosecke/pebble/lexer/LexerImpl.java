@@ -215,7 +215,7 @@ public final class LexerImpl implements Lexer {
         return new TokenStream(tokens, source.getFilename());
     }
 
-    private void lexStringInterpolation() throws ParserException {
+    private void lexStringInterpolation() {
         String lastBracket = brackets.peek().getLeft();
         Matcher matcher = syntax.getRegexInterpolationClose().matcher(source);
         if (syntax.getInterpolationOpenDelimiter().equals(lastBracket) && matcher.lookingAt()) {
@@ -228,7 +228,7 @@ public final class LexerImpl implements Lexer {
         }
     }
 
-    private void lexString() throws ParserException {
+    private void lexString() {
         // interpolation
         Matcher matcher = this.syntax.getRegexInterpolationOpen().matcher(source);
         if (matcher.lookingAt()) {
