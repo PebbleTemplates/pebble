@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
@@ -35,7 +34,7 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         Function function = context.getExtensionRegistry().getFunction(this.functionName);
         if (function != null) {
             return this.applyFunction(self, context, function, this.args);
@@ -43,8 +42,7 @@ public class  FunctionOrMacroInvocationExpression implements Expression<Object> 
         return self.macro(context, this.functionName, this.args, false, this.lineNumber);
     }
 
-    private Object applyFunction(PebbleTemplateImpl self, EvaluationContext context, Function function,
-            ArgumentsNode args) throws PebbleException {
+    private Object applyFunction(PebbleTemplateImpl self, EvaluationContext context, Function function, ArgumentsNode args) {
         List<Object> arguments = new ArrayList<>();
 
         Collections.addAll(arguments, args);

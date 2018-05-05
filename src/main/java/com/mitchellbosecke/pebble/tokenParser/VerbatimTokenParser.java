@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
@@ -23,7 +22,7 @@ import com.mitchellbosecke.pebble.parser.Parser;
 public class VerbatimTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+    public RenderableNode parse(Token token, Parser parser) {
 
         throw new UnsupportedOperationException();
     }

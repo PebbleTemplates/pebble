@@ -8,14 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.parser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
@@ -47,6 +39,14 @@ import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Parses expressions.
@@ -84,10 +84,8 @@ public class ExpressionParser {
      * The public entry point for parsing an expression.
      *
      * @return NodeExpression the expression that has been parsed.
-     * @throws ParserException
-     *             Thrown if a parsing error occurs
      */
-    public Expression<?> parseExpression() throws ParserException {
+    public Expression<?> parseExpression() {
         return parseExpression(0);
     }
 
@@ -99,10 +97,8 @@ public class ExpressionParser {
      * @see http://en.wikipedia.org/wiki/Operator-precedence_parser
      *
      * @return The NodeExpression representing the parsed expression.
-     * @throws ParserException
-     *             Thrown if a parsing error occurs.
      */
-    private Expression<?> parseExpression(int minPrecedence) throws ParserException {
+    private Expression<?> parseExpression(int minPrecedence) {
 
         this.stream = parser.getStream();
         Token token = stream.current();
@@ -256,10 +252,8 @@ public class ExpressionParser {
      * binary operator. Ex. "var.field", "true", "12", etc.
      *
      * @return NodeExpression The expression that it found.
-     * @throws ParserException
-     *             Thrown if a parsing error occurs.
      */
-    private Expression<?> subparseExpression() throws ParserException {
+    private Expression<?> subparseExpression() {
         final Token token = stream.current();
         Expression<?> node = null;
 
@@ -325,7 +319,7 @@ public class ExpressionParser {
     }
 
     @SuppressWarnings("unchecked")
-    private Expression<?> parseTernaryExpression(Expression<?> expression) throws ParserException {
+    private Expression<?> parseTernaryExpression(Expression<?> expression) {
         // if the next token isn't a ?, we're not dealing with a ternary expression
         if (!stream.current().test(Token.Type.PUNCTUATION, "?")) return expression;
 
@@ -349,10 +343,8 @@ public class ExpressionParser {
      *            The expression that we have already discovered
      * @return Either the original expression that was passed in or a slightly
      *         modified version of it, depending on what was discovered.
-     * @throws ParserException
-     *             Thrown if a parsing error occurs.
      */
-    private Expression<?> parsePostfixExpression(Expression<?> node) throws ParserException {
+    private Expression<?> parsePostfixExpression(Expression<?> node) {
         Token current;
         while (true) {
             current = stream.current();
@@ -375,7 +367,7 @@ public class ExpressionParser {
         return node;
     }
 
-    private Expression<?> parseFunctionOrMacroInvocation(Expression<?> node) throws ParserException {
+    private Expression<?> parseFunctionOrMacroInvocation(Expression<?> node) {
         String functionName = ((FunctionOrMacroNameNode) node).getName();
         ArgumentsNode args = parseArguments();
 
@@ -393,7 +385,7 @@ public class ExpressionParser {
         return new FunctionOrMacroInvocationExpression(functionName, args, node.getLineNumber());
     }
 
-    public FilterInvocationExpression parseFilterInvocationExpression() throws ParserException {
+    public FilterInvocationExpression parseFilterInvocationExpression() {
         TokenStream stream = parser.getStream();
         Token filterToken = stream.expect(Token.Type.NAME);
 
@@ -407,7 +399,7 @@ public class ExpressionParser {
         return new FilterInvocationExpression(filterToken.getValue(), args, filterToken.getLineNumber());
     }
 
-    private Expression<?> parseTestInvocationExpression() throws ParserException {
+    private Expression<?> parseTestInvocationExpression() {
         TokenStream stream = parser.getStream();
         int lineNumber = stream.current().getLineNumber();
 
@@ -433,10 +425,8 @@ public class ExpressionParser {
      * @param node
      *            The expression parsed so far
      * @return NodeExpression The parsed subscript expression
-     * @throws ParserException
-     *             Thrown if a parsing error occurs.
      */
-    private Expression<?> parseBeanAttributeExpression(Expression<?> node) throws ParserException {
+    private Expression<?> parseBeanAttributeExpression(Expression<?> node) {
         TokenStream stream = parser.getStream();
 
         if (stream.current().test(Token.Type.PUNCTUATION, ".")) {
@@ -472,11 +462,11 @@ public class ExpressionParser {
         return node;
     }
 
-    public ArgumentsNode parseArguments() throws ParserException {
+    public ArgumentsNode parseArguments() {
         return parseArguments(false);
     }
 
-    public ArgumentsNode parseArguments(boolean isMacroDefinition) throws ParserException {
+    public ArgumentsNode parseArguments(boolean isMacroDefinition) {
 
         List<PositionalArgumentNode> positionalArgs = new ArrayList<>();
         List<NamedArgumentNode> namedArgs = new ArrayList<>();
@@ -536,10 +526,8 @@ public class ExpressionParser {
      * This is used for the set tag, the for loop, and in named arguments.
      *
      * @return A variable name
-     * @throws ParserException
-     *             Thrown if a parsing error occurs.
      */
-    public String parseNewVariableName() throws ParserException {
+    public String parseNewVariableName() {
 
         // set the stream because this function may be called externally (for
         // and set token parsers)
@@ -556,7 +544,7 @@ public class ExpressionParser {
         return token.getValue();
     }
 
-    private Expression<?> parseArrayDefinitionExpression() throws ParserException {
+    private Expression<?> parseArrayDefinitionExpression() {
         TokenStream stream = parser.getStream();
 
         // expect the opening bracket and check for an empty array
@@ -586,7 +574,7 @@ public class ExpressionParser {
         return new ArrayExpression(elements, stream.current().getLineNumber());
     }
 
-    private Expression<?> parseMapDefinitionExpression() throws ParserException {
+    private Expression<?> parseMapDefinitionExpression() {
         TokenStream stream = parser.getStream();
 
         // expect the opening brace and check for an empty map

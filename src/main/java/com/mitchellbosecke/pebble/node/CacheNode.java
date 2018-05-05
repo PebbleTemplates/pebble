@@ -44,8 +44,7 @@ public class CacheNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
-            throws PebbleException, IOException {
+    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context) throws IOException {
         try {
             CacheKey key = new CacheKey(this, (String) this.name.evaluate(self, context), context.getLocale());
             String body = (String) context.getTagCache().get(key, new Callable<Object>() {

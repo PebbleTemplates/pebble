@@ -8,11 +8,11 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +43,7 @@ public class ParallelNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context)
-            throws IOException, PebbleException {
+    public void render(final PebbleTemplateImpl self, Writer writer, final EvaluationContext context) throws IOException {
 
         ExecutorService es = context.getExecutorService();
 
@@ -74,7 +73,7 @@ public class ParallelNode extends AbstractRenderableNode {
             Future<String> future = es.submit(new Callable<String>() {
 
                 @Override
-                public String call() throws PebbleException, IOException {
+                public String call() throws IOException {
                     body.render(self, newFutureWriter, contextCopy);
                     newFutureWriter.flush();
                     newFutureWriter.close();

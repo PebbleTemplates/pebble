@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
@@ -26,7 +25,7 @@ public class FunctionOrMacroNameNode implements Expression<String> {
     }
 
     @Override
-    public String evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public String evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         throw new UnsupportedOperationException();
     }
 

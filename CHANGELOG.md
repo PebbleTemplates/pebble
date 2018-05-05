@@ -8,7 +8,10 @@
 - Java8 Date API support on date filter
 - Replace guava cache with caffeine
 
-## v2.4.1 (2018-xx-xx)
+## v2.5.1 (2018-05-04)
+- Bugfix introduced when accessing getClass which will always return null (#338)
+
+## v2.5.0 (2018-05-02)
 - Handle all Iterables and Arrays in JoinFilter (#273)
 - Fix NPE in GetAttributeExpression (#299)
 - Remove redundant null check before calling operator "instanceof" in OperatorUtils. (#298)
@@ -16,6 +19,10 @@
 - Fix performance regression issues (#326, #328)
 - Add Reverse filter (#315) 
 - Make "loop.length" and "loop.revindex" be lazy evaluated (#279)
+- Fixed security issue which allowed to execute shell command (by having access to Java's Class object) (#329)
+- Throw ParserException when endBlock not found (#308)
+- For tag : add enumeration support (#292)
+- Fix operator precedence (#290)
 
 ## v2.4.0 (2017-06-04)
 - Add arrays support for iterable test (#254)
