@@ -11,6 +11,9 @@
 - Add the possibility to extend attribute access (#258)
 - Remove DynamicAttributeProvider
 
+## v2.5.1 (2018-05-04)
+- Bugfix introduced when accessing getClass which will always return null (#338)
+
 ## v2.5.0 (2018-05-02)
 - Handle all Iterables and Arrays in JoinFilter (#273)
 - Fix NPE in GetAttributeExpression (#299)

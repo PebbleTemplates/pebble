@@ -50,10 +50,6 @@ public class DefaultAttributeResolver implements AttributeResolver {
         Member finalMember = member;
         return () -> this.invokeMember(instance, finalMember, argumentValues);
       }
-
-      if (context.isStrictVariables() && (attributeName.equals("class") || attributeName.equals("getClass"))) {
-        throw new ClassAccessException(lineNumber, filename);
-      }
     }
     return null;
   }

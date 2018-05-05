@@ -90,11 +90,8 @@ public class MemberCacheUtils {
    * compatible. This is more relaxed than class.getMethod.
    */
   private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, String filename, int lineNumber, boolean allowGetClass) {
-    if (name.equals("getClass")) {
-      if (!allowGetClass) {
-        throw new ClassAccessException(lineNumber, filename);
-      }
-      return null;
+    if (!allowGetClass && name.equals("getClass")) {
+      throw new ClassAccessException(lineNumber, filename);
     }
 
     Method result = null;
