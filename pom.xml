@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.pebbletemplates</groupId>
   <artifactId>pebble</artifactId>
-  <version>2.5.1-SNAPSHOT</version>
+  <version>2.5.1</version>
   <packaging>jar</packaging>
 
   <name>Pebble</name>
@@ -258,6 +257,6 @@
     <connection>scm:git:git://github.com/PebbleTemplates/pebble.git</connection>
     <developerConnection>scm:git:git@github.com:PebbleTemplates/pebble.git</developerConnection>
     <url>https://github.com/PebbleTemplates/pebble.git</url>
-    <tag>HEAD</tag>
+    <tag>v2.5.1</tag>
   </scm>
 </project>
