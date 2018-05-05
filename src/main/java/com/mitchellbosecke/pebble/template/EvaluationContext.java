@@ -199,7 +199,7 @@ public class EvaluationContext {
         return this.namedImportedTemplates.get(alias);
     }
 
-    public void addNamedImportedTemplates(String alias, PebbleTemplateImpl template) throws PebbleException {
+    public void addNamedImportedTemplates(String alias, PebbleTemplateImpl template) {
         if (namedImportedTemplates.containsKey(alias)) {
             throw new PebbleException(null, "More than one named template can not share the same name: " + alias);
         }

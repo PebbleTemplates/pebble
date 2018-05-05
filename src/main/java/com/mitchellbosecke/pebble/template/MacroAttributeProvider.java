@@ -19,10 +19,8 @@ public class MacroAttributeProvider {
      * @param args            The arguments
      * @param ignoreOverriden Whether or not to ignore macro definitions in child template
      * @return The results of the macro invocation
-     * @throws PebbleException An exception that may have occurred
      */
-    public Object macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden, int lineNumber)
-                    throws PebbleException {
+    public Object macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden, int lineNumber) {
         return template.macro(context, macroName, args, ignoreOverriden, lineNumber);
     }
 
