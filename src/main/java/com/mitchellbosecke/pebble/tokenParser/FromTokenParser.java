@@ -25,7 +25,7 @@ import com.mitchellbosecke.pebble.utils.Pair;
 public class FromTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+    public RenderableNode parse(Token token, Parser parser) {
 
         TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
@@ -44,7 +44,7 @@ public class FromTokenParser extends AbstractTokenParser {
         return new FromNode(lineNumber, fromExpression, namedMacros);
     }
 
-    private List<Pair<String, String>> parseNamedMacros(Parser parser) throws ParserException {
+    private List<Pair<String, String>> parseNamedMacros(Parser parser) {
         List<Pair<String, String>> pairs = new ArrayList<>();
         TokenStream stream = parser.getStream();
 

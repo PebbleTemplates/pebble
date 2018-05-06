@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -117,7 +118,7 @@ public class TestMacroCalls {
       assertEquals(e.getFileName(), "templates/macros/invalid.from.peb");
     }
   }
-
+  
   @Test
   public void testInvalidMacro() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().build();
@@ -130,6 +131,34 @@ public class TestMacroCalls {
     } catch (PebbleException e) {
       assertEquals(e.getLineNumber(), (Integer) 2);
       assertEquals(e.getFileName(), "templates/macros/invalid.macro.peb");
+    }
+  }
+  
+  @Test
+  public void testInvalidSameAliasMacroWithFromToken() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().build();
+
+    try {
+      PebbleTemplate template = pebble.getTemplate("templates/macros/invalid.from.sameAlias.peb");
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+      fail("expected PebbleException");
+    } catch (PebbleException e) {
+      assertTrue(e.getPebbleMessage().startsWith("More than one macro can not share the same name"));
+    }
+  }
+  
+  @Test
+  public void testInvalidSameAliasMacroWithImportAsToken() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().build();
+
+    try {
+      PebbleTemplate template = pebble.getTemplate("templates/macros/invalid.import.as.sameAlias.peb");
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+      fail("expected PebbleException");
+    } catch (PebbleException e) {
+      assertTrue(e.getPebbleMessage().startsWith("More than one named template can not share the same name"));
     }
   }
 }

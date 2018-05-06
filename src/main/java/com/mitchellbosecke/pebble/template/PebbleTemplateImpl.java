@@ -195,10 +195,8 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param context The evaluation context
      * @param name    The template name
      * @param alias   The template alias
-     * @throws PebbleException Thrown if an error occurs while rendering the imported
-     *                         template
      */
-    public void importNamedTemplate(EvaluationContext context, String name, String alias) throws PebbleException {
+    public void importNamedTemplate(EvaluationContext context, String name, String alias) {
         context.addNamedImportedTemplates(alias, (PebbleTemplateImpl) this.engine.getTemplate(this.resolveRelativePath(name)));
     }
 
@@ -210,7 +208,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param namedMacros named macros
      * @throws PebbleException
      */
-    public void importNamedMacrosFromTemplate(EvaluationContext context, String name, List<Pair<String, String>> namedMacros) throws PebbleException {
+    public void importNamedMacrosFromTemplate(EvaluationContext context, String name, List<Pair<String, String>> namedMacros) {
         PebbleTemplateImpl templateImpl = (PebbleTemplateImpl) this.engine.getTemplate(this.resolveRelativePath(name));
         for (Pair<String, String> pair : namedMacros) {
             Macro m = templateImpl.macros.get(pair.getRight());
@@ -313,7 +311,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param macro The macro
      * @throws PebbleException Throws exception if macro already exists with the same name
      */
-    public void registerMacro(String alias, Macro macro) throws PebbleException {
+    public void registerMacro(String alias, Macro macro) {
         if (this.macros.containsKey(alias)) {
             throw new PebbleException(null, "More than one macro can not share the same name: " + alias);
         }

@@ -30,7 +30,7 @@ public class FromNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, final EvaluationContext context) throws PebbleException {
+    public void render(PebbleTemplateImpl self, Writer writer, final EvaluationContext context) {
         String templateName = (String) fromExpression.evaluate(self, context);
         self.importNamedMacrosFromTemplate(context, templateName, namedMacros);
     }
