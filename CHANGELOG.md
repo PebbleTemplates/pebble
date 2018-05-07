@@ -8,6 +8,9 @@
 - Java8 Date API support on date filter
 - Replace guava cache with caffeine
 
+## v2.6.0 (xxxx-xx-xx)
+- Add support for 'as' and 'from' in import statement (#271)
+
 ## v2.5.1 (2018-05-04)
 - Bugfix introduced when accessing getClass which will always return null (#338)
 
