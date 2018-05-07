@@ -61,7 +61,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
         for (int i = 0; i < size; i++) {
             Loader<?> loader = this.loaders.get(i);
             try {
-                reader = this.getReaderInner(loader, templateName);
+                reader = loader.getReader(templateName);
                 if (reader != null) {
                     break;
                 }
@@ -74,10 +74,6 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
         }
 
         return reader;
-    }
-
-    private <T> Reader getReaderInner(Loader<T> delegatingLoader, String templateName) {
-        return delegatingLoader.getReader(templateName);
     }
 
     public String getSuffix() {
