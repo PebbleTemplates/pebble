@@ -8,26 +8,38 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.io.Writer;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.io.Writer;
 
 public class ImportNode extends AbstractRenderableNode {
 
     private final Expression<?> importExpression;
+    private final String alias;
 
-    public ImportNode(int lineNumber, Expression<?> importExpression) {
+    public ImportNode(int lineNumber, Expression<?> importExpression, String alias) {
         super(lineNumber);
         this.importExpression = importExpression;
+        this.alias = alias;
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
-        self.importTemplate(context, (String) importExpression.evaluate(self, context));
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) {
+        String templateName = (String) importExpression.evaluate(self, context);
+        if (alias != null) {
+            self.importNamedTemplate(context, templateName, alias);
+
+            // put the imported template into scope
+            PebbleTemplateImpl template = self.getNamedImportedTemplate(context, alias);
+            context.getScopeChain().put(alias, new MacroAttributeProvider(template));
+
+        } else {
+            self.importTemplate(context, templateName);
+        }
     }
 
     @Override

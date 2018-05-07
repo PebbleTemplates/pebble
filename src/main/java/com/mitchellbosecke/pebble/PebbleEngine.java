@@ -10,7 +10,8 @@ package com.mitchellbosecke.pebble;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+
+import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -39,7 +40,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -59,13 +59,15 @@ public class PebbleEngine {
 
     private final Locale defaultLocale;
 
-    private final Cache<BaseTagCacheKey, Object> tagCache;
+    private final Cache<CacheKey, Object> tagCache;
 
     private final ExecutorService executorService;
 
     private final Cache<Object, PebbleTemplate> templateCache;
 
     private final ExtensionRegistry extensionRegistry;
+
+    private final boolean allowGetClass;
 
     /**
      * Constructor for the Pebble Engine given an instantiated Loader. This
@@ -75,9 +77,15 @@ public class PebbleEngine {
      * @param syntax     the syntax to use for parsing the templates.
      * @param extensions The userProvidedExtensions which should be loaded.
      */
-    private PebbleEngine(Loader<?> loader, Syntax syntax, boolean strictVariables, Locale defaultLocale,
-                         Cache<BaseTagCacheKey, Object> tagCache, Cache<Object, PebbleTemplate> templateCache,
-                         ExecutorService executorService, Collection<? extends Extension> extensions) {
+    private PebbleEngine(Loader<?> loader,
+                         Syntax syntax,
+                         boolean strictVariables,
+                         Locale defaultLocale,
+                         Cache<CacheKey, Object> tagCache,
+                         Cache<Object, PebbleTemplate> templateCache,
+                         ExecutorService executorService,
+                         Collection<? extends Extension> extensions,
+                         boolean allowGetClass) {
 
         this.loader = loader;
         this.syntax = syntax;
@@ -87,6 +95,7 @@ public class PebbleEngine {
         this.executorService = executorService;
         this.templateCache = templateCache;
         this.extensionRegistry = new ExtensionRegistry(extensions);
+        this.allowGetClass = allowGetClass;
     }
 
     /**
@@ -95,9 +104,8 @@ public class PebbleEngine {
      *
      * @param templateName The name of the template
      * @return PebbleTemplate The compiled version of the template
-     * @throws PebbleException Thrown if an error occurs while parsing the template.
      */
-    public PebbleTemplate getTemplate(final String templateName) throws PebbleException {
+    public PebbleTemplate getTemplate(final String templateName) {
 
         /*
          * template name will be null if user uses the extends tag with an
@@ -119,7 +127,7 @@ public class PebbleEngine {
 
             result = templateCache.get(cacheKey, new Callable<PebbleTemplate>() {
 
-                public PebbleTemplateImpl call() throws Exception {
+                public PebbleTemplateImpl call() {
 
                     LexerImpl lexer = new LexerImpl(syntax, extensionRegistry.getUnaryOperators().values(),
                             extensionRegistry.getBinaryOperators().values());
@@ -139,7 +147,7 @@ public class PebbleEngine {
                     return instance;
                 }
             });
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             /*
              * The execution exception is probably caused by a PebbleException
              * being thrown in the above Callable. We will unravel it and throw
@@ -163,9 +171,8 @@ public class PebbleEngine {
      * @param loader   the loader to use fetch the reader.
      * @param templateName the template name to use.
      * @return the reader object.
-     * @throws LoaderException thrown when the template could not be loaded.
      */
-    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, String templateName) throws LoaderException {
+    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, String templateName) {
         return loader.getReader(templateName);
     }
 
@@ -237,8 +244,17 @@ public class PebbleEngine {
      *
      * @return The tag cache
      */
-    public Cache<BaseTagCacheKey, Object> getTagCache() {
+    public Cache<CacheKey, Object> getTagCache() {
         return this.tagCache;
+    }
+
+    /**
+     * Returns toggle to enable/disable getClass access
+     *
+     * @return toggle to enable/disable getClass access
+     */
+    public boolean isAllowGetClass() {
+        return this.allowGetClass;
     }
 
     /**
@@ -264,9 +280,11 @@ public class PebbleEngine {
 
         private boolean cacheActive = true;
 
-        private Cache<BaseTagCacheKey, Object> tagCache;
+        private Cache<CacheKey, Object> tagCache;
 
         private EscaperExtension escaperExtension = new EscaperExtension();
+
+        private boolean allowGetClass = true;
 
         /**
          * Creates the builder.
@@ -396,7 +414,7 @@ public class PebbleEngine {
          * @param tagCache The tag cache
          * @return This builder object
          */
-        public Builder tagCache(Cache<BaseTagCacheKey, Object> tagCache) {
+        public Builder tagCache(Cache<CacheKey, Object> tagCache) {
             this.tagCache = tagCache;
             return this;
         }
@@ -448,6 +466,17 @@ public class PebbleEngine {
         }
 
         /**
+         * Enable/disable getClass access for attributes
+         *
+         * @param allowGetClass toggle to enable/disable getClass access
+         * @return This builder object
+         */
+        public Builder allowGetClass(boolean allowGetClass) {
+            this.allowGetClass = allowGetClass;
+            return this;
+        }
+
+        /**
          * Creates the PebbleEngine instance.
          *
          * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
@@ -494,7 +523,7 @@ public class PebbleEngine {
             }
 
             return new PebbleEngine(loader, syntax, strictVariables, defaultLocale, tagCache, templateCache,
-                    executorService, extensions);
+                    executorService, extensions, allowGetClass);
         }
     }
 }

@@ -1,0 +1,10 @@
+Hello
+
+{% from "templates/macros/macro.peb" import test as macro_test, test2 as macro_test2 %}
+Call 1: {{ macro_test() }}
+
+Call 3: {{ macro_test2() }}
+
+{% include "templates/macros/include.peb" %}
+
+

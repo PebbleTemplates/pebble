@@ -8,12 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.loader;
 
+import com.mitchellbosecke.pebble.error.LoaderException;
+
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.mitchellbosecke.pebble.error.LoaderException;
 
 /**
  * This loader will delegate control to a list of children loaders. This is the
@@ -53,7 +53,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
 
 
     @Override
-    public Reader getReader(String templateName) throws LoaderException {
+    public Reader getReader(String templateName) {
 
         Reader reader = null;
 
@@ -76,8 +76,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
         return reader;
     }
 
-    private <T> Reader getReaderInner(Loader<T> delegatingLoader, String templateName)
-            throws LoaderException {
+    private <T> Reader getReaderInner(Loader<T> delegatingLoader, String templateName) {
         return delegatingLoader.getReader(templateName);
     }
 

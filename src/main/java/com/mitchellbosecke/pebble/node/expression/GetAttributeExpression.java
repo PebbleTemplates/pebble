@@ -15,6 +15,7 @@
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
@@ -22,6 +23,7 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.lang.reflect.AccessibleObject;
@@ -81,7 +83,7 @@ public class GetAttributeExpression implements Expression<Object> {
     }
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         Object object = this.node.evaluate(self, context);
         Object attributeNameValue = this.attributeNameExpression.evaluate(self, context);
         String attributeName = String.valueOf(attributeNameValue);
@@ -89,14 +91,6 @@ public class GetAttributeExpression implements Expression<Object> {
         Object result = null;
 
         Object[] argumentValues = this.getArgumentValues(self, context);
-
-        // check if the object is able to provide the attribute dynamically
-        if(object != null && object instanceof DynamicAttributeProvider) {
-            DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
-            if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
-                return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
-            }
-        }
 
         Member member = object == null ? null : this.memberCache.get(new MemberCacheKey(object.getClass(), attributeName));
         if (object != null && member == null) {
@@ -157,6 +151,20 @@ public class GetAttributeExpression implements Expression<Object> {
 
             }
 
+            // check if the object is able to provide the attribute dynamically
+            if(object instanceof DynamicAttributeProvider) {
+                DynamicAttributeProvider dynamicAttributeProvider = (DynamicAttributeProvider) object;
+                if(dynamicAttributeProvider.canProvideDynamicAttribute(attributeName)) {
+                    return dynamicAttributeProvider.getDynamicAttribute(attributeNameValue, argumentValues);
+                }
+            }
+            
+            // check if the object should provide the attribute by macro invocation
+            if (object instanceof MacroAttributeProvider) {
+                MacroAttributeProvider macroAttributeProvider = (MacroAttributeProvider) object;
+                return macroAttributeProvider.macro(context, attributeName, args, false, this.lineNumber);
+            }
+
             /*
              * turn args into an array of types and an array of values in order
              * to use them for our reflection calls
@@ -172,7 +180,7 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
             }
 
-            member = this.reflect(object, attributeName, argumentTypes);
+            member = this.reflect(object, attributeName, argumentTypes, context.isAllowGetClass());
             if (member != null) {
                 this.memberCache.put(new MemberCacheKey(object.getClass(), attributeName), member);
             }
@@ -204,11 +212,11 @@ public class GetAttributeExpression implements Expression<Object> {
 
     }
 
-    private Object getObjectFromMap(Map<?, ?> object, Object attributeNameValue) throws PebbleException {
+    private Object getObjectFromMap(Map<?, ?> object, Object attributeNameValue) {
         if (object.isEmpty()) {
             return null;
         }
-        if (Number.class.isAssignableFrom(attributeNameValue.getClass())) {
+        if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
             Number keyAsNumber = (Number) attributeNameValue;
 
             Class<?> keyClass = object.keySet().iterator().next().getClass();
@@ -218,7 +226,7 @@ public class GetAttributeExpression implements Expression<Object> {
         return object.get(attributeNameValue);
     }
 
-    private Object cast(Number number, Class<?> desiredType) throws PebbleException {
+    private Object cast(Number number, Class<?> desiredType) {
         if (desiredType == Long.class) {
             return number.longValue();
         } else if (desiredType == Integer.class) {
@@ -264,9 +272,8 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param self
      * @param context
      * @return
-     * @throws PebbleException
      */
-    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    private Object[] getArgumentValues(PebbleTemplateImpl self, EvaluationContext context) {
 
         Object[] argumentValues;
 
@@ -295,7 +302,7 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param parameterTypes
      * @return
      */
-    private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes) {
+    private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, boolean allowGetClass) {
 
         Class<?> clazz = object.getClass();
 
@@ -305,21 +312,21 @@ public class GetAttributeExpression implements Expression<Object> {
         String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
         // check get method
-        result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes);
+        result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, allowGetClass);
 
         // check is method
         if (result == null) {
-            result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes);
+            result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, allowGetClass);
         }
 
         // check has method
         if (result == null) {
-            result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes);
+            result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, allowGetClass);
         }
 
         // check if attribute is a public method
         if (result == null) {
-            result = this.findMethod(clazz, attributeName, parameterTypes);
+            result = this.findMethod(clazz, attributeName, parameterTypes, allowGetClass);
         }
 
         // public field
@@ -346,7 +353,11 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param requiredTypes
      * @return
      */
-    private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes) {
+    private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, boolean allowGetClass) {
+        if (!allowGetClass && name.equals("getClass")) {
+            throw new ClassAccessException(this.lineNumber, this.filename);
+        }
+
         Method result = null;
 
         Method[] candidates = clazz.getMethods();

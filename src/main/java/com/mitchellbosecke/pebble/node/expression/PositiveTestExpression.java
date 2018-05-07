@@ -24,7 +24,7 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
     private Test cachedTest;
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
 
         TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
         ArgumentsNode args = testInvocation.getArgs();

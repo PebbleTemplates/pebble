@@ -8,21 +8,19 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import java.io.IOException;
+import java.io.Writer;
 
 public abstract class AbstractRenderableNode implements RenderableNode {
 
     private int lineNumber;
 
     @Override
-    public abstract void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context)
-            throws PebbleException, IOException;
+    public abstract void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws IOException;
 
     @Override
     public abstract void accept(NodeVisitor visitor);

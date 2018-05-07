@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
@@ -29,7 +28,7 @@ public class SetNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) throws PebbleException {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContext context) {
         context.getScopeChain().set(name, value.evaluate(self, context));
     }
 

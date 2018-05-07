@@ -9,12 +9,16 @@
 package com.mitchellbosecke.pebble.template;
 
 import com.google.common.cache.Cache;
-import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+
+import com.mitchellbosecke.pebble.cache.CacheKey;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -58,7 +62,7 @@ public class EvaluationContext {
     /**
      * The tag cache
      */
-    private final Cache<BaseTagCacheKey, Object> tagCache;
+    private final Cache<CacheKey, Object> tagCache;
 
     /**
      * The user-provided ExecutorService (can be null).
@@ -69,6 +73,16 @@ public class EvaluationContext {
      * The imported templates are used to look up macros.
      */
     private final List<PebbleTemplateImpl> importedTemplates;
+
+    /**
+     * The named imported templates are used to look up macros.
+     */
+    private final Map<String, PebbleTemplateImpl> namedImportedTemplates;
+
+    /**
+     * toggle to enable/disable getClass access
+     */
+    private final boolean allowGetClass;
 
     /**
      * Constructor used to provide all final variables.
@@ -83,9 +97,10 @@ public class EvaluationContext {
      * @param tagCache          The cache used by the "cache" tag
      */
     public EvaluationContext(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
-                             ExtensionRegistry extensionRegistry, Cache<BaseTagCacheKey, Object> tagCache,
-                             ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates, ScopeChain scopeChain,
-                             Hierarchy hierarchy) {
+                             ExtensionRegistry extensionRegistry, Cache<CacheKey, Object> tagCache,
+                             ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates,
+                             Map<String, PebbleTemplateImpl> namedImportedTemplates, ScopeChain scopeChain,
+                             Hierarchy hierarchy, boolean allowGetClass) {
 
         if (hierarchy == null) {
             hierarchy = new Hierarchy(self);
@@ -97,8 +112,10 @@ public class EvaluationContext {
         this.tagCache = tagCache;
         this.executorService = executorService;
         this.importedTemplates = importedTemplates;
+        this.namedImportedTemplates = namedImportedTemplates;
         this.scopeChain = scopeChain;
         this.hierarchy = hierarchy;
+        this.allowGetClass = allowGetClass;
     }
 
     /**
@@ -110,7 +127,7 @@ public class EvaluationContext {
      */
     public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, importedTemplates, scopeChain, null);
+                executorService, importedTemplates, namedImportedTemplates, scopeChain, null, allowGetClass);
         return result;
     }
 
@@ -123,8 +140,8 @@ public class EvaluationContext {
      * @return A copy of the evaluation context
      */
     public EvaluationContext threadSafeCopy(PebbleTemplateImpl self) {
-        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, new ArrayList<>(importedTemplates), scopeChain.deepCopy(), hierarchy);
+        EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache, executorService,
+                new ArrayList<>(importedTemplates), new HashMap<>(namedImportedTemplates), scopeChain.deepCopy(), hierarchy, allowGetClass);
         return result;
     }
 
@@ -174,11 +191,27 @@ public class EvaluationContext {
     }
 
     /**
+     * Returns the named imported template.
+     *
+     * @return the named imported template.
+     */
+    public PebbleTemplateImpl getNamedImportedTemplate(String alias) {
+        return this.namedImportedTemplates.get(alias);
+    }
+
+    public void addNamedImportedTemplates(String alias, PebbleTemplateImpl template) {
+        if (namedImportedTemplates.containsKey(alias)) {
+            throw new PebbleException(null, "More than one named template can not share the same name: " + alias);
+        }
+        this.namedImportedTemplates.put(alias, template);
+    }
+
+    /**
      * Returns the cache used for the "cache" tag
      *
      * @return The cache used for the "cache" tag
      */
-    public Cache<BaseTagCacheKey, Object> getTagCache() {
+    public Cache<CacheKey, Object> getTagCache() {
         return tagCache;
     }
 
@@ -200,6 +233,15 @@ public class EvaluationContext {
      */
     public Hierarchy getHierarchy() {
         return hierarchy;
+    }
+
+    /**
+     * Returns toggle to enable/disable getClass access
+     *
+     * @return toggle to enable/disable getClass access
+     */
+    public boolean isAllowGetClass() {
+        return this.allowGetClass;
     }
 
 }

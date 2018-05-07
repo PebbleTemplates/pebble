@@ -11,7 +11,11 @@ package com.mitchellbosecke.pebble.parser;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
-import com.mitchellbosecke.pebble.node.*;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.PrintNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
+import com.mitchellbosecke.pebble.node.RootNode;
+import com.mitchellbosecke.pebble.node.TextNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
@@ -74,7 +78,7 @@ public class ParserImpl implements Parser {
     }
 
     @Override
-    public RootNode parse(TokenStream stream) throws ParserException {
+    public RootNode parse(TokenStream stream) {
 
         // expression parser
         this.expressionParser = new ExpressionParser(this, binaryOperators, unaryOperators);
@@ -90,7 +94,7 @@ public class ParserImpl implements Parser {
     }
 
     @Override
-    public BodyNode subparse() throws ParserException {
+    public BodyNode subparse() {
         return subparse(null);
     }
 
@@ -101,7 +105,7 @@ public class ParserImpl implements Parser {
      *
      * @param stopCondition    A stopping condition provided by a token parser
      * @return Node        The root node of the generated Abstract Syntax Tree
-     */ public BodyNode subparse(StoppingCondition stopCondition) throws ParserException {
+     */ public BodyNode subparse(StoppingCondition stopCondition) {
 
         // these nodes will be the children of the root node
         List<RenderableNode> nodes = new ArrayList<>();

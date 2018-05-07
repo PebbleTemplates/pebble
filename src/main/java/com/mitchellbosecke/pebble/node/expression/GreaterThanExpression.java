@@ -16,7 +16,7 @@ import com.mitchellbosecke.pebble.utils.OperatorUtils;
 public class GreaterThanExpression extends BinaryExpression<Boolean> {
 
     @Override
-    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         try {
             return OperatorUtils.gt(getLeftExpression().evaluate(self, context),
                     getRightExpression().evaluate(self, context));

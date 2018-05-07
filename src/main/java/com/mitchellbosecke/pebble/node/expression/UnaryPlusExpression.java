@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node.expression;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.OperatorUtils;
@@ -16,7 +15,7 @@ import com.mitchellbosecke.pebble.utils.OperatorUtils;
 public class UnaryPlusExpression extends UnaryExpression {
 
     @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) throws PebbleException {
+    public Object evaluate(PebbleTemplateImpl self, EvaluationContext context) {
         return OperatorUtils.unaryPlus(getChildExpression().evaluate(self, context));
     }
 

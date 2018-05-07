@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
 import com.mitchellbosecke.pebble.node.ImportNode;
@@ -19,7 +18,7 @@ import com.mitchellbosecke.pebble.parser.Parser;
 public class ImportTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+    public RenderableNode parse(Token token, Parser parser) {
 
         TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
@@ -28,10 +27,23 @@ public class ImportTokenParser extends AbstractTokenParser {
         stream.next();
 
         Expression<?> importExpression = parser.getExpressionParser().parseExpression();
+        
+        Token current = stream.current();
+        String alias = null;
+
+        // We check if there is an optional 'as' keyword on the import tag.
+        if (current.getType().equals(Token.Type.NAME) && current.getValue().equals("as")) {
+            
+            // Skip over 'as'
+            stream.next();
+            
+            current = stream.expect(Token.Type.NAME);
+            alias = current.getValue();
+        }
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        return new ImportNode(lineNumber, importExpression);
+        return new ImportNode(lineNumber, importExpression, alias);
     }
 
     @Override

@@ -9,7 +9,6 @@
 package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.LoaderException;
 
 import java.io.Reader;
 
@@ -30,10 +29,8 @@ public interface Loader<T> {
      * @param templateName
      *           the template name to use to load create the reader.
      * @return A reader object
-     * @throws LoaderException
-     *             If template can not be found
      */
-    Reader getReader(String templateName) throws LoaderException;
+    Reader getReader(String templateName);
 
     /**
      * A method for end users to change the charset used by the loader.

@@ -356,6 +356,23 @@ public class CoreFiltersTest extends AbstractTest {
     }
 
     @Test
+    public void testReverseFilter() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{% for word in words|reverse %}{{ word }} {% endfor %}");
+        List<String> words = new ArrayList<>();
+        words.add("one");
+        words.add("two");
+        words.add("three");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("words", words);
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("three two one ", writer.toString());
+    }
+
+    @Test
     public void testTitle() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -561,6 +578,86 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testJoinWithStringArray() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ names | join(',') }}");
+
+        String[] names = new String[]{"Alex", "Joe", "Bob"};
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("Alex,Joe,Bob", writer.toString());
+    }
+
+    @Test
+    public void testJoinWithStringArrayWithoutGlue() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ names | join }}");
+
+        String[] names = new String[]{"Alex", "Joe", "Bob"};
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", names);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("AlexJoeBob", writer.toString());
+    }
+
+    @Test
+    public void testJoinWithNumbersArray() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ numbers | join(',') }}");
+
+        int[] numbers = new int[]{1,2,3};
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("numbers", numbers);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("1,2,3", writer.toString());
+    }
+
+    @Test
+    public void testJoinWithEmptyNumbersArray() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ numbers | join(',') }}");
+
+        int[] numbers = new int[0];
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("numbers", numbers);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testJoinWithFloatArray() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ numbers | join(',') }}");
+
+        float[] numbers = new float[]{1.0f,2.5f,3.0f};
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("numbers", numbers);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("1.0,2.5,3.0", writer.toString());
     }
 
     @Test

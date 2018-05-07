@@ -8,10 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.tokenParser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.lexer.Token;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
@@ -24,6 +20,9 @@ import com.mitchellbosecke.pebble.node.expression.RenderableNodeExpression;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Parses the "filter" tag. It has nothing to do with implementing normal
  * filters.
@@ -31,7 +30,7 @@ import com.mitchellbosecke.pebble.parser.StoppingCondition;
 public class FilterTokenParser extends AbstractTokenParser {
 
     @Override
-    public RenderableNode parse(Token token, Parser parser) throws ParserException {
+    public RenderableNode parse(Token token, Parser parser) {
         TokenStream stream = parser.getStream();
         int lineNumber = token.getLineNumber();
 
