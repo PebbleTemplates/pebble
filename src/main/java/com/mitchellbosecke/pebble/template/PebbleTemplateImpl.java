@@ -196,7 +196,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param name    The template name
      * @param alias   The template alias
      */
-    public void importNamedTemplate(EvaluationContext context, String name, String alias) {
+    public void importNamedTemplate(EvaluationContextImpl context, String name, String alias) {
         context.addNamedImportedTemplates(alias, (PebbleTemplateImpl) this.engine.getTemplate(this.resolveRelativePath(name)));
     }
 
@@ -222,7 +222,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
      * @param context The evaluation context
      * @param alias   The template alias
      */
-    public PebbleTemplateImpl getNamedImportedTemplate(EvaluationContext context, String alias) {
+    public PebbleTemplateImpl getNamedImportedTemplate(EvaluationContextImpl context, String alias) {
         return context.getNamedImportedTemplate(alias);
     }
 

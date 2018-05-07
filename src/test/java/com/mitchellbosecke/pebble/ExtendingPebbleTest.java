@@ -97,7 +97,7 @@ public class ExtendingPebbleTest extends AbstractTest {
         public List<AttributeResolver> getAttributeResolver() {
 
             List<AttributeResolver> attributeResolvers = new ArrayList<>();
-            attributeResolvers.add((instance, attribute, argumentValues, isStrictVariables, filename, lineNumber) ->
+            attributeResolvers.add((instance, attribute, argumentValues, args, isStrictVariables, filename, lineNumber) ->
                     () -> "customAttributeResolver");
             return attributeResolvers;
         }

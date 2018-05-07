@@ -1,6 +1,7 @@
 package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class ListResolver implements AttributeResolver {
   public ResolvedAttribute resolve(Object instance,
                                    Object attributeNameValue,
                                    Object[] argumentValues,
+                                   ArgumentsNode args,
                                    EvaluationContextImpl context,
                                    String filename,
                                    int lineNumber) {

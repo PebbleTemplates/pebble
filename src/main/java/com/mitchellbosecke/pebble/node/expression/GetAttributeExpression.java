@@ -76,7 +76,7 @@ public class GetAttributeExpression implements Expression<Object> {
         }
 
         for (AttributeResolver attributeResolver: context.getExtensionRegistry().getAttributeResolver()) {
-            ResolvedAttribute resolvedAttribute = attributeResolver.resolve(object, attributeNameValue, argumentValues, context, this.filename, this.lineNumber);
+            ResolvedAttribute resolvedAttribute = attributeResolver.resolve(object, attributeNameValue, argumentValues, this.args, context, this.filename, this.lineNumber);
             if (resolvedAttribute != null) {
                 return resolvedAttribute.evaluate();
             }

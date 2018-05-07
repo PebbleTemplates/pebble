@@ -1,14 +1,13 @@
 package com.mitchellbosecke.pebble.node;
 
-import java.io.Writer;
-import java.util.List;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.Pair;
+
+import java.io.Writer;
+import java.util.List;
 
 /**
  * From Node for <br/>
@@ -30,7 +29,7 @@ public class FromNode extends AbstractRenderableNode {
     }
 
     @Override
-    public void render(PebbleTemplateImpl self, Writer writer, final EvaluationContext context) {
+    public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) {
         String templateName = (String) fromExpression.evaluate(self, context);
         self.importNamedMacrosFromTemplate(context, templateName, namedMacros);
     }

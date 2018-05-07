@@ -1,7 +1,8 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import com.mitchellbosecke.pebble.error.ClassAccessException;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
+import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +18,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
   public ResolvedAttribute resolve(Object instance,
                                    Object attributeNameValue,
                                    Object[] argumentValues,
+                                   ArgumentsNode args,
                                    EvaluationContextImpl context,
                                    String filename,
                                    int lineNumber) {
@@ -29,18 +31,22 @@ public class DefaultAttributeResolver implements AttributeResolver {
 
           // first we check maps
           if (instance instanceof Map) {
-            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, context, filename, lineNumber);
+            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
           }
 
           // then we check arrays
           if (instance.getClass().isArray()) {
-            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, context, filename, lineNumber);
+            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
           }
 
           // then lists
           if (instance instanceof List) {
-            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, context, filename, lineNumber);
+            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
           }
+        }
+
+        if (instance instanceof MacroAttributeProvider) {
+          return MacroResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
         }
 
         member = memberCacheUtils.cacheMember(instance, attributeName, argumentValues, context, filename, lineNumber);

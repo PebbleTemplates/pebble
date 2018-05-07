@@ -1,6 +1,5 @@
 package com.mitchellbosecke.pebble.template;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 
 
@@ -20,7 +19,7 @@ public class MacroAttributeProvider {
      * @param ignoreOverriden Whether or not to ignore macro definitions in child template
      * @return The results of the macro invocation
      */
-    public Object macro(EvaluationContext context, String macroName, ArgumentsNode args, boolean ignoreOverriden, int lineNumber) {
+    public Object macro(EvaluationContextImpl context, String macroName, ArgumentsNode args, boolean ignoreOverriden, int lineNumber) {
         return template.macro(context, macroName, args, ignoreOverriden, lineNumber);
     }
 
