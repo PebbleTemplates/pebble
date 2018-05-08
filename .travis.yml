@@ -3,6 +3,11 @@ addons:
     packages:
       - libxml2-utils
 
+env:
+  global:
+    - secure: "J7Z7mMQuoiX+4+6FDXH1mH6MnMBSvz8VsX92rXnl9+Q63QnW85CBYmiAD/GfVNUxdxQGo6h/w0eYGg6Uzj5Dz613E46GSgsoICFQTzUpW3YJi9FxxXPU0f//RJAmrqJ3jjTLNRu+0OHpDktjJw99btOMQmTpiaFuk8IfWgX1wRI="
+    - secure: "ROJMg4Ije8d3lFVOZk7vvb1f/hHpYwJ4TePZ0Xw0MbMEeuL5FvSyqj3xkvHzZF6olKuwSTuRkSwriFuHRBaXR0G2MPr2dyyHGn7Yg+L1ScMKwaeFZXDt6NmwxWBREV0v5/TH5JmU1HVQJC+olIER4g/cSRKqeYhsdu4C7xD2rtE="
+
 language: java
 jdk:
     - openjdk7
@@ -10,5 +15,4 @@ jdk:
 
 after_success:
   - export VERSION=$(echo "cat //*[local-name()='project']/*[local-name()='version']/text()" | xmllint --nocdata --shell pom.xml | sed '1d;$d')
-  - echo $VERSION
-  - 'if [[ "$VERSION" =~ \-SNAPSHOT$ ]]; then echo SNAPSHOT; fi'
+  - 'if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ] && [[ "$VERSION" =~ \-SNAPSHOT$ ]]; then mvn deploy --settings travis-settings.xml -DskipTests=true -B; fi'
