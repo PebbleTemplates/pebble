@@ -5,8 +5,8 @@ addons:
 
 env:
   global:
-    - secure: "J7Z7mMQuoiX+4+6FDXH1mH6MnMBSvz8VsX92rXnl9+Q63QnW85CBYmiAD/GfVNUxdxQGo6h/w0eYGg6Uzj5Dz613E46GSgsoICFQTzUpW3YJi9FxxXPU0f//RJAmrqJ3jjTLNRu+0OHpDktjJw99btOMQmTpiaFuk8IfWgX1wRI="
-    - secure: "nmUT+WfC2GL2pppdDQD5llSApxd4WpQUTkBhWAQesODliUwBLmZIjH7tJdapybZCpY/CdGsiR7SmJn1zOxW5lLMqop8m50y5rSBIJZw61PAyLF/YR/U1lE0L/eLpTf6rVxbdIP/RPDyUdFPafJDz7QuuXY6MBjh4MzlQYqtmygQ="
+    - secure: "JAN9rRQz2ZLWj1Fxtf8A4qNQwOAga3Nektt+QINicvpD5eDQluVkISKc+oCGmmz9Ie3+7t1FUILlBgM8sfqCq/eZd1RvlQg1n0ka7BegZqWcdrcNztbe+6mGWxEXGygNjtBhX3I1mUcDfjnPiPybZKMwoaUbmQZfJ4syDeREvSI="
+    - secure: "VoNjWPtNa3xVy4oZ4xUlAa5eTDGYNcB7otPzx1V8sfFYeePK8jkMuLm4IGJtKNFrKHSqmEAEZ8jHp6eOJdcAwl3TwIMXPBG63R5L5kVNlKPJ+TppH74SuteIrEXmu94r6PSebhMLQkI+26S2QtukqlLSBbAYm591CUvugThs+MI="
 
 language: java
 jdk:
