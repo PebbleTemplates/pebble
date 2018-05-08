@@ -6,7 +6,7 @@ addons:
 env:
   global:
     - secure: "J7Z7mMQuoiX+4+6FDXH1mH6MnMBSvz8VsX92rXnl9+Q63QnW85CBYmiAD/GfVNUxdxQGo6h/w0eYGg6Uzj5Dz613E46GSgsoICFQTzUpW3YJi9FxxXPU0f//RJAmrqJ3jjTLNRu+0OHpDktjJw99btOMQmTpiaFuk8IfWgX1wRI="
-    - secure: "ZJ8Yi7nWIOeJhm/Hd+vzCbFrGaLTHFoKzlna0+hdsN3vOlygi5Kf3RdUpcgVqK+dk3DbWvb6d0N2KxdkwbkdPMz2IEt7GXCkAcDxK/zpaEzLZmqNmumS20l/avZDLWgRLYei7BM08Hvw6pXiQNLVC+xAfBPA5phjvFqb3IjXRTw="
+    - secure: "nmUT+WfC2GL2pppdDQD5llSApxd4WpQUTkBhWAQesODliUwBLmZIjH7tJdapybZCpY/CdGsiR7SmJn1zOxW5lLMqop8m50y5rSBIJZw61PAyLF/YR/U1lE0L/eLpTf6rVxbdIP/RPDyUdFPafJDz7QuuXY6MBjh4MzlQYqtmygQ="
 
 language: java
 jdk:
