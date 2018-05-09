@@ -80,9 +80,9 @@ public class EvaluationContext {
     private final Map<String, PebbleTemplateImpl> namedImportedTemplates;
 
     /**
-     * toggle to enable/disable getClass access
+     * evaluation options
      */
-    private final boolean allowGetClass;
+    private final EvaluationOptions evaluationOptions;
 
     /**
      * Constructor used to provide all final variables.
@@ -100,7 +100,7 @@ public class EvaluationContext {
                              ExtensionRegistry extensionRegistry, Cache<CacheKey, Object> tagCache,
                              ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates,
                              Map<String, PebbleTemplateImpl> namedImportedTemplates, ScopeChain scopeChain,
-                             Hierarchy hierarchy, boolean allowGetClass) {
+                             Hierarchy hierarchy, EvaluationOptions evaluationOptions) {
 
         if (hierarchy == null) {
             hierarchy = new Hierarchy(self);
@@ -115,7 +115,7 @@ public class EvaluationContext {
         this.namedImportedTemplates = namedImportedTemplates;
         this.scopeChain = scopeChain;
         this.hierarchy = hierarchy;
-        this.allowGetClass = allowGetClass;
+        this.evaluationOptions = evaluationOptions;
     }
 
     /**
@@ -127,7 +127,7 @@ public class EvaluationContext {
      */
     public EvaluationContext shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache,
-                executorService, importedTemplates, namedImportedTemplates, scopeChain, null, allowGetClass);
+                executorService, importedTemplates, namedImportedTemplates, scopeChain, null, evaluationOptions);
         return result;
     }
 
@@ -141,7 +141,7 @@ public class EvaluationContext {
      */
     public EvaluationContext threadSafeCopy(PebbleTemplateImpl self) {
         EvaluationContext result = new EvaluationContext(self, strictVariables, locale, extensionRegistry, tagCache, executorService,
-                new ArrayList<>(importedTemplates), new HashMap<>(namedImportedTemplates), scopeChain.deepCopy(), hierarchy, allowGetClass);
+                new ArrayList<>(importedTemplates), new HashMap<>(namedImportedTemplates), scopeChain.deepCopy(), hierarchy, evaluationOptions);
         return result;
     }
 
@@ -236,12 +236,11 @@ public class EvaluationContext {
     }
 
     /**
-     * Returns toggle to enable/disable getClass access
-     *
-     * @return toggle to enable/disable getClass access
+     * Returns the evaluation options.
+     * @return the evaluation options
      */
-    public boolean isAllowGetClass() {
-        return this.allowGetClass;
+    public EvaluationOptions getEvaluationOptions() {
+        return evaluationOptions;
     }
 
 }

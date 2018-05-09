@@ -174,9 +174,9 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         // global vars provided from extensions
         scopeChain.pushScope(this.engine.getExtensionRegistry().getGlobalVariables());
 
-        return new EvaluationContext(this, this.engine.isStrictVariables(), locale,
-                this.engine.getExtensionRegistry(), this.engine.getTagCache(), this.engine.getExecutorService(),
-                new ArrayList<PebbleTemplateImpl>(), new HashMap<String, PebbleTemplateImpl>(), scopeChain, null, this.engine.isAllowGetClass());
+        return new EvaluationContext(this, this.engine.isStrictVariables(), locale, this.engine.getExtensionRegistry(), this.engine.getTagCache(),
+                        this.engine.getExecutorService(), new ArrayList<PebbleTemplateImpl>(), new HashMap<String, PebbleTemplateImpl>(), scopeChain,
+                        null, this.engine.getEvaluationOptions());
     }
 
     /**
