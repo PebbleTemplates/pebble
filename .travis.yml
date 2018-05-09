@@ -1,4 +1,13 @@
+addons:
+  apt:
+    packages:
+      - libxml2-utils
+
 language: java
 jdk:
     - openjdk7
     - oraclejdk8
+
+after_success:
+  - export VERSION=$(echo "cat //*[local-name()='project']/*[local-name()='version']/text()" | xmllint --nocdata --shell pom.xml | sed '1d;$d')
+  - 'if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ] && [[ "$VERSION" =~ \-SNAPSHOT$ ]]; then mvn --settings travis-settings.xml -DsonatypeUsername=$SONATYPE_USERNAME -DsonatypePassword=$SONATYPE_PASSWORD -DskipTests=true -B deploy; fi'
