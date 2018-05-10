@@ -14,6 +14,7 @@ import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,8 +23,16 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 
 public class CoreFiltersTest extends AbstractTest {
@@ -510,6 +519,20 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("A", writer.toString());
+    }
+
+    @Test
+    public void testFirstWithEmptyCollection() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("{{ names | first }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("names", emptyList());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
     }
 
     @Test

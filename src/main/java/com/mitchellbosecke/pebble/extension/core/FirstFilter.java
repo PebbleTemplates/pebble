@@ -8,12 +8,13 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.extension.Filter;
+
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.extension.Filter;
 
 /**
  * Returns the first element of a collection
@@ -45,6 +46,11 @@ public class FirstFilter implements Filter {
         }
         
         Collection<?> inputCollection = (Collection<?>) input;
-        return inputCollection.iterator().next();
+
+        Iterator<?> iterator = inputCollection.iterator();
+        if (iterator.hasNext()) {
+            return iterator.next();
+        }
+        return null;
     }
 }
