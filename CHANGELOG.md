@@ -11,6 +11,7 @@
 ## v2.6.0 (xxxx-xx-xx)
 - Add support for 'as' and 'from' in import statement (#271)
 - Add support for spring-boot-2 (#340)
+- Supports empty collection for first filter (#342)
 
 ## v2.5.1 (2018-05-04)
 - Bugfix introduced when accessing getClass which will always return null (#338)
