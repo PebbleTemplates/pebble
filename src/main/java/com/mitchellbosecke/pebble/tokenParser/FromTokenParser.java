@@ -13,7 +13,7 @@ import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 /**
- * From Token parser for <br/>
+ * From Token parser for
  * 
  * <p>
  * {% from "templateName" import macroName as alias %}
