@@ -32,21 +32,29 @@ public class TypeUtils {
             Number number = (Number) value;
             if (type == byte.class || type == Byte.class) {
                 return number.byteValue();
-            } else if (type == short.class || type == Short.class) {
+            }
+            if (type == short.class || type == Short.class) {
                 return number.shortValue();
-            } else if (type == int.class || type == Integer.class) {
+            }
+            if (type == int.class || type == Integer.class) {
                 return number.intValue();
-            } else if (type == long.class || type == Long.class) {
+            }
+            if (type == long.class || type == Long.class) {
                 return number.longValue();
-            } else if (type == float.class || type == Float.class) {
+            }
+            if (type == float.class || type == Float.class) {
                 return number.floatValue();
-            } else if (type == double.class || type == Double.class) {
+            }
+            if (type == double.class || type == Double.class) {
                 return number.doubleValue();
-            } else if (type == BigInteger.class) {
+            }
+            if (type == BigInteger.class) {
                 return BigInteger.valueOf(number.longValue());
-            } else if (type == BigDecimal.class) {
+            }
+            if (type == BigDecimal.class) {
                 return BigDecimal.valueOf(number.doubleValue());
-            } else if (type == Date.class) {
+            }
+            if (type == Date.class) {
                 return new Date(number.longValue());
             }
         }

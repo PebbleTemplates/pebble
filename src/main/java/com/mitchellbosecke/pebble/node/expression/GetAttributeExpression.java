@@ -362,7 +362,6 @@ public class GetAttributeExpression implements Expression<Object> {
             throw new ClassAccessException(this.lineNumber, this.filename);
         }
 
-        Method result = null;
         List<Method> candidates = getCandidates(clazz, name, requiredTypes);
 
         // perfect match
@@ -377,13 +376,12 @@ public class GetAttributeExpression implements Expression<Object> {
             }
 
             if (compatibleTypes) {
-                result = candidate;
-                break;
+                return candidate;
             }
         }
 
         // greedy match
-        if (result == null && evaluationOptions.isGreedyMatchMethod()) {
+        if (evaluationOptions.isGreedyMatchMethod()) {
             for (Method candidate : candidates) {
                 boolean compatibleTypes = true;
                 Class<?>[] types = candidate.getParameterTypes();
@@ -395,13 +393,12 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
 
                 if (compatibleTypes) {
-                    result = candidate;
-                    break;
+                    return candidate;
                 }
             }
         }
 
-        return result;
+        return null;
     }
 
     /**
@@ -411,23 +408,28 @@ public class GetAttributeExpression implements Expression<Object> {
      * @return
      */
     private Class<?> widen(Class<?> clazz) {
-        Class<?> result = clazz;
         if (clazz == int.class) {
-            result = Integer.class;
-        } else if (clazz == long.class) {
-            result = Long.class;
-        } else if (clazz == double.class) {
-            result = Double.class;
-        } else if (clazz == float.class) {
-            result = Float.class;
-        } else if (clazz == short.class) {
-            result = Short.class;
-        } else if (clazz == byte.class) {
-            result = Byte.class;
-        } else if (clazz == boolean.class) {
-            result = Boolean.class;
+            return Integer.class;
         }
-        return result;
+        if (clazz == long.class) {
+            return Long.class;
+        }
+        if (clazz == double.class) {
+            return Double.class;
+        }
+        if (clazz == float.class) {
+            return Float.class;
+        }
+        if (clazz == short.class) {
+            return Short.class;
+        }
+        if (clazz == byte.class) {
+            return Byte.class;
+        }
+        if (clazz == boolean.class) {
+            return Boolean.class;
+        }
+        return clazz;
     }
 
     private class MemberCacheKey {
@@ -500,9 +502,6 @@ public class GetAttributeExpression implements Expression<Object> {
 
     private boolean isCompatibleType(Class<?> type1, Class<?> type2) {
         Class<?> widenType = widen(type1);
-        if (Number.class.isAssignableFrom(widenType) && Number.class.isAssignableFrom(type2)) {
-            return true;
-        }
-        return false;
+        return Number.class.isAssignableFrom(widenType) && Number.class.isAssignableFrom(type2);
     }
 }
