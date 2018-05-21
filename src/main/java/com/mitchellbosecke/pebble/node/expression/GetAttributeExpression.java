@@ -23,8 +23,10 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.PositionalArgumentNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationOptions;
 import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.utils.TypeUtils;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -32,6 +34,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -180,7 +183,7 @@ public class GetAttributeExpression implements Expression<Object> {
                 }
             }
 
-            member = this.reflect(object, attributeName, argumentTypes, context.isAllowGetClass());
+            member = this.reflect(object, attributeName, argumentTypes, context.getEvaluationOptions());
             if (member != null) {
                 this.memberCache.put(new MemberCacheKey(object.getClass(), attributeName), member);
             }
@@ -255,6 +258,7 @@ public class GetAttributeExpression implements Expression<Object> {
         Object result = null;
         try {
             if (member instanceof Method) {
+                argumentValues = TypeUtils.compatibleCast(argumentValues, ((Method) member).getParameterTypes());
                 result = ((Method) member).invoke(object, argumentValues);
             } else if (member instanceof Field) {
                 result = ((Field) member).get(object);
@@ -302,7 +306,7 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param parameterTypes
      * @return
      */
-    private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, boolean allowGetClass) {
+    private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, EvaluationOptions evaluationOptions) {
 
         Class<?> clazz = object.getClass();
 
@@ -312,21 +316,21 @@ public class GetAttributeExpression implements Expression<Object> {
         String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
         // check get method
-        result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, allowGetClass);
+        result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, evaluationOptions);
 
         // check is method
         if (result == null) {
-            result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, allowGetClass);
+            result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, evaluationOptions);
         }
 
         // check has method
         if (result == null) {
-            result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, allowGetClass);
+            result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, evaluationOptions);
         }
 
         // check if attribute is a public method
         if (result == null) {
-            result = this.findMethod(clazz, attributeName, parameterTypes, allowGetClass);
+            result = this.findMethod(clazz, attributeName, parameterTypes, evaluationOptions);
         }
 
         // public field
@@ -353,27 +357,17 @@ public class GetAttributeExpression implements Expression<Object> {
      * @param requiredTypes
      * @return
      */
-    private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, boolean allowGetClass) {
-        if (!allowGetClass && name.equals("getClass")) {
+    private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, EvaluationOptions evaluationOptions) {
+        if (!evaluationOptions.isAllowGetClass() && name.equals("getClass")) {
             throw new ClassAccessException(this.lineNumber, this.filename);
         }
 
-        Method result = null;
+        List<Method> candidates = getCandidates(clazz, name, requiredTypes);
 
-        Method[] candidates = clazz.getMethods();
-
+        // perfect match
         for (Method candidate : candidates) {
-            if (!candidate.getName().equalsIgnoreCase(name)) {
-                continue;
-            }
-
-            Class<?>[] types = candidate.getParameterTypes();
-
-            if (types.length != requiredTypes.length) {
-                continue;
-            }
-
             boolean compatibleTypes = true;
+            Class<?>[] types = candidate.getParameterTypes();
             for (int i = 0; i < types.length; i++) {
                 if (requiredTypes[i] != null && !this.widen(types[i]).isAssignableFrom(requiredTypes[i])) {
                     compatibleTypes = false;
@@ -382,11 +376,29 @@ public class GetAttributeExpression implements Expression<Object> {
             }
 
             if (compatibleTypes) {
-                result = candidate;
-                break;
+                return candidate;
             }
         }
-        return result;
+
+        // greedy match
+        if (evaluationOptions.isGreedyMatchMethod()) {
+            for (Method candidate : candidates) {
+                boolean compatibleTypes = true;
+                Class<?>[] types = candidate.getParameterTypes();
+                for (int i = 0; i < types.length; i++) {
+                    if (requiredTypes[i] != null && !isCompatibleType(types[i], requiredTypes[i])) {
+                        compatibleTypes = false;
+                        break;
+                    }
+                }
+
+                if (compatibleTypes) {
+                    return candidate;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -396,23 +408,28 @@ public class GetAttributeExpression implements Expression<Object> {
      * @return
      */
     private Class<?> widen(Class<?> clazz) {
-        Class<?> result = clazz;
         if (clazz == int.class) {
-            result = Integer.class;
-        } else if (clazz == long.class) {
-            result = Long.class;
-        } else if (clazz == double.class) {
-            result = Double.class;
-        } else if (clazz == float.class) {
-            result = Float.class;
-        } else if (clazz == short.class) {
-            result = Short.class;
-        } else if (clazz == byte.class) {
-            result = Byte.class;
-        } else if (clazz == boolean.class) {
-            result = Boolean.class;
+            return Integer.class;
         }
-        return result;
+        if (clazz == long.class) {
+            return Long.class;
+        }
+        if (clazz == double.class) {
+            return Double.class;
+        }
+        if (clazz == float.class) {
+            return Float.class;
+        }
+        if (clazz == short.class) {
+            return Short.class;
+        }
+        if (clazz == byte.class) {
+            return Byte.class;
+        }
+        if (clazz == boolean.class) {
+            return Boolean.class;
+        }
+        return clazz;
     }
 
     private class MemberCacheKey {
@@ -466,4 +483,25 @@ public class GetAttributeExpression implements Expression<Object> {
         return this.lineNumber;
     }
 
+    private List<Method> getCandidates(Class<?> clazz, String name, Object[] requiredTypes) {
+        List<Method> candidates = new ArrayList<>();
+        Method[] methods = clazz.getMethods();
+        for (Method m : methods) {
+            if (!m.getName().equalsIgnoreCase(name)) {
+                continue;
+            }
+
+            Class<?>[] types = m.getParameterTypes();
+            if (types.length != requiredTypes.length) {
+                continue;
+            }
+            candidates.add(m);
+        }
+        return candidates;
+    }
+
+    private boolean isCompatibleType(Class<?> type1, Class<?> type2) {
+        Class<?> widenType = widen(type1);
+        return Number.class.isAssignableFrom(widenType) && Number.class.isAssignableFrom(type2);
+    }
 }

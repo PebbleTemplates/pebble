@@ -64,6 +64,11 @@ public class ParserImpl implements Parser {
     private LinkedList<String> blockStack;
 
     /**
+     * parser options
+     */
+    private ParserOptions parserOptions;
+
+    /**
      * Constructor
      *
      * @param binaryOperators A map of binary operators
@@ -71,17 +76,18 @@ public class ParserImpl implements Parser {
      * @param tokenParsers    A map of token parsers
      */
     public ParserImpl(Map<String, UnaryOperator> unaryOperators, Map<String, BinaryOperator> binaryOperators,
-                      Map<String, TokenParser> tokenParsers) {
+                      Map<String, TokenParser> tokenParsers, ParserOptions parserOptions) {
         this.binaryOperators = binaryOperators;
         this.unaryOperators = unaryOperators;
         this.tokenParsers = tokenParsers;
+        this.parserOptions = parserOptions;
     }
 
     @Override
     public RootNode parse(TokenStream stream) {
 
         // expression parser
-        this.expressionParser = new ExpressionParser(this, binaryOperators, unaryOperators);
+        this.expressionParser = new ExpressionParser(this, binaryOperators, unaryOperators, parserOptions);
 
         this.stream = stream;
 

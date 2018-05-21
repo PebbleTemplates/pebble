@@ -90,6 +90,8 @@ public final class LexerImpl implements Lexer {
      */
     private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
 
+    private static final Pattern REGEX_LONG = Pattern.compile("^[0-9]+L");
+
     private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
 
     // the negative lookbehind assertion is used to ignore escaped quotation
@@ -355,6 +357,15 @@ public final class LexerImpl implements Lexer {
         if (matcher.lookingAt()) {
             token = source.substring(matcher.end());
             pushToken(Token.Type.NAME, token);
+            source.advance(matcher.end());
+            return;
+        }
+
+        // long
+        matcher = REGEX_LONG.matcher(source);
+        if (matcher.lookingAt()) {
+            token = source.substring(matcher.end()-1);
+            pushToken(Token.Type.LONG, token);
             source.advance(matcher.end());
             return;
         }

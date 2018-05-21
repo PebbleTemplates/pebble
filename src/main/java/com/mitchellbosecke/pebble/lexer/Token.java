@@ -19,7 +19,7 @@ public class Token {
     private int lineNumber;
 
     public enum Type {
-        EOF, TEXT, EXECUTE_START, EXECUTE_END, PRINT_START, PRINT_END, NAME, NUMBER, STRING, OPERATOR, PUNCTUATION
+        EOF, TEXT, EXECUTE_START, EXECUTE_END, PRINT_START, PRINT_END, NAME, NUMBER, LONG, STRING, OPERATOR, PUNCTUATION
     }
 
     public Token(Type type, String value, int lineNumber) {
