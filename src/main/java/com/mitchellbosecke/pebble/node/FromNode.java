@@ -10,7 +10,7 @@ import java.io.Writer;
 import java.util.List;
 
 /**
- * From Node for <br/>
+ * From Node for
  * 
  * <p>{% from "templateName" import macroName as alias %}<p>
  * 

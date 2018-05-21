@@ -485,8 +485,8 @@ public class PebbleEngine {
         }
 
         /**
-         * Enable/disable greedy matching mode for finding java method. Default is disabled. <br/>
-         * If enabled, <br/>
+         * Enable/disable greedy matching mode for finding java method. Default is disabled.
+         * If enabled,
          * when can not find perfect method (method name, parameter length and parameter type are all satisfied),
          * reduce the limit of the parameter type, try to find other method which has compatible parameter types.
          *

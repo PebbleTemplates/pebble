@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * From Token parser for <br/>
+ * From Token parser for
  * 
  * <p>
  * {% from "templateName" import macroName as alias %}
