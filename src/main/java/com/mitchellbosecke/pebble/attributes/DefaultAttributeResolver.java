@@ -3,6 +3,7 @@ package com.mitchellbosecke.pebble.attributes;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
+import com.mitchellbosecke.pebble.utils.TypeUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -67,6 +68,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
     Object result = null;
     try {
       if (member instanceof Method) {
+        argumentValues = TypeUtils.compatibleCast(argumentValues, ((Method) member).getParameterTypes());
         result = ((Method) member).invoke(object, argumentValues);
       } else if (member instanceof Field) {
         result = ((Field) member).get(object);

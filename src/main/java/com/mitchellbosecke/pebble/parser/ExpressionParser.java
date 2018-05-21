@@ -28,6 +28,7 @@ import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpre
 import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralBooleanExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralDoubleExpression;
+import com.mitchellbosecke.pebble.node.expression.LiteralIntegerExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralLongExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralNullExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
@@ -64,6 +65,8 @@ public class ExpressionParser {
 
     private Map<String, UnaryOperator> unaryOperators;
 
+    private ParserOptions parserOptions;
+
     /**
      * Constructor
      *
@@ -75,10 +78,11 @@ public class ExpressionParser {
      *            All the unary operators
      */
     public ExpressionParser(Parser parser, Map<String, BinaryOperator> binaryOperators,
-            Map<String, UnaryOperator> unaryOperators) {
+                            Map<String, UnaryOperator> unaryOperators, ParserOptions parserOptions) {
         this.parser = parser;
         this.binaryOperators = binaryOperators;
         this.unaryOperators = unaryOperators;
+        this.parserOptions = parserOptions;
     }
 
     /**
@@ -297,12 +301,22 @@ public class ExpressionParser {
             }
             break;
 
+        case LONG:
+            final String longValue = token.getValue();
+            node = new LiteralLongExpression(Long.valueOf(longValue), token.getLineNumber());
+            stream.next();
+            break;
+
         case NUMBER:
             final String numberValue = token.getValue();
             if (numberValue.contains(".")) {
                 node = new LiteralDoubleExpression(Double.valueOf(numberValue), token.getLineNumber());
             } else {
-                node = new LiteralLongExpression(Long.valueOf(numberValue), token.getLineNumber());
+                if (parserOptions.isLiteralDecimalTreatedAsInteger()) {
+                    node = new LiteralIntegerExpression(Integer.valueOf(numberValue), token.getLineNumber());
+                } else {
+                    node = new LiteralLongExpression(Long.valueOf(numberValue), token.getLineNumber());
+                }
             }
             stream.next();
             break;

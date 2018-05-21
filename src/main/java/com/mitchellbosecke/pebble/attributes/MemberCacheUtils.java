@@ -2,10 +2,13 @@ package com.mitchellbosecke.pebble.attributes;
 
 import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
+import com.mitchellbosecke.pebble.template.EvaluationOptions;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MemberCacheUtils {
@@ -35,7 +38,7 @@ public class MemberCacheUtils {
       }
     }
 
-    Member member = this.reflect(instance, attributeName, argumentTypes, filename, lineNumber, context.isAllowGetClass());
+    Member member = this.reflect(instance, attributeName, argumentTypes, filename, lineNumber, context.getEvaluationOptions());
     if (member != null) {
       this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName), member);
     }
@@ -45,7 +48,7 @@ public class MemberCacheUtils {
   /**
    * Performs the actual reflection to obtain a "Member" from a class.
    */
-  private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, String filename, int lineNumber, boolean allowGetClass) {
+  private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes, String filename, int lineNumber, EvaluationOptions evaluationOptions) {
 
     Class<?> clazz = object.getClass();
 
@@ -53,21 +56,21 @@ public class MemberCacheUtils {
     String attributeCapitalized = Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
 
     // check get method
-    Member result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, filename, lineNumber, allowGetClass);
+    Member result = this.findMethod(clazz, "get" + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
 
     // check is method
     if (result == null) {
-      result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, filename, lineNumber, allowGetClass);
+      result = this.findMethod(clazz, "is" + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
     }
 
     // check has method
     if (result == null) {
-      result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, filename, lineNumber, allowGetClass);
+      result = this.findMethod(clazz, "has" + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
     }
 
     // check if attribute is a public method
     if (result == null) {
-      result = this.findMethod(clazz, attributeName, parameterTypes, filename, lineNumber, allowGetClass);
+      result = this.findMethod(clazz, attributeName, parameterTypes, filename, lineNumber, evaluationOptions);
     }
 
     // public field
@@ -89,27 +92,17 @@ public class MemberCacheUtils {
    * Finds an appropriate method by comparing if parameter types are
    * compatible. This is more relaxed than class.getMethod.
    */
-  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, String filename, int lineNumber, boolean allowGetClass) {
-    if (!allowGetClass && name.equals("getClass")) {
+  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, String filename, int lineNumber, EvaluationOptions evaluationOptions) {
+    if (!evaluationOptions.isAllowGetClass() && name.equals("getClass")) {
       throw new ClassAccessException(lineNumber, filename);
     }
 
-    Method result = null;
+    List<Method> candidates = getCandidates(clazz, name, requiredTypes);
 
-    Method[] candidates = clazz.getMethods();
-
+    // perfect match
     for (Method candidate : candidates) {
-      if (!candidate.getName().equalsIgnoreCase(name)) {
-        continue;
-      }
-
-      Class<?>[] types = candidate.getParameterTypes();
-
-      if (types.length != requiredTypes.length) {
-        continue;
-      }
-
       boolean compatibleTypes = true;
+      Class<?>[] types = candidate.getParameterTypes();
       for (int i = 0; i < types.length; i++) {
         if (requiredTypes[i] != null && !this.widen(types[i]).isAssignableFrom(requiredTypes[i])) {
           compatibleTypes = false;
@@ -118,34 +111,79 @@ public class MemberCacheUtils {
       }
 
       if (compatibleTypes) {
-        result = candidate;
-        break;
+        return candidate;
       }
     }
-    return result;
+
+    // greedy match
+    if (evaluationOptions.isGreedyMatchMethod()) {
+      for (Method candidate : candidates) {
+        boolean compatibleTypes = true;
+        Class<?>[] types = candidate.getParameterTypes();
+        for (int i = 0; i < types.length; i++) {
+          if (requiredTypes[i] != null && !isCompatibleType(types[i], requiredTypes[i])) {
+            compatibleTypes = false;
+            break;
+          }
+        }
+
+        if (compatibleTypes) {
+          return candidate;
+        }
+      }
+    }
+
+    return null;
   }
 
   /**
    * Performs a widening conversion (primitive to boxed type)
    */
   private Class<?> widen(Class<?> clazz) {
-    Class<?> result = clazz;
     if (clazz == int.class) {
-      result = Integer.class;
-    } else if (clazz == long.class) {
-      result = Long.class;
-    } else if (clazz == double.class) {
-      result = Double.class;
-    } else if (clazz == float.class) {
-      result = Float.class;
-    } else if (clazz == short.class) {
-      result = Short.class;
-    } else if (clazz == byte.class) {
-      result = Byte.class;
-    } else if (clazz == boolean.class) {
-      result = Boolean.class;
+      return Integer.class;
     }
-    return result;
+    if (clazz == long.class) {
+      return Long.class;
+    }
+    if (clazz == double.class) {
+      return Double.class;
+    }
+    if (clazz == float.class) {
+      return Float.class;
+    }
+    if (clazz == short.class) {
+      return Short.class;
+    }
+    if (clazz == byte.class) {
+      return Byte.class;
+    }
+    if (clazz == boolean.class) {
+      return Boolean.class;
+    }
+    return clazz;
+  }
+
+  private List<Method> getCandidates(Class<?> clazz, String name, Object[] requiredTypes) {
+    List<Method> candidates = new ArrayList<>();
+    Method[] methods = clazz.getMethods();
+    for (Method m : methods) {
+      if (!m.getName().equalsIgnoreCase(name)) {
+        continue;
+      }
+
+      Class<?>[] types = m.getParameterTypes();
+      if (types.length != requiredTypes.length) {
+        continue;
+      }
+      candidates.add(m);
+    }
+    return candidates;
+  }
+
+  private boolean isCompatibleType(Class<?> type1, Class<?> type2) {
+    Class<?> widenType = widen(type1);
+    return Number.class.isAssignableFrom(widenType) && Number.class.isAssignableFrom(type2);
   }
 
   private class MemberCacheKey {

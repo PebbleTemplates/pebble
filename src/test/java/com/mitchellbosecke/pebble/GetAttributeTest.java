@@ -14,6 +14,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class GetAttributeTest extends AbstractTest {
 
@@ -301,6 +303,65 @@ public class GetAttributeTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("hello 2", writer.toString());
+    }
+
+    @Test
+    public void testBeanMethodWithLongArgument2() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.number(2L) }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new BeanWithMethodsThatHaveArguments());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello 2", writer.toString());
+    }
+
+    @Test
+    public void testBeanMethodWithTreatLiteralDecimalAsLong() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).literalDecimalTreatedAsInteger(false)
+                        .greedyMatchMethod(false).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.integer(2) }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new BeanWithMethodsThatHaveArguments());
+
+        try {
+          Writer writer = new StringWriter();
+          template.evaluate(writer, context);
+          fail("expected PebbleException");
+        } catch (PebbleException e) {
+          assertEquals(e.getLineNumber(), (Integer) 1);
+          assertEquals(e.getClass(), AttributeNotFoundException.class);
+        }
+    }
+
+    @Test
+    public void testBeanMethodWithTreatNumberAsInteger() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).literalDecimalTreatedAsInteger(true)
+                        .build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.integer(2) }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new BeanWithMethodsThatHaveArguments());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello 2", writer.toString());
+    }
+
+    @Test
+    public void testBeanMethodWithGreedyMatchArgument() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).greedyMatchMethod(true).build();
+
+        PebbleTemplate template = pebble.getTemplate("hello {{ object.integer(2) }} {{ object.short(2) }}");
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", new BeanWithMethodsThatHaveArguments());
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("hello 2 2", writer.toString());
     }
 
     @Test
@@ -650,6 +711,14 @@ public class GetAttributeTest extends AbstractTest {
         }
 
         public Long getNumber(Long number) {
+            return number;
+        }
+
+        public Integer getInteger(Integer number) {
+            return number;
+        }
+
+        public Short getShort(short number) {
             return number;
         }
 

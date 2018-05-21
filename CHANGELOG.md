@@ -11,10 +11,14 @@
 - Add the possibility to extend attribute access (#258)
 - Remove DynamicAttributeProvider
 
-## v2.6.0 (xxxx-xx-xx)
+## v2.6.0 (2018-05-20)
 - Add support for 'as' and 'from' in import statement (#271)
 - Add support for spring-boot-2 (#340)
 - Supports empty collection for first filter (#342)
+- Add options for literal number types and method finding strategy (#268)
+  - support L type suffix for literal number which will be treated as Long, such as '123L'.
+  - Add literalDecimalTreatedAsInteger option for toggling to enable/disable literal decimal treated as integer.
+  - Add 'greedyMatchMethod' option for toggling to enable/disable greedy matching mode for finding java method. Reduce the limit of the parameter type, try to find other method which has compatible parameter types.
 
 ## v2.5.1 (2018-05-04)
 - Bugfix introduced when accessing getClass which will always return null (#338)

@@ -13,7 +13,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.error.LoaderException;
-import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
@@ -32,6 +31,8 @@ import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
+import com.mitchellbosecke.pebble.parser.ParserOptions;
+import com.mitchellbosecke.pebble.template.EvaluationOptions;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
@@ -69,7 +70,9 @@ public class PebbleEngine {
 
     private final ExtensionRegistry extensionRegistry;
 
-    private final boolean allowGetClass;
+    private final ParserOptions parserOptions;
+
+    private final EvaluationOptions evaluationOptions;
 
     /**
      * Constructor for the Pebble Engine given an instantiated Loader. This
@@ -87,7 +90,8 @@ public class PebbleEngine {
                          Cache<Object, PebbleTemplate> templateCache,
                          ExecutorService executorService,
                          Collection<? extends Extension> extensions,
-                         boolean allowGetClass) {
+                         ParserOptions parserOptions,
+                         EvaluationOptions evaluationOptions) {
 
         this.loader = loader;
         this.syntax = syntax;
@@ -97,7 +101,8 @@ public class PebbleEngine {
         this.executorService = executorService;
         this.templateCache = templateCache;
         this.extensionRegistry = new ExtensionRegistry(extensions);
-        this.allowGetClass = allowGetClass;
+        this.parserOptions = parserOptions;
+        this.evaluationOptions = evaluationOptions;
     }
 
     /**
@@ -142,8 +147,8 @@ public class PebbleEngine {
         Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
         TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
 
-      Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
-              this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers());
+        Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
+              this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers(), this.parserOptions);
         RootNode root = parser.parse(tokenStream);
 
         PebbleTemplateImpl instance = new PebbleTemplateImpl(self, root, templateName);
@@ -244,15 +249,6 @@ public class PebbleEngine {
     }
 
     /**
-     * Returns toggle to enable/disable getClass access
-     *
-     * @return toggle to enable/disable getClass access
-     */
-    public boolean isAllowGetClass() {
-        return this.allowGetClass;
-    }
-
-    /**
      * A builder to configure and construct an instance of a PebbleEngine.
      */
     public static class Builder {
@@ -280,6 +276,10 @@ public class PebbleEngine {
         private EscaperExtension escaperExtension = new EscaperExtension();
 
         private boolean allowGetClass;
+
+        private boolean literalDecimalTreatedAsInteger = false;
+
+        private boolean greedyMatchMethod = false;
 
         /**
          * Creates the builder.
@@ -472,6 +472,46 @@ public class PebbleEngine {
         }
 
         /**
+         * Enable/disable treat literal decimal as Integer.
+         * Default is disabled, treated as Long.
+         *
+         * @param literalDecimalTreatedAsInteger toggle to enable/disable
+         *            literal decimal treated as integer
+         * @return This builder object
+         */
+        public Builder literalDecimalTreatedAsInteger(boolean literalDecimalTreatedAsInteger) {
+            this.literalDecimalTreatedAsInteger = literalDecimalTreatedAsInteger;
+            return this;
+        }
+
+        /**
+         * Enable/disable greedy matching mode for finding java method. Default is disabled. <br/>
+         * If enabled, <br/>
+         * when can not find perfect method (method name, parameter length and parameter type are all satisfied),
+         * reduce the limit of the parameter type, try to find other method which has compatible parameter types.
+         *
+         * For example,
+         * <pre> {{ obj.number(2) }} </pre>
+         * the expression can match all of below methods.
+         * <pre>
+         *   public Long getNumber(Long v) {...}
+         *   public Integer getNumber(Integer v) {...}
+         *   public Short getNumber(Short v) {...}
+         *   public Byte getNumber(Byte v) {...}
+         *   ...
+         * </pre>
+         *
+         * @see com.mitchellbosecke.pebble.utils.TypeUtils#compatibleCast(Object, Class)
+         * @param greedyMatchMethod toggle to enable/disable
+         *            greedy match method
+         * @return This builder object
+         */
+        public Builder greedyMatchMethod(boolean greedyMatchMethod) {
+            this.greedyMatchMethod = greedyMatchMethod;
+            return this;
+        }
+
+        /**
          * Creates the PebbleEngine instance.
          *
          * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
@@ -518,8 +558,19 @@ public class PebbleEngine {
             this.syntax = new Syntax.Builder().setEnableNewLineTrimming(this.enableNewLineTrimming).build();
             }
 
-          return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale, this.tagCache, this.templateCache,
-                  this.executorService, extensions, this.allowGetClass);
+            ParserOptions parserOptions = new ParserOptions();
+            parserOptions.setLiteralDecimalTreatedAsInteger(literalDecimalTreatedAsInteger);
+
+            EvaluationOptions evaluationOptions = new EvaluationOptions();
+            evaluationOptions.setAllowGetClass(allowGetClass);
+            evaluationOptions.setGreedyMatchMethod(greedyMatchMethod);
+
+            return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale, this.tagCache, this.templateCache,
+                    this.executorService, extensions, parserOptions, evaluationOptions);
         }
+    }
+
+    public EvaluationOptions getEvaluationOptions() {
+        return evaluationOptions;
     }
 }

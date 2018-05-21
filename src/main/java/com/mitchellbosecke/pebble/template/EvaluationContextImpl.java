@@ -79,9 +79,9 @@ public class EvaluationContextImpl implements EvaluationContext {
     private final Map<String, PebbleTemplateImpl> namedImportedTemplates;
 
     /**
-     * toggle to enable/disable getClass access
+     * evaluation options
      */
-    private final boolean allowGetClass;
+    private final EvaluationOptions evaluationOptions;
 
     /**
      * Constructor used to provide all final variables.
@@ -99,7 +99,7 @@ public class EvaluationContextImpl implements EvaluationContext {
                                  ExtensionRegistry extensionRegistry, Cache<CacheKey, Object> tagCache,
                                  ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates,
                                  Map<String, PebbleTemplateImpl> namedImportedTemplates, ScopeChain scopeChain,
-                                 Hierarchy hierarchy, boolean allowGetClass) {
+                                 Hierarchy hierarchy, EvaluationOptions evaluationOptions) {
 
         if (hierarchy == null) {
             hierarchy = new Hierarchy(self);
@@ -114,7 +114,7 @@ public class EvaluationContextImpl implements EvaluationContext {
         this.namedImportedTemplates = namedImportedTemplates;
         this.scopeChain = scopeChain;
         this.hierarchy = hierarchy;
-        this.allowGetClass = allowGetClass;
+        this.evaluationOptions = evaluationOptions;
     }
 
     /**
@@ -126,7 +126,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      */
     public EvaluationContextImpl shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
         EvaluationContextImpl result = new EvaluationContextImpl(self, this.strictVariables, this.locale, this.extensionRegistry, this.tagCache,
-                this.executorService, this.importedTemplates, this.namedImportedTemplates, this.scopeChain, null, this.allowGetClass);
+                this.executorService, this.importedTemplates, this.namedImportedTemplates, this.scopeChain, null, this.evaluationOptions);
         return result;
     }
 
@@ -140,7 +140,7 @@ public class EvaluationContextImpl implements EvaluationContext {
      */
     public EvaluationContextImpl threadSafeCopy(PebbleTemplateImpl self) {
         EvaluationContextImpl result = new EvaluationContextImpl(self, this.strictVariables, this.locale, this.extensionRegistry, this.tagCache,
-                this.executorService, new ArrayList<>(this.importedTemplates), new HashMap<>(this.namedImportedTemplates), this.scopeChain.deepCopy(), this.hierarchy, this.allowGetClass);
+                this.executorService, new ArrayList<>(this.importedTemplates), new HashMap<>(this.namedImportedTemplates), this.scopeChain.deepCopy(), this.hierarchy, this.evaluationOptions);
         return result;
     }
 
@@ -237,12 +237,12 @@ public class EvaluationContextImpl implements EvaluationContext {
     }
 
     /**
-     * Returns toggle to enable/disable getClass access
+     * Returns the evaluation options.
      *
-     * @return toggle to enable/disable getClass access
+     * @return the evaluation options
      */
-    public boolean isAllowGetClass() {
-      return this.allowGetClass;
+    public EvaluationOptions getEvaluationOptions() {
+        return evaluationOptions;
     }
 
     @Override

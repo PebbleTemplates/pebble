@@ -8,6 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.lexer;
 
+import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.lexer.Token.Type;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
+import com.mitchellbosecke.pebble.utils.Pair;
+import com.mitchellbosecke.pebble.utils.StringLengthComparator;
+import com.mitchellbosecke.pebble.utils.StringUtils;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -18,14 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.lexer.Token.Type;
-import com.mitchellbosecke.pebble.operator.BinaryOperator;
-import com.mitchellbosecke.pebble.operator.UnaryOperator;
-import com.mitchellbosecke.pebble.utils.Pair;
-import com.mitchellbosecke.pebble.utils.StringLengthComparator;
-import com.mitchellbosecke.pebble.utils.StringUtils;
 
 /**
  * This class reads the template input and builds single items out of it.
@@ -93,6 +93,8 @@ public final class LexerImpl implements Lexer {
      * Static regular expressions for names, numbers, and punctuation.
      */
     private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
+
+    private static final Pattern REGEX_LONG = Pattern.compile("^[0-9]+L");
 
     private static final Pattern REGEX_NUMBER = Pattern.compile("^[0-9]+(\\.[0-9]+)?");
 
@@ -433,6 +435,15 @@ public final class LexerImpl implements Lexer {
         if (matcher.lookingAt()) {
             token = source.substring(matcher.end());
             pushToken(Token.Type.NAME, token);
+            source.advance(matcher.end());
+            return;
+        }
+
+        // long
+        matcher = REGEX_LONG.matcher(source);
+        if (matcher.lookingAt()) {
+            token = source.substring(matcher.end()-1);
+            pushToken(Token.Type.LONG, token);
             source.advance(matcher.end());
             return;
         }

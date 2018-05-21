@@ -176,7 +176,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
         return new EvaluationContextImpl(this, this.engine.isStrictVariables(), locale,
                 this.engine.getExtensionRegistry(), this.engine.getTagCache(), this.engine.getExecutorService(),
-                new ArrayList<PebbleTemplateImpl>(), new HashMap<String, PebbleTemplateImpl>(), scopeChain, null, this.engine.isAllowGetClass());
+                new ArrayList<PebbleTemplateImpl>(), new HashMap<String, PebbleTemplateImpl>(), scopeChain, null, this.engine.getEvaluationOptions());
     }
 
     /**
