@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 
@@ -201,6 +202,35 @@ public class CoreFiltersTest extends AbstractTest {
         Writer writer = new StringWriter();
         template.evaluate(writer);
         assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testDateWithNumberInput() throws IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{{ dateAsNumber | date(\"MM/dd/yyyy\") }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("dateAsNumber", 1518004210000L);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("02/07/2018", writer.toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDateWithUnsupportedInput() throws IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{{ unsupportedDateType | date(\"MM/dd/yyyy\") }}";
+
+        PebbleTemplate template = pebble.getTemplate(source);
+        Map<String, Object> context = new HashMap<>();
+        context.put("unsupportedDateType", TRUE);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
     }
 
     @Test

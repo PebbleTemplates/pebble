@@ -19,9 +19,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 public class DateFilter implements Filter {
 
@@ -65,7 +70,13 @@ public class DateFilter implements Filter {
                     dateOrString.toString()), lineNumber, self.getName());
             }
         } else {
-            date = (Date) dateOrString;
+            if (dateOrString instanceof Date) {
+                date = (Date) dateOrString;
+            } else if (dateOrString instanceof Number) {
+                date = new Date(((Number) dateOrString).longValue());
+            } else {
+                throw new IllegalArgumentException(format("Unsupported argument type: %s (value: %s)", dateOrString.getClass().getName(), dateOrString));
+            }
         }
         intendedFormat = new SimpleDateFormat(format, locale);
         return new SafeString(intendedFormat.format(date));

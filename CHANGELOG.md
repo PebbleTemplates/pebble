@@ -11,6 +11,9 @@
 - Add the possibility to extend attribute access (#258)
 - Remove DynamicAttributeProvider
 
+## v2.6.1
+- Implement [java.util.Long] timestamp argument support in date filter
+
 ## v2.6.0 (2018-05-20)
 - Add support for 'as' and 'from' in import statement (#271)
 - Add support for spring-boot-2 (#340)
