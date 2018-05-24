@@ -9,7 +9,7 @@
 - Replace guava cache with caffeine
 
 ## v2.6.1
-- Implement [java.util.Long] timestamp argument support in date filter
+- Implement [java.util.Long] timestamp argument support in date filter (#346)
 
 ## v2.6.0 (2018-05-20)
 - Add support for 'as' and 'from' in import statement (#271)
