@@ -15,7 +15,13 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 public class DateFilter implements Filter {
 
@@ -54,7 +60,13 @@ public class DateFilter implements Filter {
                 throw new RuntimeException("Could not parse date", e);
             }
         } else {
-            date = (Date) input;
+            if (input instanceof Date) {
+                date = (Date) input;
+            } else if (input instanceof Number) {
+                date = new Date(((Number) input).longValue());
+            } else {
+                throw new IllegalArgumentException(format("Unsupported argument type: %s (value: %s)", input.getClass().getName(), input));
+            }
         }
 
         return new SafeString(intendedFormat.format(date));
