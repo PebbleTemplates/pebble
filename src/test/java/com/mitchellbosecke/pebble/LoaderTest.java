@@ -10,16 +10,28 @@ package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.*;
+import com.mitchellbosecke.pebble.loader.ClasspathLoader;
+import com.mitchellbosecke.pebble.loader.DelegatingLoader;
+import com.mitchellbosecke.pebble.loader.FileLoader;
+import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import org.junit.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -94,6 +106,19 @@ public class LoaderTest extends AbstractTest {
         template.evaluate(writer);
 
         assertEquals("LOADER ONE", writer.toString());
+    }
+
+    @Test
+    public void testGetLiteralTemplate() throws IOException {
+        PebbleEngine engine = new PebbleEngine.Builder().build();
+        PebbleTemplate template = engine.getLiteralTemplate("hello {{ object }}");
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("object", "world");
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+
+        assertEquals("hello world", writer.toString());
     }
 
     /**

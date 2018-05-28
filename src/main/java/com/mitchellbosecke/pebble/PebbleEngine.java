@@ -28,6 +28,7 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
@@ -62,7 +63,7 @@ public class PebbleEngine {
 
     private final Locale defaultLocale;
 
-  private final Cache<CacheKey, Object> tagCache;
+    private final Cache<CacheKey, Object> tagCache;
 
     private final ExecutorService executorService;
 
@@ -112,39 +113,51 @@ public class PebbleEngine {
      * @param templateName The name of the template
      * @return PebbleTemplate The compiled version of the template
      */
-    public PebbleTemplate getTemplate(final String templateName) {
-
-        /*
-         * template name will be null if user uses the extends tag with an
-         * expression that evaluates to null
-         */
-        if (templateName == null) {
-            return null;
-        }
-
-        if (this.loader == null) {
-            throw new LoaderException(null, "Loader has not yet been specified.");
-        }
-
-        final PebbleEngine self = this;
-        PebbleTemplate result;
-
-        final Object cacheKey = this.loader.createCacheKey(templateName);
-
-        if (isNull(this.templateCache)) {
-          result = this.getPebbleTemplate(self, templateName, cacheKey);
-        }
-        else {
-          result = this.templateCache.get(cacheKey, k -> this.getPebbleTemplate(self, templateName, cacheKey));
-        }
-
-        return result;
+    public PebbleTemplate getTemplate(String templateName) {
+      return getTemplate(templateName, this.loader);
     }
 
-    private PebbleTemplate getPebbleTemplate(final PebbleEngine self, final String templateName, final Object cacheKey) {
+    /**
+     * Loads, parses, and compiles a template using a StringLoader into an instance of PebbleTemplate
+     * and returns this instance.
+     *
+     * @param templateName The name of the template
+     * @return PebbleTemplate The compiled version of the template
+     */
+    public PebbleTemplate getLiteralTemplate(String templateName) {
+      return getTemplate(templateName, new StringLoader());
+    }
+
+    private PebbleTemplate getTemplate(String templateName, Loader loader) {
+      /*
+       * template name will be null if user uses the extends tag with an
+       * expression that evaluates to null
+       */
+      if (templateName == null) {
+          return null;
+      }
+
+      if (loader == null) {
+          throw new LoaderException(null, "Loader has not yet been specified.");
+      }
+
+      PebbleTemplate result;
+
+      Object cacheKey = loader.createCacheKey(templateName);
+      Reader templateReader = loader.getReader(cacheKey);
+      if (isNull(this.templateCache)) {
+        result = this.getPebbleTemplate(this, templateName, templateReader);
+      }
+      else {
+        result = this.templateCache.get(cacheKey, k -> this.getPebbleTemplate(this, templateName, templateReader));
+      }
+
+      return result;
+    }
+
+    private PebbleTemplate getPebbleTemplate(PebbleEngine self, String templateName, Reader templateReader) {
       LexerImpl lexer = new LexerImpl(this.syntax, this.extensionRegistry.getUnaryOperators().values(),
               this.extensionRegistry.getBinaryOperators().values());
-        Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
         TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
 
         Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
@@ -153,27 +166,11 @@ public class PebbleEngine {
 
         PebbleTemplateImpl instance = new PebbleTemplateImpl(self, root, templateName);
 
-      for (NodeVisitorFactory visitorFactory : this.extensionRegistry.getNodeVisitors()) {
+        for (NodeVisitorFactory visitorFactory : this.extensionRegistry.getNodeVisitors()) {
             visitorFactory.createVisitor(instance).visit(root);
         }
 
         return instance;
-    }
-
-    /**
-     * This method calls the loader and fetches the reader. We use this method
-     * to handle the generic cast.
-     *
-     * @param loader   the loader to use fetch the reader.
-     * @param cacheKey the cache key to use.
-     * @return the reader object.
-     */
-    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, Object cacheKey) {
-        // We make sure within getTemplate() that we use only the same key for
-        // the same loader and hence we can be sure that the cast is safe.
-        @SuppressWarnings("unchecked")
-        T casted = (T) cacheKey;
-        return loader.getReader(casted);
     }
 
     /**

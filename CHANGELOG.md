@@ -10,6 +10,7 @@
 - Add String Interpolation (#235)
 - Add the possibility to extend attribute access (#258)
 - Remove DynamicAttributeProvider
+- Render content on demand. Expose getLiteralTemplate(String templateName) (#295)
 
 ## v2.6.1
 - Implement [java.util.Long] timestamp argument support in date filter
