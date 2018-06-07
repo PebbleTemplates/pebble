@@ -14,7 +14,6 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BodyNode extends AbstractRenderableNode {
@@ -36,10 +35,8 @@ public class BodyNode extends AbstractRenderableNode {
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         for (RenderableNode child : children) {
-            if (onlyRenderInheritanceSafeNodes && context.getHierarchy().getParent() != null) {
-                if (!nodesToRenderInChild.contains(child.getClass())) {
-                    continue;
-                }
+            if (onlyRenderInheritanceSafeNodes && context.getHierarchy().getParent() != null && !renderInChild(child.getClass())) {
+                continue;
             }
             child.render(self, writer, context);
         }
@@ -62,11 +59,8 @@ public class BodyNode extends AbstractRenderableNode {
         this.onlyRenderInheritanceSafeNodes = onlyRenderInheritanceSafeNodes;
     }
 
-    private static List<Class<? extends Node>> nodesToRenderInChild = new ArrayList<>();
-
-    static {
-        nodesToRenderInChild.add(SetNode.class);
-        nodesToRenderInChild.add(ImportNode.class);
+    private static boolean renderInChild(Class<?> childClass) {
+        return childClass == SetNode.class || childClass == ImportNode.class;
     }
 
 }
