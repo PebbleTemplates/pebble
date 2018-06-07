@@ -20,6 +20,6 @@ public class MacroResolver implements AttributeResolver {
                                    int lineNumber) {
     MacroAttributeProvider macroAttributeProvider = (MacroAttributeProvider) instance;
     String attributeName = String.valueOf(attributeNameValue);
-    return () -> macroAttributeProvider.macro(context, attributeName, args, false, lineNumber);
+    return new ResolvedAttribute(macroAttributeProvider.macro(context, attributeName, args, false, lineNumber));
   }
 }

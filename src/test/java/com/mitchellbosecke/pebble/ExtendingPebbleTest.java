@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble;
 
 import com.mitchellbosecke.pebble.attributes.AttributeResolver;
+import com.mitchellbosecke.pebble.attributes.ResolvedAttribute;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -98,7 +99,7 @@ public class ExtendingPebbleTest extends AbstractTest {
 
             List<AttributeResolver> attributeResolvers = new ArrayList<>();
             attributeResolvers.add((instance, attribute, argumentValues, args, isStrictVariables, filename, lineNumber) ->
-                    () -> "customAttributeResolver");
+                    new ResolvedAttribute("customAttributeResolver"));
             return attributeResolvers;
         }
     }

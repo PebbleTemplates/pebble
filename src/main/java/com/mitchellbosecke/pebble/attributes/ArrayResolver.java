@@ -29,10 +29,10 @@ public class ArrayResolver implements AttributeResolver {
                 "Index out of bounds while accessing array with strict variables on.",
                 attributeName, lineNumber, filename);
       } else {
-        return () -> null;
+        return new ResolvedAttribute(null);
       }
     }
-    return () -> Array.get(instance, index);
+    return new ResolvedAttribute(Array.get(instance, index));
   }
 
   private int getIndex(String attributeName) {

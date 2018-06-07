@@ -29,9 +29,9 @@ public class MapResolver implements AttributeResolver {
 
       Class<?> keyClass = object.keySet().iterator().next().getClass();
       Object key = this.cast(keyAsNumber, keyClass, filename, lineNumber);
-      return () -> object.get(key);
+      return new ResolvedAttribute(object.get(key));
     }
-    return () -> object.get(attributeNameValue);
+    return new ResolvedAttribute(object.get(attributeNameValue));
   }
 
   private Object cast(Number number,
