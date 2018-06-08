@@ -54,8 +54,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
       }
 
       if (member != null) {
-        Member finalMember = member;
-        return () -> this.invokeMember(instance, finalMember, argumentValues);
+        return new ResolvedAttribute(invokeMember(instance, member, argumentValues));
       }
     }
     return null;

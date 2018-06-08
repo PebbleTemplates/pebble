@@ -33,11 +33,11 @@ public class ListResolver implements AttributeResolver {
                 "Index out of bounds while accessing array with strict variables on.",
                 attributeName, lineNumber, filename);
       } else {
-        return () -> null;
+        return new ResolvedAttribute(null);
       }
     }
 
-    return () -> list.get(index);
+    return new ResolvedAttribute(list.get(index));
   }
 
   private int getIndex(String attributeName) {
