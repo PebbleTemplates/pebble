@@ -4,6 +4,16 @@ Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org
 
 For more information please visit the [wiki](https://github.com/PebbleTemplates/pebble/wiki).
 
+# New group id
+Please note that the pebble's groupId has been updated as of version 2.5.0
+```
+<dependency>
+	<groupId>io.pebbletemplates</groupId>
+	<artifactId>pebble</artifactId>
+	<version>2.6.0</version>
+</dependency>
+```
+
 ## License
 
     Copyright (c) 2013 by Mitchell Bösecke
