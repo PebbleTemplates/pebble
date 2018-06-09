@@ -112,19 +112,28 @@ public class ScopeChain {
          * null values must not be handled as "not present".
          */
         Scope scope = this.stack.getFirst();
-        if (scope.containsKey(key)) {
-            return scope.get(key);
+        Object result = scope.get(key);
+        if (result != null) {
+            return result;
         }
 
-        Iterator<Scope> iterator = this.stack.iterator();
-        // account for the first lookup we did
-        iterator.next();
-
-        while (iterator.hasNext()) {
-            scope = iterator.next();
-
+        if (this.stack.size() > 1) {
             if (scope.containsKey(key)) {
-                return scope.get(key);
+                // key could be defined with null and override another value below in the stack
+                return null;
+            }
+            Iterator<Scope> iterator = this.stack.iterator();
+            // account for the first lookup we did
+            iterator.next();
+
+            while (iterator.hasNext()) {
+                result = iterator.next().get(key);
+                if (result != null) {
+                    return result;
+                } else if (scope.containsKey(key)) {
+                    // null value
+                    return null;
+                }
             }
         }
 
