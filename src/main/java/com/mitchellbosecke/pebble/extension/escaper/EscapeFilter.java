@@ -35,45 +35,11 @@ public class EscapeFilter implements Filter {
     }
 
     private void buildDefaultStrategies() {
-        strategies.put("html", new EscapingStrategy() {
-
-            @Override
-            public String escape(String input) {
-                return Escape.htmlText(input);
-            }
-        });
-
-        strategies.put("js", new EscapingStrategy() {
-
-            @Override
-            public String escape(String input) {
-                return Escape.jsString(input);
-            }
-        });
-
-        strategies.put("css", new EscapingStrategy() {
-
-            @Override
-            public String escape(String input) {
-                return Escape.cssString(input);
-            }
-        });
-
-        strategies.put("html_attr", new EscapingStrategy() {
-
-            @Override
-            public String escape(String input) {
-                return Escape.html(input);
-            }
-        });
-
-        strategies.put("url_param", new EscapingStrategy() {
-
-            @Override
-            public String escape(String input) {
-                return Escape.uriParam(input);
-            }
-        });
+        strategies.put("html", Escape::htmlText);
+        strategies.put("js", Escape::jsString);
+        strategies.put("css", Escape::cssString);
+        strategies.put("html_attr", Escape::html);
+        strategies.put("url_param", Escape::uriParam);
     }
 
     @Override

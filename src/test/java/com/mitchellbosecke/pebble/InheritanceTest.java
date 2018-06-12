@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 public class InheritanceTest extends AbstractTest {
 
-	public static final String LINE_SEPARATOR = System.lineSeparator();
+	private static final String LINE_SEPARATOR = System.lineSeparator();
 
 	@Test
 	public void testSimpleInheritance() throws PebbleException, IOException {

@@ -32,17 +32,17 @@ public class DefaultAttributeResolver implements AttributeResolver {
 
           // first we check maps
           if (instance instanceof Map) {
-            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
+            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
           }
 
           // then we check arrays
           if (instance.getClass().isArray()) {
-            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
+            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
           }
 
           // then lists
           if (instance instanceof List) {
-            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
+            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
           }
         }
 

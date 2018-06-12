@@ -99,7 +99,7 @@ public class ExpressionParser {
      * precedence required to operate a "precedence climbing" parsing algorithm.
      * It is a recursive method.
      *
-     * @see http://en.wikipedia.org/wiki/Operator-precedence_parser
+     * @see "http://en.wikipedia.org/wiki/Operator-precedence_parser"
      *
      * @return The NodeExpression representing the parsed expression.
      */
@@ -107,7 +107,7 @@ public class ExpressionParser {
 
         this.stream = parser.getStream();
         Token token = stream.current();
-        Expression<?> expression = null;
+        Expression<?> expression;
 
         /*
          * The first check is to see if the expression begins with a unary
@@ -118,7 +118,7 @@ public class ExpressionParser {
             stream.next();
             expression = parseExpression(operator.getPrecedence());
 
-            UnaryExpression unaryExpression = null;
+            UnaryExpression unaryExpression;
             Class<? extends UnaryExpression> operatorNodeClass = operator.getNodeClass();
             try {
                 unaryExpression = operatorNodeClass.newInstance();
@@ -177,7 +177,7 @@ public class ExpressionParser {
             BinaryOperator operator = binaryOperators.get(token.getValue());
             stream.next();
 
-            Expression<?> expressionRight = null;
+            Expression<?> expressionRight;
 
             // the right hand expression of the FILTER operator is handled in a
             // unique way
@@ -203,7 +203,7 @@ public class ExpressionParser {
              * final expression. The operator provides us with the type of
              * expression we are creating.
              */
-            BinaryExpression<?> finalExpression = null;
+            BinaryExpression<?> finalExpression;
             Class<? extends BinaryExpression<?>> operatorNodeClass = operator.getNodeClass();
             try {
                 finalExpression = operatorNodeClass.newInstance();
@@ -259,7 +259,7 @@ public class ExpressionParser {
      */
     private Expression<?> subparseExpression() {
         final Token token = stream.current();
-        Expression<?> node = null;
+        Expression<?> node;
 
         switch (token.getType()) {
 
@@ -451,7 +451,7 @@ public class ExpressionParser {
         TokenStream stream = parser.getStream();
         Token filterToken = stream.expect(Token.Type.NAME);
 
-        ArgumentsNode args = null;
+        ArgumentsNode args;
         if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
             args = this.parseArguments();
         } else {
@@ -467,7 +467,7 @@ public class ExpressionParser {
 
         Token testToken = stream.expect(Token.Type.NAME);
 
-        ArgumentsNode args = null;
+        ArgumentsNode args;
         if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
             args = this.parseArguments();
         } else {

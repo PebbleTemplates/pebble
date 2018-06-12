@@ -34,7 +34,7 @@ import static org.junit.Assert.fail;
 
 public class ConcurrencyTest extends AbstractTest {
 
-    static Random r = new SecureRandom();
+    private static Random r = new SecureRandom();
 
     public static class TestObject {
 
@@ -69,41 +69,36 @@ public class ConcurrencyTest extends AbstractTest {
 
         for (int i = 0; i < 10000; i++) {
             semaphore.acquire();
-            es.submit(new Runnable() {
+            es.submit(() -> {
+                try {
 
-                @Override
-                public void run() {
-                    try {
+                    int a = r.nextInt();
+                    int b = r.nextInt();
+                    int c = r.nextInt();
+                    int d = r.nextInt();
 
-                        int a = r.nextInt();
-                        int b = r.nextInt();
-                        int c = r.nextInt();
-                        int d = r.nextInt();
+                    TestObject testObject = new TestObject(a, b, c, "test" + d);
 
-                        TestObject testObject = new TestObject(a, b, c, "test"+d);
+                    StringWriter writer = new StringWriter();
+                    Map<String, Object> context = new HashMap<>();
+                    context.put("test", testObject);
+                    template.evaluate(writer, context);
 
-                        StringWriter writer = new StringWriter();
-                        Map<String, Object> context = new HashMap<>();
-                        context.put("test", testObject);
-                        template.evaluate(writer, context);
+                    String expectedResult = a + ":" + b + ":" + c + ":" + "TEST" + d;
 
-                        String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-                                .append(c).append(":").append("TEST").append(d).toString();
-
-                        String actualResult = writer.toString();
-                        if (!expectedResult.equals(actualResult)) {
-                            System.out.println("Expected: " + expectedResult);
-                            System.out.println("Actual: " + actualResult);
-                            System.out.println("");
-                            totalFailed.incrementAndGet();
-                        }
-
-                    } catch (IOException | PebbleException e) {
-                        e.printStackTrace();
+                    String actualResult = writer.toString();
+                    if (!expectedResult.equals(actualResult)) {
+                        System.out.println("Expected: " + expectedResult);
+                        System.out.println("Actual: " + actualResult);
+                        System.out.println();
                         totalFailed.incrementAndGet();
-                    } finally {
-                        semaphore.release();
                     }
+
+                } catch (IOException | PebbleException e) {
+                    e.printStackTrace();
+                    totalFailed.incrementAndGet();
+                } finally {
+                    semaphore.release();
                 }
             });
             if (totalFailed.intValue() > 0) {
@@ -136,78 +131,68 @@ public class ConcurrencyTest extends AbstractTest {
 
         for (int i = 0; i < 1000; i++) {
             semaphore.acquire(1);
-            es.submit(new Runnable() {
+            es.submit(() -> {
+                try {
+                    PebbleTemplate template = engine.getTemplate("templates/template.concurrent1.peb");
 
-                @Override
-                public void run() {
-                    try {
-                        PebbleTemplate template = engine.getTemplate("templates/template.concurrent1.peb");
+                    int a = r.nextInt();
+                    int b = r.nextInt();
+                    int c = r.nextInt();
+                    int d = r.nextInt();
 
-                        int a = r.nextInt();
-                        int b = r.nextInt();
-                        int c = r.nextInt();
-                        int d = r.nextInt();
+                    TestObject testObject = new TestObject(a, b, c, "test" + d);
 
-                        TestObject testObject = new TestObject(a, b, c, "test" + d);
+                    StringWriter writer = new StringWriter();
+                    Map<String, Object> context = new HashMap<>();
+                    context.put("test", testObject);
+                    template.evaluate(writer, context);
 
-                        StringWriter writer = new StringWriter();
-                        Map<String, Object> context = new HashMap<>();
-                        context.put("test", testObject);
-                        template.evaluate(writer, context);
+                    String expectedResult = a + ":" + b + ":" + c;
 
-                        String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-                                .append(c).toString();
-
-                        String actualResult = writer.toString();
-                        if (!expectedResult.equals(actualResult)) {
-                            System.out.println("Expected1: " + expectedResult);
-                            System.out.println("Actual1: " + actualResult);
-                            totalFailed.incrementAndGet();
-                        }
-
-                    } catch (IOException | PebbleException e) {
-                        e.printStackTrace();
+                    String actualResult = writer.toString();
+                    if (!expectedResult.equals(actualResult)) {
+                        System.out.println("Expected1: " + expectedResult);
+                        System.out.println("Actual1: " + actualResult);
                         totalFailed.incrementAndGet();
-                    } finally {
-                        semaphore.release();
                     }
+
+                } catch (IOException | PebbleException e) {
+                    e.printStackTrace();
+                    totalFailed.incrementAndGet();
+                } finally {
+                    semaphore.release();
                 }
             });
-            es.submit(new Runnable() {
+            es.submit(() -> {
+                try {
+                    PebbleTemplate template = engine.getTemplate("templates/template.concurrent2.peb");
 
-                @Override
-                public void run() {
-                    try {
-                        PebbleTemplate template = engine.getTemplate("templates/template.concurrent2.peb");
+                    int a = r.nextInt();
+                    int b = r.nextInt();
+                    int c = r.nextInt();
+                    int d = r.nextInt();
 
-                        int a = r.nextInt();
-                        int b = r.nextInt();
-                        int c = r.nextInt();
-                        int d = r.nextInt();
+                    TestObject testObject = new TestObject(a, b, c, "test" + d);
 
-                        TestObject testObject = new TestObject(a, b, c, "test" + d);
+                    StringWriter writer = new StringWriter();
+                    Map<String, Object> context = new HashMap<>();
+                    context.put("test", testObject);
+                    template.evaluate(writer, context);
 
-                        StringWriter writer = new StringWriter();
-                        Map<String, Object> context = new HashMap<>();
-                        context.put("test", testObject);
-                        template.evaluate(writer, context);
+                    String expectedResult = a + ":" + b + ":" + c;
 
-                        String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-                                .append(c).toString();
-
-                        String actualResult = writer.toString();
-                        if (!expectedResult.equals(actualResult)) {
-                            System.out.println("Expected2: " + expectedResult);
-                            System.out.println("Actual2: " + actualResult);
-                            totalFailed.incrementAndGet();
-                        }
-
-                    } catch (IOException | PebbleException e) {
-                        e.printStackTrace();
+                    String actualResult = writer.toString();
+                    if (!expectedResult.equals(actualResult)) {
+                        System.out.println("Expected2: " + expectedResult);
+                        System.out.println("Actual2: " + actualResult);
                         totalFailed.incrementAndGet();
-                    } finally {
-                        semaphore.release();
                     }
+
+                } catch (IOException | PebbleException e) {
+                    e.printStackTrace();
+                    totalFailed.incrementAndGet();
+                } finally {
+                    semaphore.release();
                 }
             });
 
@@ -245,36 +230,32 @@ public class ConcurrencyTest extends AbstractTest {
 
         for (int i = 0; i < 1000; i++) {
             semaphore.acquire();
-            es.submit(new Runnable() {
+            es.submit(() -> {
+                try {
 
-                @Override
-                public void run() {
-                    try {
+                    final boolean isGerman = r.nextBoolean();
 
-                        final boolean isGerman = r.nextBoolean();
+                    final Locale locale = isGerman ? Locale.GERMANY : Locale.CANADA;
 
-                        final Locale locale = isGerman ? Locale.GERMANY : Locale.CANADA;
+                    final StringWriter writer = new StringWriter();
 
-                        final StringWriter writer = new StringWriter();
+                    template.evaluate(writer, locale);
 
-                        template.evaluate(writer, locale);
+                    final String expectedResult = isGerman ? germanResult : canadianResult;
 
-                        final String expectedResult = isGerman ? germanResult : canadianResult;
+                    final String actualResult = writer.toString();
 
-                        final String actualResult = writer.toString();
-
-                        if (!expectedResult.equals(actualResult)) {
-                            System.out.println(String.format("Locale: %s\nExpected: %s\nActual: %s\n",
-                                    locale.toString(), expectedResult, actualResult));
-                            totalFailed.incrementAndGet();
-                        }
-
-                    } catch (IOException | PebbleException e) {
-                        e.printStackTrace();
+                    if (!expectedResult.equals(actualResult)) {
+                        System.out.println(String.format("Locale: %s\nExpected: %s\nActual: %s\n",
+                                locale.toString(), expectedResult, actualResult));
                         totalFailed.incrementAndGet();
-                    } finally {
-                        semaphore.release();
                     }
+
+                } catch (IOException | PebbleException e) {
+                    e.printStackTrace();
+                    totalFailed.incrementAndGet();
+                } finally {
+                    semaphore.release();
                 }
             });
             if (totalFailed.intValue() > 0) {
@@ -376,7 +357,7 @@ public class ConcurrencyTest extends AbstractTest {
     }
 
     @Test
-    public void testConcurrentEvaluationWithException() throws PebbleException, IOException
+    public void testConcurrentEvaluationWithException() throws PebbleException
     {
         PebbleEngine engine = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 

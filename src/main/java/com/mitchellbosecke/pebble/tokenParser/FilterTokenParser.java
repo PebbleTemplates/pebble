@@ -18,7 +18,6 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.node.expression.FilterExpression;
 import com.mitchellbosecke.pebble.node.expression.RenderableNodeExpression;
 import com.mitchellbosecke.pebble.parser.Parser;
-import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.List;
  * Parses the "filter" tag. It has nothing to do with implementing normal
  * filters.
  */
-public class FilterTokenParser extends AbstractTokenParser {
+public class FilterTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {
@@ -49,7 +48,7 @@ public class FilterTokenParser extends AbstractTokenParser {
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = parser.subparse(endFilter);
+        BodyNode body = parser.subparse(tkn -> tkn.test(Type.NAME, "endfilter"));
 
         stream.next();
         stream.expect(Token.Type.EXECUTE_END);
@@ -67,14 +66,6 @@ public class FilterTokenParser extends AbstractTokenParser {
 
         return new PrintNode(lastExpression, lineNumber);
     }
-
-    private StoppingCondition endFilter = new StoppingCondition() {
-
-        @Override
-        public boolean evaluate(Token token) {
-            return token.test(Token.Type.NAME, "endfilter");
-        }
-    };
 
     @Override
     public String getTag() {

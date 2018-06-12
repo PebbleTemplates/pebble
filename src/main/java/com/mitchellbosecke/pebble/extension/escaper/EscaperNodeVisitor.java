@@ -46,14 +46,14 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
             TernaryExpression ternary = (TernaryExpression) expression;
             Expression<?> left = ternary.getExpression2();
             Expression<?> right = ternary.getExpression3();
-            if (!isSafe(left)) {
+            if (isUnsafe(left)) {
                 ternary.setExpression2(escape(left));
             }
-            if (!isSafe(right)) {
+            if (isUnsafe(right)) {
                 ternary.setExpression3(escape(right));
             }
         } else {
-            if (!isSafe(expression)) {
+            if (isUnsafe(expression)) {
                 node.setExpression(escape(expression));
             }
         }
@@ -105,25 +105,25 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
         return binary;
     }
 
-    private boolean isSafe(Expression<?> expression) {
+    private boolean isUnsafe(Expression<?> expression) {
 
         // check whether the autoescaper is even active
-        if (!active.isEmpty() && !active.peek()) {
-            return true;
+        if (active.peek() == Boolean.FALSE) {
+            return false;
         }
 
-        boolean safe = false;
+        boolean unsafe = true;
 
         // string literals are safe
         if (expression instanceof LiteralStringExpression) {
-            safe = true;
+            unsafe = false;
         } else if (expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
-            safe = true;
+            unsafe = false;
         } else if (isSafeConcatenateExpr(expression)) {
-            safe = true;
+            unsafe = false;
         }
 
-        return safe;
+        return unsafe;
     }
 
     /**

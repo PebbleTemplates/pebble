@@ -37,12 +37,14 @@ public class MergeFilter implements Filter {
     @Override
     public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
         Object items = args.get("items");
-        if (input == null && items == null) {
-            throw new PebbleException(null, "The two arguments to be merged are null", lineNumber, self.getName());
-        } else if (input != null && items == null) {
+        if (input == null) {
+            if (items == null) {
+                throw new PebbleException(null, "The two arguments to be merged are null", lineNumber, self.getName());
+            } else {
+                return items;
+            }
+        } else if (items == null) {
             return input;
-        } else if (items != null && input == null) {
-            return items;
         }
         // left hand side argument defines resulting type
         if (input instanceof Map) {
@@ -57,17 +59,16 @@ public class MergeFilter implements Filter {
     }
 
     private Object mergeAsMap(Map<?, ?> arg1, Object arg2) {
-        Map<?, ?> collection1 = arg1;
-        Map<Object, Object> output = null;
+        Map<Object, Object> output ;
         if (arg2 instanceof Map) {
             Map<?, ?> collection2 = (Map<?, ?>) arg2;
-            output = new HashMap<Object, Object>(collection1.size() + collection2.size() + 16);
-            output.putAll(collection1);
+            output = new HashMap<>(arg1.size() + collection2.size() + 16);
+            output.putAll(arg1);
             output.putAll(collection2);
         } else if (arg2 instanceof List) {
             List<?> collection2 = (List<?>) arg2;
-            output = new HashMap<Object, Object>(collection1.size() + collection2.size() + 16);
-            output.putAll(collection1);
+            output = new HashMap<>(arg1.size() + collection2.size() + 16);
+            output.putAll(arg1);
             for (Object o : collection2) {
                 output.put(o, o);
             }
@@ -79,17 +80,16 @@ public class MergeFilter implements Filter {
     }
 
     private Object mergeAsList(List<?> arg1, Object arg2, int lineNumber, PebbleTemplate self) throws PebbleException{
-        List<?> collection1 = arg1;
         List<Object> output;
         if (arg2 instanceof Map) {
             Map<?, ?> collection2 = (Map<?, ?>) arg2;
-            output = new ArrayList<>(collection1.size() + collection2.size() + 16);
-            output.addAll(collection1);
+            output = new ArrayList<>(arg1.size() + collection2.size() + 16);
+            output.addAll(arg1);
             output.addAll(collection2.entrySet());
         } else if (arg2 instanceof List) {
             List<?> collection2 = (List<?>) arg2;
-            output = new ArrayList<>(collection1.size() + collection2.size() + 16);
-            output.addAll(collection1);
+            output = new ArrayList<>(arg1.size() + collection2.size() + 16);
+            output.addAll(arg1);
             output.addAll(collection2);
         } else {
             throw new PebbleException(null,

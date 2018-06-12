@@ -51,11 +51,6 @@ public class ClasspathLoader implements Loader<String> {
     @Override
     public Reader getReader(String templateName) {
 
-        InputStreamReader isr = null;
-        Reader reader = null;
-
-        InputStream is = null;
-
         // append the prefix and make sure prefix ends with a separator character
         StringBuilder path = new StringBuilder(128);
         if (getPrefix() != null) {
@@ -75,19 +70,18 @@ public class ClasspathLoader implements Loader<String> {
         logger.debug("Looking for template in {}.", location);
 
         // perform the lookup
-        is = rcl.getResourceAsStream(location);
+        InputStream is = rcl.getResourceAsStream(location);
 
         if (is == null) {
             throw new LoaderException(null, "Could not find template \"" + location + "\"");
         }
 
         try {
-            isr = new InputStreamReader(is, charset);
-            reader = new BufferedReader(isr);
+            return new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
         }
 
-        return reader;
+        return null;
     }
 
     public String getSuffix() {

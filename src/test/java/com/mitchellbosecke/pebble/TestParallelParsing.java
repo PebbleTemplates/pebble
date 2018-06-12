@@ -11,14 +11,13 @@ import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-import com.mitchellbosecke.pebble.tokenParser.AbstractTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,36 +41,28 @@ public class TestParallelParsing extends AbstractTest {
     public void testParser() throws InterruptedException {
         final PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).extension(new DelayExtension()).build();
 
-        final AtomicReference<String> resultThread1 = new AtomicReference<String>();
-        final AtomicReference<String> resultThread2 = new AtomicReference<String>();
+        final AtomicReference<String> resultThread1 = new AtomicReference<>();
+        final AtomicReference<String> resultThread2 = new AtomicReference<>();
 
-        Thread thread1 = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    PebbleTemplate template = pebble.getTemplate("templates/template.parallelParsing1.peb");
-                    Writer writer = new StringWriter();
-                    template.evaluate(writer);
-                    resultThread1.set(writer.toString());
-                } catch (PebbleException | IOException e) {
-                    throw new RuntimeException(e);
-                }
+        Thread thread1 = new Thread(() -> {
+            try {
+                PebbleTemplate template = pebble.getTemplate("templates/template.parallelParsing1.peb");
+                Writer writer = new StringWriter();
+                template.evaluate(writer);
+                resultThread1.set(writer.toString());
+            } catch (PebbleException | IOException e) {
+                throw new RuntimeException(e);
             }
         });
 
-        Thread thread2 = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    PebbleTemplate template = pebble.getTemplate("templates/template.parallelParsing2.peb");
-                    Writer writer = new StringWriter();
-                    template.evaluate(writer);
-                    resultThread2.set(writer.toString());
-                } catch (PebbleException | IOException e) {
-                    throw new RuntimeException(e);
-                }
+        Thread thread2 = new Thread(() -> {
+            try {
+                PebbleTemplate template = pebble.getTemplate("templates/template.parallelParsing2.peb");
+                Writer writer = new StringWriter();
+                template.evaluate(writer);
+                resultThread2.set(writer.toString());
+            } catch (PebbleException | IOException e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -96,12 +87,12 @@ public class TestParallelParsing extends AbstractTest {
 
         @Override
         public List<TokenParser> getTokenParsers() {
-            return Arrays.asList((TokenParser) new DelayTokenParser());
+            return Collections.singletonList(new DelayTokenParser());
         }
 
     }
 
-    private static class DelayTokenParser extends AbstractTokenParser {
+    private static class DelayTokenParser implements TokenParser {
 
         @Override
         public String getTag() {
@@ -148,7 +139,7 @@ public class TestParallelParsing extends AbstractTest {
 
                 @Override
                 public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
-                        throws PebbleException, IOException {
+                        throws PebbleException {
                     // Do nothing.
                 }
             };

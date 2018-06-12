@@ -36,7 +36,7 @@ public class RsortFilter implements Filter {
             return null;
         }
         List<Comparable> collection = (List<Comparable>) input;
-        Collections.sort(collection, Collections.reverseOrder());
+        collection.sort(Collections.reverseOrder());
         return collection;
     }
 

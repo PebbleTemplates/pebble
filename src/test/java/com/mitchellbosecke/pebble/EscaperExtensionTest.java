@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.extension.escaper.EscapingStrategy;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -211,13 +210,7 @@ public class EscaperExtensionTest extends AbstractTest {
     @Test
     public void testCustomEscapingStrategy() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
-                .defaultEscapingStrategy("custom").addEscapingStrategy("custom", new EscapingStrategy() {
-
-                    @Override
-                    public String escape(String input) {
-                        return input.replace('a', 'b');
-                    }
-                }).build();
+                .defaultEscapingStrategy("custom").addEscapingStrategy("custom", input -> input.replace('a', 'b')).build();
 
         // replaces all a's with b's
         PebbleTemplate template = pebble.getTemplate("{{ text }}");
@@ -264,7 +257,7 @@ public class EscaperExtensionTest extends AbstractTest {
 
         @Override
         public Map<String, Function> getFunctions() {
-            return Collections.<String, Function>singletonMap("bad", new Function() {
+            return Collections.singletonMap("bad", new Function() {
 
                 @Override
                 public List<String> getArgumentNames() {

@@ -15,9 +15,8 @@ import com.mitchellbosecke.pebble.node.BlockNode;
 import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
-import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
-public class BlockTokenParser extends AbstractTokenParser {
+public class BlockTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {
@@ -47,13 +46,7 @@ public class BlockTokenParser extends AbstractTokenParser {
         parser.pushBlockStack(name);
 
         // now we parse the block body
-        BodyNode blockBody = parser.subparse(new StoppingCondition() {
-
-            @Override
-            public boolean evaluate(Token token) {
-                return token.test(Token.Type.NAME, "endblock");
-            }
-        });
+        BodyNode blockBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endblock"));
         parser.popBlockStack();
 
         //check endblock us exist with block or not

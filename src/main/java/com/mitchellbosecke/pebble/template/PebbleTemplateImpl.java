@@ -176,7 +176,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
 
         return new EvaluationContextImpl(this, this.engine.isStrictVariables(), locale,
                 this.engine.getExtensionRegistry(), this.engine.getTagCache(), this.engine.getExecutorService(),
-                new ArrayList<PebbleTemplateImpl>(), new HashMap<String, PebbleTemplateImpl>(), scopeChain, null, this.engine.getEvaluationOptions());
+                new ArrayList<>(), new HashMap<>(), scopeChain, null, this.engine.getEvaluationOptions());
     }
 
     /**
@@ -203,12 +203,11 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     /**
      * Imports named macros from specified template.
      *
-     * @param context     The evaluation context
      * @param name        The template name
      * @param namedMacros named macros
      * @throws PebbleException
      */
-    public void importNamedMacrosFromTemplate(EvaluationContext context, String name, List<Pair<String, String>> namedMacros) {
+    public void importNamedMacrosFromTemplate(String name, List<Pair<String, String>> namedMacros) {
         PebbleTemplateImpl templateImpl = (PebbleTemplateImpl) this.engine.getTemplate(this.resolveRelativePath(name));
         for (Pair<String, String> pair : namedMacros) {
             Macro m = templateImpl.macros.get(pair.getRight());
@@ -429,13 +428,13 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
 
     private static class NoopWriter extends Writer {
-        public void write(char[] cbuf, int off, int len) throws IOException {
+        public void write(char[] cbuf, int off, int len) {
         }
 
-        public void flush() throws IOException {
+        public void flush() {
         }
 
-        public void close() throws IOException {
+        public void close() {
         }
     }
 }

@@ -72,19 +72,11 @@ public class TokenStream {
     public Token expect(Token.Type type, String value) {
         Token token = tokens.get(current);
 
-        boolean success = true;
-        String message = null;
-        if (value == null) {
-            success = token.test(type);
-        } else {
-            success = token.test(type, value);
-        }
+        boolean success = value == null ? token.test(type) : token.test(type, value);
 
         if (!success) {
-            if (message == null) {
-                message = String.format("Unexpected token of value \"%s\" and type %s, expected token of type %s",
+            String message = String.format("Unexpected token of value \"%s\" and type %s, expected token of type %s",
                         token.getValue(), token.getType().toString(), type);
-            }
             throw new ParserException(null, message, token.getLineNumber(), filename);
         }
         this.next();

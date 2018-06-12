@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -71,15 +70,11 @@ public class ParallelNode extends AbstractRenderableNode {
             final StringWriter newStringWriter = new StringWriter();
             final Writer newFutureWriter = new FutureWriter(newStringWriter);
 
-            Future<String> future = es.submit(new Callable<String>() {
-
-                @Override
-                public String call() throws IOException {
-                    body.render(self, newFutureWriter, contextCopy);
-                    newFutureWriter.flush();
-                    newFutureWriter.close();
-                    return newStringWriter.toString();
-                }
+            Future<String> future = es.submit(() -> {
+                body.render(self, newFutureWriter, contextCopy);
+                newFutureWriter.flush();
+                newFutureWriter.close();
+                return newStringWriter.toString();
             });
             ((FutureWriter) writer).enqueue(future);
         }

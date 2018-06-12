@@ -33,7 +33,7 @@ public class NewlineTrimmingTest extends AbstractTest {
 
         Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("param1", "val1");
         params.put("param2", "val2");
 
@@ -73,7 +73,7 @@ public class NewlineTrimmingTest extends AbstractTest {
 
         Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("param1", "val1");
         params.put("param2", "val2");
 
@@ -92,7 +92,7 @@ public class NewlineTrimmingTest extends AbstractTest {
 
         Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("param1", "val1");
         params.put("param2", "val2");
 
@@ -112,7 +112,7 @@ public class NewlineTrimmingTest extends AbstractTest {
 
         Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("param1", "val1");
         params.put("param2", "val2");
 

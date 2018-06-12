@@ -14,7 +14,6 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,9 +48,8 @@ public class LastFilter implements Filter {
 
         Collection<?> inputCollection = (Collection<?>) input;
         Object result = null;
-        Iterator<?> iterator = inputCollection.iterator();
-        while(iterator.hasNext()){
-            result = iterator.next();
+        for (Object o : inputCollection) {
+            result = o;
         }
         return result;
     }

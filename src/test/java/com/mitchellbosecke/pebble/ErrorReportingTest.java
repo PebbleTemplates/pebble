@@ -33,7 +33,7 @@ public class ErrorReportingTest extends AbstractTest {
     public final ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testLineNumberErrorReportingWithUnixNewlines() throws PebbleException, IOException {
+    public void testLineNumberErrorReportingWithUnixNewlines() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -45,7 +45,7 @@ public class ErrorReportingTest extends AbstractTest {
     }
 
     @Test
-    public void testLineNumberErrorReportingWithWindowsNewlines() throws PebbleException, IOException {
+    public void testLineNumberErrorReportingWithWindowsNewlines() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 

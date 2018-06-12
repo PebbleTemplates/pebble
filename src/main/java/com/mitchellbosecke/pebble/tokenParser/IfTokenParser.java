@@ -22,7 +22,7 @@ import com.mitchellbosecke.pebble.utils.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IfTokenParser extends AbstractTokenParser {
+public class IfTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {
@@ -38,9 +38,9 @@ public class IfTokenParser extends AbstractTokenParser {
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = parser.subparse(this.decideIfFork);
+        BodyNode body = parser.subparse(DECIDE_IF_FORK);
 
-        conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
+        conditionsWithBodies.add(new Pair<>(expression, body));
 
         BodyNode elseBody = null;
         boolean end = false;
@@ -56,15 +56,15 @@ public class IfTokenParser extends AbstractTokenParser {
             case "else":
                 stream.next();
                 stream.expect(Token.Type.EXECUTE_END);
-                elseBody = parser.subparse(this.decideIfEnd);
+                elseBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endif"));
                 break;
 
             case "elseif":
                 stream.next();
                 expression = parser.getExpressionParser().parseExpression();
                 stream.expect(Token.Type.EXECUTE_END);
-                body = parser.subparse(this.decideIfFork);
-                conditionsWithBodies.add(new Pair<Expression<?>, BodyNode>(expression, body));
+                body = parser.subparse(DECIDE_IF_FORK);
+                conditionsWithBodies.add(new Pair<>(expression, body));
                 break;
 
             case "endif":
@@ -83,21 +83,7 @@ public class IfTokenParser extends AbstractTokenParser {
         return new IfNode(lineNumber, conditionsWithBodies, elseBody);
     }
 
-    private StoppingCondition decideIfFork = new StoppingCondition() {
-
-        @Override
-        public boolean evaluate(Token token) {
-            return token.test(Token.Type.NAME, "elseif", "else", "endif");
-        }
-    };
-
-    private StoppingCondition decideIfEnd = new StoppingCondition() {
-
-        @Override
-        public boolean evaluate(Token token) {
-            return token.test(Token.Type.NAME, "endif");
-        }
-    };
+    private static final StoppingCondition DECIDE_IF_FORK = token -> token.test(Token.Type.NAME, "elseif", "else", "endif");
 
     @Override
     public String getTag() {

@@ -89,12 +89,12 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
         context.put("colors", new HashMap<Long, Object>() {
 
             {
-                put(1l, "red");
-                put(2l, "green");
+                put(1L, "red");
+                put(2L, "green");
             }
         });
-        context.put("one", 1l);
-        context.put("two", 2l);
+        context.put("one", 1L);
+        context.put("two", 2L);
 
         Writer writer1 = new StringWriter();
         template1.evaluate(writer1, context);

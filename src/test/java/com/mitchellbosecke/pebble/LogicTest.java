@@ -563,7 +563,7 @@ public class LogicTest extends AbstractTest {
         String source = "{% if 'test' equals obj2 %}yes{% endif %}{% if 'blue' equals 'red' %}no{% else %}yes{% endif %}";
         PebbleTemplate template = pebble.getTemplate(source);
         Map<String, Object> context = new HashMap<>();
-        context.put("obj2", new String("test"));
+        context.put("obj2", "test");
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
@@ -970,49 +970,49 @@ public class LogicTest extends AbstractTest {
         // byte
         writer = new StringWriter();
         context.put("values", new byte[] { 1, 2 });
-        context.put("value", Byte.valueOf("1"));
+        context.put("value", (byte) 1);
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
 
         // char
         writer = new StringWriter();
         context.put("values", new char[] { 'a', 'b' });
-        context.put("value", new Character('a'));
+        context.put("value", 'a');
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
 
         // double
         writer = new StringWriter();
         context.put("values", new double[] { 1.0d, 2.0d });
-        context.put("value", new Double(1.0d));
+        context.put("value", 1.0d);
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
 
         // float
         writer = new StringWriter();
         context.put("values", new float[] { 1.0f, 2.0f });
-        context.put("value", new Float(1.0f));
+        context.put("value", 1.0f);
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
 
         // int
         writer = new StringWriter();
         context.put("values", new int[] { 1, 2 });
-        context.put("value", new Integer(1));
+        context.put("value", 1);
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
 
         // long
         writer = new StringWriter();
         context.put("values", new long[] { 1, 2 });
-        context.put("value", new Long(1));
+        context.put("value", 1L);
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
 
         // short
         writer = new StringWriter();
         context.put("values", new short[] { 1, 2 });
-        context.put("value", Short.valueOf("1"));
+        context.put("value", (short) 1);
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
     }

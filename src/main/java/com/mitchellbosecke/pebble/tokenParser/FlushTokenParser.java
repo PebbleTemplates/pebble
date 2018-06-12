@@ -14,7 +14,7 @@ import com.mitchellbosecke.pebble.node.FlushNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
 
-public class FlushTokenParser extends AbstractTokenParser {
+public class FlushTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {

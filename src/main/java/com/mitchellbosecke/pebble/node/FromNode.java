@@ -31,7 +31,7 @@ public class FromNode extends AbstractRenderableNode {
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) {
         String templateName = (String) fromExpression.evaluate(self, context);
-        self.importNamedMacrosFromTemplate(context, templateName, namedMacros);
+        self.importNamedMacrosFromTemplate(templateName, namedMacros);
     }
 
     @Override

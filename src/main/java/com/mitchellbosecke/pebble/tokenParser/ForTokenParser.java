@@ -16,9 +16,8 @@ import com.mitchellbosecke.pebble.node.ForNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.parser.Parser;
-import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
-public class ForTokenParser extends AbstractTokenParser {
+public class ForTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {
@@ -38,7 +37,7 @@ public class ForTokenParser extends AbstractTokenParser {
 
         stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = parser.subparse(this.decideForFork);
+        BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "else", "endfor"));
 
         BodyNode elseBody = null;
 
@@ -46,7 +45,7 @@ public class ForTokenParser extends AbstractTokenParser {
             // skip the 'else' token
             stream.next();
             stream.expect(Token.Type.EXECUTE_END);
-            elseBody = parser.subparse(this.decideForEnd);
+            elseBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endfor"));
         }
 
         if (stream.current().getValue() == null) {
@@ -61,22 +60,6 @@ public class ForTokenParser extends AbstractTokenParser {
 
         return new ForNode(lineNumber, iterationVariable, iterable, body, elseBody);
     }
-
-    private StoppingCondition decideForFork = new StoppingCondition() {
-
-        @Override
-        public boolean evaluate(Token token) {
-            return token.test(Token.Type.NAME, "else", "endfor");
-        }
-    };
-
-    private StoppingCondition decideForEnd = new StoppingCondition() {
-
-        @Override
-        public boolean evaluate(Token token) {
-            return token.test(Token.Type.NAME, "endfor");
-        }
-    };
 
     @Override
     public String getTag() {

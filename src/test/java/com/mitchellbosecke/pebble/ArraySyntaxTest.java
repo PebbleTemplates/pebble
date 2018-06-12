@@ -40,7 +40,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[]", writer.toString());
     }
 
@@ -52,7 +52,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[first-name]", writer.toString());
     }
 
@@ -64,7 +64,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[first-name, last-name]", writer.toString());
     }
 
@@ -76,7 +76,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[first-name, last-name]", writer.toString());
     }
 
@@ -88,14 +88,14 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals(
                 "[repeated-name, repeated-name, repeated-name, repeated-name, repeated-name, repeated-name, repeated-name]",
                 writer.toString());
     }
 
     @Test
-    public void testIncompleteArraySyntax() throws PebbleException, IOException {
+    public void testIncompleteArraySyntax() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -171,7 +171,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[repeated-name, 10]", writer.toString());
     }
 
@@ -183,7 +183,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("10", writer.toString());
     }
 
@@ -196,7 +196,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("name", writer.toString());
     }
 
@@ -209,7 +209,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("name", writer.toString());
     }
 
@@ -222,7 +222,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("name:10", writer.toString());
     }
 
@@ -235,7 +235,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("name:10", writer.toString());
     }
 
@@ -248,7 +248,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("10", writer.toString());
     }
 
@@ -261,7 +261,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("10", writer.toString());
     }
 
@@ -274,7 +274,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[10, three]", writer.toString());
     }
 
@@ -287,7 +287,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[10, three]", writer.toString());
     }
 
@@ -300,7 +300,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[0, 1, 2, 3]", writer.toString());
     }
 
@@ -313,7 +313,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[0, 1, 2, 3]", writer.toString());
     }
 
@@ -326,7 +326,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("BobMariaJohn", writer.toString());
     }
 
@@ -339,7 +339,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("BobMariaJohn", writer.toString());
     }
 
@@ -352,7 +352,7 @@ public class ArraySyntaxTest extends AbstractTest {
 
         Writer writer = new StringWriter();
         try {
-            template.evaluate(writer, new HashMap<String, Object>());
+            template.evaluate(writer, new HashMap<>());
             fail("Expected PebbleException");
         } catch (PebbleException e) {
             assertEquals("Not an iterable object. Value = [somevalue] (" + source + ":1)", e.getMessage());
@@ -368,7 +368,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("no name", writer.toString());
     }
 
@@ -381,7 +381,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("it is not", writer.toString());
     }
 
@@ -394,7 +394,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("it is not", writer.toString());
     }
 
@@ -407,7 +407,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("Bob", writer.toString());
     }
 
@@ -420,7 +420,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("Bob", writer.toString());
     }
 
@@ -433,7 +433,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[0, 1, 2]", writer.toString());
     }
 
@@ -446,7 +446,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[0, 1, 2, 3]", writer.toString());
     }
 
@@ -476,7 +476,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[0, 2]", writer.toString());
     }
 
@@ -489,7 +489,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[1]", writer.toString());
     }
 
@@ -519,7 +519,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("false", writer.toString());
     }
 
@@ -532,7 +532,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("false", writer.toString());
     }
 
@@ -545,7 +545,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("false", writer.toString());
     }
 
@@ -558,7 +558,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -571,7 +571,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -584,7 +584,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -597,7 +597,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -610,7 +610,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -623,7 +623,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("false", writer.toString());
     }
 
@@ -636,7 +636,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("false", writer.toString());
     }
 
@@ -649,7 +649,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[[]]", writer.toString());
     }
 
@@ -662,7 +662,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[[], [test], [[nested], [arrays]]]", writer.toString());
     }
 
@@ -675,7 +675,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[[], [test], [[nested], [arrays]]]", writer.toString());
     }
 
@@ -688,7 +688,7 @@ public class ArraySyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("[{1=1}]", writer.toString());
     }
 
