@@ -66,7 +66,7 @@ public class RawFilterTest {
     	PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("{{ text | raw }}");
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("", writer.toString());
     }
     

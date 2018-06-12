@@ -39,7 +39,7 @@ public class ForNode extends AbstractRenderableNode {
 
     private final BodyNode elseBody;
 
-    class Control extends Object {
+    private static class Control {
 
         protected int value = -1;
 

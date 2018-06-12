@@ -462,12 +462,12 @@ public final class LexerImpl implements Lexer {
             String character = String.valueOf(source.charAt(0));
 
             // opening bracket
-            if ("([{".indexOf(character) >= 0) {
+            if ("([{".contains(character)) {
                 brackets.push(new Pair<>(character, source.getLineNumber()));
             }
 
             // closing bracket
-            else if (")]}".indexOf(character) >= 0) {
+            else if (")]}".contains(character)) {
                 if (brackets.isEmpty())
                     throw new ParserException(null, "Unexpected \"" + character + "\"", source.getLineNumber(),
                             source.getFilename());
@@ -649,8 +649,6 @@ public final class LexerImpl implements Lexer {
      * Retrieves the operators (both unary and binary) from the PebbleEngine and
      * then dynamically creates one giant regular expression to detect for the
      * existence of one of these operators.
-     *
-     * @return Pattern The regular expression used to find an operator
      */
     private void buildOperatorRegex() {
 
@@ -670,7 +668,7 @@ public final class LexerImpl implements Lexer {
          * we must first sort all of the operators by length before creating the
          * regex. This is to help match "is not" over "is".
          */
-        Collections.sort(operators, new StringLengthComparator());
+        operators.sort(StringLengthComparator.INSTANCE);
 
         StringBuilder regex = new StringBuilder("^");
 

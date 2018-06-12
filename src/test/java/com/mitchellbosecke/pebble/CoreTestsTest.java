@@ -53,7 +53,7 @@ public class CoreTestsTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Map<String, Object> context = new HashMap<>();
-        context.put("num", new Integer(2));
+        context.put("num", 2);
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
@@ -97,7 +97,7 @@ public class CoreTestsTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Map<String, Object> context = new HashMap<>();
-        context.put("num", new Integer(3));
+        context.put("num", 3);
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
         assertEquals("yes", writer.toString());
@@ -220,7 +220,7 @@ public class CoreTestsTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 

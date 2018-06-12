@@ -25,11 +25,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 public class CacheTest extends AbstractTest {
 
-	public static final String LINE_SEPARATOR = System.lineSeparator();
+	private static final String LINE_SEPARATOR = System.lineSeparator();
 	
 	/**
 	 * There was once an issue where the cache was unable to differentiate
@@ -53,7 +53,7 @@ public class CacheTest extends AbstractTest {
 		String cache1Output = writer1.toString();
 		String cache2Output = writer2.toString();
 
-		assertFalse(cache1Output.equals(cache2Output));
+		assertNotEquals(cache1Output, cache2Output);
 
 	}
 	
@@ -127,39 +127,35 @@ public class CacheTest extends AbstractTest {
 
 		for (int i = 0; i < 100000; i++) {
 			semaphore.acquire();
-			es.submit(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						PebbleTemplate template = engine.getTemplate("templates/template.concurrent1.peb");
+			es.submit(() -> {
+				try {
+					PebbleTemplate template = engine.getTemplate("templates/template.concurrent1.peb");
 
-						int a = r.nextInt();
-						int b = r.nextInt();
-						int c = r.nextInt();
+					int a = r.nextInt();
+					int b = r.nextInt();
+					int c = r.nextInt();
 
-						TestObject testObject = new TestObject(a, b, c);
+					TestObject testObject = new TestObject(a, b, c);
 
-						StringWriter writer = new StringWriter();
-						Map<String, Object> context = new HashMap<>();
-						context.put("test", testObject);
-						template.evaluate(writer, context);
+					StringWriter writer = new StringWriter();
+					Map<String, Object> context = new HashMap<>();
+					context.put("test", testObject);
+					template.evaluate(writer, context);
 
-						String expectedResult = new StringBuilder().append(a).append(":").append(b).append(":")
-								.append(c).toString();
+					String expectedResult = a + ":" + b + ":" + c;
 
-						String actualResult = writer.toString();
-						if (!expectedResult.equals(actualResult)) {
-							System.out.println("Expected: " + expectedResult);
-							System.out.println("Actual: " + actualResult);
-							totalFailed.incrementAndGet();
-						}
-
-					} catch (IOException | PebbleException e) {
-						e.printStackTrace();
+					String actualResult = writer.toString();
+					if (!expectedResult.equals(actualResult)) {
+						System.out.println("Expected: " + expectedResult);
+						System.out.println("Actual: " + actualResult);
 						totalFailed.incrementAndGet();
-					} finally {
-						semaphore.release();
 					}
+
+				} catch (IOException | PebbleException e) {
+					e.printStackTrace();
+					totalFailed.incrementAndGet();
+				} finally {
+					semaphore.release();
 				}
 			});
 			
@@ -174,7 +170,7 @@ public class CacheTest extends AbstractTest {
 		assertEquals(0, totalFailed.intValue());
 	}
 
-	static Random r = new SecureRandom();
+	private static Random r = new SecureRandom();
 
 	public static class TestObject {
 		final public int a;

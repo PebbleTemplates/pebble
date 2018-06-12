@@ -19,7 +19,7 @@ import com.mitchellbosecke.pebble.parser.Parser;
  * @author mbosecke
  *
  */
-public class VerbatimTokenParser extends AbstractTokenParser {
+public class VerbatimTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {

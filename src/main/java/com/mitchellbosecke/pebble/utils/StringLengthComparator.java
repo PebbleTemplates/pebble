@@ -10,9 +10,9 @@ package com.mitchellbosecke.pebble.utils;
 
 public class StringLengthComparator implements java.util.Comparator<String> {
 
-    public StringLengthComparator() {
-        super();
-    }
+    public static StringLengthComparator INSTANCE = new StringLengthComparator();
+
+    private StringLengthComparator(){}
 
     public int compare(String s1, String s2) {
         return s2.length() - s1.length();

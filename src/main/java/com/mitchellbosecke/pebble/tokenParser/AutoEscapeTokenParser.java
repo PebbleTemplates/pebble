@@ -14,9 +14,8 @@ import com.mitchellbosecke.pebble.node.AutoEscapeNode;
 import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
-import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
-public class AutoEscapeTokenParser extends AbstractTokenParser {
+public class AutoEscapeTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {
@@ -44,13 +43,7 @@ public class AutoEscapeTokenParser extends AbstractTokenParser {
         stream.expect(Token.Type.EXECUTE_END);
 
         // now we parse the block body
-        BodyNode body = parser.subparse(new StoppingCondition() {
-
-            @Override
-            public boolean evaluate(Token token) {
-                return token.test(Token.Type.NAME, "endautoescape");
-            }
-        });
+        BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endautoescape"));
 
         // skip the 'endautoescape' token
         stream.next();

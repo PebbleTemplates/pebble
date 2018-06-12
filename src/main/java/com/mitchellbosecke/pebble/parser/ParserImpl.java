@@ -95,8 +95,7 @@ public class ParserImpl implements Parser {
 
         BodyNode body = subparse();
 
-        RootNode root = new RootNode(body);
-        return root;
+        return new RootNode(body);
     }
 
     @Override

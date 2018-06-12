@@ -15,14 +15,13 @@ import com.mitchellbosecke.pebble.node.CacheNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.parser.Parser;
-import com.mitchellbosecke.pebble.parser.StoppingCondition;
 
 /**
  * Token parser for the cache tag
  *
  * @author Eric Bussieres
  */
-public class CacheTokenParser extends AbstractTokenParser {
+public class CacheTokenParser implements TokenParser {
     public static final String TAG_NAME = "cache";
 
     @Override
@@ -44,12 +43,7 @@ public class CacheTokenParser extends AbstractTokenParser {
         stream.next();
 
         // now we parse the cache body
-        BodyNode cacheBody = parser.subparse(new StoppingCondition() {
-            @Override
-            public boolean evaluate(Token token) {
-                return token.test(Token.Type.NAME, "endcache");
-            }
-        });
+        BodyNode cacheBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endcache"));
 
         // skip the 'endcache' token
         stream.next();

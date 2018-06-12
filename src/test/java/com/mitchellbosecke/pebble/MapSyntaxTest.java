@@ -40,7 +40,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{}", writer.toString());
     }
 
@@ -52,7 +52,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{key=value}", writer.toString());
     }
 
@@ -65,7 +65,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{key1=value1, key2=value2}", writer.toString());
     }
 
@@ -78,7 +78,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{key1=value1, key2=value2}", writer.toString());
     }
 
@@ -91,7 +91,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{key1=value1, key2=value2, key3=value3, key4=value4, key5=value5}", writer.toString());
     }
 
@@ -225,7 +225,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{key1=value1}", writer.toString());
     }
 
@@ -239,7 +239,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         String result = writer.toString();
         assertTrue(result.indexOf("Bob-Marley") > -1);
         assertTrue(result.indexOf("Maria-Callas") > -1);
@@ -254,7 +254,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         String result = writer.toString();
         assertTrue(result.indexOf("Bob-Marley") > -1);
         assertTrue(result.indexOf("Maria-Callas") > -1);
@@ -269,7 +269,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("no name", writer.toString());
     }
 
@@ -281,7 +281,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("it is not", writer.toString());
     }
 
@@ -293,7 +293,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{Bob=Marley}", writer.toString());
     }
 
@@ -305,7 +305,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{Bob=Marley}", writer.toString());
     }
 
@@ -318,7 +318,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
     }
 
     @Test(expected = PebbleException.class)
@@ -329,7 +329,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
     }
 
     @Test
@@ -340,7 +340,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("false", writer.toString());
     }
 
@@ -352,7 +352,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -364,7 +364,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("false", writer.toString());
     }
 
@@ -376,7 +376,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -388,7 +388,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -400,7 +400,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("true", writer.toString());
     }
 
@@ -412,7 +412,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{{3=3}=3, 1={}, 2={1=1}, 4={4={4=4}}}", writer.toString());
     }
 
@@ -424,7 +424,7 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        template.evaluate(writer, new HashMap<>());
         assertEquals("{array=[]}", writer.toString());
     }
 

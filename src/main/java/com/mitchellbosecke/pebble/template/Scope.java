@@ -31,7 +31,7 @@ public class Scope {
      * @param backingMap The backing map of variables
      */
     public Scope(Map<String, Object> backingMap) {
-        this.backingMap = backingMap == null ? new HashMap<String, Object>() : backingMap;
+        this.backingMap = backingMap == null ? new HashMap<>() : backingMap;
     }
 
     /**
@@ -48,10 +48,7 @@ public class Scope {
      * @return A copy of the scope
      */
     public Scope shallowCopy() {
-
-        Map<String, Object> backingMapCopy = new HashMap<>();
-        backingMapCopy.putAll(backingMap);
-
+        Map<String, Object> backingMapCopy = new HashMap<>(backingMap);
         return new Scope(backingMapCopy);
     }
 

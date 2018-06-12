@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public final class PathUtils {
 
-    private static final Pattern separatorRegex = Pattern.compile("\\\\|/");
+    public static final Pattern PATH_SEPARATOR_REGEX = Pattern.compile("[\\\\/]");
 
     /**
      * Resolves the given {@code relativePath} based on the given
@@ -41,7 +41,7 @@ public final class PathUtils {
     }
 
     private static String sanitize(String path, char expectedSeparator){
-        return separatorRegex.matcher(path).replaceAll(Matcher.quoteReplacement(String.valueOf(expectedSeparator)));
+        return PATH_SEPARATOR_REGEX.matcher(path).replaceAll(Matcher.quoteReplacement(String.valueOf(expectedSeparator)));
     }
 
     private static String resolvePathInner(String relativePath, String anchorPath, char separator) {

@@ -58,15 +58,15 @@ public class DateFilter implements Filter {
 
     private Object applyDate(Object dateOrString, final PebbleTemplate self, final Locale locale,
         int lineNumber, final String format, final String existingFormatString) throws PebbleException {
-        Date date = null;
-        DateFormat existingFormat = null;
-        DateFormat intendedFormat = null;
+        Date date;
+        DateFormat existingFormat;
+        DateFormat intendedFormat;
         if (existingFormatString != null) {
             existingFormat = new SimpleDateFormat(existingFormatString, locale);
             try {
                 date = existingFormat.parse(dateOrString.toString());
             } catch (ParseException e) {
-                throw new PebbleException(e, String.format("Could not parse the string '%1' into a date.",
+                throw new PebbleException(e, String.format("Could not parse the string '%s' into a date.",
                     dateOrString.toString()), lineNumber, self.getName());
             }
         } else {
@@ -90,7 +90,7 @@ public class DateFilter implements Filter {
         try {
             return new SafeString(formatter.format(input));
         } catch (DateTimeException dte) {
-            throw new PebbleException(dte, String.format("Could not parse the string '%1' into a date.",
+            throw new PebbleException(dte, String.format("Could not parse the string '%s' into a date.",
                 input.toString()), lineNumber, self.getName());
         }
     }

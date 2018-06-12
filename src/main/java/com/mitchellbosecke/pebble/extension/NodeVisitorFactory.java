@@ -29,6 +29,6 @@ public interface NodeVisitorFactory {
      *            the template for which a visitor should be created for.
      * @return the visitor.
      */
-    public NodeVisitor createVisitor(PebbleTemplate template);
+    NodeVisitor createVisitor(PebbleTemplate template);
 
 }

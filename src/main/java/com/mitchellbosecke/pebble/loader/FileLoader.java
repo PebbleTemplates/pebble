@@ -43,11 +43,6 @@ public class FileLoader implements Loader<String> {
     @Override
     public Reader getReader(String templateName) {
 
-        InputStreamReader isr;
-        Reader reader = null;
-
-        InputStream is = null;
-
         // add the prefix and ensure the prefix ends with a separator character
         StringBuilder path = new StringBuilder();
         if (getPrefix() != null) {
@@ -68,7 +63,7 @@ public class FileLoader implements Loader<String> {
          * path variable. The below technique needs to know the difference
          * between the path and file name.
          */
-        String[] pathSegments = templateName.split("\\\\|/");
+        String[] pathSegments = PathUtils.PATH_SEPARATOR_REGEX.split(templateName);
 
         if (pathSegments.length > 1) {
             // file name is the last segment
@@ -79,13 +74,12 @@ public class FileLoader implements Loader<String> {
         }
 
         // try to load File
-        if (is == null) {
-            File file = new File(path.toString(), templateName);
-            if (file.exists() && file.isFile()) {
-                try {
-                    is = new FileInputStream(file);
-                } catch (FileNotFoundException e) {
-                }
+        InputStream is = null;
+        File file = new File(path.toString(), templateName);
+        if (file.exists() && file.isFile()) {
+            try {
+                is = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
             }
         }
 
@@ -94,12 +88,11 @@ public class FileLoader implements Loader<String> {
         }
 
         try {
-            isr = new InputStreamReader(is, charset);
-            reader = new BufferedReader(isr);
+            return new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
         }
 
-        return reader;
+        return null;
     }
 
     public String getSuffix() {

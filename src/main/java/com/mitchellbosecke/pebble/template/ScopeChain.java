@@ -67,7 +67,7 @@ public class ScopeChain {
      * Adds an empty non-local scope to the scope chain
      */
     public void pushScope() {
-        this.pushScope(new HashMap<String, Object>());
+        this.pushScope(new HashMap<>());
     }
 
     /**

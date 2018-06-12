@@ -76,13 +76,12 @@ public class FutureWriter extends Writer {
                 }
 
                 @Override
-                public String get() throws InterruptedException, ExecutionException {
+                public String get() {
                     return result;
                 }
 
                 @Override
-                public String get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException,
-                        TimeoutException {
+                public String get(long timeout, TimeUnit unit) {
                     return null;
                 }
 

@@ -48,7 +48,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
      *            A list of loaders to delegate to
      */
     public DelegatingLoader(List<Loader<?>> loaders) {
-        this.loaders = Collections.unmodifiableList(new ArrayList<Loader<?>>(loaders));
+        this.loaders = Collections.unmodifiableList(new ArrayList<>(loaders));
     }
 
 
@@ -126,7 +126,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
     @Override
     public String resolveRelativePath(String relativePath, String anchorPath) {
         if (relativePath == null) {
-            return relativePath;
+            return null;
         }
         for (Loader<?> loader : this.loaders) {
             String path = loader.resolveRelativePath(relativePath, anchorPath);

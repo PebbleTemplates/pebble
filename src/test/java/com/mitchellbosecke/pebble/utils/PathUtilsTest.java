@@ -25,7 +25,7 @@ public class PathUtilsTest {
                 PathUtils.resolveRelativePath("./sample.peb", "test/test/other.peb", FORWARD_SLASH));
         Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/", FORWARD_SLASH));
         Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/other.peb", FORWARD_SLASH));
-        Assert.assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb", FORWARD_SLASH));
+        Assert.assertNull(PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb", FORWARD_SLASH));
 
     }
 

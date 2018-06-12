@@ -21,7 +21,7 @@ public class Hierarchy {
      * A list of all the templates in this hierarchy. A template at index i is the child
      * to the template at index i+1.
      */
-    private final ArrayList<PebbleTemplateImpl> hierarchy = new ArrayList<>();
+    private final ArrayList<PebbleTemplateImpl> hierarchy = new ArrayList<>(2);
 
     /**
      * Index of the template currently being evaluated.

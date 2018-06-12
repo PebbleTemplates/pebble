@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.node.SetNode;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.parser.Parser;
 
-public class SetTokenParser extends AbstractTokenParser {
+public class SetTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {

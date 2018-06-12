@@ -14,9 +14,6 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public class FunctionOrMacroInvocationExpression implements Expression<Object> {
@@ -43,10 +40,6 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
     }
 
     private Object applyFunction(PebbleTemplateImpl self, EvaluationContextImpl context, Function function, ArgumentsNode args) {
-        List<Object> arguments = new ArrayList<>();
-
-        Collections.addAll(arguments, args);
-
         Map<String, Object> namedArguments = args.getArgumentMap(self, context, function);
         return function.execute(namedArguments, self, context, this.getLineNumber());
     }

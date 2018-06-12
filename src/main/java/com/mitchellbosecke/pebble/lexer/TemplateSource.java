@@ -46,10 +46,6 @@ public class TemplateSource implements CharSequence {
     private final String filename;
 
     /**
-     * Pattern used to detect newlines from multiple different systems
-     */
-
-    /**
      * Constructor
      *
      * @param reader   Reader provided by the Loader
@@ -71,7 +67,7 @@ public class TemplateSource implements CharSequence {
      */
     private void copyReaderIntoCharArray(Reader reader) throws IOException {
         char[] buffer = new char[1024 * 4];
-        int amountJustRead = 0;
+        int amountJustRead;
         while ((amountJustRead = reader.read(buffer)) != -1) {
 
             ensureCapacity(size + amountJustRead);
@@ -87,9 +83,7 @@ public class TemplateSource implements CharSequence {
      * @param amount
      */
     private void append(char[] characters, int amount) {
-        for (int i = 0; i < amount; ++i) {
-            this.source[size + i] = characters[i];
-        }
+        System.arraycopy(characters, 0, source, size, amount);
         size += amount;
     }
 

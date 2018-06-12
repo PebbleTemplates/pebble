@@ -38,7 +38,7 @@ public class DefaultFilter implements Filter {
         Object defaultObj = args.get("default");
 
         Test emptyTest = new EmptyTest();
-        if (emptyTest.apply(input, new HashMap<String, Object>(), self, context, lineNumber)) {
+        if (emptyTest.apply(input, new HashMap<>(), self, context, lineNumber)) {
             return defaultObj;
         }
         return input;

@@ -75,7 +75,7 @@ public class ParsingOdditiesTest extends AbstractTest {
     }
 
     @Test
-    public void testPositionalArgumentAfterNamedArguments() throws PebbleException, IOException, ParseException {
+    public void testPositionalArgumentAfterNamedArguments() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
                 .defaultLocale(Locale.ENGLISH).build();

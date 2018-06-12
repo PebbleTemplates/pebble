@@ -6,7 +6,6 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class ReplaceFilter implements Filter {
 
     private static final String ARGUMENT_NAME = "replace_pairs";
 
-    private final static List<String> ARGS = Collections.unmodifiableList(Arrays.asList(ARGUMENT_NAME));
+    private final static List<String> ARGS = Collections.singletonList(ARGUMENT_NAME);
 
     @Override
     public List<String> getArgumentNames() {

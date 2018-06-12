@@ -12,14 +12,12 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.ScopeChain;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 
 public class ScopeChainTest extends AbstractTest {
 
     @Test
-    public void testSet() throws PebbleException, IOException {
+    public void testSet() throws PebbleException {
         ScopeChain scopeChain = new ScopeChain();
         scopeChain.pushScope();
         scopeChain.set("key", "value");

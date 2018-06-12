@@ -22,7 +22,7 @@ import java.util.List;
  * @author yanxiyue
  *
  */
-public class FromTokenParser extends AbstractTokenParser {
+public class FromTokenParser implements TokenParser {
 
     @Override
     public RenderableNode parse(Token token, Parser parser) {
@@ -50,7 +50,7 @@ public class FromTokenParser extends AbstractTokenParser {
 
         stream.expect(Token.Type.NAME, "import");
 
-        Token pre = null, post = null;
+        Token pre, post;
         while (!stream.current().getType().equals(Token.Type.EXECUTE_END)) {
             pre = stream.expect(Token.Type.NAME);
             if (stream.current().test(Token.Type.NAME, "as")) {
@@ -59,9 +59,9 @@ public class FromTokenParser extends AbstractTokenParser {
 
                 post = stream.expect(Token.Type.NAME);
 
-                pairs.add(new Pair<String, String>(post.getValue(), pre.getValue()));
+                pairs.add(new Pair<>(post.getValue(), pre.getValue()));
             } else {
-                pairs.add(new Pair<String, String>(pre.getValue(), pre.getValue()));
+                pairs.add(new Pair<>(pre.getValue(), pre.getValue()));
             }
 
             Token token = stream.current();

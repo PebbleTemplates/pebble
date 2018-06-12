@@ -31,7 +31,7 @@ public class TernaryExpressionTest extends AbstractTest {
     public final ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testTernaryFail1() throws PebbleException, IOException {
+    public void testTernaryFail1() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -44,7 +44,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail2() throws PebbleException, IOException {
+    public void testTernaryFail2() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -57,7 +57,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail3() throws PebbleException, IOException {
+    public void testTernaryFail3() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -70,7 +70,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail4() throws PebbleException, IOException {
+    public void testTernaryFail4() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -83,7 +83,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail5() throws PebbleException, IOException {
+    public void testTernaryFail5() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -96,7 +96,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail6() throws PebbleException, IOException {
+    public void testTernaryFail6() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -109,7 +109,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail7() throws PebbleException, IOException {
+    public void testTernaryFail7() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -122,7 +122,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail8() throws PebbleException, IOException {
+    public void testTernaryFail8() throws PebbleException {
         //arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -135,7 +135,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail9() throws PebbleException, IOException {
+    public void testTernaryFail9() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -148,7 +148,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail10() throws PebbleException, IOException {
+    public void testTernaryFail10() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -161,7 +161,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail11() throws PebbleException, IOException {
+    public void testTernaryFail11() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -174,7 +174,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail12() throws PebbleException, IOException {
+    public void testTernaryFail12() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -187,7 +187,7 @@ public class TernaryExpressionTest extends AbstractTest {
     }
 
     @Test
-    public void testTernaryFail13() throws PebbleException, IOException {
+    public void testTernaryFail13() throws PebbleException {
         //Arrange
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 

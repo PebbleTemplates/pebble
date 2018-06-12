@@ -41,7 +41,7 @@ public class i18nFunction implements Function {
         ResourceBundle bundle = ResourceBundle.getBundle(basename, locale, new UTF8Control());
         Object phraseObject = bundle.getObject(key);
 
-        if (phraseObject != null && params != null) {
+        if (params != null) {
             if (params instanceof List) {
                 List<?> list = (List<?>) params;
                 return MessageFormat.format(phraseObject.toString(), list.toArray());

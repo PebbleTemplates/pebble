@@ -45,10 +45,10 @@ public class SliceFilter implements Filter {
 
         if (argFrom == null) {
             // defaults to 0
-            argFrom = Long.valueOf(0);
+            argFrom = 0;
         } else if (!(argFrom instanceof Number)) {
             throw new PebbleException(null, "Argument fromIndex must be a number. Actual type: "
-                    + (argFrom == null ? "null" : argFrom.getClass().getName()), lineNumber, self.getName());
+                    + argFrom.getClass().getName(), lineNumber, self.getName());
         }
         int from = ((Number) argFrom).intValue();
         if (from < 0) {
@@ -62,7 +62,7 @@ public class SliceFilter implements Filter {
             // argTo == null;
         } else if (!(argTo instanceof Number)) {
             throw new PebbleException(null, "Argument toIndex must be a number. Actual type: "
-                    + (argTo == null ? "null" : argTo.getClass().getName()), lineNumber, self.getName());
+                    + argTo.getClass().getName(), lineNumber, self.getName());
         }
 
         int length;
