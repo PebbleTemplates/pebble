@@ -10,12 +10,15 @@ package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.extension.writer.SpecializedWriter;
+import com.mitchellbosecke.pebble.extension.writer.StringWriterSpecializedAdapter;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.StringUtils;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 
 public class PrintNode extends AbstractRenderableNode {
@@ -32,7 +35,13 @@ public class PrintNode extends AbstractRenderableNode {
             PebbleException {
         Object var = expression.evaluate(self, context);
         if (var != null) {
-            writer.write(StringUtils.toString(var));
+            if (writer instanceof StringWriter) {
+                new StringWriterSpecializedAdapter((StringWriter) writer).write(var);
+            } else if (writer instanceof SpecializedWriter) {
+                ((SpecializedWriter) writer).write(var);
+            } else {
+                writer.write(StringUtils.toString(var));
+            }
         }
     }
 
