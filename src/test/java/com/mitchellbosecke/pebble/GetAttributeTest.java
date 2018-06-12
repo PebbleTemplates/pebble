@@ -100,6 +100,39 @@ public class GetAttributeTest extends AbstractTest {
     }
 
     @Test
+    public void testNonExistingHashMapAttributeWithoutStrictVariables() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+        String source = "{{ object.nonExisting }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
+        map.put("name", "Steve");
+        context.put("object", map);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+        assertEquals("", writer.toString());
+    }
+
+    @Test(expected = AttributeNotFoundException.class)
+    public void testNonExistingMapAttributeWithStrictVariables() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
+
+        String source = "{{ object.nonExisting }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Map<String, Object> context = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
+        map.put("name", "Steve");
+        context.put("object", map);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, context);
+    }
+
+    @Test
     public void testMethodAttribute() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 

@@ -106,7 +106,15 @@ public class GetAttributeExpression implements Expression<Object> {
 
                 // first we check maps
                 if (object instanceof Map) {
-                    return this.getObjectFromMap((Map<?, ?>) object, attributeNameValue);
+                    Object objectFromMap = this.getObjectFromMap((Map<?, ?>) object, attributeNameValue);
+
+                    if (context.isStrictVariables() && objectFromMap == null) {
+                        throw new AttributeNotFoundException(null, String.format(
+                                "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+                                attributeName, object.getClass().getName()), attributeName, this.lineNumber, this.filename);
+                    }
+
+                    return objectFromMap;
                 }
 
                 try {
