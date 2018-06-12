@@ -142,16 +142,36 @@ public class PebbleEngine {
           throw new LoaderException(null, "Loader has not yet been specified.");
       }
 
-      PebbleTemplate result;
-
       Object cacheKey = loader.createCacheKey(templateName);
+
+      if (isNull(this.templateCache)) {
+          return getPebbleTemplate(templateName, loader, cacheKey);
+      } else {
+        return this.templateCache.get(cacheKey, k -> getPebbleTemplate(templateName, loader, cacheKey));
+      }
+    }
+
+    private PebbleTemplate getPebbleTemplate(String templateName, Loader loader, Object cacheKey) {
+
       Reader templateReader = loader.getReader(cacheKey);
+
       try {
-        if (isNull(this.templateCache)) {
-          result = this.getPebbleTemplate(this, templateName, templateReader);
-        } else {
-          result = this.templateCache.get(cacheKey, k -> this.getPebbleTemplate(this, templateName, templateReader));
+        LexerImpl lexer = new LexerImpl(this.syntax, this.extensionRegistry.getUnaryOperators().values(),
+          this.extensionRegistry.getBinaryOperators().values());
+        TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
+
+        Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
+          this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers(), this.parserOptions);
+        RootNode root = parser.parse(tokenStream);
+
+        PebbleTemplateImpl instance = new PebbleTemplateImpl(this, root, templateName);
+
+        for (NodeVisitorFactory visitorFactory : this.extensionRegistry.getNodeVisitors()) {
+          visitorFactory.createVisitor(instance).visit(root);
         }
+
+        return instance;
+
       } finally {
         try {
           templateReader.close();
@@ -159,26 +179,6 @@ public class PebbleEngine {
           // can't do much about it
         }
       }
-
-      return result;
-    }
-
-    private PebbleTemplate getPebbleTemplate(PebbleEngine self, String templateName, Reader templateReader) {
-      LexerImpl lexer = new LexerImpl(this.syntax, this.extensionRegistry.getUnaryOperators().values(),
-              this.extensionRegistry.getBinaryOperators().values());
-        TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
-
-        Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
-              this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers(), this.parserOptions);
-        RootNode root = parser.parse(tokenStream);
-
-        PebbleTemplateImpl instance = new PebbleTemplateImpl(self, root, templateName);
-
-        for (NodeVisitorFactory visitorFactory : this.extensionRegistry.getNodeVisitors()) {
-            visitorFactory.createVisitor(instance).visit(root);
-        }
-
-        return instance;
     }
 
     /**
