@@ -1,5 +1,6 @@
 package com.mitchellbosecke.pebble.attributes;
 
+import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
@@ -24,14 +25,25 @@ public class MapResolver implements AttributeResolver {
     if (object.isEmpty()) {
       return null;
     }
+
+    ResolvedAttribute resolvedAttribute;
     if (attributeNameValue != null && Number.class.isAssignableFrom(attributeNameValue.getClass())) {
       Number keyAsNumber = (Number) attributeNameValue;
 
       Class<?> keyClass = object.keySet().iterator().next().getClass();
       Object key = this.cast(keyAsNumber, keyClass, filename, lineNumber);
-      return new ResolvedAttribute(object.get(key));
+      resolvedAttribute = new ResolvedAttribute(object.get(key));
+    } else {
+      resolvedAttribute = new ResolvedAttribute(object.get(attributeNameValue));
     }
-    return new ResolvedAttribute(object.get(attributeNameValue));
+
+    if (context.isStrictVariables() && resolvedAttribute.evaluatedValue == null) {
+      throw new AttributeNotFoundException(null, String.format(
+              "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
+              attributeNameValue.toString(), object.getClass().getName()), attributeNameValue.toString(), lineNumber, filename);
+    }
+
+    return resolvedAttribute;
   }
 
   private Object cast(Number number,
