@@ -26,11 +26,11 @@ public interface Loader<T> {
      * The reader which will be used by Pebble to read the contents of the
      * template.
      *
-     * @param cacheKey
-     *           the cache key to use to load create the reader.
+     * @param templateName
+     *           the template name to use to load create the reader.
      * @return A reader object
      */
-    Reader getReader(T cacheKey);
+    Reader getReader(String templateName);
 
     /**
      * A method for end users to change the charset used by the loader.

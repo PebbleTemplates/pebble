@@ -53,16 +53,15 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
 
 
     @Override
-    public Reader getReader(DelegatingLoaderCacheKey cacheKey) {
+    public Reader getReader(String templateName) {
 
         Reader reader = null;
 
         final int size = this.loaders.size();
         for (int i = 0; i < size; i++) {
             Loader<?> loader = this.loaders.get(i);
-            Object delegatingKey = cacheKey.getDelegatingCacheKeys().get(i);
             try {
-                reader = this.getReaderInner(loader, delegatingKey);
+                reader = loader.getReader(templateName);
                 if (reader != null) {
                     break;
                 }
@@ -71,20 +70,10 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
             }
         }
         if (reader == null) {
-            throw new LoaderException(null, "Could not find template \"" + cacheKey.getTemplateName() + "\"");
+            throw new LoaderException(null, "Could not find template \"" + templateName + "\"");
         }
 
         return reader;
-    }
-
-    private <T> Reader getReaderInner(Loader<T> delegatingLoader, Object cacheKey) {
-
-        // This unchecked cast is ok, because we ensure that the type of the
-        // cache key corresponds to the loader when we create the key.
-        @SuppressWarnings("unchecked")
-        T castedKey = (T) cacheKey;
-
-        return delegatingLoader.getReader(castedKey);
     }
 
     public String getSuffix() {

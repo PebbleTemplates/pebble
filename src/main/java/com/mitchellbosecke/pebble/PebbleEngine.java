@@ -137,7 +137,7 @@ public class PebbleEngine {
 
                     LexerImpl lexer = new LexerImpl(syntax, extensionRegistry.getUnaryOperators().values(),
                             extensionRegistry.getBinaryOperators().values());
-                    Reader templateReader = self.retrieveReaderFromLoader(self.loader, cacheKey);
+                    Reader templateReader = self.loader.getReader(templateName);
                     TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
 
                     Parser parser = new ParserImpl(extensionRegistry.getUnaryOperators(),
@@ -168,22 +168,6 @@ public class PebbleEngine {
         }
 
         return result;
-    }
-
-    /**
-     * This method calls the loader and fetches the reader. We use this method
-     * to handle the generic cast.
-     *
-     * @param loader   the loader to use fetch the reader.
-     * @param cacheKey the cache key to use.
-     * @return the reader object.
-     */
-    private <T> Reader retrieveReaderFromLoader(Loader<T> loader, Object cacheKey) {
-        // We make sure within getTemplate() that we use only the same key for
-        // the same loader and hence we can be sure that the cast is safe.
-        @SuppressWarnings("unchecked")
-        T casted = (T) cacheKey;
-        return loader.getReader(casted);
     }
 
     /**
