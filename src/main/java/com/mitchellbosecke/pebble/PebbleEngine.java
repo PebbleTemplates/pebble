@@ -37,6 +37,7 @@ import com.mitchellbosecke.pebble.template.EvaluationOptions;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -145,11 +146,18 @@ public class PebbleEngine {
 
       Object cacheKey = loader.createCacheKey(templateName);
       Reader templateReader = loader.getReader(cacheKey);
-      if (isNull(this.templateCache)) {
-        result = this.getPebbleTemplate(this, templateName, templateReader);
-      }
-      else {
-        result = this.templateCache.get(cacheKey, k -> this.getPebbleTemplate(this, templateName, templateReader));
+      try {
+        if (isNull(this.templateCache)) {
+          result = this.getPebbleTemplate(this, templateName, templateReader);
+        } else {
+          result = this.templateCache.get(cacheKey, k -> this.getPebbleTemplate(this, templateName, templateReader));
+        }
+      } finally {
+        try {
+          templateReader.close();
+        } catch (IOException e) {
+          // can't do much about it
+        }
       }
 
       return result;
