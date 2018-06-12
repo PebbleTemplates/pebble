@@ -340,17 +340,14 @@ public class ExpressionParser {
         List<Expression<?>> nodes = new ArrayList<>();
 
         // Sequential strings are not OK, but strings can follow interpolation
-        boolean nextCanBeString = true;
-
         while (true) {
-            if (nextCanBeString && stream.current().test(Token.Type.STRING)) {
+            if (stream.current().test(Token.Type.STRING)) {
                 Token token = stream.expect(Token.Type.STRING);
                 nodes.add(new LiteralStringExpression(token.getValue(), token.getLineNumber()));
             } else if (stream.current().test(Token.Type.STRING_INTERPOLATION_START)) {
                 stream.expect(Token.Type.STRING_INTERPOLATION_START);
                 nodes.add(parseExpression());
                 stream.expect(Token.Type.STRING_INTERPOLATION_END);
-                nextCanBeString = true;
             } else {
                 break;
             }
@@ -525,7 +522,7 @@ public class ExpressionParser {
         return node;
     }
 
-    public ArgumentsNode parseArguments() {
+    private ArgumentsNode parseArguments() {
         return parseArguments(false);
     }
 
