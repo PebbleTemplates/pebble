@@ -3,7 +3,7 @@
 
   <groupId>io.pebbletemplates</groupId>
   <artifactId>pebble</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.0.0.BETA01</version>
   <packaging>jar</packaging>
 
   <name>Pebble</name>
@@ -248,6 +248,6 @@
     <connection>scm:git:git://github.com/PebbleTemplates/pebble.git</connection>
     <developerConnection>scm:git:git@github.com:PebbleTemplates/pebble.git</developerConnection>
     <url>https://github.com/PebbleTemplates/pebble.git</url>
-    <tag>HEAD</tag>
+    <tag>v3.0.0.BETA01</tag>
   </scm>
 </project>
