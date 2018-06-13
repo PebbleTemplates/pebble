@@ -14,25 +14,25 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class LiteralNullExpression implements Expression<Object> {
 
-    private final int lineNumber;
+  private final int lineNumber;
 
-    public LiteralNullExpression(int lineNumber) {
-        this.lineNumber = lineNumber;
-    }
+  public LiteralNullExpression(int lineNumber) {
+    this.lineNumber = lineNumber;
+  }
 
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.visit(this);
-    }
+  @Override
+  public void accept(NodeVisitor visitor) {
+    visitor.visit(this);
+  }
 
-    @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-        return null;
-    }
+  @Override
+  public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
+    return null;
+  }
 
-    @Override
-    public int getLineNumber() {
-        return this.lineNumber;
-    }
+  @Override
+  public int getLineNumber() {
+    return this.lineNumber;
+  }
 
 }

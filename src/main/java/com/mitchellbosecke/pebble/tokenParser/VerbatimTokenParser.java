@@ -13,22 +13,21 @@ import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.parser.Parser;
 
 /**
- * This is just a dummy class to point developers into the right direction; the
- * verbatim tag had to be implemented directly into the lexer.
+ * This is just a dummy class to point developers into the right direction; the verbatim tag had to
+ * be implemented directly into the lexer.
  *
  * @author mbosecke
- *
  */
 public class VerbatimTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
 
-        throw new UnsupportedOperationException();
-    }
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public String getTag() {
-        return "verbatim";
-    }
+  @Override
+  public String getTag() {
+    return "verbatim";
+  }
 }

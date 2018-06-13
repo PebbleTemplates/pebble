@@ -4,7 +4,6 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 import com.mitchellbosecke.pebble.utils.TypeUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
@@ -13,16 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 public class DefaultAttributeResolver implements AttributeResolver {
+
   private final MemberCacheUtils memberCacheUtils = new MemberCacheUtils();
 
   @Override
   public ResolvedAttribute resolve(Object instance,
-                                   Object attributeNameValue,
-                                   Object[] argumentValues,
-                                   ArgumentsNode args,
-                                   EvaluationContextImpl context,
-                                   String filename,
-                                   int lineNumber) {
+      Object attributeNameValue,
+      Object[] argumentValues,
+      ArgumentsNode args,
+      EvaluationContextImpl context,
+      String filename,
+      int lineNumber) {
     if (instance != null) {
       String attributeName = String.valueOf(attributeNameValue);
 
@@ -32,25 +32,31 @@ public class DefaultAttributeResolver implements AttributeResolver {
 
           // first we check maps
           if (instance instanceof Map) {
-            return MapResolver.INSTANCE.resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
+            return MapResolver.INSTANCE
+                .resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
           }
 
           // then we check arrays
           if (instance.getClass().isArray()) {
-            return ArrayResolver.INSTANCE.resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
+            return ArrayResolver.INSTANCE
+                .resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
           }
 
           // then lists
           if (instance instanceof List) {
-            return ListResolver.INSTANCE.resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
+            return ListResolver.INSTANCE
+                .resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
           }
         }
 
         if (instance instanceof MacroAttributeProvider) {
-          return MacroResolver.INSTANCE.resolve(instance, attributeNameValue, argumentValues, args, context, filename, lineNumber);
+          return MacroResolver.INSTANCE
+              .resolve(instance, attributeNameValue, argumentValues, args, context, filename,
+                  lineNumber);
         }
 
-        member = memberCacheUtils.cacheMember(instance, attributeName, argumentValues, context, filename, lineNumber);
+        member = memberCacheUtils
+            .cacheMember(instance, attributeName, argumentValues, context, filename, lineNumber);
       }
 
       if (member != null) {
@@ -67,7 +73,8 @@ public class DefaultAttributeResolver implements AttributeResolver {
     Object result = null;
     try {
       if (member instanceof Method) {
-        argumentValues = TypeUtils.compatibleCast(argumentValues, ((Method) member).getParameterTypes());
+        argumentValues = TypeUtils
+            .compatibleCast(argumentValues, ((Method) member).getParameterTypes());
         result = ((Method) member).invoke(object, argumentValues);
       } else if (member instanceof Field) {
         result = ((Field) member).get(object);

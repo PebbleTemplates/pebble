@@ -18,75 +18,75 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.StoppingCondition;
 import com.mitchellbosecke.pebble.utils.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class IfTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
-        TokenStream stream = parser.getStream();
-        int lineNumber = token.getLineNumber();
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
+    TokenStream stream = parser.getStream();
+    int lineNumber = token.getLineNumber();
 
-        // skip the 'if' token
-        stream.next();
+    // skip the 'if' token
+    stream.next();
 
-        List<Pair<Expression<?>, BodyNode>> conditionsWithBodies = new ArrayList<>();
+    List<Pair<Expression<?>, BodyNode>> conditionsWithBodies = new ArrayList<>();
 
-        Expression<?> expression = parser.getExpressionParser().parseExpression();
+    Expression<?> expression = parser.getExpressionParser().parseExpression();
 
-        stream.expect(Token.Type.EXECUTE_END);
+    stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = parser.subparse(DECIDE_IF_FORK);
+    BodyNode body = parser.subparse(DECIDE_IF_FORK);
 
-        conditionsWithBodies.add(new Pair<>(expression, body));
+    conditionsWithBodies.add(new Pair<>(expression, body));
 
-        BodyNode elseBody = null;
-        boolean end = false;
-        while (!end) {
-            if (stream.current().getValue() == null) {
-                throw new ParserException(
-                        null,
-                        "Unexpected end of template. Pebble was looking for the \"endif\" tag",
-                        stream.current().getLineNumber(), stream.getFilename());
-            }
+    BodyNode elseBody = null;
+    boolean end = false;
+    while (!end) {
+      if (stream.current().getValue() == null) {
+        throw new ParserException(
+            null,
+            "Unexpected end of template. Pebble was looking for the \"endif\" tag",
+            stream.current().getLineNumber(), stream.getFilename());
+      }
 
-            switch (stream.current().getValue()) {
-            case "else":
-                stream.next();
-                stream.expect(Token.Type.EXECUTE_END);
-                elseBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endif"));
-                break;
+      switch (stream.current().getValue()) {
+        case "else":
+          stream.next();
+          stream.expect(Token.Type.EXECUTE_END);
+          elseBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endif"));
+          break;
 
-            case "elseif":
-                stream.next();
-                expression = parser.getExpressionParser().parseExpression();
-                stream.expect(Token.Type.EXECUTE_END);
-                body = parser.subparse(DECIDE_IF_FORK);
-                conditionsWithBodies.add(new Pair<>(expression, body));
-                break;
+        case "elseif":
+          stream.next();
+          expression = parser.getExpressionParser().parseExpression();
+          stream.expect(Token.Type.EXECUTE_END);
+          body = parser.subparse(DECIDE_IF_FORK);
+          conditionsWithBodies.add(new Pair<>(expression, body));
+          break;
 
-            case "endif":
-                stream.next();
-                end = true;
-                break;
-            default:
-                throw new ParserException(
-                        null,
-                        "Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\"",
-                        stream.current().getLineNumber(), stream.getFilename());
-            }
-        }
-
-        stream.expect(Token.Type.EXECUTE_END);
-        return new IfNode(lineNumber, conditionsWithBodies, elseBody);
+        case "endif":
+          stream.next();
+          end = true;
+          break;
+        default:
+          throw new ParserException(
+              null,
+              "Unexpected end of template. Pebble was looking for the following tags \"else\", \"elseif\", or \"endif\"",
+              stream.current().getLineNumber(), stream.getFilename());
+      }
     }
 
-    private static final StoppingCondition DECIDE_IF_FORK = token -> token.test(Token.Type.NAME, "elseif", "else", "endif");
+    stream.expect(Token.Type.EXECUTE_END);
+    return new IfNode(lineNumber, conditionsWithBodies, elseBody);
+  }
 
-    @Override
-    public String getTag() {
-        return "if";
-    }
+  private static final StoppingCondition DECIDE_IF_FORK = token -> token
+      .test(Token.Type.NAME, "elseif", "else", "endif");
+
+  @Override
+  public String getTag() {
+    return "if";
+  }
 }

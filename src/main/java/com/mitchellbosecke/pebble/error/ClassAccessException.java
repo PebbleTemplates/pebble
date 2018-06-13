@@ -10,9 +10,10 @@ package com.mitchellbosecke.pebble.error;
 
 public class ClassAccessException extends PebbleException {
 
-    private static final long serialVersionUID = 5109892021088141417L;
+  private static final long serialVersionUID = 5109892021088141417L;
 
-    public ClassAccessException(Integer lineNumber, String filename) {
-        super(null, "For security reasons access to class/getClass attribute is denied.", lineNumber, filename);
-    }
+  public ClassAccessException(Integer lineNumber, String filename) {
+    super(null, "For security reasons access to class/getClass attribute is denied.", lineNumber,
+        filename);
+  }
 }

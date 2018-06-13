@@ -10,6 +10,5 @@ package com.mitchellbosecke.pebble;
 
 public abstract class AbstractTest {
 
-
-	// PebbleEngine pebble =  new PebbleEngine.Builder().loaderPrefix("templates").strictVariables(false).build();
+  // PebbleEngine pebble =  new PebbleEngine.Builder().loaderPrefix("templates").strictVariables(false).build();
 }

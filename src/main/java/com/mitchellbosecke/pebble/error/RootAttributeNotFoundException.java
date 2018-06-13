@@ -10,11 +10,12 @@ package com.mitchellbosecke.pebble.error;
 
 public class RootAttributeNotFoundException extends AttributeNotFoundException {
 
-    private static final long serialVersionUID = 3863732457312917327L;
+  private static final long serialVersionUID = 3863732457312917327L;
 
-    public RootAttributeNotFoundException(Throwable cause, String message, String attributeName, int lineNumber,
-            String filename) {
-        super(cause, message, attributeName, lineNumber, filename);
-    }
+  public RootAttributeNotFoundException(Throwable cause, String message, String attributeName,
+      int lineNumber,
+      String filename) {
+    super(cause, message, attributeName, lineNumber, filename);
+  }
 
 }

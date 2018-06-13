@@ -16,23 +16,23 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class MacroAndBlockRegistrantNodeVisitor extends AbstractNodeVisitor {
 
-    public MacroAndBlockRegistrantNodeVisitor(PebbleTemplateImpl template) {
-        super(template);
-    }
+  public MacroAndBlockRegistrantNodeVisitor(PebbleTemplateImpl template) {
+    super(template);
+  }
 
-    @Override
-    public void visit(BlockNode node) {
-        this.getTemplate().registerBlock(node.getBlock());
-        super.visit(node);
-    }
+  @Override
+  public void visit(BlockNode node) {
+    this.getTemplate().registerBlock(node.getBlock());
+    super.visit(node);
+  }
 
-    @Override
-    public void visit(MacroNode node) {
-        try {
-            this.getTemplate().registerMacro(node.getMacro());
-        } catch (PebbleException e) {
-            throw new RuntimeException(e);
-        }
-        super.visit(node);
+  @Override
+  public void visit(MacroNode node) {
+    try {
+      this.getTemplate().registerMacro(node.getMacro());
+    } catch (PebbleException e) {
+      throw new RuntimeException(e);
     }
+    super.visit(node);
+  }
 }

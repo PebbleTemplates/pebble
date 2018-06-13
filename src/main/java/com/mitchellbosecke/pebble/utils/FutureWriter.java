@@ -14,105 +14,103 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
- * A Writer that will wrap around the user-provided writer if the user also
- * provided an ExecutorService to the main PebbleEngine. A FutureWriter is
- * capable of handling Futures that will return a string.
+ * A Writer that will wrap around the user-provided writer if the user also provided an
+ * ExecutorService to the main PebbleEngine. A FutureWriter is capable of handling Futures that will
+ * return a string.
  *
- * It is not thread safe but that is okay. Each thread will have it's own
- * writer, provided by the "parallel" node; i.e. they will never share writers.
+ * It is not thread safe but that is okay. Each thread will have it's own writer, provided by the
+ * "parallel" node; i.e. they will never share writers.
  *
  * @author Mitchell
- *
  */
 public class FutureWriter extends Writer {
 
-    private final LinkedList<Future<String>> orderedFutures = new LinkedList<>();
+  private final LinkedList<Future<String>> orderedFutures = new LinkedList<>();
 
-    private final Writer internalWriter;
+  private final Writer internalWriter;
 
-    private boolean closed = false;
+  private boolean closed = false;
 
-    public FutureWriter(Writer writer) {
-        this.internalWriter = writer;
+  public FutureWriter(Writer writer) {
+    this.internalWriter = writer;
+  }
+
+  public void enqueue(Future<String> future) throws IOException {
+    if (closed) {
+      throw new IOException("Writer is closed");
+    }
+    orderedFutures.add(future);
+  }
+
+  @Override
+  public void write(final char[] cbuf, final int off, final int len) throws IOException {
+
+    if (closed) {
+      throw new IOException("Writer is closed");
     }
 
-    public void enqueue(Future<String> future) throws IOException {
-        if (closed) {
-            throw new IOException("Writer is closed");
+    final String result = new String(cbuf, off, len);
+
+    if (orderedFutures.isEmpty()) {
+      internalWriter.write(result);
+    } else {
+      Future<String> future = new Future<String>() {
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+          return false;
         }
-        orderedFutures.add(future);
-    }
 
-    @Override
-    public void write(final char[] cbuf, final int off, final int len) throws IOException {
-
-        if (closed) {
-            throw new IOException("Writer is closed");
+        @Override
+        public boolean isCancelled() {
+          return false;
         }
 
-        final String result = new String(cbuf, off, len);
-
-        if (orderedFutures.isEmpty()) {
-            internalWriter.write(result);
-        } else {
-            Future<String> future = new Future<String>() {
-
-                @Override
-                public boolean cancel(boolean mayInterruptIfRunning) {
-                    return false;
-                }
-
-                @Override
-                public boolean isCancelled() {
-                    return false;
-                }
-
-                @Override
-                public boolean isDone() {
-                    return true;
-                }
-
-                @Override
-                public String get() {
-                    return result;
-                }
-
-                @Override
-                public String get(long timeout, TimeUnit unit) {
-                    return null;
-                }
-
-            };
-
-            orderedFutures.add(future);
+        @Override
+        public boolean isDone() {
+          return true;
         }
-    }
 
-    @Override
-    public void flush() throws IOException {
-        for (Future<String> future : orderedFutures) {
-            try {
-                String result = future.get();
-                internalWriter.write(result);
-                internalWriter.flush();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException e) {
-                throw new IOException(e);
-            }
+        @Override
+        public String get() {
+          return result;
         }
-        orderedFutures.clear();
-    }
 
-    @Override
-    public void close() throws IOException {
-        flush();
-        internalWriter.close();
-        closed = true;
+        @Override
+        public String get(long timeout, TimeUnit unit) {
+          return null;
+        }
 
+      };
+
+      orderedFutures.add(future);
     }
+  }
+
+  @Override
+  public void flush() throws IOException {
+    for (Future<String> future : orderedFutures) {
+      try {
+        String result = future.get();
+        internalWriter.write(result);
+        internalWriter.flush();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } catch (ExecutionException e) {
+        throw new IOException(e);
+      }
+    }
+    orderedFutures.clear();
+  }
+
+  @Override
+  public void close() throws IOException {
+    flush();
+    internalWriter.close();
+    closed = true;
+
+  }
 
 }

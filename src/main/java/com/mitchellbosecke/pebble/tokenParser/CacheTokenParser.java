@@ -22,33 +22,34 @@ import com.mitchellbosecke.pebble.parser.Parser;
  * @author Eric Bussieres
  */
 public class CacheTokenParser implements TokenParser {
-    public static final String TAG_NAME = "cache";
 
-    @Override
-    public String getTag() {
-        return TAG_NAME;
-    }
+  public static final String TAG_NAME = "cache";
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
-        TokenStream stream = parser.getStream();
-        int lineNumber = token.getLineNumber();
+  @Override
+  public String getTag() {
+    return TAG_NAME;
+  }
 
-        // skip over the 'cache' token
-        stream.next();
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
+    TokenStream stream = parser.getStream();
+    int lineNumber = token.getLineNumber();
 
-        Expression<?> expression = parser.getExpressionParser().parseExpression();
+    // skip over the 'cache' token
+    stream.next();
 
-        // Skip the expression
-        stream.next();
+    Expression<?> expression = parser.getExpressionParser().parseExpression();
 
-        // now we parse the cache body
-        BodyNode cacheBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endcache"));
+    // Skip the expression
+    stream.next();
 
-        // skip the 'endcache' token
-        stream.next();
+    // now we parse the cache body
+    BodyNode cacheBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endcache"));
 
-        stream.expect(Token.Type.EXECUTE_END);
-        return new CacheNode(lineNumber, expression, cacheBody);
-    }
+    // skip the 'endcache' token
+    stream.next();
+
+    stream.expect(Token.Type.EXECUTE_END);
+    return new CacheNode(lineNumber, expression, cacheBody);
+  }
 }

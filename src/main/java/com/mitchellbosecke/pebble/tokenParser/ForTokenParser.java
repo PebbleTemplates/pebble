@@ -19,50 +19,50 @@ import com.mitchellbosecke.pebble.parser.Parser;
 
 public class ForTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
-        TokenStream stream = parser.getStream();
-        int lineNumber = token.getLineNumber();
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
+    TokenStream stream = parser.getStream();
+    int lineNumber = token.getLineNumber();
 
-        // skip the 'for' token
-        stream.next();
+    // skip the 'for' token
+    stream.next();
 
-        // get the iteration variable
-        String iterationVariable = parser.getExpressionParser().parseNewVariableName();
+    // get the iteration variable
+    String iterationVariable = parser.getExpressionParser().parseNewVariableName();
 
-        stream.expect(Token.Type.NAME, "in");
+    stream.expect(Token.Type.NAME, "in");
 
-        // get the iterable variable
-        Expression<?> iterable = parser.getExpressionParser().parseExpression();
+    // get the iterable variable
+    Expression<?> iterable = parser.getExpressionParser().parseExpression();
 
-        stream.expect(Token.Type.EXECUTE_END);
+    stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "else", "endfor"));
+    BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "else", "endfor"));
 
-        BodyNode elseBody = null;
+    BodyNode elseBody = null;
 
-        if (stream.current().test(Token.Type.NAME, "else")) {
-            // skip the 'else' token
-            stream.next();
-            stream.expect(Token.Type.EXECUTE_END);
-            elseBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endfor"));
-        }
-
-        if (stream.current().getValue() == null) {
-            throw new ParserException(
-                    null,
-                    "Unexpected end of template. Pebble was looking for the \"endfor\" tag",
-                    stream.current().getLineNumber(), stream.getFilename());
-        }
-        // skip the 'endfor' token
-        stream.next();
-        stream.expect(Token.Type.EXECUTE_END);
-
-        return new ForNode(lineNumber, iterationVariable, iterable, body, elseBody);
+    if (stream.current().test(Token.Type.NAME, "else")) {
+      // skip the 'else' token
+      stream.next();
+      stream.expect(Token.Type.EXECUTE_END);
+      elseBody = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endfor"));
     }
 
-    @Override
-    public String getTag() {
-        return "for";
+    if (stream.current().getValue() == null) {
+      throw new ParserException(
+          null,
+          "Unexpected end of template. Pebble was looking for the \"endfor\" tag",
+          stream.current().getLineNumber(), stream.getFilename());
     }
+    // skip the 'endfor' token
+    stream.next();
+    stream.expect(Token.Type.EXECUTE_END);
+
+    return new ForNode(lineNumber, iterationVariable, iterable, body, elseBody);
+  }
+
+  @Override
+  public String getTag() {
+    return "for";
+  }
 }

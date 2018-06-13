@@ -11,20 +11,20 @@ package com.mitchellbosecke.pebble.extension.core;
 import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import java.util.List;
 import java.util.Map;
 
 public class MapTest implements Test {
 
-    @Override
-    public List<String> getArgumentNames() {
-        return null;
-    }
+  @Override
+  public List<String> getArgumentNames() {
+    return null;
+  }
 
-    @Override
-    public boolean apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
-        return input instanceof Map;
-    }
+  @Override
+  public boolean apply(Object input, Map<String, Object> args, PebbleTemplate self,
+      EvaluationContext context, int lineNumber) {
+    return input instanceof Map;
+  }
 
 }

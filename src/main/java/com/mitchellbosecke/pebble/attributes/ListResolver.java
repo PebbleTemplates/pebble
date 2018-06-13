@@ -3,10 +3,10 @@ package com.mitchellbosecke.pebble.attributes;
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
-
 import java.util.List;
 
 public class ListResolver implements AttributeResolver {
+
   static final ListResolver INSTANCE = new ListResolver();
 
   private ListResolver() {
@@ -14,12 +14,12 @@ public class ListResolver implements AttributeResolver {
 
   @Override
   public ResolvedAttribute resolve(Object instance,
-                                   Object attributeNameValue,
-                                   Object[] argumentValues,
-                                   ArgumentsNode args,
-                                   EvaluationContextImpl context,
-                                   String filename,
-                                   int lineNumber) {
+      Object attributeNameValue,
+      Object[] argumentValues,
+      ArgumentsNode args,
+      EvaluationContextImpl context,
+      String filename,
+      int lineNumber) {
     String attributeName = String.valueOf(attributeNameValue);
 
     @SuppressWarnings("unchecked") List<Object> list = (List<Object>) instance;
@@ -30,8 +30,8 @@ public class ListResolver implements AttributeResolver {
     if (index < 0 || index >= length) {
       if (context.isStrictVariables()) {
         throw new AttributeNotFoundException(null,
-                "Index out of bounds while accessing array with strict variables on.",
-                attributeName, lineNumber, filename);
+            "Index out of bounds while accessing array with strict variables on.",
+            attributeName, lineNumber, filename);
       } else {
         return new ResolvedAttribute(null);
       }

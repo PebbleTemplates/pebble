@@ -17,37 +17,37 @@ import com.mitchellbosecke.pebble.parser.Parser;
 
 public class ImportTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
 
-        TokenStream stream = parser.getStream();
-        int lineNumber = token.getLineNumber();
+    TokenStream stream = parser.getStream();
+    int lineNumber = token.getLineNumber();
 
-        // skip over the 'import' token
-        stream.next();
+    // skip over the 'import' token
+    stream.next();
 
-        Expression<?> importExpression = parser.getExpressionParser().parseExpression();
-        
-        Token current = stream.current();
-        String alias = null;
+    Expression<?> importExpression = parser.getExpressionParser().parseExpression();
 
-        // We check if there is an optional 'as' keyword on the import tag.
-        if (current.getType().equals(Token.Type.NAME) && current.getValue().equals("as")) {
-            
-            // Skip over 'as'
-            stream.next();
-            
-            current = stream.expect(Token.Type.NAME);
-            alias = current.getValue();
-        }
+    Token current = stream.current();
+    String alias = null;
 
-        stream.expect(Token.Type.EXECUTE_END);
+    // We check if there is an optional 'as' keyword on the import tag.
+    if (current.getType().equals(Token.Type.NAME) && current.getValue().equals("as")) {
 
-        return new ImportNode(lineNumber, importExpression, alias);
+      // Skip over 'as'
+      stream.next();
+
+      current = stream.expect(Token.Type.NAME);
+      alias = current.getValue();
     }
 
-    @Override
-    public String getTag() {
-        return "import";
-    }
+    stream.expect(Token.Type.EXECUTE_END);
+
+    return new ImportNode(lineNumber, importExpression, alias);
+  }
+
+  @Override
+  public String getTag() {
+    return "import";
+  }
 }

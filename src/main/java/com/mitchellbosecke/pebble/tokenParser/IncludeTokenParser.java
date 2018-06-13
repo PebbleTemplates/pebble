@@ -19,44 +19,45 @@ import com.mitchellbosecke.pebble.parser.Parser;
 
 public class IncludeTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
 
-        TokenStream stream = parser.getStream();
-        int lineNumber = token.getLineNumber();
+    TokenStream stream = parser.getStream();
+    int lineNumber = token.getLineNumber();
 
-        // skip over the 'include' token
-        stream.next();
+    // skip over the 'include' token
+    stream.next();
 
-        Expression<?> includeExpression = parser.getExpressionParser().parseExpression();
+    Expression<?> includeExpression = parser.getExpressionParser().parseExpression();
 
-        Token current = stream.current();
-        MapExpression mapExpression = null;
+    Token current = stream.current();
+    MapExpression mapExpression = null;
 
-        // We check if there is an optional 'with' parameter on the include tag.
-        if (current.getType().equals(Token.Type.NAME) && current.getValue().equals("with")) {
+    // We check if there is an optional 'with' parameter on the include tag.
+    if (current.getType().equals(Token.Type.NAME) && current.getValue().equals("with")) {
 
-            // Skip over 'with'
-            stream.next();
+      // Skip over 'with'
+      stream.next();
 
-            Expression<?> parsedExpression = parser.getExpressionParser().parseExpression();
+      Expression<?> parsedExpression = parser.getExpressionParser().parseExpression();
 
-            if (parsedExpression instanceof MapExpression) {
-                mapExpression = (MapExpression) parsedExpression;
-            } else {
-                throw new ParserException(null, String.format("Unexpected expression '%1s'.", parsedExpression
-                        .getClass().getCanonicalName()), token.getLineNumber(), stream.getFilename());
-            }
+      if (parsedExpression instanceof MapExpression) {
+        mapExpression = (MapExpression) parsedExpression;
+      } else {
+        throw new ParserException(null,
+            String.format("Unexpected expression '%1s'.", parsedExpression
+                .getClass().getCanonicalName()), token.getLineNumber(), stream.getFilename());
+      }
 
-        }
-
-        stream.expect(Token.Type.EXECUTE_END);
-
-        return new IncludeNode(lineNumber, includeExpression, mapExpression);
     }
 
-    @Override
-    public String getTag() {
-        return "include";
-    }
+    stream.expect(Token.Type.EXECUTE_END);
+
+    return new IncludeNode(lineNumber, includeExpression, mapExpression);
+  }
+
+  @Override
+  public String getTag() {
+    return "include";
+  }
 }

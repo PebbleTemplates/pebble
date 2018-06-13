@@ -15,13 +15,13 @@ import com.mitchellbosecke.pebble.utils.OperatorUtils;
 
 public class DivideExpression extends BinaryExpression<Object> {
 
-    @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-        try {
-            return OperatorUtils.divide(getLeftExpression().evaluate(self, context),
-                    getRightExpression().evaluate(self, context));
-        } catch (Exception ex) {
-            throw new PebbleException(ex, "Could not perform division", getLineNumber(), self.getName());
-        }
+  @Override
+  public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
+    try {
+      return OperatorUtils.divide(getLeftExpression().evaluate(self, context),
+          getRightExpression().evaluate(self, context));
+    } catch (Exception ex) {
+      throw new PebbleException(ex, "Could not perform division", getLineNumber(), self.getName());
     }
+  }
 }

@@ -11,19 +11,19 @@ package com.mitchellbosecke.pebble.extension.escaper;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import java.util.List;
 import java.util.Map;
 
 public class RawFilter implements Filter {
 
-    public List<String> getArgumentNames() {
-        return null;
-    }
+  public List<String> getArgumentNames() {
+    return null;
+  }
 
-    @Override
-    public Object apply(Object inputObject, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
-        return inputObject == null ? null : new SafeString(inputObject.toString());
-    }
+  @Override
+  public Object apply(Object inputObject, Map<String, Object> args, PebbleTemplate self,
+      EvaluationContext context, int lineNumber) {
+    return inputObject == null ? null : new SafeString(inputObject.toString());
+  }
 
 }

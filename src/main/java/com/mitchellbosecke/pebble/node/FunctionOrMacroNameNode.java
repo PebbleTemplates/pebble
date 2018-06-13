@@ -15,32 +15,32 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class FunctionOrMacroNameNode implements Expression<String> {
 
-    private final String name;
+  private final String name;
 
-    private final int lineNumber;
+  private final int lineNumber;
 
-    public FunctionOrMacroNameNode(String name, int lineNumber) {
-        this.name = name;
-        this.lineNumber = lineNumber;
-    }
+  public FunctionOrMacroNameNode(String name, int lineNumber) {
+    this.name = name;
+    this.lineNumber = lineNumber;
+  }
 
-    @Override
-    public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.visit(this);
-    }
+  @Override
+  public void accept(NodeVisitor visitor) {
+    visitor.visit(this);
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    @Override
-    public int getLineNumber() {
-        return this.lineNumber;
-    }
+  @Override
+  public int getLineNumber() {
+    return this.lineNumber;
+  }
 
 }

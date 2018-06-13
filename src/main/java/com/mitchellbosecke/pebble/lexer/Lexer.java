@@ -12,5 +12,5 @@ import java.io.Reader;
 
 public interface Lexer {
 
-    TokenStream tokenize(Reader templateReader, String name);
+  TokenStream tokenize(Reader templateReader, String name);
 }

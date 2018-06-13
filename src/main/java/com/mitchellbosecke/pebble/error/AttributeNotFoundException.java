@@ -10,18 +10,19 @@ package com.mitchellbosecke.pebble.error;
 
 public class AttributeNotFoundException extends PebbleException {
 
-    private static final long serialVersionUID = 3863732457312917327L;
+  private static final long serialVersionUID = 3863732457312917327L;
 
-    private final String attributeName;
+  private final String attributeName;
 
-    public AttributeNotFoundException(Throwable cause, String message, String attributeName, int lineNumber,
-            String filename) {
-        super(cause, message, lineNumber, filename);
-        this.attributeName = attributeName;
-    }
+  public AttributeNotFoundException(Throwable cause, String message, String attributeName,
+      int lineNumber,
+      String filename) {
+    super(cause, message, lineNumber, filename);
+    this.attributeName = attributeName;
+  }
 
-    public String getAttributeName() {
-        return attributeName;
-    }
+  public String getAttributeName() {
+    return attributeName;
+  }
 
 }

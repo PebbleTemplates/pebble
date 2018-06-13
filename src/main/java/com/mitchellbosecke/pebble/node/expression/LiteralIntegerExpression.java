@@ -14,27 +14,27 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class LiteralIntegerExpression implements Expression<Integer> {
 
-    private final Integer value;
-    private final int lineNumber;
+  private final Integer value;
+  private final int lineNumber;
 
-    public LiteralIntegerExpression(Integer value, int lineNumber) {
-        this.value = value;
-        this.lineNumber = lineNumber;
-    }
+  public LiteralIntegerExpression(Integer value, int lineNumber) {
+    this.value = value;
+    this.lineNumber = lineNumber;
+  }
 
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.visit(this);
-    }
+  @Override
+  public void accept(NodeVisitor visitor) {
+    visitor.visit(this);
+  }
 
-    @Override
-    public Integer evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-        return value;
-    }
+  @Override
+  public Integer evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
+    return value;
+  }
 
-    @Override
-    public int getLineNumber() {
-        return this.lineNumber;
-    }
+  @Override
+  public int getLineNumber() {
+    return this.lineNumber;
+  }
 
 }

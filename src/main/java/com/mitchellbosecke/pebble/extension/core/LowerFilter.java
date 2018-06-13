@@ -11,28 +11,28 @@ package com.mitchellbosecke.pebble.extension.core;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class LowerFilter implements Filter {
 
-    @Override
-    public List<String> getArgumentNames() {
-        return null;
-    }
+  @Override
+  public List<String> getArgumentNames() {
+    return null;
+  }
 
-    @Override
-    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
-        if (input == null) {
-            return null;
-        }
-        if (input instanceof String) {
-            return ((String) input).toLowerCase(Locale.ENGLISH);
-        } else {
-            return input.toString().toLowerCase(Locale.ENGLISH);
-        }
+  @Override
+  public Object apply(Object input, Map<String, Object> args, PebbleTemplate self,
+      EvaluationContext context, int lineNumber) {
+    if (input == null) {
+      return null;
     }
+    if (input instanceof String) {
+      return ((String) input).toLowerCase(Locale.ENGLISH);
+    } else {
+      return input.toString().toLowerCase(Locale.ENGLISH);
+    }
+  }
 
 }

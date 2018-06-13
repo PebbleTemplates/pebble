@@ -7,9 +7,9 @@ import java.util.Locale;
  */
 public interface EvaluationContext {
 
-    boolean isStrictVariables();
+  boolean isStrictVariables();
 
-    Locale getLocale();
+  Locale getLocale();
 
-    Object getVariable(String key);
+  Object getVariable(String key);
 }

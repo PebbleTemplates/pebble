@@ -18,33 +18,33 @@ import com.mitchellbosecke.pebble.parser.Parser;
 
 public class MacroTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
 
-        TokenStream stream = parser.getStream();
+    TokenStream stream = parser.getStream();
 
-        // skip over the 'macro' token
-        stream.next();
+    // skip over the 'macro' token
+    stream.next();
 
-        String macroName = stream.expect(Token.Type.NAME).getValue();
+    String macroName = stream.expect(Token.Type.NAME).getValue();
 
-        ArgumentsNode args = parser.getExpressionParser().parseArguments(true);
+    ArgumentsNode args = parser.getExpressionParser().parseArguments(true);
 
-        stream.expect(Token.Type.EXECUTE_END);
+    stream.expect(Token.Type.EXECUTE_END);
 
-        // parse the body
-        BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endmacro"));
+    // parse the body
+    BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endmacro"));
 
-        // skip the 'endmacro' token
-        stream.next();
+    // skip the 'endmacro' token
+    stream.next();
 
-        stream.expect(Token.Type.EXECUTE_END);
+    stream.expect(Token.Type.EXECUTE_END);
 
-        return new MacroNode(macroName, args, body);
-    }
+    return new MacroNode(macroName, args, body);
+  }
 
-    @Override
-    public String getTag() {
-        return "macro";
-    }
+  @Override
+  public String getTag() {
+    return "macro";
+  }
 }

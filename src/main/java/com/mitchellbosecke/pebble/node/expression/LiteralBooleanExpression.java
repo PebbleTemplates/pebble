@@ -14,33 +14,33 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public class LiteralBooleanExpression implements Expression<Boolean> {
 
-    private final Boolean value;
+  private final Boolean value;
 
-    private final int lineNumber;
+  private final int lineNumber;
 
-    public LiteralBooleanExpression(Boolean value, int lineNumber) {
-        this.value = value;
-        this.lineNumber = lineNumber;
-    }
+  public LiteralBooleanExpression(Boolean value, int lineNumber) {
+    this.value = value;
+    this.lineNumber = lineNumber;
+  }
 
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.visit(this);
-    }
+  @Override
+  public void accept(NodeVisitor visitor) {
+    visitor.visit(this);
+  }
 
-    @Override
-    public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-        return value;
-    }
+  @Override
+  public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
+    return value;
+  }
 
-    @Override
-    public int getLineNumber() {
-        return this.lineNumber;
-    }
+  @Override
+  public int getLineNumber() {
+    return this.lineNumber;
+  }
 
-    @Override
-    public String toString() {
-        return value.toString();
-    }
+  @Override
+  public String toString() {
+    return value.toString();
+  }
 
 }

@@ -17,27 +17,27 @@ import com.mitchellbosecke.pebble.parser.Parser;
 
 public class ParallelTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
-        TokenStream stream = parser.getStream();
-        int lineNumber = token.getLineNumber();
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
+    TokenStream stream = parser.getStream();
+    int lineNumber = token.getLineNumber();
 
-        // skip the 'parallel' token
-        stream.next();
+    // skip the 'parallel' token
+    stream.next();
 
-        stream.expect(Token.Type.EXECUTE_END);
+    stream.expect(Token.Type.EXECUTE_END);
 
-        BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endparallel"));
+    BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endparallel"));
 
-        // skip the 'endparallel' token
-        stream.next();
+    // skip the 'endparallel' token
+    stream.next();
 
-        stream.expect(Token.Type.EXECUTE_END);
-        return new ParallelNode(lineNumber, body);
-    }
+    stream.expect(Token.Type.EXECUTE_END);
+    return new ParallelNode(lineNumber, body);
+  }
 
-    @Override
-    public String getTag() {
-        return "parallel";
-    }
+  @Override
+  public String getTag() {
+    return "parallel";
+  }
 }

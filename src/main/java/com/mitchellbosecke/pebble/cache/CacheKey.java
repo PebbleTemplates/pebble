@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble.cache;
 
 import com.mitchellbosecke.pebble.node.CacheNode;
-
 import java.util.Locale;
 
 /**
@@ -10,6 +9,7 @@ import java.util.Locale;
  * @author Eric Bussieres
  */
 public final class CacheKey {
+
   private final CacheNode node;
   private final String name;
   private final Locale locale;
@@ -46,7 +46,9 @@ public final class CacheKey {
     }
     if (this.name == null) {
       return other.name == null;
-    } else return this.name.equals(other.name);
+    } else {
+      return this.name.equals(other.name);
+    }
   }
 
   /**

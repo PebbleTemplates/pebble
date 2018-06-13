@@ -8,10 +8,6 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.escaper;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.AutoEscapeNode;
@@ -26,121 +22,123 @@ import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class EscaperNodeVisitor extends AbstractNodeVisitor {
 
-    private final LinkedList<String> strategies = new LinkedList<>();
+  private final LinkedList<String> strategies = new LinkedList<>();
 
-    private final LinkedList<Boolean> active = new LinkedList<>();
+  private final LinkedList<Boolean> active = new LinkedList<>();
 
-    public EscaperNodeVisitor(PebbleTemplateImpl template, boolean autoEscapting) {
-        super(template);
-        this.pushAutoEscapeState(autoEscapting);
+  public EscaperNodeVisitor(PebbleTemplateImpl template, boolean autoEscapting) {
+    super(template);
+    this.pushAutoEscapeState(autoEscapting);
+  }
+
+  @Override
+  public void visit(PrintNode node) {
+    Expression<?> expression = node.getExpression();
+
+    if (expression instanceof TernaryExpression) {
+      TernaryExpression ternary = (TernaryExpression) expression;
+      Expression<?> left = ternary.getExpression2();
+      Expression<?> right = ternary.getExpression3();
+      if (isUnsafe(left)) {
+        ternary.setExpression2(escape(left));
+      }
+      if (isUnsafe(right)) {
+        ternary.setExpression3(escape(right));
+      }
+    } else {
+      if (isUnsafe(expression)) {
+        node.setExpression(escape(expression));
+      }
     }
+  }
 
-    @Override
-    public void visit(PrintNode node) {
-        Expression<?> expression = node.getExpression();
+  @Override
+  public void visit(AutoEscapeNode node) {
+    active.push(node.isActive());
+    strategies.push(node.getStrategy());
 
-        if (expression instanceof TernaryExpression) {
-            TernaryExpression ternary = (TernaryExpression) expression;
-            Expression<?> left = ternary.getExpression2();
-            Expression<?> right = ternary.getExpression3();
-            if (isUnsafe(left)) {
-                ternary.setExpression2(escape(left));
-            }
-            if (isUnsafe(right)) {
-                ternary.setExpression3(escape(right));
-            }
-        } else {
-            if (isUnsafe(expression)) {
-                node.setExpression(escape(expression));
-            }
-        }
-    }
+    node.getBody().accept(this);
 
-    @Override
-    public void visit(AutoEscapeNode node) {
-        active.push(node.isActive());
-        strategies.push(node.getStrategy());
+    active.pop();
+    strategies.pop();
+  }
 
-        node.getBody().accept(this);
+  /**
+   * Simply wraps the input expression with a {@link EscapeFilter}.
+   */
+  private Expression<?> escape(Expression<?> expression) {
 
-        active.pop();
-        strategies.pop();
-    }
-
-    /**
-     * Simply wraps the input expression with a {@link EscapeFilter}.
-     *
-     * @param expression
-     * @return
+    /*
+     * Build the arguments to the escape filter. The arguments will just
+     * include the strategy being used.
      */
-    private Expression<?> escape(Expression<?> expression) {
-
-        /*
-         * Build the arguments to the escape filter. The arguments will just
-         * include the strategy being used.
-         */
-        List<NamedArgumentNode> namedArgs = new ArrayList<>();
-        if (!strategies.isEmpty() && strategies.peek() != null) {
-            String strategy = strategies.peek();
-            namedArgs.add(new NamedArgumentNode("strategy",
-                    new LiteralStringExpression(strategy, expression.getLineNumber())));
-        }
-        ArgumentsNode args = new ArgumentsNode(null, namedArgs, expression.getLineNumber());
-
-        /*
-         * Create the filter invocation with the newly created named arguments.
-         */
-        FilterInvocationExpression filter = new FilterInvocationExpression("escape", args, expression.getLineNumber());
-
-        /*
-         * The given expression and the filter invocation now become a binary
-         * expression which is what is returned.
-         */
-        FilterExpression binary = new FilterExpression();
-        binary.setLeft(expression);
-        binary.setRight(filter);
-        return binary;
+    List<NamedArgumentNode> namedArgs = new ArrayList<>();
+    if (!strategies.isEmpty() && strategies.peek() != null) {
+      String strategy = strategies.peek();
+      namedArgs.add(new NamedArgumentNode("strategy",
+          new LiteralStringExpression(strategy, expression.getLineNumber())));
     }
+    ArgumentsNode args = new ArgumentsNode(null, namedArgs, expression.getLineNumber());
 
-    private boolean isUnsafe(Expression<?> expression) {
-
-        // check whether the autoescaper is even active
-        if (active.peek() == Boolean.FALSE) {
-            return false;
-        }
-
-        boolean unsafe = true;
-
-        // string literals are safe
-        if (expression instanceof LiteralStringExpression) {
-            unsafe = false;
-        } else if (expression instanceof ParentFunctionExpression || expression instanceof BlockFunctionExpression) {
-            unsafe = false;
-        } else if (isSafeConcatenateExpr(expression)) {
-            unsafe = false;
-        }
-
-        return unsafe;
-    }
-
-    /**
-     * Returns true if {@code expr} is a {@link ConcatenateExpression} made up
-     * of two {@link LiteralStringExpression}s.
+    /*
+     * Create the filter invocation with the newly created named arguments.
      */
-    private boolean isSafeConcatenateExpr(Expression<?> expr) {
-        if (!(expr instanceof ConcatenateExpression)) {
-            return false;
-        }
-        ConcatenateExpression cexpr = (ConcatenateExpression) expr;
-        return cexpr.getLeftExpression() instanceof LiteralStringExpression
-                && cexpr.getRightExpression() instanceof LiteralStringExpression;
+    FilterInvocationExpression filter = new FilterInvocationExpression("escape", args,
+        expression.getLineNumber());
+
+    /*
+     * The given expression and the filter invocation now become a binary
+     * expression which is what is returned.
+     */
+    FilterExpression binary = new FilterExpression();
+    binary.setLeft(expression);
+    binary.setRight(filter);
+    return binary;
+  }
+
+  private boolean isUnsafe(Expression<?> expression) {
+
+    // check whether the autoescaper is even active
+    if (active.peek() == Boolean.FALSE) {
+      return false;
     }
 
-    public void pushAutoEscapeState(boolean auto) {
-        active.push(auto);
+    boolean unsafe = true;
+
+    // string literals are safe
+    if (expression instanceof LiteralStringExpression) {
+      unsafe = false;
+    } else if (expression instanceof ParentFunctionExpression
+        || expression instanceof BlockFunctionExpression) {
+      unsafe = false;
+    } else if (isSafeConcatenateExpr(expression)) {
+      unsafe = false;
     }
+
+    return unsafe;
+  }
+
+  /**
+   * Returns true if {@code expr} is a {@link ConcatenateExpression} made up of two {@link
+   * LiteralStringExpression}s.
+   */
+  private boolean isSafeConcatenateExpr(Expression<?> expr) {
+    if (!(expr instanceof ConcatenateExpression)) {
+      return false;
+    }
+    ConcatenateExpression cexpr = (ConcatenateExpression) expr;
+    return cexpr.getLeftExpression() instanceof LiteralStringExpression
+        && cexpr.getRightExpression() instanceof LiteralStringExpression;
+  }
+
+  public void pushAutoEscapeState(boolean auto) {
+    active.push(auto);
+  }
 
 }

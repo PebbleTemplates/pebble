@@ -2,19 +2,19 @@ package com.mitchellbosecke.pebble.parser;
 
 /**
  * Parser options.
- * 
+ *
  * @author yanxiyue
- * 
  */
 public class ParserOptions {
-    private boolean literalDecimalTreatedAsInteger;
 
-    public boolean isLiteralDecimalTreatedAsInteger() {
-        return literalDecimalTreatedAsInteger;
-    }
+  private boolean literalDecimalTreatedAsInteger;
 
-    public ParserOptions setLiteralDecimalTreatedAsInteger(boolean literalDecimalTreatedAsInteger) {
-        this.literalDecimalTreatedAsInteger = literalDecimalTreatedAsInteger;
-        return this;
-    }
+  public boolean isLiteralDecimalTreatedAsInteger() {
+    return literalDecimalTreatedAsInteger;
+  }
+
+  public ParserOptions setLiteralDecimalTreatedAsInteger(boolean literalDecimalTreatedAsInteger) {
+    this.literalDecimalTreatedAsInteger = literalDecimalTreatedAsInteger;
+    return this;
+  }
 }

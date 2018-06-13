@@ -8,212 +8,211 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
+import static org.junit.Assert.assertEquals;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class NewlineTrimmingTest extends AbstractTest {
 
-    @Test
-    public void testPrintDefault() throws PebbleException, IOException {
+  @Test
+  public void testPrintDefault() throws PebbleException, IOException {
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .build();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .build();
 
-        PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
+    PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
 
-        Writer writer = new StringWriter();
+    Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("param1", "val1");
-        params.put("param2", "val2");
+    Map<String, Object> params = new HashMap<>();
+    params.put("param1", "val1");
+    params.put("param2", "val2");
 
-        template.evaluate(writer, params);
+    template.evaluate(writer, params);
 
-        assertEquals("val1val2", writer.toString());
-    }
+    assertEquals("val1val2", writer.toString());
+  }
 
-    @Test
-    public void testPrintForceToTrue() throws PebbleException, IOException {
+  @Test
+  public void testPrintForceToTrue() throws PebbleException, IOException {
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .newLineTrimming(true)
-                                                        .build();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .newLineTrimming(true)
+        .build();
 
-        PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
+    PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
 
-        Writer writer = new StringWriter();
+    Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("param1", "val1");
-        params.put("param2", "val2");
+    Map<String, Object> params = new HashMap<>();
+    params.put("param1", "val1");
+    params.put("param2", "val2");
 
-        template.evaluate(writer, params);
+    template.evaluate(writer, params);
 
-        assertEquals("val1val2", writer.toString());
-    }
+    assertEquals("val1val2", writer.toString());
+  }
 
-    @Test
-    public void testPrintSetToFalse() throws PebbleException, IOException {
+  @Test
+  public void testPrintSetToFalse() throws PebbleException, IOException {
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .newLineTrimming(false)
-                                                        .build();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .newLineTrimming(false)
+        .build();
 
-        PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
+    PebbleTemplate template = pebble.getTemplate("{{param1}}\n{{param2}}");
 
-        Writer writer = new StringWriter();
+    Writer writer = new StringWriter();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("param1", "val1");
-        params.put("param2", "val2");
+    Map<String, Object> params = new HashMap<>();
+    params.put("param1", "val1");
+    params.put("param2", "val2");
 
-        template.evaluate(writer, params);
+    template.evaluate(writer, params);
 
-        assertEquals("val1\nval2", writer.toString());
-    }
-    
-    @Test
-    public void testPrintDefaultTwoNewlines() throws PebbleException, IOException {
+    assertEquals("val1\nval2", writer.toString());
+  }
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .build();
+  @Test
+  public void testPrintDefaultTwoNewlines() throws PebbleException, IOException {
 
-        PebbleTemplate template = pebble.getTemplate("{{param1}}\n\n{{param2}}");
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .build();
 
-        Writer writer = new StringWriter();
+    PebbleTemplate template = pebble.getTemplate("{{param1}}\n\n{{param2}}");
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("param1", "val1");
-        params.put("param2", "val2");
+    Writer writer = new StringWriter();
 
-        template.evaluate(writer, params);
+    Map<String, Object> params = new HashMap<>();
+    params.put("param1", "val1");
+    params.put("param2", "val2");
 
-        assertEquals("val1\nval2", writer.toString());
-    }
-    
-    @Test
-    public void testPrintSetToFalseTwoNewlines() throws PebbleException, IOException {
+    template.evaluate(writer, params);
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .newLineTrimming(false)
-                                                        .build();
+    assertEquals("val1\nval2", writer.toString());
+  }
 
-        PebbleTemplate template = pebble.getTemplate("{{param1}}\n\n{{param2}}");
+  @Test
+  public void testPrintSetToFalseTwoNewlines() throws PebbleException, IOException {
 
-        Writer writer = new StringWriter();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .newLineTrimming(false)
+        .build();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("param1", "val1");
-        params.put("param2", "val2");
+    PebbleTemplate template = pebble.getTemplate("{{param1}}\n\n{{param2}}");
 
-        template.evaluate(writer, params);
+    Writer writer = new StringWriter();
 
-        assertEquals("val1\n\nval2", writer.toString());
-    }
+    Map<String, Object> params = new HashMap<>();
+    params.put("param1", "val1");
+    params.put("param2", "val2");
 
-    @Test
-    public void testCommentDefault() throws PebbleException, IOException {
+    template.evaluate(writer, params);
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .build();
+    assertEquals("val1\n\nval2", writer.toString());
+  }
 
-        PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
+  @Test
+  public void testCommentDefault() throws PebbleException, IOException {
 
-        Writer writer = new StringWriter();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .build();
 
-        template.evaluate(writer);
+    PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
 
-        assertEquals("", writer.toString());
-    }
+    Writer writer = new StringWriter();
 
-    @Test
-    public void testCommentForceToTrue() throws PebbleException, IOException {
+    template.evaluate(writer);
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .newLineTrimming(true)
-                                                        .build();
+    assertEquals("", writer.toString());
+  }
 
-        PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
+  @Test
+  public void testCommentForceToTrue() throws PebbleException, IOException {
 
-        Writer writer = new StringWriter();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .newLineTrimming(true)
+        .build();
 
-        template.evaluate(writer);
+    PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
 
-        assertEquals("", writer.toString());
-    }
+    Writer writer = new StringWriter();
 
-    @Test
-    public void testCommentSetToFalse() throws PebbleException, IOException {
+    template.evaluate(writer);
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .newLineTrimming(false)
-                                                        .build();
+    assertEquals("", writer.toString());
+  }
 
-        PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
+  @Test
+  public void testCommentSetToFalse() throws PebbleException, IOException {
 
-        Writer writer = new StringWriter();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .newLineTrimming(false)
+        .build();
 
-        template.evaluate(writer);
+    PebbleTemplate template = pebble.getTemplate("{# comment1 #}\n{# comment2 #}");
 
-        assertEquals("\n", writer.toString());
-    }
+    Writer writer = new StringWriter();
 
-    @Test
-    public void testExecuteDefault() throws PebbleException, IOException {
+    template.evaluate(writer);
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .build();
+    assertEquals("\n", writer.toString());
+  }
 
-        PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");
+  @Test
+  public void testExecuteDefault() throws PebbleException, IOException {
 
-        Writer writer = new StringWriter();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .build();
 
-        template.evaluate(writer);
+    PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");
 
-        assertEquals("", writer.toString());
-    }
+    Writer writer = new StringWriter();
 
-    @Test
-    public void testExecuteForceToTrue() throws PebbleException, IOException {
+    template.evaluate(writer);
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .newLineTrimming(true)
-                                                        .build();
+    assertEquals("", writer.toString());
+  }
 
-        PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");
+  @Test
+  public void testExecuteForceToTrue() throws PebbleException, IOException {
 
-        Writer writer = new StringWriter();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .newLineTrimming(true)
+        .build();
 
-        template.evaluate(writer);
+    PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");
 
-        assertEquals("", writer.toString());
-    }
+    Writer writer = new StringWriter();
 
-    @Test
-    public void testExecuteSetToFalse() throws PebbleException, IOException {
+    template.evaluate(writer);
 
-        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-                                                        .newLineTrimming(false)
-                                                        .build();
+    assertEquals("", writer.toString());
+  }
 
-        PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");
+  @Test
+  public void testExecuteSetToFalse() throws PebbleException, IOException {
 
-        Writer writer = new StringWriter();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .newLineTrimming(false)
+        .build();
 
-        template.evaluate(writer);
+    PebbleTemplate template = pebble.getTemplate("{% if true %}\n{% endif %}");
 
-        assertEquals("\n", writer.toString());
-    }
-    
+    Writer writer = new StringWriter();
+
+    template.evaluate(writer);
+
+    assertEquals("\n", writer.toString());
+  }
+
 
 }

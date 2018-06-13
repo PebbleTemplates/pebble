@@ -3,21 +3,24 @@ package com.mitchellbosecke.pebble.extension.writer;
 import java.io.Writer;
 
 /**
- * A ${@link SpecializedWriter} that's pooled in a ${@link ThreadLocal}.
- * It's backed by a ${@link StringBuilder} so it's not threadsafe but doesn't involve synchronization.
- * Beware that it has some limitations:
+ * A ${@link SpecializedWriter} that's pooled in a ${@link ThreadLocal}. It's backed by a ${@link
+ * StringBuilder} so it's not threadsafe but doesn't involve synchronization. Beware that it has
+ * some limitations:
  * <ul>
- *   <li>As it's backed by a ${@link ThreadLocal}, it might leak in environments where ClassLoaders are rebooted at runtime</li>
- *   <li>It doesn't take any security measure against very large payloads that would cause underlying buffers to eat memory</li>
+ * <li>As it's backed by a ${@link ThreadLocal}, it might leak in environments where ClassLoaders
+ * are rebooted at runtime</li>
+ * <li>It doesn't take any security measure against very large payloads that would cause underlying
+ * buffers to eat memory</li>
  * </ul>
  */
 public class PooledSpecializedStringWriter extends Writer implements SpecializedWriter {
 
-  private static final ThreadLocal<PooledSpecializedStringWriter> POOL = ThreadLocal.withInitial(PooledSpecializedStringWriter::new);
+  private static final ThreadLocal<PooledSpecializedStringWriter> POOL = ThreadLocal
+      .withInitial(PooledSpecializedStringWriter::new);
 
   private StringBuilder sb = new StringBuilder();
 
-  private PooledSpecializedStringWriter(){
+  private PooledSpecializedStringWriter() {
   }
 
   @Override

@@ -3,8 +3,9 @@ package com.mitchellbosecke.pebble.extension.writer;
 import java.io.StringWriter;
 
 /**
- * A ${@link SpecializedWriter} that wraps a ${@link StringWriter}.
- * Directly write numbers into the underlying ${@link StringBuffer} and save String allocations (compared to ${@link java.io.Writer}).
+ * A ${@link SpecializedWriter} that wraps a ${@link StringWriter}. Directly write numbers into the
+ * underlying ${@link StringBuffer} and save String allocations (compared to ${@link
+ * java.io.Writer}).
  */
 public class StringWriterSpecializedAdapter implements SpecializedWriter {
 

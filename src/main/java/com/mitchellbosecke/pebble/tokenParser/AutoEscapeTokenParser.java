@@ -17,44 +17,44 @@ import com.mitchellbosecke.pebble.parser.Parser;
 
 public class AutoEscapeTokenParser implements TokenParser {
 
-    @Override
-    public RenderableNode parse(Token token, Parser parser) {
-        TokenStream stream = parser.getStream();
-        int lineNumber = token.getLineNumber();
+  @Override
+  public RenderableNode parse(Token token, Parser parser) {
+    TokenStream stream = parser.getStream();
+    int lineNumber = token.getLineNumber();
 
-        String strategy = null;
-        boolean active = true;
+    String strategy = null;
+    boolean active = true;
 
-        // skip over the 'autoescape' token
-        stream.next();
+    // skip over the 'autoescape' token
+    stream.next();
 
-        // did user specify active boolean?
-        if (stream.current().test(Token.Type.NAME)) {
-            active = Boolean.parseBoolean(stream.current().getValue());
-            stream.next();
-        }
-
-        // did user specify a strategy?
-        if (stream.current().test(Token.Type.STRING)) {
-            strategy = stream.current().getValue();
-            stream.next();
-        }
-
-        stream.expect(Token.Type.EXECUTE_END);
-
-        // now we parse the block body
-        BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endautoescape"));
-
-        // skip the 'endautoescape' token
-        stream.next();
-
-        stream.expect(Token.Type.EXECUTE_END);
-
-        return new AutoEscapeNode(lineNumber, body, active, strategy);
+    // did user specify active boolean?
+    if (stream.current().test(Token.Type.NAME)) {
+      active = Boolean.parseBoolean(stream.current().getValue());
+      stream.next();
     }
 
-    @Override
-    public String getTag() {
-        return "autoescape";
+    // did user specify a strategy?
+    if (stream.current().test(Token.Type.STRING)) {
+      strategy = stream.current().getValue();
+      stream.next();
     }
+
+    stream.expect(Token.Type.EXECUTE_END);
+
+    // now we parse the block body
+    BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endautoescape"));
+
+    // skip the 'endautoescape' token
+    stream.next();
+
+    stream.expect(Token.Type.EXECUTE_END);
+
+    return new AutoEscapeNode(lineNumber, body, active, strategy);
+  }
+
+  @Override
+  public String getTag() {
+    return "autoescape";
+  }
 }

@@ -16,49 +16,49 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.node.TestInvocationExpression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-
 import java.util.Map;
 
 public class PositiveTestExpression extends BinaryExpression<Object> {
 
-    private Test cachedTest;
+  private Test cachedTest;
 
-    @Override
-    public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
+  @Override
+  public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
 
-        TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
-        ArgumentsNode args = testInvocation.getArgs();
+    TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
+    ArgumentsNode args = testInvocation.getArgs();
 
-        if (cachedTest == null) {
-            String testName = testInvocation.getTestName();
+    if (cachedTest == null) {
+      String testName = testInvocation.getTestName();
 
-            cachedTest = context.getExtensionRegistry().getTest(testInvocation.getTestName());
+      cachedTest = context.getExtensionRegistry().getTest(testInvocation.getTestName());
 
-            if (cachedTest == null) {
-                throw new PebbleException(null, String.format("Test [%s] does not exist.", testName),
-                        this.getLineNumber(), self.getName());
-            }
-        }
-        Test test = cachedTest;
-
-        Map<String, Object> namedArguments = args.getArgumentMap(self, context, test);
-
-        // This check is not nice, because we use instanceof. However this is
-        // the only test which should not fail in strict mode, when the variable
-        // is not set, because this method should exactly test this. Hence a
-        // generic solution to allow other tests to reuse this feature make no
-        // sense.
-        if (test instanceof DefinedTest) {
-            Object input = null;
-            try {
-                input = getLeftExpression().evaluate(self, context);
-            } catch (AttributeNotFoundException e) {
-                input = null;
-            }
-            return test.apply(input, namedArguments, self, context, getLineNumber());
-        } else {
-            return test.apply(getLeftExpression().evaluate(self, context), namedArguments, self, context, getLineNumber());
-        }
-
+      if (cachedTest == null) {
+        throw new PebbleException(null, String.format("Test [%s] does not exist.", testName),
+            this.getLineNumber(), self.getName());
+      }
     }
+    Test test = cachedTest;
+
+    Map<String, Object> namedArguments = args.getArgumentMap(self, context, test);
+
+    // This check is not nice, because we use instanceof. However this is
+    // the only test which should not fail in strict mode, when the variable
+    // is not set, because this method should exactly test this. Hence a
+    // generic solution to allow other tests to reuse this feature make no
+    // sense.
+    if (test instanceof DefinedTest) {
+      Object input = null;
+      try {
+        input = getLeftExpression().evaluate(self, context);
+      } catch (AttributeNotFoundException e) {
+        input = null;
+      }
+      return test.apply(input, namedArguments, self, context, getLineNumber());
+    } else {
+      return test.apply(getLeftExpression().evaluate(self, context), namedArguments, self, context,
+          getLineNumber());
+    }
+
+  }
 }

@@ -8,23 +8,22 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.extension.debug;
 
+import com.mitchellbosecke.pebble.extension.AbstractExtension;
+import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mitchellbosecke.pebble.extension.AbstractExtension;
-import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
-
 public class DebugExtension extends AbstractExtension {
 
-    private final PrettyPrintNodeVisitorFactory prettyPrinter = new PrettyPrintNodeVisitorFactory();
+  private final PrettyPrintNodeVisitorFactory prettyPrinter = new PrettyPrintNodeVisitorFactory();
 
-    public List<NodeVisitorFactory> getNodeVisitors() {
-        List<NodeVisitorFactory> visitors = new ArrayList<>();
-        visitors.add(prettyPrinter);
-        return visitors;
-    }
+  public List<NodeVisitorFactory> getNodeVisitors() {
+    List<NodeVisitorFactory> visitors = new ArrayList<>();
+    visitors.add(prettyPrinter);
+    return visitors;
+  }
 
-    public String toString() {
-        return prettyPrinter.toString();
-    }
+  public String toString() {
+    return prettyPrinter.toString();
+  }
 }

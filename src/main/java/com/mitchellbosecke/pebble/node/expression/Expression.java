@@ -14,12 +14,12 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
 public interface Expression<T> extends Node {
 
-    T evaluate(PebbleTemplateImpl self, EvaluationContextImpl context);
+  T evaluate(PebbleTemplateImpl self, EvaluationContextImpl context);
 
-    /**
-     * Returns the line number on which the expression is defined on.
-     *
-     * @return the line number on which the expression is defined on.
-     */
-    int getLineNumber();
+  /**
+   * Returns the line number on which the expression is defined on.
+   *
+   * @return the line number on which the expression is defined on.
+   */
+  int getLineNumber();
 }

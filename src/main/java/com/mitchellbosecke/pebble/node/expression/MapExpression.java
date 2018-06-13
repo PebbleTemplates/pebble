@@ -11,7 +11,6 @@ package com.mitchellbosecke.pebble.node.expression;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +43,8 @@ public class MapExpression implements Expression<Map<?, ?>> {
 
   @Override
   public Map<?, ?> evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    Map<Object, Object> returnEntries = new HashMap<>(Long.valueOf(Math.round(Math.ceil(entries.size() / 0.75)))
+    Map<Object, Object> returnEntries = new HashMap<>(
+        Long.valueOf(Math.round(Math.ceil(entries.size() / 0.75)))
             .intValue());
     for (Entry<Expression<?>, Expression<?>> entry : entries.entrySet()) {
       Expression<?> keyExpr = entry.getKey();

@@ -3,8 +3,8 @@ package com.mitchellbosecke.pebble.extension.writer;
 import java.math.BigDecimal;
 
 /**
- * A special type to be implemented by ${@link java.io.Writer}s
- * so Pebble can bypass ${@link Number}s String allocation and directly write primitives.
+ * A special type to be implemented by ${@link java.io.Writer}s so Pebble can bypass ${@link
+ * Number}s String allocation and directly write primitives.
  */
 public interface SpecializedWriter {
 
