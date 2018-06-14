@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>io.pebbletemplates</groupId>
+    <artifactId>pebble-project</artifactId>
+    <version>3.0.0-SNAPSHOT</version>  
+  </parent>
+
+  <artifactId>pebble-spring</artifactId>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>pebble-spring3</module>
+    <module>pebble-spring4</module>
+    <module>pebble-spring5</module>
+    <module>pebble-spring-boot-starter</module>
+    <module>pebble-spring-boot-2-starter</module>
+  </modules>
+
+  <name>Pebble Spring Project</name>
+  <description>Pebble Spring Project</description>
+  <url>http://pebbletemplates.io</url>
+
+  <properties>
+    <junit.version>4.12</junit.version>
+    <mockito.version>2.3.5</mockito.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.pebbletemplates</groupId>
+        <artifactId>pebble</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>
+

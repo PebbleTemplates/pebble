@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>test</title>
+</head>
+
+<body>
+{{ hasErrors('formName') }}
+{{ hasGlobalErrors('formName') }}
+{{ hasFieldErrors('formName', 'testField') }}
+
+{{ hasErrors('') }}
+{{ hasGlobalErrors('') }}
+{{ hasFieldErrors('formName', '') }}
+
+{% for err in getAllErrors('formName') %}{{ err }}{% endfor %}
+{% for err in getGlobalErrors('formName') %}{{ err }}{% endfor %}
+{% for err in getFieldErrors('formName', 'testField') %}{{ err }}{% endfor %}
+
+{% for err in getAllErrors('') %}{{ err }}{% endfor %}
+{% for err in getGlobalErrors('') %}{{ err }}{% endfor %}
+{% for err in getFieldErrors('', 'testField') %}{{ err }}{% endfor %}
+{% for err in getFieldErrors('formName', '') %}{{ err }}{% endfor %}
+</body>
+</html>
