@@ -1,0 +1,6 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.mitchellbosecke.pebble.boot.autoconfigure.PebbleAutoConfiguration
+# Template availability providers
+org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
+com.mitchellbosecke.pebble.boot.autoconfigure.PebbleTemplateAvailabilityProvider
