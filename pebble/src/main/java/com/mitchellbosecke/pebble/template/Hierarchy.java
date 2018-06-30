@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.template;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class Hierarchy {
    * @param currentTemplate The current template
    */
   public Hierarchy(PebbleTemplateImpl currentTemplate) {
-    hierarchy.add(currentTemplate);
+    this.hierarchy.add(currentTemplate);
   }
 
   /**
@@ -43,7 +43,7 @@ public class Hierarchy {
    * @param ancestor The ancestor template
    */
   public void pushAncestor(PebbleTemplateImpl ancestor) {
-    hierarchy.add(ancestor);
+    this.hierarchy.add(ancestor);
   }
 
   /**
@@ -51,7 +51,7 @@ public class Hierarchy {
    * considered the "current" template.
    */
   public void ascend() {
-    current++;
+    this.current++;
   }
 
   /**
@@ -59,7 +59,7 @@ public class Hierarchy {
    * considered the "current" template.
    */
   public void descend() {
-    current--;
+    this.current--;
   }
 
   /**
@@ -68,10 +68,10 @@ public class Hierarchy {
    * @return The child template if exists or null
    */
   public PebbleTemplateImpl getChild() {
-    if (current == 0) {
+    if (this.current == 0) {
       return null;
     }
-    return hierarchy.get(current - 1);
+    return this.hierarchy.get(this.current - 1);
   }
 
   /**
@@ -80,9 +80,9 @@ public class Hierarchy {
    * @return The parent template if exists or null
    */
   public PebbleTemplateImpl getParent() {
-    if (current == hierarchy.size() - 1) {
+    if (this.current == this.hierarchy.size() - 1) {
       return null;
     }
-    return hierarchy.get(current + 1);
+    return this.hierarchy.get(this.current + 1);
   }
 }

@@ -4,7 +4,7 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 
-public class MacroResolver implements AttributeResolver {
+class MacroResolver implements AttributeResolver {
 
   static final MacroResolver INSTANCE = new MacroResolver();
 

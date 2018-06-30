@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -35,16 +35,17 @@ public class ParentFunctionExpression implements Expression<String> {
       Hierarchy hierarchy = context.getHierarchy();
       if (hierarchy.getParent() == null) {
         throw new PebbleException(null,
-            "Can not use parent function if template does not extend another template.", lineNumber,
+            "Can not use parent function if template does not extend another template.",
+            this.lineNumber,
             self.getName());
       }
       PebbleTemplateImpl parent = hierarchy.getParent();
 
       hierarchy.ascend();
-      parent.block(writer, context, blockName, true);
+      parent.block(writer, context, this.blockName, true);
       hierarchy.descend();
     } catch (IOException e) {
-      throw new PebbleException(e, "Could not render block [" + blockName + "]",
+      throw new PebbleException(e, "Could not render block [" + this.blockName + "]",
           this.getLineNumber(),
           self.getName());
     }

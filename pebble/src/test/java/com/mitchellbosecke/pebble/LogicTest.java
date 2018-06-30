@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class LogicTest extends AbstractTest {
+public class LogicTest {
 
   @Test
   public void testUnaryOperators() throws PebbleException, IOException {
@@ -892,9 +892,9 @@ public class LogicTest extends AbstractTest {
     context.put("names", new HashMap<String, String>() {
 
       {
-        put("Bob", "Bob");
-        put("Maria", "Maria");
-        put("John", "John");
+        this.put("Bob", "Bob");
+        this.put("Maria", "Maria");
+        this.put("John", "John");
       }
     });
 

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.template;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -156,7 +156,7 @@ public class EvaluationContextImpl implements EvaluationContext {
   }
 
   public void addNamedImportedTemplates(String alias, PebbleTemplateImpl template) {
-    if (namedImportedTemplates.containsKey(alias)) {
+    if (this.namedImportedTemplates.containsKey(alias)) {
       throw new PebbleException(null,
           "More than one named template can not share the same name: " + alias);
     }
@@ -245,7 +245,7 @@ public class EvaluationContextImpl implements EvaluationContext {
    * @return the evaluation options
    */
   public EvaluationOptions getEvaluationOptions() {
-    return evaluationOptions;
+    return this.evaluationOptions;
   }
 
   @Override

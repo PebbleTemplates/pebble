@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -47,19 +47,19 @@ public class ParallelNode extends AbstractRenderableNode {
 
     if (es == null) {
 
-      if (!hasWarnedAboutNonExistingExecutorService) {
-        logger.info(String.format(
+      if (!this.hasWarnedAboutNonExistingExecutorService) {
+        this.logger.info(String.format(
             "The parallel tag was used [%s:%d] but no ExecutorService was provided. The parallel tag will be ignored "
                 + "and it's contents will be rendered in sequence with the rest of the template.",
-            self.getName(), getLineNumber()));
-        hasWarnedAboutNonExistingExecutorService = true;
+            self.getName(), this.getLineNumber()));
+        this.hasWarnedAboutNonExistingExecutorService = true;
       }
 
       /*
        * If user did not provide an ExecutorService, we simply ignore the
        * parallel tag and render it's contents like we normally would.
        */
-      body.render(self, writer, context);
+      this.body.render(self, writer, context);
 
     } else {
 
@@ -69,7 +69,7 @@ public class ParallelNode extends AbstractRenderableNode {
       final Writer newFutureWriter = new FutureWriter(newStringWriter);
 
       Future<String> future = es.submit(() -> {
-        body.render(self, newFutureWriter, contextCopy);
+        this.body.render(self, newFutureWriter, contextCopy);
         newFutureWriter.flush();
         newFutureWriter.close();
         return newStringWriter.toString();
@@ -84,6 +84,6 @@ public class ParallelNode extends AbstractRenderableNode {
   }
 
   public BodyNode getBody() {
-    return body;
+    return this.body;
   }
 }

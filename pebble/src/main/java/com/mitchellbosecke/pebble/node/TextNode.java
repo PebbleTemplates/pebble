@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -38,7 +38,7 @@ public class TextNode extends AbstractRenderableNode {
   @Override
   public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
       throws IOException {
-    writer.write(data);
+    writer.write(this.data);
   }
 
   @Override
@@ -47,7 +47,7 @@ public class TextNode extends AbstractRenderableNode {
   }
 
   public char[] getData() {
-    return data;
+    return this.data;
   }
 
 }

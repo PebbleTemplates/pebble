@@ -6,7 +6,7 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import java.util.Map;
 
-public class MapResolver implements AttributeResolver {
+class MapResolver implements AttributeResolver {
 
   static final MapResolver INSTANCE = new MapResolver();
 

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.extension.core;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -29,12 +29,12 @@ public class JoinFilter implements Filter {
   private final List<String> argumentNames = new ArrayList<>();
 
   public JoinFilter() {
-    argumentNames.add("separator");
+    this.argumentNames.add("separator");
   }
 
   @Override
   public List<String> getArgumentNames() {
-    return argumentNames;
+    return this.argumentNames;
   }
 
   @Override
@@ -56,9 +56,9 @@ public class JoinFilter implements Filter {
       for (int i = 0; i < length; i++) {
         items.add(Array.get(input, i));
       }
-      return join(items, glue);
+      return this.join(items, glue);
     } else if (input instanceof Collection) {
-      return join((Collection<?>) input, glue);
+      return this.join((Collection<?>) input, glue);
     } else {
       throw new PebbleException(null,
           "The 'join' filter expects that the input is either a collection or an array.",

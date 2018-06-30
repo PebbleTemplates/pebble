@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.lexer;
 
 import com.mitchellbosecke.pebble.error.ParserException;
@@ -144,7 +144,7 @@ public final class LexerImpl implements Lexer {
   public TokenStream tokenize(Reader reader, String name) {
 
     // operator regex
-    buildOperatorRegex();
+    this.buildOperatorRegex();
 
     // standardize the character used for line breaks
     try {
@@ -172,22 +172,22 @@ public final class LexerImpl implements Lexer {
     while (this.source.length() > 0) {
       switch (this.state) {
         case DATA:
-          lexData();
+          this.lexData();
           break;
         case EXECUTE:
-          lexExecute();
+          this.lexExecute();
           break;
         case PRINT:
-          lexPrint();
+          this.lexPrint();
           break;
         case COMMENT:
-          lexComment();
+          this.lexComment();
           break;
         case STRING:
-          lexString();
+          this.lexString();
           break;
         case STRING_INTERPOLATION:
-          lexStringInterpolation();
+          this.lexStringInterpolation();
           break;
         default:
           break;
@@ -195,65 +195,66 @@ public final class LexerImpl implements Lexer {
     }
 
     // end of file token
-    pushToken(Token.Type.EOF);
+    this.pushToken(Token.Type.EOF);
 
     // make sure that all brackets have been closed, else throw an error
     if (!this.brackets.isEmpty()) {
-      String expected = brackets.pop().getLeft();
+      String expected = this.brackets.pop().getLeft();
       throw new ParserException(null, String.format("Unclosed \"%s\"", expected),
-          source.getLineNumber(),
-          source.getFilename());
+          this.source.getLineNumber(),
+          this.source.getFilename());
     }
 
-    return new TokenStream(tokens, source.getFilename());
+    return new TokenStream(this.tokens, this.source.getFilename());
   }
 
   private void lexStringInterpolation() {
-    String lastBracket = brackets.peek().getLeft();
-    Matcher matcher = syntax.getRegexInterpolationClose().matcher(source);
-    if (syntax.getInterpolationOpenDelimiter().equals(lastBracket) && matcher.lookingAt()) {
-      brackets.pop();
-      pushToken(Token.Type.STRING_INTERPOLATION_END);
-      source.advance(matcher.end());
-      popState();
+    String lastBracket = this.brackets.peek().getLeft();
+    Matcher matcher = this.syntax.getRegexInterpolationClose().matcher(this.source);
+    if (this.syntax.getInterpolationOpenDelimiter().equals(lastBracket) && matcher.lookingAt()) {
+      this.brackets.pop();
+      this.pushToken(Token.Type.STRING_INTERPOLATION_END);
+      this.source.advance(matcher.end());
+      this.popState();
     } else {
-      lexExpression();
+      this.lexExpression();
     }
   }
 
   private void lexString() {
     // interpolation
-    Matcher matcher = this.syntax.getRegexInterpolationOpen().matcher(source);
+    Matcher matcher = this.syntax.getRegexInterpolationOpen().matcher(this.source);
     if (matcher.lookingAt()) {
-      brackets.push(new Pair<>(syntax.getInterpolationOpenDelimiter(), source.getLineNumber()));
-      pushToken(Token.Type.STRING_INTERPOLATION_START);
-      source.advance(matcher.end());
-      pushState(State.STRING_INTERPOLATION);
+      this.brackets.push(
+          new Pair<>(this.syntax.getInterpolationOpenDelimiter(), this.source.getLineNumber()));
+      this.pushToken(Token.Type.STRING_INTERPOLATION_START);
+      this.source.advance(matcher.end());
+      this.pushState(State.STRING_INTERPOLATION);
       return;
     }
 
     // regular string start (always full string if single quotes)
-    matcher = REGEX_STRING_NON_INTERPOLATED_PART.matcher(source);
+    matcher = REGEX_STRING_NON_INTERPOLATED_PART.matcher(this.source);
     if (matcher.lookingAt() && matcher.end() > 0) {
-      String token = source.substring(matcher.end());
-      source.advance(matcher.end());
-      pushToken(Token.Type.STRING, token);
+      String token = this.source.substring(matcher.end());
+      this.source.advance(matcher.end());
+      this.pushToken(Token.Type.STRING, token);
       return;
     }
 
     // end of string (which may have contained interpolation)
-    matcher = REGEX_DOUBLEQUOTE.matcher(source);
+    matcher = REGEX_DOUBLEQUOTE.matcher(this.source);
     if (matcher.lookingAt()) {
-      String expected = brackets.pop().getLeft();
+      String expected = this.brackets.pop().getLeft();
 
-      if (source.charAt(0) != '"') {
+      if (this.source.charAt(0) != '"') {
         throw new ParserException(null, String.format("Unclosed \"%s\"", expected),
-            source.getLineNumber(),
-            source.getFilename());
+            this.source.getLineNumber(),
+            this.source.getFilename());
       }
 
-      popState();
-      source.advance(matcher.end());
+      this.popState();
+      this.source.advance(matcher.end());
     }
   }
 
@@ -264,7 +265,7 @@ public final class LexerImpl implements Lexer {
    */
   private void lexData() {
     // find the next start delimiter
-    Matcher matcher = this.syntax.getRegexStartDelimiters().matcher(source);
+    Matcher matcher = this.syntax.getRegexStartDelimiters().matcher(this.source);
     boolean match = matcher.find();
 
     String text;
@@ -273,51 +274,51 @@ public final class LexerImpl implements Lexer {
     // if we didn't find another start delimiter, the text
     // token goes all the way to the end of the template.
     if (!match) {
-      text = source.toString();
-      source.advance(source.length());
+      text = this.source.toString();
+      this.source.advance(this.source.length());
     } else {
-      text = source.substring(matcher.start());
-      startDelimiterToken = source.substring(matcher.start(), matcher.end());
+      text = this.source.substring(matcher.start());
+      startDelimiterToken = this.source.substring(matcher.start(), matcher.end());
 
       // advance to after the start delimiter
-      source.advance(matcher.end());
+      this.source.advance(matcher.end());
     }
 
     // trim leading whitespace from this text if we previously
     // encountered the appropriate whitespace trim character
-    if (trimLeadingWhitespaceFromNextData) {
+    if (this.trimLeadingWhitespaceFromNextData) {
       text = StringUtils.ltrim(text);
-      trimLeadingWhitespaceFromNextData = false;
+      this.trimLeadingWhitespaceFromNextData = false;
     }
-    Token textToken = pushToken(Type.TEXT, text);
+    Token textToken = this.pushToken(Type.TEXT, text);
 
     if (match) {
 
-      checkForLeadingWhitespaceTrim(textToken);
+      this.checkForLeadingWhitespaceTrim(textToken);
 
       if (this.syntax.getCommentOpenDelimiter().equals(startDelimiterToken)) {
 
         // we don't actually push any tokens for comments
-        pushState(State.COMMENT);
+        this.pushState(State.COMMENT);
 
       } else if (this.syntax.getPrintOpenDelimiter().equals(startDelimiterToken)) {
 
-        pushToken(Token.Type.PRINT_START);
-        pushState(State.PRINT);
+        this.pushToken(Token.Type.PRINT_START);
+        this.pushState(State.PRINT);
 
       } else if ((this.syntax.getExecuteOpenDelimiter().equals(startDelimiterToken))) {
 
         // check for verbatim tag
-        Matcher verbatimStartMatcher = this.syntax.getRegexVerbatimStart().matcher(source);
+        Matcher verbatimStartMatcher = this.syntax.getRegexVerbatimStart().matcher(this.source);
         if (verbatimStartMatcher.lookingAt()) {
 
-          lexVerbatimData(verbatimStartMatcher);
-          pushState(State.DATA);
+          this.lexVerbatimData(verbatimStartMatcher);
+          this.pushState(State.DATA);
 
         } else {
 
-          pushToken(Token.Type.EXECUTE_START);
-          pushState(State.EXECUTE);
+          this.pushToken(Token.Type.EXECUTE_START);
+          this.pushState(State.EXECUTE);
 
         }
 
@@ -332,17 +333,17 @@ public final class LexerImpl implements Lexer {
   private void lexExecute() {
 
     // check for the trailing whitespace trim character
-    checkForTrailingWhitespaceTrim();
+    this.checkForTrailingWhitespaceTrim();
 
-    Matcher matcher = this.syntax.getRegexExecuteClose().matcher(source);
+    Matcher matcher = this.syntax.getRegexExecuteClose().matcher(this.source);
 
     // check if we are at the execute closing delimiter
-    if (brackets.isEmpty() && matcher.lookingAt()) {
-      pushToken(Token.Type.EXECUTE_END, this.syntax.getExecuteCloseDelimiter());
-      source.advance(matcher.end());
-      popState();
+    if (this.brackets.isEmpty() && matcher.lookingAt()) {
+      this.pushToken(Token.Type.EXECUTE_END, this.syntax.getExecuteCloseDelimiter());
+      this.source.advance(matcher.end());
+      this.popState();
     } else {
-      lexExpression();
+      this.lexExpression();
     }
   }
 
@@ -352,17 +353,17 @@ public final class LexerImpl implements Lexer {
   private void lexPrint() {
 
     // check for the trailing whitespace trim character
-    checkForTrailingWhitespaceTrim();
+    this.checkForTrailingWhitespaceTrim();
 
-    Matcher matcher = this.syntax.getRegexPrintClose().matcher(source);
+    Matcher matcher = this.syntax.getRegexPrintClose().matcher(this.source);
 
     // check if we are at the print closing delimiter
-    if (brackets.isEmpty() && matcher.lookingAt()) {
-      pushToken(Token.Type.PRINT_END, this.syntax.getPrintCloseDelimiter());
-      source.advance(matcher.end());
-      popState();
+    if (this.brackets.isEmpty() && matcher.lookingAt()) {
+      this.pushToken(Token.Type.PRINT_END, this.syntax.getPrintCloseDelimiter());
+      this.source.advance(matcher.end());
+      this.popState();
     } else {
-      lexExpression();
+      this.lexExpression();
     }
   }
 
@@ -374,19 +375,19 @@ public final class LexerImpl implements Lexer {
   private void lexComment() {
 
     // all we need to do is find the end of the comment.
-    Matcher matcher = this.syntax.getRegexCommentClose().matcher(source);
+    Matcher matcher = this.syntax.getRegexCommentClose().matcher(this.source);
 
     boolean match = matcher.find(0);
     if (!match) {
-      throw new ParserException(null, "Unclosed comment.", source.getLineNumber(),
-          source.getFilename());
+      throw new ParserException(null, "Unclosed comment.", this.source.getLineNumber(),
+          this.source.getFilename());
     }
 
     /*
      * check if the commented ended with the whitespace trim character by
      * reversing the comment and performing a regular forward regex search.
      */
-    String comment = source.substring(matcher.start());
+    String comment = this.source.substring(matcher.start());
     String reversedComment = new StringBuilder(comment).reverse().toString();
     Matcher whitespaceTrimMatcher = this.syntax.getRegexLeadingWhitespaceTrim()
         .matcher(reversedComment);
@@ -395,8 +396,8 @@ public final class LexerImpl implements Lexer {
     }
 
     // move cursor to end of comment (and closing delimiter)
-    source.advance(matcher.end());
-    popState();
+    this.source.advance(matcher.end());
+    this.popState();
   }
 
   /**
@@ -406,104 +407,106 @@ public final class LexerImpl implements Lexer {
     String token;
 
     // whitespace
-    source.advanceThroughWhitespace();
+    this.source.advanceThroughWhitespace();
     /*
      * Matcher matcher = REGEX_WHITESPACE.matcher(source); if
      * (matcher.lookingAt()) { source.advance(matcher.end()); }
      */
 
     // operators
-    Matcher matcher = regexOperators.matcher(source);
+    Matcher matcher = this.regexOperators.matcher(this.source);
     if (matcher.lookingAt()) {
-      token = source.substring(matcher.end());
-      pushToken(Token.Type.OPERATOR, token);
-      source.advance(matcher.end());
+      token = this.source.substring(matcher.end());
+      this.pushToken(Token.Type.OPERATOR, token);
+      this.source.advance(matcher.end());
       return;
     }
 
     // names
-    matcher = REGEX_NAME.matcher(source);
+    matcher = REGEX_NAME.matcher(this.source);
     if (matcher.lookingAt()) {
-      token = source.substring(matcher.end());
-      pushToken(Token.Type.NAME, token);
-      source.advance(matcher.end());
+      token = this.source.substring(matcher.end());
+      this.pushToken(Token.Type.NAME, token);
+      this.source.advance(matcher.end());
       return;
     }
 
     // long
-    matcher = REGEX_LONG.matcher(source);
+    matcher = REGEX_LONG.matcher(this.source);
     if (matcher.lookingAt()) {
-      token = source.substring(matcher.end() - 1);
-      pushToken(Token.Type.LONG, token);
-      source.advance(matcher.end());
+      token = this.source.substring(matcher.end() - 1);
+      this.pushToken(Token.Type.LONG, token);
+      this.source.advance(matcher.end());
       return;
     }
 
     // numbers
-    matcher = REGEX_NUMBER.matcher(source);
+    matcher = REGEX_NUMBER.matcher(this.source);
     if (matcher.lookingAt()) {
-      token = source.substring(matcher.end());
-      pushToken(Token.Type.NUMBER, token);
-      source.advance(matcher.end());
+      token = this.source.substring(matcher.end());
+      this.pushToken(Token.Type.NUMBER, token);
+      this.source.advance(matcher.end());
       return;
     }
 
     // punctuation
-    if (PUNCTUATION.indexOf(source.charAt(0)) >= 0) {
-      String character = String.valueOf(source.charAt(0));
+    if (PUNCTUATION.indexOf(this.source.charAt(0)) >= 0) {
+      String character = String.valueOf(this.source.charAt(0));
 
       // opening bracket
       if ("([{".contains(character)) {
-        brackets.push(new Pair<>(character, source.getLineNumber()));
+        this.brackets.push(new Pair<>(character, this.source.getLineNumber()));
       }
 
       // closing bracket
       else if (")]}".contains(character)) {
-        if (brackets.isEmpty()) {
+        if (this.brackets.isEmpty()) {
           throw new ParserException(null, "Unexpected \"" + character + "\"",
-              source.getLineNumber(),
-              source.getFilename());
+              this.source.getLineNumber(),
+              this.source.getFilename());
         } else {
           HashMap<String, String> validPairs = new HashMap<>();
           validPairs.put("(", ")");
           validPairs.put("[", "]");
           validPairs.put("{", "}");
-          String lastBracket = brackets.pop().getLeft();
+          String lastBracket = this.brackets.pop().getLeft();
           String expected = validPairs.get(lastBracket);
           if (!expected.equals(character)) {
-            throw new ParserException(null, "Unclosed \"" + expected + "\"", source.getLineNumber(),
-                source.getFilename());
+            throw new ParserException(null, "Unclosed \"" + expected + "\"",
+                this.source.getLineNumber(),
+                this.source.getFilename());
           }
         }
       }
 
-      pushToken(Token.Type.PUNCTUATION, character);
-      source.advance(1);
+      this.pushToken(Token.Type.PUNCTUATION, character);
+      this.source.advance(1);
       return;
     }
 
     // Plain (non-interpolated) string
-    matcher = REGEX_STRING_PLAIN.matcher(source);
+    matcher = REGEX_STRING_PLAIN.matcher(this.source);
     if (matcher.lookingAt()) {
-      token = source.substring(matcher.end());
-      source.advance(matcher.end());
-      token = unquoteAndUnescape(token);
-      pushToken(Token.Type.STRING, token);
+      token = this.source.substring(matcher.end());
+      this.source.advance(matcher.end());
+      token = this.unquoteAndUnescape(token);
+      this.pushToken(Token.Type.STRING, token);
       return;
     }
 
     // Interpolated strings
-    matcher = REGEX_DOUBLEQUOTE.matcher(source);
+    matcher = REGEX_DOUBLEQUOTE.matcher(this.source);
     if (matcher.lookingAt()) {
-      brackets.push(new Pair<>("\"", source.getLineNumber()));
-      pushState(State.STRING);
-      source.advance(matcher.end());
+      this.brackets.push(new Pair<>("\"", this.source.getLineNumber()));
+      this.pushState(State.STRING);
+      this.source.advance(matcher.end());
       return;
     }
 
     // we should have found something and returned by this point
-    throw new ParserException(null, String.format("Unexpected character [%s]", source.charAt(0)),
-        source.getLineNumber(), source.getFilename());
+    throw new ParserException(null,
+        String.format("Unexpected character [%s]", this.source.charAt(0)),
+        this.source.getLineNumber(), this.source.getFilename());
   }
 
   /**
@@ -527,19 +530,21 @@ public final class LexerImpl implements Lexer {
 
   private void checkForLeadingWhitespaceTrim(Token leadingToken) {
 
-    Matcher whitespaceTrimMatcher = this.syntax.getRegexLeadingWhitespaceTrim().matcher(source);
+    Matcher whitespaceTrimMatcher = this.syntax.getRegexLeadingWhitespaceTrim()
+        .matcher(this.source);
 
     if (whitespaceTrimMatcher.lookingAt()) {
       if (leadingToken != null) {
         leadingToken.setValue(StringUtils.rtrim(leadingToken.getValue()));
       }
-      source.advance(whitespaceTrimMatcher.end());
+      this.source.advance(whitespaceTrimMatcher.end());
     }
 
   }
 
   private void checkForTrailingWhitespaceTrim() {
-    Matcher whitespaceTrimMatcher = this.syntax.getRegexTrailingWhitespaceTrim().matcher(source);
+    Matcher whitespaceTrimMatcher = this.syntax.getRegexTrailingWhitespaceTrim().matcher(
+        this.source);
 
     if (whitespaceTrimMatcher.lookingAt()) {
       this.trimLeadingWhitespaceFromNextData = true;
@@ -552,18 +557,18 @@ public final class LexerImpl implements Lexer {
   private void lexVerbatimData(Matcher verbatimStartMatcher) {
 
     // move cursor past the opening verbatim tag
-    source.advance(verbatimStartMatcher.end());
+    this.source.advance(verbatimStartMatcher.end());
 
     // look for the "endverbatim" tag and storing everything between
     // now and then into a TEXT node
-    Matcher verbatimEndMatcher = this.syntax.getRegexVerbatimEnd().matcher(source);
+    Matcher verbatimEndMatcher = this.syntax.getRegexVerbatimEnd().matcher(this.source);
 
     // check for EOF
     if (!verbatimEndMatcher.find()) {
-      throw new ParserException(null, "Unclosed verbatim tag.", source.getLineNumber(),
-          source.getFilename());
+      throw new ParserException(null, "Unclosed verbatim tag.", this.source.getLineNumber(),
+          this.source.getFilename());
     }
-    String verbatimText = source.substring(verbatimEndMatcher.start());
+    String verbatimText = this.source.substring(verbatimEndMatcher.start());
 
     // check if the verbatim start tag has a trailing whitespace trim
     if (verbatimStartMatcher.group(0) != null) {
@@ -577,13 +582,13 @@ public final class LexerImpl implements Lexer {
 
     // check if the verbatim end tag had a trailing whitespace trim
     if (verbatimEndMatcher.group(2) != null) {
-      trimLeadingWhitespaceFromNextData = true;
+      this.trimLeadingWhitespaceFromNextData = true;
     }
 
     // move cursor past the verbatim text and end delimiter
-    source.advance(verbatimEndMatcher.end());
+    this.source.advance(verbatimEndMatcher.end());
 
-    pushToken(Type.TEXT, verbatimText);
+    this.pushToken(Type.TEXT, verbatimText);
   }
 
   /**
@@ -593,7 +598,7 @@ public final class LexerImpl implements Lexer {
    * @param type The type of Token we are creating
    */
   private Token pushToken(Token.Type type) {
-    return pushToken(type, null);
+    return this.pushToken(type, null);
   }
 
   /**
@@ -608,7 +613,7 @@ public final class LexerImpl implements Lexer {
     if (type.equals(Token.Type.TEXT) && (value == null || "".equals(value))) {
       return null;
     }
-    Token result = new Token(type, value, source.getLineNumber());
+    Token result = new Token(type, value, this.source.getLineNumber());
     this.tokens.add(result);
 
     return result;
@@ -639,11 +644,11 @@ public final class LexerImpl implements Lexer {
 
     List<String> operators = new ArrayList<>();
 
-    for (UnaryOperator operator : unaryOperators) {
+    for (UnaryOperator operator: this.unaryOperators) {
       operators.add(operator.getSymbol());
     }
 
-    for (BinaryOperator operator : binaryOperators) {
+    for (BinaryOperator operator: this.binaryOperators) {
       operators.add(operator.getSymbol());
     }
 

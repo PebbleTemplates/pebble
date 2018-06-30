@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -34,8 +34,8 @@ public class BodyNode extends AbstractRenderableNode {
   @Override
   public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
       throws IOException {
-    for (RenderableNode child : children) {
-      if (onlyRenderInheritanceSafeNodes && context.getHierarchy().getParent() != null) {
+    for (RenderableNode child: this.children) {
+      if (this.onlyRenderInheritanceSafeNodes && context.getHierarchy().getParent() != null) {
         if (!nodesToRenderInChild.contains(child.getClass())) {
           continue;
         }
@@ -50,11 +50,11 @@ public class BodyNode extends AbstractRenderableNode {
   }
 
   public List<RenderableNode> getChildren() {
-    return children;
+    return this.children;
   }
 
   public boolean isOnlyRenderInheritanceSafeNodes() {
-    return onlyRenderInheritanceSafeNodes;
+    return this.onlyRenderInheritanceSafeNodes;
   }
 
   public void setOnlyRenderInheritanceSafeNodes(boolean onlyRenderInheritanceSafeNodes) {

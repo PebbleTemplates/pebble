@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -178,7 +178,7 @@ public class ForNode extends AbstractRenderableNode {
 
         private int index = 0;
 
-        private final int length = Array.getLength(obj);
+        private final int length = Array.getLength(ArrayIterable.this.obj);
 
         @Override
         public boolean hasNext() {
@@ -187,7 +187,7 @@ public class ForNode extends AbstractRenderableNode {
 
         @Override
         public Object next() {
-          return Array.get(obj, this.index++);
+          return Array.get(ArrayIterable.this.obj, this.index++);
         }
 
         @Override
@@ -215,12 +215,12 @@ public class ForNode extends AbstractRenderableNode {
 
         @Override
         public boolean hasNext() {
-          return obj.hasMoreElements();
+          return EnumerationIterable.this.obj.hasMoreElements();
         }
 
         @Override
         public Object next() {
-          return obj.nextElement();
+          return EnumerationIterable.this.obj.nextElement();
         }
 
         @Override

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class MapSyntaxTest extends AbstractTest {
+public class MapSyntaxTest {
 
   @Rule
   public final ExpectedException thrown = ExpectedException.none();
@@ -107,7 +107,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     String source = "{{ {,} }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -121,7 +121,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     String source = "{{ {'key'} }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -135,7 +135,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     String source = "{{ {'key':} }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -149,7 +149,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     String source = "{{ {:'value'} }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -163,7 +163,7 @@ public class MapSyntaxTest extends AbstractTest {
 
     String source = "{{ {'key':'value',} }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -184,7 +184,7 @@ public class MapSyntaxTest extends AbstractTest {
     context.put("numbers", new HashMap<String, Object>() {
 
       {
-        put("four", "4");
+        this.put("four", "4");
       }
     });
 
@@ -211,8 +211,8 @@ public class MapSyntaxTest extends AbstractTest {
     context.put("numbers", new HashMap<String, Object>() {
 
       {
-        put("four", new String[]{"4"});
-        put("five", new Object() {
+        this.put("four", new String[]{"4"});
+        this.put("five", new Object() {
 
           private String value = "five";
 

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
@@ -38,7 +38,7 @@ public class ClasspathLoader implements Loader<String> {
   private final ClassLoader rcl;
 
   public ClasspathLoader(ClassLoader classLoader) {
-    rcl = classLoader;
+    this.rcl = classLoader;
   }
 
   public ClasspathLoader() {
@@ -50,32 +50,32 @@ public class ClasspathLoader implements Loader<String> {
 
     // append the prefix and make sure prefix ends with a separator character
     StringBuilder path = new StringBuilder(128);
-    if (getPrefix() != null) {
+    if (this.getPrefix() != null) {
 
-      path.append(getPrefix());
+      path.append(this.getPrefix());
 
       // we do NOT use OS dependent separators here; getResourceAsStream
       // explicitly requires forward slashes.
-      if (!getPrefix().endsWith(Character.toString(expectedSeparator))) {
-        path.append(expectedSeparator);
+      if (!this.getPrefix().endsWith(Character.toString(this.expectedSeparator))) {
+        path.append(this.expectedSeparator);
       }
     }
     path.append(templateName);
-    if (getSuffix() != null) {
-      path.append(getSuffix());
+    if (this.getSuffix() != null) {
+      path.append(this.getSuffix());
     }
     String location = path.toString();
     logger.debug("Looking for template in {}.", location);
 
     // perform the lookup
-    InputStream is = rcl.getResourceAsStream(location);
+    InputStream is = this.rcl.getResourceAsStream(location);
 
     if (is == null) {
       throw new LoaderException(null, "Could not find template \"" + location + "\"");
     }
 
     try {
-      return new BufferedReader(new InputStreamReader(is, charset));
+      return new BufferedReader(new InputStreamReader(is, this.charset));
     } catch (UnsupportedEncodingException e) {
     }
 
@@ -83,7 +83,7 @@ public class ClasspathLoader implements Loader<String> {
   }
 
   public String getSuffix() {
-    return suffix;
+    return this.suffix;
   }
 
   @Override
@@ -92,7 +92,7 @@ public class ClasspathLoader implements Loader<String> {
   }
 
   public String getPrefix() {
-    return prefix;
+    return this.prefix;
   }
 
   @Override
@@ -101,7 +101,7 @@ public class ClasspathLoader implements Loader<String> {
   }
 
   public String getCharset() {
-    return charset;
+    return this.charset;
   }
 
   @Override
@@ -111,7 +111,7 @@ public class ClasspathLoader implements Loader<String> {
 
   @Override
   public String resolveRelativePath(String relativePath, String anchorPath) {
-    return PathUtils.resolveRelativePath(relativePath, anchorPath, expectedSeparator);
+    return PathUtils.resolveRelativePath(relativePath, anchorPath, this.expectedSeparator);
   }
 
   @Override

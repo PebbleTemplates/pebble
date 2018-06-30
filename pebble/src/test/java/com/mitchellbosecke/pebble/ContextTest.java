@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.junit.Test;
 
-public class ContextTest extends AbstractTest {
+public class ContextTest {
 
   @SuppressWarnings("serial")
   @Test
@@ -35,7 +35,7 @@ public class ContextTest extends AbstractTest {
     template.evaluate(writer, new HashMap<String, Object>() {
 
       {
-        put("eager_key", "eager_value");
+        this.put("eager_key", "eager_value");
       }
 
       @Override

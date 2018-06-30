@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class ExtendingPebbleTest extends AbstractTest {
+public class ExtendingPebbleTest {
 
   /**
    * Issue #51

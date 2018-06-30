@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -30,7 +30,7 @@ public class LiteralStringExpression implements Expression<String> {
 
   @Override
   public String evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    return value;
+    return this.value;
   }
 
   @Override
@@ -39,12 +39,12 @@ public class LiteralStringExpression implements Expression<String> {
   }
 
   public String getValue() {
-    return value;
+    return this.value;
   }
 
   @Override
   public String toString() {
-    return String.format("\"%s\"", value);
+    return String.format("\"%s\"", this.value);
   }
 
 }

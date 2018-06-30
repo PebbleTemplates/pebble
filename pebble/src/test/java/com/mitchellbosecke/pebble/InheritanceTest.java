@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class InheritanceTest extends AbstractTest {
+public class InheritanceTest {
 
   private static final String LINE_SEPARATOR = System.lineSeparator();
 

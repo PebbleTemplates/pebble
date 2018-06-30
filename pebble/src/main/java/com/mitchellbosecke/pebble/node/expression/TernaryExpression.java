@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -32,10 +32,11 @@ public class TernaryExpression implements Expression<Object> {
 
   @Override
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    if (expression1.evaluate(self, context) != null && expression1.evaluate(self, context)) {
-      return expression2.evaluate(self, context);
+    if (this.expression1.evaluate(self, context) != null && this.expression1
+        .evaluate(self, context)) {
+      return this.expression2.evaluate(self, context);
     } else {
-      return expression3.evaluate(self, context);
+      return this.expression3.evaluate(self, context);
     }
   }
 
@@ -45,15 +46,15 @@ public class TernaryExpression implements Expression<Object> {
   }
 
   public Expression<Boolean> getExpression1() {
-    return expression1;
+    return this.expression1;
   }
 
   public Expression<?> getExpression2() {
-    return expression2;
+    return this.expression2;
   }
 
   public Expression<?> getExpression3() {
-    return expression3;
+    return this.expression3;
   }
 
   public void setExpression3(Expression<?> expression3) {

@@ -17,7 +17,7 @@ import org.junit.Test;
 /**
  * Created by mitch_000 on 2016-11-13.
  */
-public class MacroTest extends AbstractTest {
+public class MacroTest {
 
   public static final String LINE_SEPARATOR = System.lineSeparator();
 

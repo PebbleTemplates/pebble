@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import java.util.List;
 
-public class ListResolver implements AttributeResolver {
+class ListResolver implements AttributeResolver {
 
   static final ListResolver INSTANCE = new ListResolver();
 

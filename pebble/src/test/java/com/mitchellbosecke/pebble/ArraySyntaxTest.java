@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.hamcrest.core.StringStartsWith.startsWith;
@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ArraySyntaxTest extends AbstractTest {
+public class ArraySyntaxTest {
 
   @Rule
   public final ExpectedException thrown = ExpectedException.none();
@@ -105,8 +105,8 @@ public class ArraySyntaxTest extends AbstractTest {
 
     String source = "{{ [,] }}";
 
-    thrown.expect(ParserException.class);
-    thrown.expectMessage(startsWith("Unexpected token"));
+    this.thrown.expect(ParserException.class);
+    this.thrown.expectMessage(startsWith("Unexpected token"));
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -126,7 +126,7 @@ public class ArraySyntaxTest extends AbstractTest {
     context.put("numbers", new HashMap<String, Object>() {
 
       {
-        put("four", "4");
+        this.put("four", "4");
       }
     });
 
@@ -152,8 +152,8 @@ public class ArraySyntaxTest extends AbstractTest {
     context.put("numbers", new HashMap<String, Object>() {
 
       {
-        put("four", new String[]{"4"});
-        put("five", new Object() {
+        this.put("four", new String[]{"4"});
+        this.put("five", new Object() {
 
           private String value = "five";
 
@@ -490,8 +490,8 @@ public class ArraySyntaxTest extends AbstractTest {
 
     Writer writer = new StringWriter();
 
-    thrown.expect(PebbleException.class);
-    thrown.expectMessage(startsWith("Could not perform addition"));
+    this.thrown.expect(PebbleException.class);
+    this.thrown.expectMessage(startsWith("Could not perform addition"));
 
     //Act + Assert
     template.evaluate(writer, new HashMap<>());
@@ -536,8 +536,8 @@ public class ArraySyntaxTest extends AbstractTest {
 
     Writer writer = new StringWriter();
 
-    thrown.expect(PebbleException.class);
-    thrown.expectMessage(startsWith("Could not perform subtraction"));
+    this.thrown.expect(PebbleException.class);
+    this.thrown.expectMessage(startsWith("Could not perform subtraction"));
 
     //Act + Assert
     template.evaluate(writer, new HashMap<>());
@@ -755,7 +755,7 @@ public class ArraySyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("first-name", "Bob");
+        this.put("first-name", "Bob");
       }
     });
 
@@ -778,7 +778,7 @@ public class ArraySyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("first-name", new String[]{"Bob"});
+        this.put("first-name", new String[]{"Bob"});
       }
     });
 
@@ -801,7 +801,7 @@ public class ArraySyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("first-name", new Object() {
+        this.put("first-name", new Object() {
 
           private String name = "Bob";
 
@@ -831,7 +831,7 @@ public class ArraySyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("first-name", "Bob");
+        this.put("first-name", "Bob");
       }
     });
 
@@ -854,7 +854,7 @@ public class ArraySyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("first-name", "Bob");
+        this.put("first-name", "Bob");
       }
     });
 

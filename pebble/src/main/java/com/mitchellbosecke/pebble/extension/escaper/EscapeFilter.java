@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.extension.escaper;
 
 import com.coverity.security.Escape;
@@ -29,21 +29,21 @@ public class EscapeFilter implements Filter {
 
   public EscapeFilter() {
     this.strategies = new HashMap<>();
-    buildDefaultStrategies();
-    argumentNames.add("strategy");
+    this.buildDefaultStrategies();
+    this.argumentNames.add("strategy");
   }
 
   private void buildDefaultStrategies() {
-    strategies.put("html", Escape::htmlText);
-    strategies.put("js", Escape::jsString);
-    strategies.put("css", Escape::cssString);
-    strategies.put("html_attr", Escape::html);
-    strategies.put("url_param", Escape::uriParam);
+    this.strategies.put("html", Escape::htmlText);
+    this.strategies.put("js", Escape::jsString);
+    this.strategies.put("css", Escape::cssString);
+    this.strategies.put("html_attr", Escape::html);
+    this.strategies.put("url_param", Escape::uriParam);
   }
 
   @Override
   public List<String> getArgumentNames() {
-    return argumentNames;
+    return this.argumentNames;
   }
 
   @Override
@@ -54,22 +54,22 @@ public class EscapeFilter implements Filter {
     }
     String input = StringUtils.toString(inputObject);
 
-    String strategy = defaultStrategy;
+    String strategy = this.defaultStrategy;
 
     if (args.get("strategy") != null) {
       strategy = (String) args.get("strategy");
     }
 
-    if (!strategies.containsKey(strategy)) {
+    if (!this.strategies.containsKey(strategy)) {
       throw new PebbleException(null, String.format("Unknown escaping strategy [%s]", strategy),
           lineNumber, self.getName());
     }
 
-    return new SafeString(strategies.get(strategy).escape(input));
+    return new SafeString(this.strategies.get(strategy).escape(input));
   }
 
   public String getDefaultStrategy() {
-    return defaultStrategy;
+    return this.defaultStrategy;
   }
 
   public void setDefaultStrategy(String defaultStrategy) {

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
@@ -42,16 +42,16 @@ public class FileLoader implements Loader<String> {
 
     // add the prefix and ensure the prefix ends with a separator character
     StringBuilder path = new StringBuilder();
-    if (getPrefix() != null) {
+    if (this.getPrefix() != null) {
 
-      path.append(getPrefix());
+      path.append(this.getPrefix());
 
-      if (!getPrefix().endsWith(String.valueOf(File.separatorChar))) {
+      if (!this.getPrefix().endsWith(String.valueOf(File.separatorChar))) {
         path.append(File.separatorChar);
       }
     }
 
-    templateName = templateName + (getSuffix() == null ? "" : getSuffix());
+    templateName = templateName + (this.getSuffix() == null ? "" : this.getSuffix());
 
     logger.debug("Looking for template in {}{}.", path.toString(), templateName);
 
@@ -86,7 +86,7 @@ public class FileLoader implements Loader<String> {
     }
 
     try {
-      return new BufferedReader(new InputStreamReader(is, charset));
+      return new BufferedReader(new InputStreamReader(is, this.charset));
     } catch (UnsupportedEncodingException e) {
     }
 
@@ -94,7 +94,7 @@ public class FileLoader implements Loader<String> {
   }
 
   public String getSuffix() {
-    return suffix;
+    return this.suffix;
   }
 
   @Override
@@ -103,7 +103,7 @@ public class FileLoader implements Loader<String> {
   }
 
   public String getPrefix() {
-    return prefix;
+    return this.prefix;
   }
 
   @Override
@@ -112,7 +112,7 @@ public class FileLoader implements Loader<String> {
   }
 
   public String getCharset() {
-    return charset;
+    return this.charset;
   }
 
   @Override

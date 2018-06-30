@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class RenderSingleBlockTest extends AbstractTest {
+public class RenderSingleBlockTest {
 
   @Test
   public void testRenderSingleBlock() throws PebbleException, IOException {

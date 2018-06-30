@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -31,7 +31,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
-public class ConcurrencyTest extends AbstractTest {
+public class ConcurrencyTest {
 
   private static Random r = new SecureRandom();
 
@@ -288,9 +288,9 @@ public class ConcurrencyTest extends AbstractTest {
       public Reader getReader(String cacheKey) throws LoaderException {
         switch (cacheKey) {
           case "template":
-            return new StringReader(TEMPLATE);
+            return new StringReader(this.TEMPLATE);
           case "macro":
-            return new StringReader(MACRO);
+            return new StringReader(this.MACRO);
           default:
             throw new IllegalStateException("No such file");
         }

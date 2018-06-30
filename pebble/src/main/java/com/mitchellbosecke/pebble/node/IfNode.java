@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -40,7 +40,7 @@ public class IfNode extends AbstractRenderableNode {
       throws IOException {
 
     boolean satisfied = false;
-    for (Pair<Expression<?>, BodyNode> ifStatement : conditionsWithBodies) {
+    for (Pair<Expression<?>, BodyNode> ifStatement: this.conditionsWithBodies) {
 
       Expression<?> conditionalExpression = ifStatement.getLeft();
 
@@ -52,18 +52,19 @@ public class IfNode extends AbstractRenderableNode {
           try {
             satisfied = (Boolean) result;
           } catch (ClassCastException ex) {
-            throw new PebbleException(ex, "Expected a Boolean in \"if\" statement", getLineNumber(),
+            throw new PebbleException(ex, "Expected a Boolean in \"if\" statement",
+                this.getLineNumber(),
                 self.getName());
           }
         } else if (context.isStrictVariables()) {
           throw new PebbleException(null,
               "null value given to if statement and strict variables is set to true",
-              getLineNumber(), self.getName());
+              this.getLineNumber(), self.getName());
         }
 
       } catch (RuntimeException ex) {
         throw new PebbleException(ex, "Wrong operand(s) type in conditional expression",
-            getLineNumber(), self.getName());
+            this.getLineNumber(), self.getName());
       }
 
       if (satisfied) {
@@ -72,8 +73,8 @@ public class IfNode extends AbstractRenderableNode {
       }
     }
 
-    if (!satisfied && elseBody != null) {
-      elseBody.render(self, writer, context);
+    if (!satisfied && this.elseBody != null) {
+      this.elseBody.render(self, writer, context);
     }
   }
 
@@ -83,11 +84,11 @@ public class IfNode extends AbstractRenderableNode {
   }
 
   public List<Pair<Expression<?>, BodyNode>> getConditionsWithBodies() {
-    return conditionsWithBodies;
+    return this.conditionsWithBodies;
   }
 
   public BodyNode getElseBody() {
-    return elseBody;
+    return this.elseBody;
   }
 
 }

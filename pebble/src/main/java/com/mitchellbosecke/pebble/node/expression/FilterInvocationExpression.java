@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -43,11 +43,11 @@ public class FilterInvocationExpression implements Expression<Object> {
   }
 
   public ArgumentsNode getArgs() {
-    return args;
+    return this.args;
   }
 
   public String getFilterName() {
-    return filterName;
+    return this.filterName;
   }
 
   @Override

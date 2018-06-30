@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import org.junit.Test;
 
-public class CoreTagsTest extends AbstractTest {
+public class CoreTagsTest {
 
   public static final String LINE_SEPARATOR = System.lineSeparator();
 
