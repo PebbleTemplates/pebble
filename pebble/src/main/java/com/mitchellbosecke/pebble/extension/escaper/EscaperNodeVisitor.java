@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.extension.escaper;
 
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
@@ -45,28 +45,28 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
       TernaryExpression ternary = (TernaryExpression) expression;
       Expression<?> left = ternary.getExpression2();
       Expression<?> right = ternary.getExpression3();
-      if (isUnsafe(left)) {
-        ternary.setExpression2(escape(left));
+      if (this.isUnsafe(left)) {
+        ternary.setExpression2(this.escape(left));
       }
-      if (isUnsafe(right)) {
-        ternary.setExpression3(escape(right));
+      if (this.isUnsafe(right)) {
+        ternary.setExpression3(this.escape(right));
       }
     } else {
-      if (isUnsafe(expression)) {
-        node.setExpression(escape(expression));
+      if (this.isUnsafe(expression)) {
+        node.setExpression(this.escape(expression));
       }
     }
   }
 
   @Override
   public void visit(AutoEscapeNode node) {
-    active.push(node.isActive());
-    strategies.push(node.getStrategy());
+    this.active.push(node.isActive());
+    this.strategies.push(node.getStrategy());
 
     node.getBody().accept(this);
 
-    active.pop();
-    strategies.pop();
+    this.active.pop();
+    this.strategies.pop();
   }
 
   /**
@@ -79,8 +79,8 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
      * include the strategy being used.
      */
     List<NamedArgumentNode> namedArgs = new ArrayList<>();
-    if (!strategies.isEmpty() && strategies.peek() != null) {
-      String strategy = strategies.peek();
+    if (!this.strategies.isEmpty() && this.strategies.peek() != null) {
+      String strategy = this.strategies.peek();
       namedArgs.add(new NamedArgumentNode("strategy",
           new LiteralStringExpression(strategy, expression.getLineNumber())));
     }
@@ -105,7 +105,7 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
   private boolean isUnsafe(Expression<?> expression) {
 
     // check whether the autoescaper is even active
-    if (active.peek() == Boolean.FALSE) {
+    if (this.active.peek() == Boolean.FALSE) {
       return false;
     }
 
@@ -117,7 +117,7 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
     } else if (expression instanceof ParentFunctionExpression
         || expression instanceof BlockFunctionExpression) {
       unsafe = false;
-    } else if (isSafeConcatenateExpr(expression)) {
+    } else if (this.isSafeConcatenateExpr(expression)) {
       unsafe = false;
     }
 
@@ -138,7 +138,7 @@ public class EscaperNodeVisitor extends AbstractNodeVisitor {
   }
 
   public void pushAutoEscapeState(boolean auto) {
-    active.push(auto);
+    this.active.push(auto);
   }
 
 }

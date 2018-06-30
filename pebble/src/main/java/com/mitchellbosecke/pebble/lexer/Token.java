@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.lexer;
 
 import java.util.Arrays;
@@ -29,7 +29,7 @@ public class Token {
   }
 
   public boolean test(Type type) {
-    return test(type, new String[0]);
+    return this.test(type, new String[0]);
   }
 
   public boolean test(Type type, String... values) {
@@ -41,7 +41,7 @@ public class Token {
   }
 
   public String getValue() {
-    return value;
+    return this.value;
   }
 
   public void setValue(String value) {
@@ -49,7 +49,7 @@ public class Token {
   }
 
   public Type getType() {
-    return type;
+    return this.type;
   }
 
   public void setType(Type type) {
@@ -57,7 +57,7 @@ public class Token {
   }
 
   public int getLineNumber() {
-    return lineNumber;
+    return this.lineNumber;
   }
 
   public void setLineNumber(int lineNumber) {

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static java.lang.Boolean.TRUE;
@@ -925,7 +925,7 @@ public class CoreFiltersTest extends AbstractTest {
     }
 
     public String getUsername() {
-      return username;
+      return this.username;
     }
   }
 

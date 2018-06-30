@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
@@ -31,14 +31,14 @@ public class ContextVariableExpression implements Expression<Object> {
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   @Override
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
     ScopeChain scopeChain = context.getScopeChain();
-    Object result = scopeChain.get(name);
-    if (result == null && context.isStrictVariables() && !scopeChain.containsKey(name)) {
+    Object result = scopeChain.get(this.name);
+    if (result == null && context.isStrictVariables() && !scopeChain.containsKey(this.name)) {
       throw new RootAttributeNotFoundException(null, String.format(
           "Root attribute [%s] does not exist or can not be accessed and strict variables is set to true.",
           this.name), this.name, this.lineNumber, self.getName());
@@ -48,12 +48,12 @@ public class ContextVariableExpression implements Expression<Object> {
 
   @Override
   public int getLineNumber() {
-    return lineNumber;
+    return this.lineNumber;
   }
 
   @Override
   public String toString() {
-    return String.format("[%s]", name);
+    return String.format("[%s]", this.name);
   }
 
 }

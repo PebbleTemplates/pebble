@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -51,7 +51,7 @@ public class MacroNode extends AbstractRenderableNode {
       @Override
       public List<String> getArgumentNames() {
         List<String> names = new ArrayList<>();
-        for (NamedArgumentNode arg : getArgs().getNamedArgs()) {
+        for (NamedArgumentNode arg: MacroNode.this.getArgs().getNamedArgs()) {
           names.add(arg.getName());
         }
         return names;
@@ -59,7 +59,7 @@ public class MacroNode extends AbstractRenderableNode {
 
       @Override
       public String getName() {
-        return name;
+        return MacroNode.this.name;
       }
 
       @Override
@@ -70,7 +70,7 @@ public class MacroNode extends AbstractRenderableNode {
 
         // scope for default arguments
         scopeChain.pushScope();
-        for (NamedArgumentNode arg : getArgs().getNamedArgs()) {
+        for (NamedArgumentNode arg: MacroNode.this.getArgs().getNamedArgs()) {
           Expression<?> valueExpression = arg.getValueExpression();
           if (valueExpression == null) {
             scopeChain.put(arg.getName(), null);
@@ -83,9 +83,9 @@ public class MacroNode extends AbstractRenderableNode {
         scopeChain.pushScope(macroArgs);
 
         try {
-          getBody().render(self, writer, context);
+          MacroNode.this.getBody().render(self, writer, context);
         } catch (IOException e) {
-          throw new RuntimeException("Could not evaluate macro [" + name + "]", e);
+          throw new RuntimeException("Could not evaluate macro [" + MacroNode.this.name + "]", e);
         }
 
         scopeChain.popScope(); // user arguments
@@ -98,15 +98,15 @@ public class MacroNode extends AbstractRenderableNode {
   }
 
   public BodyNode getBody() {
-    return body;
+    return this.body;
   }
 
   public ArgumentsNode getArgs() {
-    return args;
+    return this.args;
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
 }

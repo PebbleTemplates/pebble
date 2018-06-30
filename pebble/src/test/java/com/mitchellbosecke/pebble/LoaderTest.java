@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -82,7 +82,7 @@ public class LoaderTest extends AbstractTest {
     Loader<?> loader = new FileLoader();
     loader.setSuffix(".suffix");
     PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
-    URL url = getClass().getResource("/templates/template.loaderTest.peb");
+    URL url = this.getClass().getResource("/templates/template.loaderTest.peb");
     PebbleTemplate template1 = engine.getTemplate(new File(url.toURI()).getPath());
     Writer writer1 = new StringWriter();
     template1.evaluate(writer1);

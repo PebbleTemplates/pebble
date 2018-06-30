@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -41,9 +41,9 @@ public class ArrayExpression implements Expression<List<?>> {
 
   @Override
   public List<?> evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    List<Object> returnValues = new ArrayList<>(values.size());
-    for (int i = 0; i < values.size(); i++) {
-      Expression<?> expr = values.get(i);
+    List<Object> returnValues = new ArrayList<>(this.values.size());
+    for (int i = 0; i < this.values.size(); i++) {
+      Expression<?> expr = this.values.get(i);
       Object value = expr == null ? null : expr.evaluate(self, context);
       returnValues.add(value);
     }

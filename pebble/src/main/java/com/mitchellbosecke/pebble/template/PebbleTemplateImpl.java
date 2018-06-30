@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.template;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
@@ -215,7 +215,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         .getTemplate(this.resolveRelativePath(name));
     for (Pair<String, String> pair : namedMacros) {
       Macro m = templateImpl.macros.get(pair.getRight());
-      registerMacro(pair.getLeft(), m);
+      this.registerMacro(pair.getLeft(), m);
     }
   }
 

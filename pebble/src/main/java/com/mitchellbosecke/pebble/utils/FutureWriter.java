@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.utils;
 
 import java.io.IOException;
@@ -38,23 +38,23 @@ public class FutureWriter extends Writer {
   }
 
   public void enqueue(Future<String> future) throws IOException {
-    if (closed) {
+    if (this.closed) {
       throw new IOException("Writer is closed");
     }
-    orderedFutures.add(future);
+    this.orderedFutures.add(future);
   }
 
   @Override
   public void write(final char[] cbuf, final int off, final int len) throws IOException {
 
-    if (closed) {
+    if (this.closed) {
       throw new IOException("Writer is closed");
     }
 
     final String result = new String(cbuf, off, len);
 
-    if (orderedFutures.isEmpty()) {
-      internalWriter.write(result);
+    if (this.orderedFutures.isEmpty()) {
+      this.internalWriter.write(result);
     } else {
       Future<String> future = new Future<String>() {
 
@@ -85,31 +85,31 @@ public class FutureWriter extends Writer {
 
       };
 
-      orderedFutures.add(future);
+      this.orderedFutures.add(future);
     }
   }
 
   @Override
   public void flush() throws IOException {
-    for (Future<String> future : orderedFutures) {
+    for (Future<String> future: this.orderedFutures) {
       try {
         String result = future.get();
-        internalWriter.write(result);
-        internalWriter.flush();
+        this.internalWriter.write(result);
+        this.internalWriter.flush();
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       } catch (ExecutionException e) {
         throw new IOException(e);
       }
     }
-    orderedFutures.clear();
+    this.orderedFutures.clear();
   }
 
   @Override
   public void close() throws IOException {
-    flush();
-    internalWriter.close();
-    closed = true;
+    this.flush();
+    this.internalWriter.close();
+    this.closed = true;
 
   }
 

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.lexer;
 
 import com.mitchellbosecke.pebble.error.ParserException;
@@ -39,7 +39,7 @@ public class TokenStream {
    * @return The next token
    */
   public Token next() {
-    return tokens.get(++current);
+    return this.tokens.get(++this.current);
   }
 
   /**
@@ -50,7 +50,7 @@ public class TokenStream {
    * @return Token The current token
    */
   public Token expect(Token.Type type) {
-    return expect(type, null);
+    return this.expect(type, null);
   }
 
   /**
@@ -62,7 +62,7 @@ public class TokenStream {
    * @return Token The current token
    */
   public Token expect(Token.Type type, String value) {
-    Token token = tokens.get(current);
+    Token token = this.tokens.get(this.current);
 
     boolean success = value == null ? token.test(type) : token.test(type, value);
 
@@ -70,7 +70,7 @@ public class TokenStream {
       String message = String
           .format("Unexpected token of value \"%s\" and type %s, expected token of type %s",
               token.getValue(), token.getType().toString(), type);
-      throw new ParserException(null, message, token.getLineNumber(), filename);
+      throw new ParserException(null, message, token.getLineNumber(), this.filename);
     }
     this.next();
     return token;
@@ -82,7 +82,7 @@ public class TokenStream {
    * @return The next token
    */
   public Token peek() {
-    return peek(1);
+    return this.peek(1);
   }
 
   /**
@@ -96,12 +96,12 @@ public class TokenStream {
   }
 
   public boolean isEOF() {
-    return this.tokens.get(current).getType().equals(Type.EOF);
+    return this.tokens.get(this.current).getType().equals(Type.EOF);
   }
 
   @Override
   public String toString() {
-    return String.format("Current: %s. All: %s", current(), tokens);
+    return String.format("Current: %s. All: %s", this.current(), this.tokens);
   }
 
   /**
@@ -110,11 +110,11 @@ public class TokenStream {
    * @return Token The current token
    */
   public Token current() {
-    return this.tokens.get(current);
+    return this.tokens.get(this.current);
   }
 
   public String getFilename() {
-    return filename;
+    return this.filename;
   }
 
   /**
@@ -123,6 +123,6 @@ public class TokenStream {
    * @return List of tokens
    */
   public ArrayList<Token> getTokens() {
-    return tokens;
+    return this.tokens;
   }
 }

@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
@@ -83,37 +83,37 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
   }
 
   public String getSuffix() {
-    return suffix;
+    return this.suffix;
   }
 
   @Override
   public void setSuffix(String suffix) {
     this.suffix = suffix;
-    for (Loader<?> loader : loaders) {
+    for (Loader<?> loader: this.loaders) {
       loader.setSuffix(suffix);
     }
   }
 
   public String getPrefix() {
-    return prefix;
+    return this.prefix;
   }
 
   @Override
   public void setPrefix(String prefix) {
     this.prefix = prefix;
-    for (Loader<?> loader : loaders) {
+    for (Loader<?> loader: this.loaders) {
       loader.setPrefix(prefix);
     }
   }
 
   public String getCharset() {
-    return charset;
+    return this.charset;
   }
 
   @Override
   public void setCharset(String charset) {
     this.charset = charset;
-    for (Loader<?> loader : loaders) {
+    for (Loader<?> loader: this.loaders) {
       loader.setCharset(charset);
     }
   }

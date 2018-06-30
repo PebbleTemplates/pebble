@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.operator;
 
 import com.mitchellbosecke.pebble.node.expression.BinaryExpression;
@@ -31,21 +31,21 @@ public class BinaryOperatorImpl implements BinaryOperator {
 
   @Override
   public int getPrecedence() {
-    return precedence;
+    return this.precedence;
   }
 
   @Override
   public String getSymbol() {
-    return symbol;
+    return this.symbol;
   }
 
   @Override
   public Class<? extends BinaryExpression<?>> getNodeClass() {
-    return nodeClass;
+    return this.nodeClass;
   }
 
   @Override
   public Associativity getAssociativity() {
-    return associativity;
+    return this.associativity;
   }
 }

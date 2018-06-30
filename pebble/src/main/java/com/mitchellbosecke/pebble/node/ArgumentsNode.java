@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -39,11 +39,11 @@ public class ArgumentsNode implements Node {
   }
 
   public List<NamedArgumentNode> getNamedArgs() {
-    return namedArgs;
+    return this.namedArgs;
   }
 
   public List<PositionalArgumentNode> getPositionalArgs() {
-    return positionalArgs;
+    return this.positionalArgs;
   }
 
   /**
@@ -64,18 +64,18 @@ public class ArgumentsNode implements Node {
     if (argumentNames == null) {
 
       /* Some functions such as min and max use un-named varags */
-      if (positionalArgs != null && !positionalArgs.isEmpty()) {
-        for (int i = 0; i < positionalArgs.size(); i++) {
+      if (this.positionalArgs != null && !this.positionalArgs.isEmpty()) {
+        for (int i = 0; i < this.positionalArgs.size(); i++) {
           result.put(String.valueOf(i),
-              positionalArgs.get(i).getValueExpression().evaluate(self, context));
+              this.positionalArgs.get(i).getValueExpression().evaluate(self, context));
         }
       }
     } else {
 
-      if (positionalArgs != null) {
+      if (this.positionalArgs != null) {
         int nameIndex = 0;
 
-        for (PositionalArgumentNode arg : positionalArgs) {
+        for (PositionalArgumentNode arg: this.positionalArgs) {
           if (argumentNames.size() <= nameIndex) {
             throw new PebbleException(null, "The argument at position " + (nameIndex + 1)
                 + " is not allowed. Only " + argumentNames.size() + " argument(s) are allowed.",
@@ -88,8 +88,8 @@ public class ArgumentsNode implements Node {
         }
       }
 
-      if (namedArgs != null) {
-        for (NamedArgumentNode arg : namedArgs) {
+      if (this.namedArgs != null) {
+        for (NamedArgumentNode arg: this.namedArgs) {
           // check if user used an incorrect name
           if (!argumentNames.contains(arg.getName())) {
             throw new PebbleException(null,
@@ -109,7 +109,7 @@ public class ArgumentsNode implements Node {
 
   @Override
   public String toString() {
-    return positionalArgs.toString();
+    return this.positionalArgs.toString();
   }
 
 }

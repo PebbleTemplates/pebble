@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.hamcrest.Matchers.is;
@@ -36,8 +36,8 @@ public class ErrorReportingTest extends AbstractTest {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
-    thrown.expect(ParserException.class);
-    thrown.expectMessage(endsWith(":7)"));
+    this.thrown.expect(ParserException.class);
+    this.thrown.expectMessage(endsWith(":7)"));
 
     //Act + Assert
     pebble.getTemplate("test\n\n\ntest\ntest\ntest\n{% error %}\ntest");
@@ -49,8 +49,8 @@ public class ErrorReportingTest extends AbstractTest {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
-    thrown.expect(ParserException.class);
-    thrown.expectMessage(endsWith(":6)"));
+    this.thrown.expect(ParserException.class);
+    this.thrown.expectMessage(endsWith(":6)"));
 
     //Act + Assert
     pebble.getTemplate("test\r\n\r\ntest\r\ntest\r\ntest\r\n{% error %}\r\ntest");
@@ -63,8 +63,8 @@ public class ErrorReportingTest extends AbstractTest {
 
     PebbleTemplate template = pebble.getTemplate("templates/template.errorReporting.peb");
 
-    thrown.expect(PebbleException.class);
-    thrown.expectMessage(endsWith(":8)"));
+    this.thrown.expect(PebbleException.class);
+    this.thrown.expectMessage(endsWith(":8)"));
 
     //Act + Assert
     template.evaluate(new StringWriter());
@@ -77,12 +77,12 @@ public class ErrorReportingTest extends AbstractTest {
     PebbleTemplate template = pebble
         .getTemplate("templates/template.errorReportingMissingRootProperty.peb");
 
-    thrown.expect(allOf(
+    this.thrown.expect(allOf(
         instanceOf(RootAttributeNotFoundException.class),
         hasProperty("attributeName", is("root"))
         )
     );
-    thrown.expectMessage(
+    this.thrown.expectMessage(
         "Root attribute [root] does not exist or can not be accessed and strict variables is set to true. (templates/template.errorReportingMissingRootProperty.peb:2)");
 
     //Act

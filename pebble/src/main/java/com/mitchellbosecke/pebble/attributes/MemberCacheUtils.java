@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemberCacheUtils {
+class MemberCacheUtils {
 
   private final ConcurrentHashMap<MemberCacheKey, Member> memberCache = new ConcurrentHashMap<>(100,
       0.9f, 1);
@@ -109,7 +109,7 @@ public class MemberCacheUtils {
       throw new ClassAccessException(lineNumber, filename);
     }
 
-    List<Method> candidates = getCandidates(clazz, name, requiredTypes);
+    List<Method> candidates = this.getCandidates(clazz, name, requiredTypes);
 
     // perfect match
     for (Method candidate : candidates) {
@@ -133,7 +133,7 @@ public class MemberCacheUtils {
         boolean compatibleTypes = true;
         Class<?>[] types = candidate.getParameterTypes();
         for (int i = 0; i < types.length; i++) {
-          if (requiredTypes[i] != null && !isCompatibleType(types[i], requiredTypes[i])) {
+          if (requiredTypes[i] != null && !this.isCompatibleType(types[i], requiredTypes[i])) {
             compatibleTypes = false;
             break;
           }
@@ -194,7 +194,7 @@ public class MemberCacheUtils {
   }
 
   private boolean isCompatibleType(Class<?> type1, Class<?> type2) {
-    Class<?> widenType = widen(type1);
+    Class<?> widenType = this.widen(type1);
     return Number.class.isAssignableFrom(widenType) && Number.class.isAssignableFrom(type2);
   }
 

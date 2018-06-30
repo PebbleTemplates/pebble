@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.extension.core;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -25,12 +25,12 @@ public class MergeFilter implements Filter {
   private final List<String> argumentNames = new ArrayList<>();
 
   public MergeFilter() {
-    argumentNames.add("items");
+    this.argumentNames.add("items");
   }
 
   @Override
   public List<String> getArgumentNames() {
-    return argumentNames;
+    return this.argumentNames;
   }
 
   @Override
@@ -49,11 +49,11 @@ public class MergeFilter implements Filter {
     }
     // left hand side argument defines resulting type
     if (input instanceof Map) {
-      return mergeAsMap((Map<?, ?>) input, items);
+      return this.mergeAsMap((Map<?, ?>) input, items);
     } else if (input instanceof List) {
-      return mergeAsList((List<?>) input, items, lineNumber, self);
+      return this.mergeAsList((List<?>) input, items, lineNumber, self);
     } else if (input.getClass().isArray()) {
-      return mergeAsArray(input, items, lineNumber, self);
+      return this.mergeAsArray(input, items, lineNumber, self);
     } else {
       throw new PebbleException(null, "The object being filtered is not a Map/List/Array",
           lineNumber, self.getName());

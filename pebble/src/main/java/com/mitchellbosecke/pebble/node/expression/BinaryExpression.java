@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -23,9 +23,9 @@ public abstract class BinaryExpression<T> implements Expression<T> {
    * as the left expression.
    */
   public BinaryExpression(Expression<?> left, Expression<?> right) {
-    setLeft(left);
-    setRight(right);
-    setLineNumber(left.getLineNumber());
+    this.setLeft(left);
+    this.setRight(right);
+    this.setLineNumber(left.getLineNumber());
   }
 
   private Expression<?> leftExpression;
@@ -41,11 +41,11 @@ public abstract class BinaryExpression<T> implements Expression<T> {
   }
 
   public Expression<?> getLeftExpression() {
-    return leftExpression;
+    return this.leftExpression;
   }
 
   public Expression<?> getRightExpression() {
-    return rightExpression;
+    return this.rightExpression;
   }
 
   @Override

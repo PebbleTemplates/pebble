@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node;
 
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
@@ -28,7 +28,7 @@ public class SetNode extends AbstractRenderableNode {
 
   @Override
   public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) {
-    context.getScopeChain().set(name, value.evaluate(self, context));
+    context.getScopeChain().set(this.name, this.value.evaluate(self, context));
   }
 
   @Override
@@ -37,11 +37,11 @@ public class SetNode extends AbstractRenderableNode {
   }
 
   public Expression<?> getValue() {
-    return value;
+    return this.value;
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
 }

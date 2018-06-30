@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -37,7 +37,7 @@ public class RenderableNodeExpression extends UnaryExpression {
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
     Writer writer = new StringWriter();
     try {
-      node.render(self, writer, context);
+      this.node.render(self, writer, context);
     } catch (IOException e) {
       throw new PebbleException(e, "Error occurred while rendering node", this.getLineNumber(),
           self.getName());

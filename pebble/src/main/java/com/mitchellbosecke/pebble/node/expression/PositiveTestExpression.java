@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
@@ -25,20 +25,20 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
   @Override
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
 
-    TestInvocationExpression testInvocation = (TestInvocationExpression) getRightExpression();
+    TestInvocationExpression testInvocation = (TestInvocationExpression) this.getRightExpression();
     ArgumentsNode args = testInvocation.getArgs();
 
-    if (cachedTest == null) {
+    if (this.cachedTest == null) {
       String testName = testInvocation.getTestName();
 
-      cachedTest = context.getExtensionRegistry().getTest(testInvocation.getTestName());
+      this.cachedTest = context.getExtensionRegistry().getTest(testInvocation.getTestName());
 
-      if (cachedTest == null) {
+      if (this.cachedTest == null) {
         throw new PebbleException(null, String.format("Test [%s] does not exist.", testName),
             this.getLineNumber(), self.getName());
       }
     }
-    Test test = cachedTest;
+    Test test = this.cachedTest;
 
     Map<String, Object> namedArguments = args.getArgumentMap(self, context, test);
 
@@ -50,14 +50,15 @@ public class PositiveTestExpression extends BinaryExpression<Object> {
     if (test instanceof DefinedTest) {
       Object input = null;
       try {
-        input = getLeftExpression().evaluate(self, context);
+        input = this.getLeftExpression().evaluate(self, context);
       } catch (AttributeNotFoundException e) {
         input = null;
       }
-      return test.apply(input, namedArguments, self, context, getLineNumber());
+      return test.apply(input, namedArguments, self, context, this.getLineNumber());
     } else {
-      return test.apply(getLeftExpression().evaluate(self, context), namedArguments, self, context,
-          getLineNumber());
+      return test
+          .apply(this.getLeftExpression().evaluate(self, context), namedArguments, self, context,
+              this.getLineNumber());
     }
 
   }

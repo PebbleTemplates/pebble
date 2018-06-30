@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -36,7 +36,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 'true' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -50,7 +50,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? : 'true' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -64,7 +64,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 'true' : }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -78,7 +78,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? : }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -92,7 +92,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? : ? 'true' : 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -106,7 +106,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? true ? 'true' : 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -120,7 +120,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? : false ? 'true' : 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -134,7 +134,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 2 > 2 ? 'true' : 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -148,7 +148,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 2 > 2 ? : 'false' : 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -162,7 +162,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 2 > 2 ? : : 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -176,7 +176,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -190,7 +190,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : 'false' }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -204,7 +204,7 @@ public class TernaryExpressionTest extends AbstractTest {
 
     String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);

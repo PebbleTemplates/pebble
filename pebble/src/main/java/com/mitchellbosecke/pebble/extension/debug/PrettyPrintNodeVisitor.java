@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.extension.debug;
 
 import com.mitchellbosecke.pebble.extension.AbstractNodeVisitor;
@@ -46,17 +46,17 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
   private int level = 0;
 
   private void write(String message) {
-    for (int i = 0; i < level - 1; i++) {
-      output.append("| ");
+    for (int i = 0; i < this.level - 1; i++) {
+      this.output.append("| ");
     }
-    if (level > 0) {
-      output.append("|-");
+    if (this.level > 0) {
+      this.output.append("|-");
     }
-    output.append(message.toUpperCase()).append("\n");
+    this.output.append(message.toUpperCase()).append("\n");
   }
 
   public String toString() {
-    return output.toString();
+    return this.output.toString();
   }
 
   /**
@@ -64,186 +64,186 @@ public class PrettyPrintNodeVisitor extends AbstractNodeVisitor {
    */
   @Override
   public void visit(Node node) {
-    write("unknown");
-    level++;
+    this.write("unknown");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(BodyNode node) {
-    write("body");
-    level++;
+    this.write("body");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(IfNode node) {
-    write("if");
-    level++;
+    this.write("if");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(ForNode node) {
-    write("for");
-    level++;
+    this.write("for");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(BinaryExpression<?> node) {
-    write("binary");
-    level++;
+    this.write("binary");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(UnaryExpression node) {
-    write("unary");
-    level++;
+    this.write("unary");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(ContextVariableExpression node) {
-    write(String.format("context variable [%s]", node.getName()));
-    level++;
+    this.write(String.format("context variable [%s]", node.getName()));
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(FilterInvocationExpression node) {
-    write("filter");
-    level++;
+    this.write("filter");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(FunctionOrMacroInvocationExpression node) {
-    write("function or macro");
-    level++;
+    this.write("function or macro");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(GetAttributeExpression node) {
-    write("get attribute");
-    level++;
+    this.write("get attribute");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(NamedArgumentNode node) {
-    write("named argument");
-    level++;
+    this.write("named argument");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(ArgumentsNode node) {
-    write("named arguments");
-    level++;
+    this.write("named arguments");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(ParentFunctionExpression node) {
-    write("parent function");
-    level++;
+    this.write("parent function");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(TernaryExpression node) {
-    write("ternary");
-    level++;
+    this.write("ternary");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   public void visit(TestInvocationExpression node) {
-    write("test");
-    level++;
+    this.write("test");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(BlockNode node) {
-    write(String.format("block [%s]", node.getName()));
-    level++;
+    this.write(String.format("block [%s]", node.getName()));
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(FlushNode node) {
-    write("flush");
-    level++;
+    this.write("flush");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(ImportNode node) {
-    write("import");
-    level++;
+    this.write("import");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(IncludeNode node) {
-    write("include");
-    level++;
+    this.write("include");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(ParallelNode node) {
-    write("parallel");
-    level++;
+    this.write("parallel");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(PrintNode node) {
-    write("print");
-    level++;
+    this.write("print");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(RootNode node) {
-    write("root");
-    level++;
+    this.write("root");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(SetNode node) {
-    write("set");
-    level++;
+    this.write("set");
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 
   @Override
   public void visit(TextNode node) {
     String text = new String(node.getData());
     String preview = text.length() > 10 ? text.substring(0, 10) + "..." : text;
-    write(String.format("text [%s]", preview));
-    level++;
+    this.write(String.format("text [%s]", preview));
+    this.level++;
     super.visit(node);
-    level--;
+    this.level--;
   }
 }

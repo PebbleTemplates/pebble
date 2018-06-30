@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.template;
 
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class Scope {
    * @return A copy of the scope
    */
   public Scope shallowCopy() {
-    Map<String, Object> backingMapCopy = new HashMap<>(backingMap);
+    Map<String, Object> backingMapCopy = new HashMap<>(this.backingMap);
     return new Scope(backingMapCopy);
   }
 
@@ -57,7 +57,7 @@ public class Scope {
    * @param value The value of the variable
    */
   public void put(String key, Object value) {
-    backingMap.put(key, value);
+    this.backingMap.put(key, value);
   }
 
   /**
@@ -67,7 +67,7 @@ public class Scope {
    * @return The value of the variable
    */
   public Object get(String key) {
-    return backingMap.get(key);
+    return this.backingMap.get(key);
   }
 
   /**
@@ -77,7 +77,7 @@ public class Scope {
    * @return boolean stating whether or not the backing map of this scope contains that variable
    */
   public boolean containsKey(String key) {
-    return backingMap.containsKey(key);
+    return this.backingMap.containsKey(key);
   }
 
 }

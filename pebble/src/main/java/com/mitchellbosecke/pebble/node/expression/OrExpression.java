@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.node.expression;
 
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -17,12 +17,13 @@ public class OrExpression extends BinaryExpression<Boolean> {
   @SuppressWarnings("unchecked")
   @Override
   public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    Boolean left = ((Expression<Boolean>) getLeftExpression()).evaluate(self, context);
-    Boolean right = ((Expression<Boolean>) getRightExpression()).evaluate(self, context);
+    Boolean left = ((Expression<Boolean>) this.getLeftExpression()).evaluate(self, context);
+    Boolean right = ((Expression<Boolean>) this.getRightExpression()).evaluate(self, context);
     if (context.isStrictVariables()) {
       if (left == null || right == null) {
         throw new PebbleException(null,
-            "null value used in or operator and strict variables is set to true", getLineNumber(),
+            "null value used in or operator and strict variables is set to true", this
+            .getLineNumber(),
             self.getName());
       }
     } else {

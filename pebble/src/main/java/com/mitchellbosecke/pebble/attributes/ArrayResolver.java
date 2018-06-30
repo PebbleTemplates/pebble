@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import java.lang.reflect.Array;
 
-public class ArrayResolver implements AttributeResolver {
+class ArrayResolver implements AttributeResolver {
 
   static final ArrayResolver INSTANCE = new ArrayResolver();
 

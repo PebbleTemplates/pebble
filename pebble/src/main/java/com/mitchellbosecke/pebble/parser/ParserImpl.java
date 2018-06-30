@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.parser;
 
 import com.mitchellbosecke.pebble.error.ParserException;
@@ -87,21 +87,21 @@ public class ParserImpl implements Parser {
   public RootNode parse(TokenStream stream) {
 
     // expression parser
-    this.expressionParser = new ExpressionParser(this, binaryOperators, unaryOperators,
-        parserOptions);
+    this.expressionParser = new ExpressionParser(this, this.binaryOperators, this.unaryOperators,
+        this.parserOptions);
 
     this.stream = stream;
 
     this.blockStack = new LinkedList<>();
 
-    BodyNode body = subparse();
+    BodyNode body = this.subparse();
 
     return new RootNode(body);
   }
 
   @Override
   public BodyNode subparse() {
-    return subparse(null);
+    return this.subparse(null);
   }
 
   @Override
@@ -117,18 +117,18 @@ public class ParserImpl implements Parser {
     List<RenderableNode> nodes = new ArrayList<>();
 
     Token token;
-    while (!stream.isEOF()) {
+    while (!this.stream.isEOF()) {
 
-      switch (stream.current().getType()) {
+      switch (this.stream.current().getType()) {
         case TEXT:
 
           /*
            * The current token is a text token. Not much to do here other
            * than convert it to a text Node.
            */
-          token = stream.current();
+          token = this.stream.current();
           nodes.add(new TextNode(token.getValue(), token.getLineNumber()));
-          stream.next();
+          this.stream.next();
           break;
 
         case PRINT_START:
@@ -141,13 +141,13 @@ public class ParserImpl implements Parser {
 
           // go to the next token because the current one is just the
           // opening delimiter
-          token = stream.next();
+          token = this.stream.next();
 
           Expression<?> expression = this.expressionParser.parseExpression();
           nodes.add(new PrintNode(expression, token.getLineNumber()));
 
           // we expect to see a print closing delimiter
-          stream.expect(Token.Type.PRINT_END);
+          this.stream.expect(Token.Type.PRINT_END);
 
           break;
 
@@ -155,9 +155,9 @@ public class ParserImpl implements Parser {
 
           // go to the next token because the current one is just the
           // opening delimiter
-          stream.next();
+          this.stream.next();
 
-          token = stream.current();
+          token = this.stream.current();
 
           /*
            * We expect a name token at the beginning of every block.
@@ -172,7 +172,7 @@ public class ParserImpl implements Parser {
           if (!Token.Type.NAME.equals(token.getType())) {
             throw new ParserException(null, "A block must start with a tag name.",
                 token.getLineNumber(),
-                stream.getFilename());
+                this.stream.getFilename());
           }
 
           // If this method was executed using a TokenParser and
@@ -184,12 +184,12 @@ public class ParserImpl implements Parser {
           }
 
           // find an appropriate parser for this name
-          TokenParser tokenParser = tokenParsers.get(token.getValue());
+          TokenParser tokenParser = this.tokenParsers.get(token.getValue());
 
           if (tokenParser == null) {
             throw new ParserException(null,
                 String.format("Unexpected tag name \"%s\"", token.getValue()),
-                token.getLineNumber(), stream.getFilename());
+                token.getLineNumber(), this.stream.getFilename());
           }
 
           RenderableNode node = tokenParser.parse(token, this);
@@ -203,18 +203,18 @@ public class ParserImpl implements Parser {
 
         default:
           throw new ParserException(null, "Parser ended in undefined state.",
-              stream.current().getLineNumber(),
-              stream.getFilename());
+              this.stream.current().getLineNumber(),
+              this.stream.getFilename());
       }
     }
 
     // create the root node with the children that we have found
-    return new BodyNode(stream.current().getLineNumber(), nodes);
+    return new BodyNode(this.stream.current().getLineNumber(), nodes);
   }
 
   @Override
   public TokenStream getStream() {
-    return stream;
+    return this.stream;
   }
 
   public void setStream(TokenStream stream) {
@@ -228,16 +228,16 @@ public class ParserImpl implements Parser {
 
   @Override
   public String peekBlockStack() {
-    return blockStack.peek();
+    return this.blockStack.peek();
   }
 
   @Override
   public String popBlockStack() {
-    return blockStack.pop();
+    return this.blockStack.pop();
   }
 
   @Override
   public void pushBlockStack(String blockName) {
-    blockStack.push(blockName);
+    this.blockStack.push(blockName);
   }
 }

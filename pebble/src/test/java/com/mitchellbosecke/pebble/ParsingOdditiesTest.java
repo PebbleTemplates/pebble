@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +84,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);
@@ -163,7 +163,7 @@ public class ParsingOdditiesTest extends AbstractTest {
 
     String source = "{{'test\"}}";
 
-    thrown.expect(ParserException.class);
+    this.thrown.expect(ParserException.class);
 
     //Act + Assert
     pebble.getTemplate(source);

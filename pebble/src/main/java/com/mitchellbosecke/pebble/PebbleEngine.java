@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  * <p>
  * Copyright (c) 2014 by Mitchell Bösecke
  * <p>
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 
@@ -113,7 +113,7 @@ public class PebbleEngine {
    * @return PebbleTemplate The compiled version of the template
    */
   public PebbleTemplate getTemplate(String templateName) {
-    return getTemplate(templateName, this.loader);
+    return this.getTemplate(templateName, this.loader);
   }
 
   /**
@@ -124,7 +124,7 @@ public class PebbleEngine {
    * @return PebbleTemplate The compiled version of the template
    */
   public PebbleTemplate getLiteralTemplate(String templateName) {
-    return getTemplate(templateName, new StringLoader());
+    return this.getTemplate(templateName, new StringLoader());
   }
 
   private PebbleTemplate getTemplate(String templateName, Loader loader) {
@@ -143,10 +143,10 @@ public class PebbleEngine {
     Object cacheKey = loader.createCacheKey(templateName);
 
     if (isNull(this.templateCache)) {
-      return getPebbleTemplate(templateName, loader, cacheKey);
+      return this.getPebbleTemplate(templateName, loader, cacheKey);
     } else {
       return this.templateCache
-          .get(cacheKey, k -> getPebbleTemplate(templateName, loader, cacheKey));
+          .get(cacheKey, k -> this.getPebbleTemplate(templateName, loader, cacheKey));
     }
   }
 
@@ -558,11 +558,11 @@ public class PebbleEngine {
       }
 
       ParserOptions parserOptions = new ParserOptions();
-      parserOptions.setLiteralDecimalTreatedAsInteger(literalDecimalTreatedAsInteger);
+      parserOptions.setLiteralDecimalTreatedAsInteger(this.literalDecimalTreatedAsInteger);
 
       EvaluationOptions evaluationOptions = new EvaluationOptions();
-      evaluationOptions.setAllowGetClass(allowGetClass);
-      evaluationOptions.setGreedyMatchMethod(greedyMatchMethod);
+      evaluationOptions.setAllowGetClass(this.allowGetClass);
+      evaluationOptions.setGreedyMatchMethod(this.greedyMatchMethod);
 
       return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale,
           this.tagCache, this.templateCache,
@@ -571,6 +571,6 @@ public class PebbleEngine {
   }
 
   public EvaluationOptions getEvaluationOptions() {
-    return evaluationOptions;
+    return this.evaluationOptions;
   }
 }

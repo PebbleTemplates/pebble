@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +35,7 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("first-name", "Bob");
+        this.put("first-name", "Bob");
       }
     });
 
@@ -60,8 +60,8 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     context.put("colors", new HashMap<String, Object>() {
 
       {
-        put("apple", "red");
-        put("pear", "green");
+        this.put("apple", "red");
+        this.put("pear", "green");
       }
     });
 
@@ -91,8 +91,8 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     context.put("colors", new HashMap<Long, Object>() {
 
       {
-        put(1L, "red");
-        put(2L, "green");
+        this.put(1L, "red");
+        this.put(2L, "green");
       }
     });
     context.put("one", 1L);
@@ -120,10 +120,10 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("name", new HashMap<String, Object>() {
+        this.put("name", new HashMap<String, Object>() {
 
           {
-            put("first", "Bob");
+            this.put("first", "Bob");
           }
         });
       }
@@ -147,10 +147,10 @@ public class AttributeSubscriptSyntaxTest extends AbstractTest {
     context.put("person", new HashMap<String, Object>() {
 
       {
-        put("name", new HashMap<String, Object>() {
+        this.put("name", new HashMap<String, Object>() {
 
           {
-            put("first", "Bob");
+            this.put("first", "Bob");
           }
         });
       }

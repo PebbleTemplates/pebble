@@ -1,11 +1,11 @@
-/*******************************************************************************
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- ******************************************************************************/
+ */
 package com.mitchellbosecke.pebble.extension.escaper;
 
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
@@ -32,7 +32,7 @@ public class EscaperExtension extends AbstractExtension {
   @Override
   public Map<String, Filter> getFilters() {
     Map<String, Filter> filters = new HashMap<>();
-    filters.put("escape", filter);
+    filters.put("escape", this.filter);
     filters.put("raw", new RawFilter());
     return filters;
   }
@@ -47,7 +47,7 @@ public class EscaperExtension extends AbstractExtension {
   @Override
   public List<NodeVisitorFactory> getNodeVisitors() {
     List<NodeVisitorFactory> visitors = new ArrayList<>();
-    visitors.add(visitorFactory);
+    visitors.add(this.visitorFactory);
     return visitors;
   }
 
@@ -60,11 +60,11 @@ public class EscaperExtension extends AbstractExtension {
     // TODO: This method is dangerous, because the state of the filter is
     // changed. When this is changed during the rendering of template this
     // can lead to unexpected results.
-    filter.setDefaultStrategy(strategy);
+    this.filter.setDefaultStrategy(strategy);
   }
 
   public void setAutoEscaping(boolean auto) {
-    visitorFactory.setAutoEscaping(auto);
+    this.visitorFactory.setAutoEscaping(auto);
   }
 
   /**
@@ -77,7 +77,7 @@ public class EscaperExtension extends AbstractExtension {
     // TODO: This method is dangerous, because the state of the filter is
     // changed. When this is changed during the rendering of template this
     // can lead to unexpected results.
-    filter.addEscapingStrategy(name, strategy);
+    this.filter.addEscapingStrategy(name, strategy);
   }
 
 }
