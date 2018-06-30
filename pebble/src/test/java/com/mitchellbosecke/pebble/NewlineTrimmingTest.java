@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class NewlineTrimmingTest extends AbstractTest {
+public class NewlineTrimmingTest {
 
   @Test
   public void testPrintDefault() throws PebbleException, IOException {

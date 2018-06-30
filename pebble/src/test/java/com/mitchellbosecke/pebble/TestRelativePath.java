@@ -18,7 +18,7 @@ import org.junit.Test;
  *
  * @author Thomas Hunziker
  */
-public class TestRelativePath extends AbstractTest {
+public class TestRelativePath {
 
   /**
    * Tests if relative includes work.
@@ -71,7 +71,7 @@ public class TestRelativePath extends AbstractTest {
   public void testPathWithBackslashesWithRelativePathWithForwardSlashes()
       throws PebbleException, IOException, URISyntaxException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
-    URL url = getClass()
+    URL url = this.getClass()
         .getResource("/templates/relativepath/subdirectory1/template.forwardslashes.peb");
     PebbleTemplate template = pebble
         .getTemplate(new File(url.toURI()).getPath()
@@ -88,7 +88,7 @@ public class TestRelativePath extends AbstractTest {
   public void testPathWithForwardSlashesWithRelativePathWithBackwardSlashes()
       throws PebbleException, IOException, URISyntaxException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
-    URL url = getClass()
+    URL url = this.getClass()
         .getResource("/templates/relativepath/subdirectory1/template.backwardslashes.peb");
     PebbleTemplate template = pebble
         .getTemplate(new File(url.toURI()).getPath()

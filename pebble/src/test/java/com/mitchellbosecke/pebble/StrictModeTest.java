@@ -16,7 +16,7 @@ import org.junit.Test;
  *
  * @author Thomas Hunziker
  */
-public class StrictModeTest extends AbstractTest {
+public class StrictModeTest {
 
 
   /**

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class GetAttributeTest extends AbstractTest {
+public class GetAttributeTest {
 
   @Test
   public void testOneLayerAttributeNesting() throws PebbleException, IOException {

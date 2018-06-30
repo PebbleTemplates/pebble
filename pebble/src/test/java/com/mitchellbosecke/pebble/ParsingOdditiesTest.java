@@ -28,7 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ParsingOdditiesTest extends AbstractTest {
+public class ParsingOdditiesTest {
 
   @Rule
   public final ExpectedException thrown = ExpectedException.none();

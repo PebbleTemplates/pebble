@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class ExtendingPebbleTest extends AbstractTest {
+public class ExtendingPebbleTest {
 
   /**
    * Issue #51

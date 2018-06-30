@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class LoaderTest extends AbstractTest {
+public class LoaderTest {
 
   @Test
   public void testClassLoaderLoader() throws PebbleException, IOException {

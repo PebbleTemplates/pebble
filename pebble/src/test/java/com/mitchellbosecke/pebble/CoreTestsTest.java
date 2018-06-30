@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class CoreTestsTest extends AbstractTest {
+public class CoreTestsTest {
 
   @Test
   public void testEven() throws PebbleException, IOException {

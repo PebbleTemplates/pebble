@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ErrorReportingTest extends AbstractTest {
+public class ErrorReportingTest {
 
   @Rule
   public final ExpectedException thrown = ExpectedException.none();

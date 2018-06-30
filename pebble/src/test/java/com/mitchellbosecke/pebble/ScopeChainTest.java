@@ -14,7 +14,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.ScopeChain;
 import org.junit.Test;
 
-public class ScopeChainTest extends AbstractTest {
+public class ScopeChainTest {
 
   @Test
   public void testSet() throws PebbleException {

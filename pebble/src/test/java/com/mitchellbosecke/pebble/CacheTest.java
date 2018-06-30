@@ -26,7 +26,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
-public class CacheTest extends AbstractTest {
+public class CacheTest {
 
   private static final String LINE_SEPARATOR = System.lineSeparator();
 

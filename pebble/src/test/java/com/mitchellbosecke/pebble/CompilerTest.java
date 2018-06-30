@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class CompilerTest extends AbstractTest {
+public class CompilerTest {
 
   @Test
   public void testCompile() throws PebbleException, IOException {

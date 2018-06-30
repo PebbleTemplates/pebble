@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.junit.Test;
 
-public class ContextTest extends AbstractTest {
+public class ContextTest {
 
   @SuppressWarnings("serial")
   @Test

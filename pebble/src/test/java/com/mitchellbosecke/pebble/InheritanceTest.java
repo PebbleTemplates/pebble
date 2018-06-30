@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class InheritanceTest extends AbstractTest {
+public class InheritanceTest {
 
   private static final String LINE_SEPARATOR = System.lineSeparator();
 

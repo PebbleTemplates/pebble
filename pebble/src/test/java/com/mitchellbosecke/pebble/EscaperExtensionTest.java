@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class EscaperExtensionTest extends AbstractTest {
+public class EscaperExtensionTest {
 
   @Test
   public void testEscapeHtml() throws PebbleException, IOException {

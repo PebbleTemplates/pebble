@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  * @author Thomas Hunziker
  */
-public class TestParallelParsing extends AbstractTest {
+public class TestParallelParsing {
 
   /**
    * Tests if the parse is working correctly within a multi threading environment.

@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ArraySyntaxTest extends AbstractTest {
+public class ArraySyntaxTest {
 
   @Rule
   public final ExpectedException thrown = ExpectedException.none();

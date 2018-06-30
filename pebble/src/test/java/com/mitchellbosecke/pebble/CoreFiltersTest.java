@@ -39,7 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.junit.Test;
 
-public class CoreFiltersTest extends AbstractTest {
+public class CoreFiltersTest {
 
   @Test
   public void testAbs() throws PebbleException, IOException {

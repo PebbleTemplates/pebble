@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class RenderWithoutEndBlockTest extends AbstractTest {
+public class RenderWithoutEndBlockTest {
 
   @Test(expected = PebbleException.class)
   public void testRenderWithoutEndBlock() throws PebbleException, IOException {

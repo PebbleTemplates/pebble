@@ -19,7 +19,7 @@ import java.io.Writer;
 import java.util.Locale;
 import org.junit.Test;
 
-public class I18nExtensionTest extends AbstractTest {
+public class I18nExtensionTest {
 
   @Test
   public void testSimpleLookup() throws PebbleException, IOException {

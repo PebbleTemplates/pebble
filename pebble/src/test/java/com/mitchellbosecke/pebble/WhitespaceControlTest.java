@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class WhitespaceControlTest extends AbstractTest {
+public class WhitespaceControlTest {
 
   @Test
   public void testStandardizationOfNewlineCharacters() throws PebbleException, IOException {

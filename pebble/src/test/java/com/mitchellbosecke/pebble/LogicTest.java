@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class LogicTest extends AbstractTest {
+public class LogicTest {
 
   @Test
   public void testUnaryOperators() throws PebbleException, IOException {

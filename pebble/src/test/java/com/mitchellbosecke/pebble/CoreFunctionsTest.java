@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class CoreFunctionsTest extends AbstractTest {
+public class CoreFunctionsTest {
 
   public static final String LINE_SEPARATOR = System.lineSeparator();
 

@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class AttributeSubscriptSyntaxTest extends AbstractTest {
+public class AttributeSubscriptSyntaxTest {
 
   @SuppressWarnings("serial")
   @Test

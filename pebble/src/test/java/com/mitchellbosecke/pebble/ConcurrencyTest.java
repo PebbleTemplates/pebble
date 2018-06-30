@@ -31,7 +31,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
-public class ConcurrencyTest extends AbstractTest {
+public class ConcurrencyTest {
 
   private static Random r = new SecureRandom();
 

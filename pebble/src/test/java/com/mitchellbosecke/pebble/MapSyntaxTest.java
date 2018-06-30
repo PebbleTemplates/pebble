@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class MapSyntaxTest extends AbstractTest {
+public class MapSyntaxTest {
 
   @Rule
   public final ExpectedException thrown = ExpectedException.none();

@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class TernaryExpressionTest extends AbstractTest {
+public class TernaryExpressionTest {
 
   @Rule
   public final ExpectedException thrown = ExpectedException.none();
