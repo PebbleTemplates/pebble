@@ -14,6 +14,9 @@
 - Introduce SpecializedWriter, (#358)
 - Many performance enhancements 
 
+## v2.6.2
+- loop.length and loop.revindex is not of type Number (#362)
+
 ## v2.6.1
 - Implement [java.util.Long] timestamp argument support in date filter (#346)
 - Handle strict mode when accessing map attribute (#356)
