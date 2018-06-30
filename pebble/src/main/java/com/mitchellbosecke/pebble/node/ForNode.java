@@ -168,7 +168,7 @@ public class ForNode extends AbstractRenderableNode {
 
     private Object obj;
 
-    public ArrayIterable(Object array) {
+    ArrayIterable(Object array) {
       this.obj = array;
     }
 
@@ -205,7 +205,7 @@ public class ForNode extends AbstractRenderableNode {
 
     private Enumeration<Object> obj;
 
-    public EnumerationIterable(Enumeration<Object> enumeration) {
+    EnumerationIterable(Enumeration<Object> enumeration) {
       this.obj = enumeration;
     }
 

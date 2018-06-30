@@ -11,30 +11,30 @@ public class LazyRevIndex extends Number {
 
   @Override
   public int intValue() {
-    return getValue();
+    return this.getValue();
   }
 
   @Override
   public long longValue() {
-    return (long) getValue();
+    return (long) this.getValue();
   }
 
   @Override
   public float floatValue() {
-    return (float) getValue();
+    return (float) this.getValue();
   }
 
   @Override
   public double doubleValue() {
-    return (double) getValue();
+    return (double) this.getValue();
   }
 
   @Override
   public String toString() {
-    return String.valueOf(getValue());
+    return String.valueOf(this.getValue());
   }
 
   private int getValue() {
-    return lazyLength.intValue() - this.value - 1;
+    return this.lazyLength.intValue() - this.value - 1;
   }
 }
