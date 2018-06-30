@@ -8,21 +8,21 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.extension.NodeVisitor;
+import com.mitchellbosecke.pebble.node.expression.Expression;
+import com.mitchellbosecke.pebble.node.fornode.LazyLength;
+import com.mitchellbosecke.pebble.node.fornode.LazyRevIndex;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.template.ScopeChain;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.template.EvaluationContext;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-import com.mitchellbosecke.pebble.template.ScopeChain;
 
 /**
  * Represents a "for" loop within the template.
@@ -38,18 +38,6 @@ public class ForNode extends AbstractRenderableNode {
     private final BodyNode body;
 
     private final BodyNode elseBody;
-
-    class Control extends Object {
-
-        protected int value = -1;
-
-        public Control(int value) {
-            this.value = value;
-        }
-
-        public Control() {
-        }
-    }
 
     public ForNode(int lineNumber, String variableName, Expression<?> iterableExpression, BodyNode body,
             BodyNode elseBody) {
@@ -83,16 +71,7 @@ public class ForNode extends AbstractRenderableNode {
             ScopeChain scopeChain = context.getScopeChain();
             scopeChain.pushScope();
 
-            final Control length = new Control() {
-
-                @Override
-                public String toString() {
-                    if (this.value == -1) {
-                        this.value = getIteratorSize(iterableEvaluation);
-                    }
-                    return String.valueOf(value);
-                }
-            };
+            LazyLength length = new LazyLength(iterableEvaluation);
 
             int index = 0;
 
@@ -118,15 +97,7 @@ public class ForNode extends AbstractRenderableNode {
                     loop.put("first", false);
                 }
 
-                Control revindex = new Control(index) {
-
-                    @Override
-                    public String toString() {
-                        return String.valueOf(Integer.valueOf(length.toString()) - this.value - 1);
-                    }
-                };
-
-                loop.put("revindex", revindex);
+                loop.put("revindex", new LazyRevIndex(index, length));
                 loop.put("index", index++);
                 scopeChain.put("loop", loop);
                 scopeChain.put(this.variableName, iterator.next());
@@ -185,36 +156,6 @@ public class ForNode extends AbstractRenderableNode {
         }
 
         return result;
-    }
-
-    private int getIteratorSize(Object iterable) {
-        if (iterable == null) {
-            return 0;
-        }
-        if (iterable instanceof Collection) {
-            return ((Collection<?>) iterable).size();
-        } else if (iterable instanceof Map) {
-            return ((Map<?, ?>) iterable).size();
-        } else if (iterable.getClass().isArray()) {
-            return Array.getLength(iterable);
-        } else if (iterable instanceof Enumeration) {
-            Enumeration<?> enumeration = (Enumeration<?>) iterable;
-            int size = 0;
-            while (enumeration.hasMoreElements()) {
-                size++;
-                enumeration.nextElement();
-            }
-            return size;
-        }
-
-        // assumed to be of type Iterator
-        Iterator<?> it = ((Iterable<?>) iterable).iterator();
-        int size = 0;
-        while (it.hasNext()) {
-            size++;
-            it.next();
-        }
-        return size;
     }
 
     /**
