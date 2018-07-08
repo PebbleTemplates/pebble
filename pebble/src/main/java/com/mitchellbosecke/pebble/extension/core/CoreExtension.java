@@ -54,6 +54,7 @@ import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ParallelTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,7 @@ public class CoreExtension extends AbstractExtension {
 
   @Override
   public List<TokenParser> getTokenParsers() {
-    ArrayList<TokenParser> parsers = new ArrayList<>();
+    List<TokenParser> parsers = new ArrayList<>();
     parsers.add(new BlockTokenParser());
     parsers.add(new ExtendsTokenParser());
     parsers.add(new FilterTokenParser());
@@ -84,7 +85,7 @@ public class CoreExtension extends AbstractExtension {
 
   @Override
   public List<UnaryOperator> getUnaryOperators() {
-    ArrayList<UnaryOperator> operators = new ArrayList<>();
+    List<UnaryOperator> operators = new ArrayList<>();
     operators.add(new UnaryOperatorImpl("not", 500, UnaryNotExpression.class));
     operators.add(new UnaryOperatorImpl("+", 500, UnaryPlusExpression.class));
     operators.add(new UnaryOperatorImpl("-", 500, UnaryMinusExpression.class));
@@ -93,32 +94,26 @@ public class CoreExtension extends AbstractExtension {
 
   @Override
   public List<BinaryOperator> getBinaryOperators() {
-    ArrayList<BinaryOperator> operators = new ArrayList<>();
+    List<BinaryOperator> operators = new ArrayList<>();
     operators.add(new BinaryOperatorImpl("or", 10, OrExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("and", 15, AndExpression.class, Associativity.LEFT));
-    operators
-        .add(new BinaryOperatorImpl("is", 20, PositiveTestExpression.class, Associativity.LEFT));
-    operators.add(
-        new BinaryOperatorImpl("is not", 20, NegativeTestExpression.class, Associativity.LEFT));
-    operators
-        .add(new BinaryOperatorImpl("contains", 20, ContainsExpression.class, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("is", 20, PositiveTestExpression.class, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("is not", 20, NegativeTestExpression.class, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("contains", 20, ContainsExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("==", 30, EqualsExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("equals", 30, EqualsExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("!=", 30, NotEqualsExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl(">", 30, GreaterThanExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("<", 30, LessThanExpression.class, Associativity.LEFT));
-    operators.add(
-        new BinaryOperatorImpl(">=", 30, GreaterThanEqualsExpression.class, Associativity.LEFT));
-    operators
-        .add(new BinaryOperatorImpl("<=", 30, LessThanEqualsExpression.class, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl(">=", 30, GreaterThanEqualsExpression.class, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("<=", 30, LessThanEqualsExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("+", 40, AddExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("-", 40, SubtractExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("*", 60, MultiplyExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("/", 60, DivideExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("%", 60, ModulusExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("|", 100, FilterExpression.class, Associativity.LEFT));
-    operators
-        .add(new BinaryOperatorImpl("~", 110, ConcatenateExpression.class, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("~", 110, ConcatenateExpression.class, Associativity.LEFT));
     operators.add(new BinaryOperatorImpl("..", 120, RangeExpression.class, Associativity.LEFT));
 
     return operators;
