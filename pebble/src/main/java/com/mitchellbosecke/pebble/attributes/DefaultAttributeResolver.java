@@ -26,24 +26,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
     if (instance != null) {
       String attributeName = String.valueOf(attributeNameValue);
 
-      Class<?>[] argumentTypes;
-      if(argumentValues != null) {
-        argumentTypes = new Class<?>[argumentValues.length];
-
-        for (int i = 0; i < argumentValues.length; i++) {
-          Object o = argumentValues[i];
-          if (o == null) {
-            argumentTypes[i] = null;
-          }
-          else {
-            argumentTypes[i] = o.getClass();
-          }
-        }
-      }
-      else {
-        argumentTypes = new Class<?>[0];
-      }
-
+      Class<?>[] argumentTypes = this.getArgumentTypes(argumentValues);
       Member member = this.memberCacheUtils.getMember(instance, attributeName, argumentTypes);
       if (member == null) {
         if (argumentValues == null) {
@@ -82,6 +65,24 @@ public class DefaultAttributeResolver implements AttributeResolver {
       }
     }
     return null;
+  }
+
+  private Class<?>[] getArgumentTypes(Object[] argumentValues) {
+    if (argumentValues != null) {
+      Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
+
+      for (int i = 0; i < argumentValues.length; i++) {
+        Object o = argumentValues[i];
+        if (o == null) {
+          argumentTypes[i] = null;
+        } else {
+          argumentTypes[i] = o.getClass();
+        }
+      }
+      return argumentTypes;
+    }
+
+    return new Class<?>[0];
   }
 
   /**

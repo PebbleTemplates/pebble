@@ -8,18 +8,17 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
+import static org.junit.Assert.assertEquals;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 // These tests verify correct behavior when resolving overloaded methods in a model class. See issue #367
 public class OverloadedMethodTest {
@@ -71,7 +70,6 @@ public class OverloadedMethodTest {
                 .build();
 
         String input = "{{ model.testMethod(\"one\") }}";
-        String actual = null;
         String expected = "string input: one";
 
         Map<String, Object> context = new HashMap<>();
@@ -81,48 +79,47 @@ public class OverloadedMethodTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        actual = writer.toString();
-        assertEquals(expected, actual);
+        assertEquals(expected, writer.toString());
     }
 
     @Test
     public void testWithContextString() throws PebbleException, IOException {
-        testWithModel(new Model(), "one", "string input: one");
+        this.testWithModel(new Model(), "one", "string input: one");
     }
 
     @Test
     public void testWithInteger() throws PebbleException, IOException {
-        testWithModel(new Model(), 1, "Integer input: 1");
+        this.testWithModel(new Model(), 1, "Integer input: 1");
     }
 
     @Test
     public void testWithLong() throws PebbleException, IOException {
-        testWithModel(new Model(), 1L, "Long input: 1");
+        this.testWithModel(new Model(), 1L, "Long input: 1");
     }
 
     @Test
     public void testWithObject() throws PebbleException, IOException {
-        testWithModel(new Model(), this, "other input: " + this.getClass().toString());
+        this.testWithModel(new Model(), this, "other input: " + this.getClass().toString());
     }
 
     @Test
     public void testWithStringString() throws PebbleException, IOException {
-        testModelWith2Inputs("", "", "string-string inputs");
+        this.testModelWith2Inputs("", "", "string-string inputs");
     }
 
     @Test
     public void testWithStringObject() throws PebbleException, IOException {
-        testModelWith2Inputs("", this, "string-object inputs");
+        this.testModelWith2Inputs("", this, "string-object inputs");
     }
 
     @Test
     public void testWithObjectString() throws PebbleException, IOException {
-        testModelWith2Inputs(this, "", "object-string inputs");
+        this.testModelWith2Inputs(this, "", "object-string inputs");
     }
 
     @Test
     public void testWithObjectObject() throws PebbleException, IOException {
-        testModelWith2Inputs(this, this, "object-object inputs");
+        this.testModelWith2Inputs(this, this, "object-object inputs");
     }
 
 // Verify that multiple overloaded methods can be called in the same template, and the member cache will not return the
@@ -165,7 +162,6 @@ public class OverloadedMethodTest {
                 .build();
 
         String input = "{{ model.testMethod(BaseClass) }}, {{ model.testMethod(ChildClass1) }}, {{ model.testMethod(ChildClass2) }}";
-        String actual = null;
         String expected = "BaseClass input, ChildClass1 input, ChildClass2 input";
 
         Map<String, Object> context = new HashMap<>();
@@ -178,8 +174,7 @@ public class OverloadedMethodTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        actual = writer.toString();
-        assertEquals(expected, actual);
+        assertEquals(expected, writer.toString());
     }
 
 // Check that method resolution works with a deep class hierarchy
@@ -227,32 +222,32 @@ public class OverloadedMethodTest {
 
     @Test
     public void testWithBaseClass() throws PebbleException, IOException {
-        testWithModel(new Model3(), new BaseClass(), "BaseClass input");
+        this.testWithModel(new Model3(), new BaseClass(), "BaseClass input");
     }
 
     @Test
     public void testWithChildClass1() throws PebbleException, IOException {
-        testWithModel(new Model3(), new ChildClass1(), "ChildClass1 input");
+        this.testWithModel(new Model3(), new ChildClass1(), "ChildClass1 input");
     }
 
     @Test
     public void testWithChildClass2() throws PebbleException, IOException {
-        testWithModel(new Model3(), new ChildClass2(), "ChildClass2 input");
+        this.testWithModel(new Model3(), new ChildClass2(), "ChildClass2 input");
     }
 
     @Test
     public void testWithChildClass3() throws PebbleException, IOException {
-        testWithModel(new Model3(), new ChildClass3(), "ChildClass3 input");
+        this.testWithModel(new Model3(), new ChildClass3(), "ChildClass3 input");
     }
 
     @Test
     public void testWithChildClass4() throws PebbleException, IOException {
-        testWithModel(new Model3(), new ChildClass4(), "ChildClass4 input");
+        this.testWithModel(new Model3(), new ChildClass4(), "ChildClass4 input");
     }
 
     @Test
     public void testWithChildClass5() throws PebbleException, IOException {
-        testWithModel(new Model3(), new ChildClass5(), "ChildClass5 input");
+        this.testWithModel(new Model3(), new ChildClass5(), "ChildClass5 input");
     }
 
 // test helpers
@@ -265,7 +260,6 @@ public class OverloadedMethodTest {
                 .build();
 
         String input = "{{ model.testMethod(input) }}";
-        String actual = null;
 
         Map<String, Object> context = new HashMap<>();
         context.put("model", model);
@@ -275,8 +269,7 @@ public class OverloadedMethodTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        actual = writer.toString();
-        assertEquals(expected, actual);
+        assertEquals(expected, writer.toString());
     }
 
     private void testModelWith2Inputs(Object modelInput1, Object modelInput2, String expected) throws PebbleException, IOException {
@@ -286,7 +279,6 @@ public class OverloadedMethodTest {
                 .build();
 
         String input = "{{ model.testMethod2(input1, input2) }}";
-        String actual = null;
 
         Map<String, Object> context = new HashMap<>();
         context.put("model", new Model());
@@ -297,8 +289,7 @@ public class OverloadedMethodTest {
 
         Writer writer = new StringWriter();
         template.evaluate(writer, context);
-        actual = writer.toString();
-        assertEquals(expected, actual);
+        assertEquals(expected, writer.toString());
     }
 
 }

@@ -3,7 +3,6 @@ package com.mitchellbosecke.pebble.attributes;
 import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.EvaluationOptions;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -101,7 +100,6 @@ class MemberCacheUtils {
 
     // perfect match
     Method bestMatch = null;
-    Class<?>[] bestMatchParamTypes = null;
     for (Method candidate : candidates) {
       // check if method is even compatible
       boolean compatibleTypes = true;
@@ -115,25 +113,19 @@ class MemberCacheUtils {
 
       // if it is compatible, check if it is a better match than the previous best
       if (compatibleTypes) {
-        boolean betterMatch = false;
-
         if(bestMatch == null) {
-          betterMatch = true;
+          bestMatch = candidate;
         }
         else {
+          Class<?>[] bestMatchParamTypes = bestMatch.getParameterTypes();
           for (int i = 0; i < types.length; i++) {
             // if the current method's param strictly extends the previous best, it is a better match
             Class<?> widened = this.widen(bestMatchParamTypes[i]);
-            if (bestMatchParamTypes[i] != null && widened.isAssignableFrom(types[i]) && !widened.equals(types[i])) {
-              betterMatch = true;
+            if (widened.isAssignableFrom(types[i]) && !widened.equals(types[i])) {
+              bestMatch = candidate;
               break;
             }
           }
-        }
-
-        if(betterMatch) {
-          bestMatch = candidate;
-          bestMatchParamTypes = types;
         }
       }
     }
@@ -242,14 +234,14 @@ class MemberCacheUtils {
         return false;
       }
 
-      return Arrays.equals(methodParameterTypes, that.methodParameterTypes);
+      return Arrays.equals(this.methodParameterTypes, that.methodParameterTypes);
     }
 
     @Override
     public int hashCode() {
       int result = this.clazz.hashCode();
       result = 31 * result + this.attributeName.hashCode();
-      result = 31 * result + Arrays.hashCode(methodParameterTypes);
+      result = 31 * result + Arrays.hashCode(this.methodParameterTypes);
       return result;
     }
   }
