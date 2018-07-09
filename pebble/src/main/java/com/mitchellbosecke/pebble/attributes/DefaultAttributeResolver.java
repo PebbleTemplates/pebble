@@ -26,7 +26,25 @@ public class DefaultAttributeResolver implements AttributeResolver {
     if (instance != null) {
       String attributeName = String.valueOf(attributeNameValue);
 
-      Member member = this.memberCacheUtils.getMember(instance, attributeName);
+      Class<?>[] argumentTypes;
+      if(argumentValues != null) {
+        argumentTypes = new Class<?>[argumentValues.length];
+
+        for (int i = 0; i < argumentValues.length; i++) {
+          Object o = argumentValues[i];
+          if (o == null) {
+            argumentTypes[i] = null;
+          }
+          else {
+            argumentTypes[i] = o.getClass();
+          }
+        }
+      }
+      else {
+        argumentTypes = new Class<?>[0];
+      }
+
+      Member member = this.memberCacheUtils.getMember(instance, attributeName, argumentTypes);
       if (member == null) {
         if (argumentValues == null) {
 
@@ -56,7 +74,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
         }
 
         member = this.memberCacheUtils
-            .cacheMember(instance, attributeName, argumentValues, context, filename, lineNumber);
+            .cacheMember(instance, attributeName, argumentTypes, context, filename, lineNumber);
       }
 
       if (member != null) {

@@ -3,10 +3,12 @@ package com.mitchellbosecke.pebble.attributes;
 import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.EvaluationOptions;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,34 +17,20 @@ class MemberCacheUtils {
   private final ConcurrentHashMap<MemberCacheKey, Member> memberCache = new ConcurrentHashMap<>(100,
       0.9f, 1);
 
-  Member getMember(Object instance, String attributeName) {
-    return this.memberCache.get(new MemberCacheKey(instance.getClass(), attributeName));
+  Member getMember(Object instance, String attributeName, Class<?>[] argumentTypes) {
+    return this.memberCache.get(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes));
   }
 
   Member cacheMember(Object instance,
       String attributeName,
-      Object[] argumentValues,
+      Class<?>[] argumentTypes,
       EvaluationContextImpl context,
       String filename,
       int lineNumber) {
-    if (argumentValues == null) {
-      argumentValues = new Object[0];
-    }
-    Class<?>[] argumentTypes = new Class<?>[argumentValues.length];
-
-    for (int i = 0; i < argumentValues.length; i++) {
-      Object o = argumentValues[i];
-      if (o == null) {
-        argumentTypes[i] = null;
-      } else {
-        argumentTypes[i] = o.getClass();
-      }
-    }
-
     Member member = this.reflect(instance, attributeName, argumentTypes, filename, lineNumber,
         context.getEvaluationOptions());
     if (member != null) {
-      this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName), member);
+      this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes), member);
     }
     return member;
   }
@@ -112,7 +100,10 @@ class MemberCacheUtils {
     List<Method> candidates = this.getCandidates(clazz, name, requiredTypes);
 
     // perfect match
+    Method bestMatch = null;
+    Class<?>[] bestMatchParamTypes = null;
     for (Method candidate : candidates) {
+      // check if method is even compatible
       boolean compatibleTypes = true;
       Class<?>[] types = candidate.getParameterTypes();
       for (int i = 0; i < types.length; i++) {
@@ -122,9 +113,32 @@ class MemberCacheUtils {
         }
       }
 
+      // if it is compatible, check if it is a better match than the previous best
       if (compatibleTypes) {
-        return candidate;
+        boolean betterMatch = false;
+
+        if(bestMatch == null) {
+          betterMatch = true;
+        }
+        else {
+          for (int i = 0; i < types.length; i++) {
+            // if the current method's param strictly extends the previous best, it is a better match
+            Class<?> widened = this.widen(bestMatchParamTypes[i]);
+            if (bestMatchParamTypes[i] != null && widened.isAssignableFrom(types[i]) && !widened.equals(types[i])) {
+              betterMatch = true;
+              break;
+            }
+          }
+        }
+
+        if(betterMatch) {
+          bestMatch = candidate;
+          bestMatchParamTypes = types;
+        }
       }
+    }
+    if(bestMatch != null) {
+      return bestMatch;
     }
 
     // greedy match
@@ -202,10 +216,12 @@ class MemberCacheUtils {
 
     private final Class<?> clazz;
     private final String attributeName;
+    private final Class<?>[] methodParameterTypes;
 
-    private MemberCacheKey(Class<?> clazz, String attributeName) {
+    public MemberCacheKey(Class<?> clazz, String attributeName, Class<?>[] methodParameterTypes) {
       this.clazz = clazz;
       this.attributeName = attributeName;
+      this.methodParameterTypes = methodParameterTypes;
     }
 
     @Override
@@ -222,14 +238,18 @@ class MemberCacheUtils {
       if (!this.clazz.equals(that.clazz)) {
         return false;
       }
-      return this.attributeName.equals(that.attributeName);
+      if (!this.attributeName.equals(that.attributeName)) {
+        return false;
+      }
 
+      return Arrays.equals(methodParameterTypes, that.methodParameterTypes);
     }
 
     @Override
     public int hashCode() {
       int result = this.clazz.hashCode();
       result = 31 * result + this.attributeName.hashCode();
+      result = 31 * result + Arrays.hashCode(methodParameterTypes);
       return result;
     }
   }
