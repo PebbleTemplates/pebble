@@ -13,6 +13,7 @@
 - Render content on demand. Expose getLiteralTemplate(String templateName) (#295)
 - Introduce SpecializedWriter, (#358)
 - Many performance enhancements 
+ -Method resolution with overloaded method signatures (#367)
 
 ## v2.6.2
 - loop.length and loop.revindex is not of type Number (#362)
