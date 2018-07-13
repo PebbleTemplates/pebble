@@ -17,7 +17,6 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 
 @Configuration
 @ConditionalOnClass(PebbleEngine.class)
@@ -35,7 +34,7 @@ public class PebbleAutoConfiguration {
     @Bean
     public Loader<?> pebbleLoader() {
       ClasspathLoader loader = new ClasspathLoader();
-      loader.setCharset(this.properties.getEncoding().name());
+      loader.setCharset(this.properties.getCharsetName());
       // classpath loader does not like leading slashes in resource paths
       loader.setPrefix(stripLeadingSlash(this.properties.getPrefix()));
       loader.setSuffix(this.properties.getSuffix());
@@ -96,21 +95,13 @@ public class PebbleAutoConfiguration {
     @ConditionalOnMissingBean(name = "pebbleViewResolver")
     public PebbleViewResolver pebbleViewResolver() {
       PebbleViewResolver pvr = new PebbleViewResolver();
-      pvr.setPebbleEngine(this.pebbleEngine);
+      this.properties.applyToMvcViewResolver(pvr);
 
-      String prefix = this.properties.getPrefix();
+      pvr.setPebbleEngine(this.pebbleEngine);
       if (this.pebbleEngine.getLoader() instanceof ClasspathLoader) {
         // classpathloader doesn't like leading slashes in paths
-        prefix = stripLeadingSlash(prefix);
+        pvr.setPrefix(stripLeadingSlash(this.properties.getPrefix()));
       }
-      pvr.setPrefix(prefix);
-      pvr.setSuffix(this.properties.getSuffix());
-
-      pvr.setContentType(this.properties.getContentType().toString());
-      pvr.setCharacterEncoding(this.properties.getEncoding().name());
-      pvr.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
-      pvr.setExposeRequestAttributes(this.properties.isExposeRequestAttributes());
-      pvr.setExposeSessionAttributes(this.properties.isExposeSessionAttributes());
 
       return pvr;
     }
