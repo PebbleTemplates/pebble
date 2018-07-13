@@ -1,4 +1,4 @@
-## v3.0.0 (future)
+## v3.0.0 (2018-07-13)
 - Java 8
 - Macros have access to all variables within the template and are no longer restricted to a "local scope"
 - New signature for filters/functions/tests that accepts the PebbleTemplate, EvaluationContext, and line number
@@ -14,6 +14,7 @@
 - Introduce SpecializedWriter, (#358)
 - Many performance enhancements 
  -Method resolution with overloaded method signatures (#367)
+ -Use AbstractTemplateViewResolverProperties for spring-boot (#369)
 
 ## v2.6.2
 - loop.length and loop.revindex is not of type Number (#362)
