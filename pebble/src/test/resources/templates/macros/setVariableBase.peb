@@ -1,0 +1,4 @@
+{{ unit }}
+{% import 'templates/macros/setVariableMacro.peb' %}
+{{ infantry() }}
+{{ unit }}

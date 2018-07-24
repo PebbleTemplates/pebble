@@ -38,7 +38,7 @@ public class ScopeChain {
    * @param map The map of variables used to initialize a scope.
    */
   public ScopeChain(Map<String, Object> map) {
-    Scope scope = new Scope(new HashMap<>(map));
+    Scope scope = new Scope(new HashMap<>(map), false);
     this.stack.push(scope);
   }
 
@@ -75,7 +75,15 @@ public class ScopeChain {
    * @param map The known variables of this scope.
    */
   public void pushScope(Map<String, Object> map) {
-    Scope scope = new Scope(map);
+    Scope scope = new Scope(map, false);
+    this.stack.push(scope);
+  }
+
+  /**
+   * Adds a new local scope to the scope chain
+   */
+  public void pushLocalScope() {
+    Scope scope = new Scope(new HashMap<>(), true);
     this.stack.push(scope);
   }
 
@@ -117,7 +125,7 @@ public class ScopeChain {
     }
 
     if (this.stack.size() > 1) {
-      if (scope.containsKey(key)) {
+      if (scope.isLocal() || scope.containsKey(key)) {
         // key could be defined with null and override another value below in the stack
         return null;
       }
@@ -126,10 +134,11 @@ public class ScopeChain {
       iterator.next();
 
       while (iterator.hasNext()) {
-        result = iterator.next().get(key);
+        scope = iterator.next();
+        result = scope.get(key);
         if (result != null) {
           return result;
-        } else if (scope.containsKey(key)) {
+        } else if (scope.isLocal() || scope.containsKey(key)) {
           // null value
           return null;
         }
@@ -157,6 +166,9 @@ public class ScopeChain {
     if (scope.containsKey(key)) {
       return true;
     }
+    if (scope.isLocal()) {
+      return false;
+    }
 
     Iterator<Scope> iterator = this.stack.iterator();
 
@@ -168,6 +180,9 @@ public class ScopeChain {
 
       if (scope.containsKey(key)) {
         return true;
+      }
+      if (scope.isLocal()) {
+        return false;
       }
     }
 
@@ -198,7 +213,7 @@ public class ScopeChain {
      * create an iterator, etc. This is solely for performance.
      */
     Scope scope = this.stack.getFirst();
-    if (scope.containsKey(key)) {
+    if (scope.isLocal() || scope.containsKey(key)) {
       scope.put(key, value);
       return;
     }
@@ -211,7 +226,7 @@ public class ScopeChain {
     while (iterator.hasNext()) {
       scope = iterator.next();
 
-      if (scope.containsKey(key)) {
+      if (scope.isLocal() || scope.containsKey(key)) {
         scope.put(key, value);
         return;
       }

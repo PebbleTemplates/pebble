@@ -129,18 +129,6 @@ public class MacroTest {
   }
 
   @Test
-  public void testMacroHasAccessToGlobalVariables() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
-    PebbleTemplate template = pebble
-        .getTemplate("{% set foo = 'bar' %}{{ test() }}{% macro test() %}{{ foo }}{% endmacro %}");
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer);
-    assertEquals("bar", writer.toString());
-  }
-
-  @Test
   public void testImportFile() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.macro2.peb");
@@ -178,5 +166,19 @@ public class MacroTest {
     writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("ajax macro" + LINE_SEPARATOR, writer.toString());
+  }
+
+  @Test
+  public void testSetVariableInsideMacro() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate("templates/macros/setVariableBase.peb");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("unit", "tank");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("tankinfantrytank", writer.toString());
   }
 }
