@@ -19,7 +19,7 @@ import org.junit.Test;
  */
 public class MacroTest {
 
-  public static final String LINE_SEPARATOR = System.lineSeparator();
+  private static final String LINE_SEPARATOR = System.lineSeparator();
 
   @Test
   public void testMacro() throws PebbleException, IOException {
@@ -180,5 +180,17 @@ public class MacroTest {
     template.evaluate(writer, context);
 
     assertEquals("tankinfantrytank", writer.toString());
+  }
+
+  @Test
+  public void testMacroHasAccessToGlobalVariables() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    String templateContent = "{% set foo = 'bar' %}{{ test(_context) }}{% macro test(_context) %}{% set foo = 'foo' %}{{ _context.foo }}{% endmacro %}";
+    PebbleTemplate template = pebble.getTemplate(templateContent);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("bar", writer.toString());
   }
 }

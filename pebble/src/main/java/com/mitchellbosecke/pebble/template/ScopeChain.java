@@ -8,9 +8,11 @@
  */
 package com.mitchellbosecke.pebble.template;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,16 +32,6 @@ public class ScopeChain {
    * Constructs an empty scope chain without any known scopes.
    */
   public ScopeChain() {
-  }
-
-  /**
-   * Constructs a new scope chain with one known scope.
-   *
-   * @param map The map of variables used to initialize a scope.
-   */
-  public ScopeChain(Map<String, Object> map) {
-    Scope scope = new Scope(new HashMap<>(map), false);
-    this.stack.push(scope);
   }
 
   /**
@@ -234,5 +226,20 @@ public class ScopeChain {
 
     // no existing variable, create a new one
     this.put(key, value);
+  }
+
+  public List<Scope> getGlobalScopes() {
+    List<Scope> globalScopes = new ArrayList<>();
+    Iterator<Scope> iterator = this.stack.iterator();
+    while (iterator.hasNext()) {
+      Scope scope = iterator.next();
+      if (scope.isLocal()) {
+        globalScopes.clear();
+      } else {
+        globalScopes.add(scope);
+      }
+    }
+
+    return globalScopes;
   }
 }
