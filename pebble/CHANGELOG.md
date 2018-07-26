@@ -1,3 +1,7 @@
+## v3.0.1 (2018-07-26)
+- Macros are restricted to a local scope (#371)
+- Macros have access to global attributes via "_context" variable (#242)
+
 ## v3.0.0 (2018-07-13)
 - Java 8
 - Macros have access to all variables within the template and are no longer restricted to a "local scope"
