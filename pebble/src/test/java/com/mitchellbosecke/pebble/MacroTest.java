@@ -186,11 +186,11 @@ public class MacroTest {
   public void testMacroHasAccessToGlobalVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
-    String templateContent = "{% set foo = 'bar' %}{{ test(_context) }}{% macro test(_context) %}{% set foo = 'foo' %}{{ _context.foo }}{% endmacro %}";
+    String templateContent = "{% set foo = 'bar' %}{{ test(_context) }}{% macro test(_context) %}{% set foo = 'foo' %}{{ _context.foo }}{{ foo }}{% endmacro %}";
     PebbleTemplate template = pebble.getTemplate(templateContent);
 
     Writer writer = new StringWriter();
     template.evaluate(writer);
-    assertEquals("bar", writer.toString());
+    assertEquals("barfoo", writer.toString());
   }
 }
