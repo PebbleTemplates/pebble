@@ -34,7 +34,7 @@ public class Scope {
    * Constructor
    *
    * @param backingMap The backing map of variables
-   * @param local    Whether this scope is local or not
+   * @param local Whether this scope is local or not
    */
   public Scope(Map<String, Object> backingMap, boolean local) {
     this.backingMap = backingMap == null ? new HashMap<>() : backingMap;
