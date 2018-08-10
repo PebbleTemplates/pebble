@@ -8,10 +8,8 @@
  */
 package com.mitchellbosecke.pebble.node;
 
-import static java.util.Objects.isNull;
-
-import com.github.benmanes.caffeine.cache.Cache;
 import com.mitchellbosecke.pebble.cache.CacheKey;
+import com.mitchellbosecke.pebble.cache.PebbleCache;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
@@ -45,24 +43,20 @@ public class CacheNode extends AbstractRenderableNode {
   }
 
   @Override
-  public void render(final PebbleTemplateImpl self, Writer writer,
-      final EvaluationContextImpl context) throws IOException {
+  public void render(PebbleTemplateImpl self, Writer writer,
+      EvaluationContextImpl context) throws IOException {
     try {
       final String body;
-      Cache tagCache = context.getTagCache();
-      if (isNull(tagCache)) { //No cache
-        body = this.render(self, context);
-      } else {
-        CacheKey key = new CacheKey(this, (String) this.name.evaluate(self, context),
-            context.getLocale());
-        body = (String) context.getTagCache().get(key, k -> {
-          try {
-            return this.render(self, context);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        });
-      }
+      PebbleCache<CacheKey, Object> tagCache = context.getTagCache();
+      CacheKey key = new CacheKey(this, (String) this.name.evaluate(self, context),
+          context.getLocale());
+      body = (String) context.getTagCache().computeIfAbsent(key, k -> {
+        try {
+          return this.render(self, context);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
       writer.write(body);
     } catch (CompletionException e) {
       throw new PebbleException(e, "Could not render cache block [" + this.name + "]");

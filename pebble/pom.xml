@@ -17,11 +17,6 @@
   <dependencies>
     <!-- required dependencies -->
     <dependency>
-      <groupId>com.github.ben-manes.caffeine</groupId>
-      <artifactId>caffeine</artifactId>
-      <version>2.6.2</version>
-    </dependency>
-    <dependency>
       <groupId>com.coverity.security</groupId>
       <artifactId>coverity-escapers</artifactId>
       <version>1.1.1</version>
@@ -34,10 +29,15 @@
 
     <!-- optional dependencies -->
     <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>2.6.2</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
-      <scope>provided</scope>
       <optional>true</optional>
     </dependency>
 

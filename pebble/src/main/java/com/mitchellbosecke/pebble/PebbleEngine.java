@@ -9,11 +9,12 @@
 package com.mitchellbosecke.pebble;
 
 
-import static java.util.Objects.isNull;
-
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mitchellbosecke.pebble.cache.CacheKey;
+import com.mitchellbosecke.pebble.cache.PebbleCache;
+import com.mitchellbosecke.pebble.cache.tag.ConcurrentMapTagCache;
+import com.mitchellbosecke.pebble.cache.tag.NoOpTagCache;
+import com.mitchellbosecke.pebble.cache.template.ConcurrentMapTemplateCache;
+import com.mitchellbosecke.pebble.cache.template.NoOpTemplateCache;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
@@ -62,11 +63,11 @@ public class PebbleEngine {
 
   private final Locale defaultLocale;
 
-  private final Cache<CacheKey, Object> tagCache;
+  private final PebbleCache<CacheKey, Object> tagCache;
 
   private final ExecutorService executorService;
 
-  private final Cache<Object, PebbleTemplate> templateCache;
+  private final PebbleCache<Object, PebbleTemplate> templateCache;
 
   private final ExtensionRegistry extensionRegistry;
 
@@ -78,16 +79,16 @@ public class PebbleEngine {
    * Constructor for the Pebble Engine given an instantiated Loader. This method does only load
    * those userProvidedExtensions listed here.
    *
-   * @param loader The template loader for this engine
-   * @param syntax the syntax to use for parsing the templates.
+   * @param loader     The template loader for this engine
+   * @param syntax     the syntax to use for parsing the templates.
    * @param extensions The userProvidedExtensions which should be loaded.
    */
   private PebbleEngine(Loader<?> loader,
       Syntax syntax,
       boolean strictVariables,
       Locale defaultLocale,
-      Cache<CacheKey, Object> tagCache,
-      Cache<Object, PebbleTemplate> templateCache,
+      PebbleCache<CacheKey, Object> tagCache,
+      PebbleCache<Object, PebbleTemplate> templateCache,
       ExecutorService executorService,
       Collection<? extends Extension> extensions,
       ParserOptions parserOptions,
@@ -141,13 +142,8 @@ public class PebbleEngine {
     }
 
     Object cacheKey = loader.createCacheKey(templateName);
-
-    if (isNull(this.templateCache)) {
-      return this.getPebbleTemplate(templateName, loader, cacheKey);
-    } else {
-      return this.templateCache
-          .get(cacheKey, k -> this.getPebbleTemplate(templateName, loader, cacheKey));
-    }
+    return this.templateCache
+        .computeIfAbsent(cacheKey, k -> this.getPebbleTemplate(templateName, loader, cacheKey));
   }
 
   private PebbleTemplate getPebbleTemplate(String templateName, Loader loader, Object cacheKey) {
@@ -196,7 +192,7 @@ public class PebbleEngine {
    *
    * @return The template cache
    */
-  public Cache<Object, PebbleTemplate> getTemplateCache() {
+  public PebbleCache<Object, PebbleTemplate> getTemplateCache() {
     return this.templateCache;
   }
 
@@ -250,7 +246,7 @@ public class PebbleEngine {
    *
    * @return The tag cache
    */
-  public Cache<CacheKey, Object> getTagCache() {
+  public PebbleCache<CacheKey, Object> getTagCache() {
     return this.tagCache;
   }
 
@@ -273,11 +269,11 @@ public class PebbleEngine {
 
     private ExecutorService executorService;
 
-    private Cache<Object, PebbleTemplate> templateCache;
+    private PebbleCache<Object, PebbleTemplate> templateCache;
 
     private boolean cacheActive = true;
 
-    private Cache<CacheKey, Object> tagCache;
+    private PebbleCache<CacheKey, Object> tagCache;
 
     private EscaperExtension escaperExtension = new EscaperExtension();
 
@@ -399,7 +395,7 @@ public class PebbleEngine {
      * @param templateCache The template cache
      * @return This builder object
      */
-    public Builder templateCache(Cache<Object, PebbleTemplate> templateCache) {
+    public Builder templateCache(PebbleCache<Object, PebbleTemplate> templateCache) {
       this.templateCache = templateCache;
       return this;
     }
@@ -410,7 +406,7 @@ public class PebbleEngine {
      * @param tagCache The tag cache
      * @return This builder object
      */
-    public Builder tagCache(Cache<CacheKey, Object> tagCache) {
+    public Builder tagCache(PebbleCache<CacheKey, Object> tagCache) {
       this.tagCache = tagCache;
       return this;
     }
@@ -440,7 +436,7 @@ public class PebbleEngine {
     /**
      * Adds an escaping strategy to the built-in escaper extension.
      *
-     * @param name The name of the escaping strategy
+     * @param name     The name of the escaping strategy
      * @param strategy The strategy implementation
      * @return This builder object
      */
@@ -476,7 +472,7 @@ public class PebbleEngine {
      * Enable/disable treat literal decimal as Integer. Default is disabled, treated as Long.
      *
      * @param literalDecimalTreatedAsInteger toggle to enable/disable literal decimal treated as
-     * integer
+     *                                       integer
      * @return This builder object
      */
     public Builder literalDecimalTreatedAsInteger(boolean literalDecimalTreatedAsInteger) {
@@ -541,15 +537,15 @@ public class PebbleEngine {
       if (this.cacheActive) {
         // default caches
         if (this.templateCache == null) {
-          this.templateCache = Caffeine.newBuilder().maximumSize(200).build();
+          this.templateCache = new ConcurrentMapTemplateCache();
         }
 
         if (this.tagCache == null) {
-          this.tagCache = Caffeine.newBuilder().maximumSize(200).build();
+          this.tagCache = new ConcurrentMapTagCache();
         }
       } else {
-        this.templateCache = null;
-        this.tagCache = null;
+        this.templateCache = new NoOpTemplateCache();
+        this.tagCache = new NoOpTagCache();
       }
 
       if (this.syntax == null) {
