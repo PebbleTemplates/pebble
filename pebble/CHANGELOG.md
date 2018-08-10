@@ -1,3 +1,6 @@
+## v3.0.2
+- Add PebbleCache interface and use ConcurrentMap instead of Caffeine as default template/tag cache (#381)
+
 ## v3.0.1 (2018-07-26)
 - Macros are restricted to a local scope (#371)
 - Macros have access to global attributes via "_context" variable (#242)
