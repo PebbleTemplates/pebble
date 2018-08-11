@@ -1,5 +1,6 @@
-## v3.0.2
+## v3.0.2 (2018-08-11)
 - Add PebbleCache interface and use ConcurrentMap instead of Caffeine as default template/tag cache (#381)
+- Use unbescape instead of Coverity Escapers (#380)
 
 ## v3.0.1 (2018-07-26)
 - Macros are restricted to a local scope (#371)
