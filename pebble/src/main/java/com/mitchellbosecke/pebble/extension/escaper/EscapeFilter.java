@@ -8,7 +8,6 @@
  */
 package com.mitchellbosecke.pebble.extension.escaper;
 
-import com.coverity.security.Escape;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
@@ -18,6 +17,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.unbescape.css.CssEscape;
+import org.unbescape.html.HtmlEscape;
+import org.unbescape.javascript.JavaScriptEscape;
+import org.unbescape.uri.UriEscape;
 
 public class EscapeFilter implements Filter {
 
@@ -25,20 +28,18 @@ public class EscapeFilter implements Filter {
 
   private final List<String> argumentNames = new ArrayList<>();
 
-  private final Map<String, EscapingStrategy> strategies;
+  private final Map<String, EscapingStrategy> strategies = new HashMap<>();
 
   public EscapeFilter() {
-    this.strategies = new HashMap<>();
     this.buildDefaultStrategies();
     this.argumentNames.add("strategy");
   }
 
   private void buildDefaultStrategies() {
-    this.strategies.put("html", Escape::htmlText);
-    this.strategies.put("js", Escape::jsString);
-    this.strategies.put("css", Escape::cssString);
-    this.strategies.put("html_attr", Escape::html);
-    this.strategies.put("url_param", Escape::uriParam);
+    this.strategies.put("html", HtmlEscape::escapeHtml4Xml);
+    this.strategies.put("js", JavaScriptEscape::escapeJavaScript);
+    this.strategies.put("css", CssEscape::escapeCssIdentifier);
+    this.strategies.put("url_param", UriEscape::escapeUriQueryParam);
   }
 
   @Override
