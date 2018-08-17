@@ -76,6 +76,7 @@ public class PebbleAutoConfiguration {
         builder.defaultLocale(this.properties.getDefaultLocale());
       }
       builder.strictVariables(this.properties.isStrictVariables());
+      builder.greedyMatchMethod(this.properties.isGreedyMatchMethod());
       return builder.build();
     }
   }
