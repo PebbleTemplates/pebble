@@ -49,13 +49,26 @@ public class IfNode extends AbstractRenderableNode {
         Object result = conditionalExpression.evaluate(self, context);
 
         if (result != null) {
-          try {
+          if (result instanceof Boolean) {
             satisfied = (Boolean) result;
-          } catch (ClassCastException ex) {
-            throw new PebbleException(ex, "Expected a Boolean in \"if\" statement",
-                this.getLineNumber(),
-                self.getName());
           }
+          else if (result instanceof Number) {
+            Number number = (Number) result;
+            satisfied = number.intValue() != 0;
+          }
+          else if (result instanceof String) {
+            String str = (String) result;
+            satisfied = !str.isEmpty();
+          } else {
+            throw new PebbleException(
+                      null,
+                      String.format(
+                              "Unsupported value type %s. Expected Boolean, String, Number in \"if\" statement",
+                              result.getClass().getSimpleName()),
+                      this.getLineNumber(),
+                      self.getName());
+          }
+
         } else if (context.isStrictVariables()) {
           throw new PebbleException(null,
               "null value given to if statement and strict variables is set to true",
