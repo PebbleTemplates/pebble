@@ -12,6 +12,7 @@ public class PebbleProperties extends AbstractTemplateViewResolverProperties {
 
   private Locale defaultLocale;
   private boolean strictVariables;
+  private boolean greedyMatchMethod;
 
   public PebbleProperties() {
     super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
@@ -32,5 +33,13 @@ public class PebbleProperties extends AbstractTemplateViewResolverProperties {
 
   public void setStrictVariables(boolean strictVariables) {
     this.strictVariables = strictVariables;
+  }
+
+  public boolean isGreedyMatchMethod() {
+    return this.greedyMatchMethod;
+  }
+
+  public void setGreedyMatchMethod(boolean greedyMatchMethod) {
+    this.greedyMatchMethod = greedyMatchMethod;
   }
 }
