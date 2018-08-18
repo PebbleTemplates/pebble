@@ -1,6 +1,7 @@
 ## v3.0.3 (xxxx-xx-xx)
 - Support more expressions for `if` operator (#387)
 - Consider adding greedyMatchMethod to PebbleProperties (#388) 
+- Use locale from context for lower/upper filter (#390) 
 
 ## v3.0.2 (2018-08-11)
 - Add PebbleCache interface and use ConcurrentMap instead of Caffeine as default template/tag cache (#381)
