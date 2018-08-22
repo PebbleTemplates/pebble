@@ -23,4 +23,9 @@ public class ConcurrentMapTagCache implements PebbleCache<CacheKey, Object> {
       Function<? super CacheKey, ?> mappingFunction) {
     return this.tagCache.computeIfAbsent(key, mappingFunction);
   }
+
+  @Override
+  public void invalidateAll() {
+    tagCache.clear();
+  }
 }

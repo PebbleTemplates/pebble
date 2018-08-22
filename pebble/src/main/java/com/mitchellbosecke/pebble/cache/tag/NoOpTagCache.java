@@ -11,4 +11,7 @@ public class NoOpTagCache implements PebbleCache<CacheKey, Object> {
       Function<? super CacheKey, ?> mappingFunction) {
     return mappingFunction.apply(key);
   }
+
+  @Override
+  public void invalidateAll() {}
 }
