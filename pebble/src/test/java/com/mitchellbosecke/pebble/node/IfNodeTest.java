@@ -83,7 +83,7 @@ public class IfNodeTest {
   @Test
   public void testIfZeroFloat() throws IOException {
     assertEquals("Zero float should be interpreted as FALSE",
-            "no", render(0));
+            "no", render(0.0));
   }
 
   @Test

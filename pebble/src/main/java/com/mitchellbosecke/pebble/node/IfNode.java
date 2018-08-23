@@ -14,6 +14,9 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.Pair;
+
+import static com.mitchellbosecke.pebble.utils.TypeUtils.compatibleCast;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
@@ -49,16 +52,10 @@ public class IfNode extends AbstractRenderableNode {
         Object result = conditionalExpression.evaluate(self, context);
 
         if (result != null) {
-          if (result instanceof Boolean) {
-            satisfied = (Boolean) result;
-          }
-          else if (result instanceof Number) {
-            Number number = (Number) result;
-            satisfied = number.intValue() != 0;
-          }
-          else if (result instanceof String) {
-            String str = (String) result;
-            satisfied = !str.isEmpty();
+          if (result instanceof Number
+                    || result instanceof String
+                    || result instanceof Boolean) {
+            satisfied = compatibleCast(result, Boolean.class);
           } else {
             throw new PebbleException(
                       null,
@@ -68,7 +65,6 @@ public class IfNode extends AbstractRenderableNode {
                       this.getLineNumber(),
                       self.getName());
           }
-
         } else if (context.isStrictVariables()) {
           throw new PebbleException(null,
               "null value given to if statement and strict variables is set to true",
