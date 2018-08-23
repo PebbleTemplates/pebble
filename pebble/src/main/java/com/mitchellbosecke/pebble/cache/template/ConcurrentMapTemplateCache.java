@@ -23,4 +23,9 @@ public class ConcurrentMapTemplateCache implements PebbleCache<Object, PebbleTem
       Function<? super Object, ? extends PebbleTemplate> mappingFunction) {
     return this.templateCache.computeIfAbsent(key, mappingFunction);
   }
+
+  @Override
+  public void invalidateAll() {
+    templateCache.clear();
+  }
 }
