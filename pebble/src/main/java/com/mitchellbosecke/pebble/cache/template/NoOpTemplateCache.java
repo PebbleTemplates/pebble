@@ -11,4 +11,7 @@ public class NoOpTemplateCache implements PebbleCache<Object, PebbleTemplate> {
       Function<? super Object, ? extends PebbleTemplate> mappingFunction) {
     return mappingFunction.apply(key);
   }
+
+  @Override
+  public void invalidateAll() {}
 }

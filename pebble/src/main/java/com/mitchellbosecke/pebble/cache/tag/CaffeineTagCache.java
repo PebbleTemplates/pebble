@@ -24,5 +24,10 @@ public class CaffeineTagCache implements PebbleCache<CacheKey, Object> {
   public Object computeIfAbsent(CacheKey key, Function<? super CacheKey, ?> mappingFunction) {
     return this.tagCache.get(key, mappingFunction);
   }
+
+  @Override
+  public void invalidateAll() {
+    tagCache.invalidateAll();
+  }
 }
 

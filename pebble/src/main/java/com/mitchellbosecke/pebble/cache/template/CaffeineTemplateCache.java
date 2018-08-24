@@ -25,5 +25,10 @@ public class CaffeineTemplateCache implements PebbleCache<Object, PebbleTemplate
       Function<? super Object, ? extends PebbleTemplate> mappingFunction) {
     return this.templateCache.get(key, mappingFunction);
   }
+
+  @Override
+  public void invalidateAll() {
+    templateCache.invalidateAll();
+  }
 }
 
