@@ -12,7 +12,6 @@ import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class UpperFilter implements Filter {
@@ -29,9 +28,9 @@ public class UpperFilter implements Filter {
       return null;
     }
     if (input instanceof String) {
-      return ((String) input).toUpperCase(Locale.ENGLISH);
+      return ((String) input).toUpperCase(context.getLocale());
     } else {
-      return input.toString().toUpperCase(Locale.ENGLISH);
+      return input.toString().toUpperCase(context.getLocale());
     }
   }
 
