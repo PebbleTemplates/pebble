@@ -1,4 +1,4 @@
-## v3.0.3 (xxxx-xx-xx)
+## v3.0.3 (2018-08-26)
 - Support more expressions for `if` operator (#387)
 - Consider adding greedyMatchMethod to PebbleProperties (#388) 
 - Use locale from context for lower/upper filter (#390) 
