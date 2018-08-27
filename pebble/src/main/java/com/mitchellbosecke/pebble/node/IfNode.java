@@ -15,11 +15,11 @@ import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.utils.Pair;
 
-import static com.mitchellbosecke.pebble.utils.TypeUtils.compatibleCast;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+
+import static com.mitchellbosecke.pebble.utils.TypeUtils.compatibleCast;
 
 public class IfNode extends AbstractRenderableNode {
 
@@ -52,9 +52,9 @@ public class IfNode extends AbstractRenderableNode {
         Object result = conditionalExpression.evaluate(self, context);
 
         if (result != null) {
-          if (result instanceof Number
-                    || result instanceof String
-                    || result instanceof Boolean) {
+          if (result instanceof Boolean
+                  || result instanceof Number
+                  || result instanceof String) {
             satisfied = compatibleCast(result, Boolean.class);
           } else {
             throw new PebbleException(

@@ -31,23 +31,23 @@ public class TypeUtils {
     }
     if (value instanceof Number) {
       Number number = (Number) value;
+      if (type == int.class || type == Integer.class) {
+        return (T) (Integer) number.intValue();
+      }
+      if (type == long.class || type == Long.class) {
+        return (T) (Long) number.longValue();
+      }
+      if (type == double.class || type == Double.class) {
+        return (T) (Double) number.doubleValue();
+      }
+      if (type == float.class || type == Float.class) {
+        return (T) (Float) number.floatValue();
+      }
       if (type == byte.class || type == Byte.class) {
         return (T) (Byte) number.byteValue();
       }
       if (type == short.class || type == Short.class) {
         return (T) (Short) number.shortValue();
-      }
-      if (type == int.class || type == Integer.class) {
-        return  (T) (Integer) number.intValue();
-      }
-      if (type == long.class || type == Long.class) {
-        return (T) (Long) number.longValue();
-      }
-      if (type == float.class || type == Float.class) {
-        return (T) (Float) number.floatValue();
-      }
-      if (type == double.class || type == Double.class) {
-        return (T) (Double) number.doubleValue();
       }
       if (type == BigInteger.class) {
         return (T) BigInteger.valueOf(number.longValue());

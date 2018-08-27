@@ -1,6 +1,11 @@
 package com.mitchellbosecke.pebble.node.expression;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -8,94 +13,88 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.Assert.assertEquals;
 
 public class UnaryNotExpressionTest {
 
-    private static final String templateSource = "{% if not value %}yes{% else %}no{% endif %}";
+  private static final String templateSource = "{% if not value %}yes{% else %}no{% endif %}";
 
-    private String render(Object foobar) throws IOException {
-      return render(false, foobar);
-    }
+  private String render(Object foobar) throws IOException {
+    return render(false, foobar);
+  }
 
-    private String render(boolean strict, Object value) throws IOException {
-      PebbleEngine pebble = new PebbleEngine.Builder()
-              .loader(new StringLoader())
-              .strictVariables(strict)
-              .build();
+  private String render(boolean strict, Object value) throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .strictVariables(strict)
+            .build();
 
-      PebbleTemplate template = pebble.getTemplate(templateSource);
-      Map<String, Object> context = new HashMap<>();
-      context.put("value", value);
+    PebbleTemplate template = pebble.getTemplate(templateSource);
+    Map<String, Object> context = new HashMap<>();
+    context.put("value", value);
 
-      Writer writer = new StringWriter();
-      template.evaluate(writer, context);
-      return writer.toString();
-    }
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    return writer.toString();
+  }
 
+  @Test
+  public void testIfNotNull() throws IOException {
+    assertEquals("Not Null should be interpreted as TRUE",
+            "yes", render(null));
+  }
 
-    @Test
-    public void testIfNull() throws IOException {
-      assertEquals("Null should be interpreted as FALSE",
-              "yes", render(null));
-    }
+  @Test(expected = PebbleException.class)
+  public void testIfNullInStrictMode() throws IOException {
+    render(true, null);
+  }
 
-    @Test(expected=PebbleException.class)
-    public void testIfNullInStrictMode() throws IOException {
-      render(true, null);
-    }
+  @Test
+  public void testIfNotTrue() throws IOException {
+    assertEquals("Not true should be interpreted as FALSE",
+            "no", render(true));
+  }
 
-    @Test
-    public void testIfTrue() throws IOException {
-      assertEquals("Null should be interpreted as FALSE",
-              "no", render(true));
-    }
+  @Test
+  public void testIfNotFalse() throws IOException {
+    assertEquals("Not false should be interpreted as TRUE",
+            "yes", render(false));
+  }
 
-    @Test
-    public void testIfFalse() throws IOException {
-      assertEquals("Null should be interpreted as FALSE",
-              "yes", render(false));
-    }
+  @Test
+  public void testIfNotIntegerDifferentThanZero() throws IOException {
+    assertEquals("Not Integer one should be interpreted as FALSE",
+            "no", render(1));
+  }
 
-    @Test
-    public void testIfNotZeroInteger() throws IOException {
-      assertEquals("Not zero integer should be interpreted as TRUE",
-              "no", render(1));
-    }
+  @Test
+  public void testIfNotIntegerZero() throws IOException {
+    assertEquals("Not Integer Zero should be interpreted as TRUE",
+            "yes", render(0));
+  }
 
-    @Test
-    public void testIfZeroInteger() throws IOException {
-      assertEquals("Zero integer should be interpreted as FALSE",
-              "yes", render(0));
-    }
+  @Test
+  public void testIfNotFloatDifferentThanZero() throws IOException {
+    assertEquals("Not float different than zero should be interpreted as FALSE",
+            "no", render(1.1));
+  }
 
-    @Test
-    public void testIfNotZeroFloat() throws IOException {
-      assertEquals("Not zero float should be interpreted as TRUE",
-              "no", render(1.1));
-    }
+  @Test
+  public void testIfNotFloatZero() throws IOException {
+    assertEquals("Not float zero should be interpreted as TRUE",
+            "yes", render(0.0));
+  }
 
-    @Test
-    public void testIfZeroFloat() throws IOException {
-      assertEquals("Zero float should be interpreted as FALSE",
-              "yes", render(0.0));
-    }
+  @Test
+  public void testIfNotString() throws IOException {
+    assertEquals("Not string should be interpreted as FALSE",
+            "no", render("not empty string"));
+  }
 
-    @Test
-    public void testIfNotEmptyString() throws IOException {
-      assertEquals("Not empty string should be interpreted as TRUE",
-              "no", render("not empty string"));
-    }
-
-    @Test
-    public void testIfEmptyString() throws IOException {
-      assertEquals("Empty string should be interpreted as FALSE",
-              "yes", render(""));
-    }
+  @Test
+  public void testIfNotEmptyString() throws IOException {
+    assertEquals("Not Empty string should be interpreted as TRUE",
+            "yes", render(""));
+  }
 
 }

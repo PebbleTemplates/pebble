@@ -20,28 +20,26 @@ public class UnaryNotExpression extends UnaryExpression {
   public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
     Object result = this.getChildExpression().evaluate(self, context);
     if (result != null) {
-      if (result instanceof Number
-              || result instanceof String
-              || result instanceof Boolean) {
+      if (result instanceof Boolean
+              || result instanceof Number
+              || result instanceof String) {
         return !compatibleCast(result, Boolean.class);
-      } else {
-        throw new PebbleException(
-                null,
-                String.format(
-                        "Unsupported value type %s. Expected Boolean, String, Number in \"if\" statement",
-                        result.getClass().getSimpleName()),
-                this.getLineNumber(),
-                self.getName());
       }
-    } else { // input is null
-      if (context.isStrictVariables()) {
-        throw new PebbleException(null,
-                  "null value given to not() and strict variables is set to true", this.getLineNumber(),
-                  self.getName());
-      } else {
-        return true;
-      }
-    }
-  }
+      throw new PebbleException(
+              null,
+              String.format(
+                      "Unsupported value type %s. Expected Boolean, String, Number in \"if\" statement",
+                      result.getClass().getSimpleName()),
+              this.getLineNumber(),
+              self.getName());
 
+    }
+    // input is null
+    if (context.isStrictVariables()) {
+      throw new PebbleException(null,
+              "null value given to not() and strict variables is set to true", this.getLineNumber(),
+              self.getName());
+    }
+    return true;
+  }
 }
