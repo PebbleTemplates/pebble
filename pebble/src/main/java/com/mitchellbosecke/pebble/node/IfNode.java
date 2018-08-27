@@ -65,6 +65,7 @@ public class IfNode extends AbstractRenderableNode {
                       this.getLineNumber(),
                       self.getName());
           }
+
         } else if (context.isStrictVariables()) {
           throw new PebbleException(null,
               "null value given to if statement and strict variables is set to true",
