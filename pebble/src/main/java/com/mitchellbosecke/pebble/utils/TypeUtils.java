@@ -24,40 +24,50 @@ public class TypeUtils {
     return result;
   }
 
-  public static Object compatibleCast(Object value, Class<?> type) {
+  @SuppressWarnings("unchecked")
+  public static <T> T compatibleCast(Object value, Class<T> type) {
     if (value == null || type == null || type.isAssignableFrom(value.getClass())) {
-      return value;
+      return (T) value;
     }
     if (value instanceof Number) {
       Number number = (Number) value;
-      if (type == byte.class || type == Byte.class) {
-        return number.byteValue();
-      }
-      if (type == short.class || type == Short.class) {
-        return number.shortValue();
-      }
       if (type == int.class || type == Integer.class) {
-        return number.intValue();
+        return (T) (Integer) number.intValue();
       }
       if (type == long.class || type == Long.class) {
-        return number.longValue();
-      }
-      if (type == float.class || type == Float.class) {
-        return number.floatValue();
+        return (T) (Long) number.longValue();
       }
       if (type == double.class || type == Double.class) {
-        return number.doubleValue();
+        return (T) (Double) number.doubleValue();
+      }
+      if (type == float.class || type == Float.class) {
+        return (T) (Float) number.floatValue();
+      }
+      if (type == byte.class || type == Byte.class) {
+        return (T) (Byte) number.byteValue();
+      }
+      if (type == short.class || type == Short.class) {
+        return (T) (Short) number.shortValue();
       }
       if (type == BigInteger.class) {
-        return BigInteger.valueOf(number.longValue());
+        return (T) BigInteger.valueOf(number.longValue());
       }
       if (type == BigDecimal.class) {
-        return BigDecimal.valueOf(number.doubleValue());
+        return (T) BigDecimal.valueOf(number.doubleValue());
       }
       if (type == Date.class) {
-        return new Date(number.longValue());
+        return (T) new Date(number.longValue());
+      }
+      if (type == Boolean.class) {
+        return (T) (Boolean) (number.intValue() != 0);
       }
     }
-    return value;
+    if (value instanceof String) {
+      String str = (String) value;
+      if (type == Boolean.class) {
+        return (T) (Boolean) !str.isEmpty();
+      }
+    }
+    return (T) value;
   }
 }
