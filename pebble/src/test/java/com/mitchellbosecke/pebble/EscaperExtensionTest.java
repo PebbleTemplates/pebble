@@ -8,6 +8,7 @@
  */
 package com.mitchellbosecke.pebble;
 
+import static com.mitchellbosecke.pebble.extension.escaper.EscapeFilter.JSON_ESCAPE_STRATEGY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -271,6 +272,25 @@ public class EscaperExtensionTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("true", writer.toString());
+  }
+
+  @Test
+  public void testEscapeJson() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+        .loader(new StringLoader())
+        .strictVariables(false)
+        .defaultEscapingStrategy(JSON_ESCAPE_STRATEGY)
+        .build();
+
+    PebbleTemplate template = pebble.getTemplate("{{ text }}");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("text", "{\"a\": \"a/b/c\"}");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("{\\\"a\\\": \\\"a/b/c\\\"}", writer.toString());
   }
 
   public static class TestExtension extends AbstractExtension {
