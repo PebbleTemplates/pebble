@@ -12,6 +12,8 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+import static com.mitchellbosecke.pebble.utils.TypeUtils.compatibleCast;
+
 public class TernaryExpression implements Expression<Object> {
 
   private final Expression<Boolean> expression1;
@@ -32,8 +34,8 @@ public class TernaryExpression implements Expression<Object> {
 
   @Override
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    if (this.expression1.evaluate(self, context) != null && this.expression1
-        .evaluate(self, context)) {
+    if (this.expression1.evaluate(self, context) != null
+            && compatibleCast(this.expression1.evaluate(self, context), Boolean.class)) {
       return this.expression2.evaluate(self, context);
     } else {
       return this.expression3.evaluate(self, context);
