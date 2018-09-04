@@ -26,6 +26,6 @@ public class ConcurrentMapTemplateCache implements PebbleCache<Object, PebbleTem
 
   @Override
   public void invalidateAll() {
-    templateCache.clear();
+    this.templateCache.clear();
   }
 }

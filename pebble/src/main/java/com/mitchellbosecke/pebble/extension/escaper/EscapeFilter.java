@@ -20,11 +20,18 @@ import java.util.Map;
 import org.unbescape.css.CssEscape;
 import org.unbescape.html.HtmlEscape;
 import org.unbescape.javascript.JavaScriptEscape;
+import org.unbescape.json.JsonEscape;
 import org.unbescape.uri.UriEscape;
 
 public class EscapeFilter implements Filter {
 
-  private String defaultStrategy = "html";
+  public static final String HTML_ESCAPE_STRATEGY = "html";
+  public static final String JAVASCRIPT_ESCAPE_STRATEGY = "js";
+  public static final String CSS_ESCAPE_STRATEGY = "css";
+  public static final String URL_PARAM_ESCAPE_STRATEGY = "url_param";
+  public static final String JSON_ESCAPE_STRATEGY = "json";
+
+  private String defaultStrategy = HTML_ESCAPE_STRATEGY;
 
   private final List<String> argumentNames = new ArrayList<>();
 
@@ -36,10 +43,11 @@ public class EscapeFilter implements Filter {
   }
 
   private void buildDefaultStrategies() {
-    this.strategies.put("html", HtmlEscape::escapeHtml4Xml);
-    this.strategies.put("js", JavaScriptEscape::escapeJavaScript);
-    this.strategies.put("css", CssEscape::escapeCssIdentifier);
-    this.strategies.put("url_param", UriEscape::escapeUriQueryParam);
+    this.strategies.put(HTML_ESCAPE_STRATEGY, HtmlEscape::escapeHtml4Xml);
+    this.strategies.put(JAVASCRIPT_ESCAPE_STRATEGY, JavaScriptEscape::escapeJavaScript);
+    this.strategies.put(CSS_ESCAPE_STRATEGY, CssEscape::escapeCssIdentifier);
+    this.strategies.put(URL_PARAM_ESCAPE_STRATEGY, UriEscape::escapeUriQueryParam);
+    this.strategies.put(JSON_ESCAPE_STRATEGY, JsonEscape::escapeJson);
   }
 
   @Override

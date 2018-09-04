@@ -27,7 +27,7 @@ public class CaffeineTagCache implements PebbleCache<CacheKey, Object> {
 
   @Override
   public void invalidateAll() {
-    tagCache.invalidateAll();
+    this.tagCache.invalidateAll();
   }
 }
 

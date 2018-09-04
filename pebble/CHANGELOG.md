@@ -1,3 +1,6 @@
+## v3.0.4 (xxxx-xx-xx)
+- Make NOT operator more tolerant to argument type (#394)
+
 ## v3.0.3 (2018-08-26)
 - Support more expressions for `if` operator (#387)
 - Consider adding greedyMatchMethod to PebbleProperties (#388) 

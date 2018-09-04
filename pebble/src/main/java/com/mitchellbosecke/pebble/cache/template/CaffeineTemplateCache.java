@@ -28,7 +28,7 @@ public class CaffeineTemplateCache implements PebbleCache<Object, PebbleTemplate
 
   @Override
   public void invalidateAll() {
-    templateCache.invalidateAll();
+    this.templateCache.invalidateAll();
   }
 }
 

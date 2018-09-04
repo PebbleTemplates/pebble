@@ -26,6 +26,6 @@ public class ConcurrentMapTagCache implements PebbleCache<CacheKey, Object> {
 
   @Override
   public void invalidateAll() {
-    tagCache.clear();
+    this.tagCache.clear();
   }
 }
