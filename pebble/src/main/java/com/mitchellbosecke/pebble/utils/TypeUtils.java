@@ -59,7 +59,7 @@ public class TypeUtils {
         return (T) new Date(number.longValue());
       }
       if (type == Boolean.class) {
-        return (T) (Boolean) (number.intValue() != 0);
+        return (T) (Boolean) (number.doubleValue() != 0.0);
       }
     }
     if (value instanceof String) {

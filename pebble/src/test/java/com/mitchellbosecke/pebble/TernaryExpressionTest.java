@@ -279,4 +279,75 @@ public class TernaryExpressionTest {
     assertEquals("true", writer.toString());
   }
 
+  @Test
+  public void testTernaryIntTrue() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate(
+            "{{ 1 ? 'true' : 'false' }}");
+    StringWriter writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("true", writer.toString());
+  }
+
+  @Test
+  public void testTernaryIntFalse() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate(
+            "{{ 0 ? 'true' : 'false' }}");
+    StringWriter writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("false", writer.toString());
+  }
+
+  @Test
+  public void testTernaryStringTrue() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate(
+            "{{ 'not empty' ? 'true' : 'false' }}");
+    StringWriter writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("true", writer.toString());
+  }
+
+  @Test
+  public void testTernaryStringFalse() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate(
+            "{{ '' ? 'true' : 'false' }}");
+    StringWriter writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("false", writer.toString());
+  }
+
+  @Test
+  public void testTernaryDecimalTrue() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate(
+            "{{ 0.000001 ? 'true' : 'false' }}");
+    StringWriter writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("true", writer.toString());
+  }
+
+  @Test
+  public void testTernaryDecimalFalse() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate(
+            "{{ 0.00000 ? 'true' : 'false' }}");
+    StringWriter writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("false", writer.toString());
+  }
 }
