@@ -34,8 +34,9 @@ public class TernaryExpression implements Expression<Object> {
 
   @Override
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    if (this.expression1.evaluate(self, context) != null
-            && compatibleCast(this.expression1.evaluate(self, context), Boolean.class)) {
+    Object evaluatedExpression1 = this.expression1.evaluate(self, context);
+    if (evaluatedExpression1 != null
+            && compatibleCast(evaluatedExpression1, Boolean.class)) {
       return this.expression2.evaluate(self, context);
     } else {
       return this.expression3.evaluate(self, context);
