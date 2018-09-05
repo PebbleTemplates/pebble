@@ -471,12 +471,9 @@ public class LogicTest {
     context.put("a", false);
     context.put("b", null);
 
-    try {
-      writer = new StringWriter();
-      andTemplate.evaluate(writer, context);
-      fail("Exception not thrown");
-    } catch (PebbleException e) {
-    }
+    writer = new StringWriter();
+    andTemplate.evaluate(writer, context);
+    assertEquals("no", writer.toString());
 
     try {
       writer = new StringWriter();

@@ -17,23 +17,28 @@ public class OrExpression extends BinaryExpression<Boolean> {
   @SuppressWarnings("unchecked")
   @Override
   public Boolean evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    Boolean left = ((Expression<Boolean>) this.getLeftExpression()).evaluate(self, context);
-    Boolean right = ((Expression<Boolean>) this.getRightExpression()).evaluate(self, context);
-    if (context.isStrictVariables()) {
-      if (left == null || right == null) {
+    Expression<Boolean> leftExpression = (Expression<Boolean>) this.getLeftExpression();
+    boolean left = this.evaluateExpression(self, context, leftExpression);
+    if (!left) {
+      Expression<Boolean> rightExpression = (Expression<Boolean>) this.getRightExpression();
+      return this.evaluateExpression(self, context, rightExpression);
+    }
+    return true;
+  }
+
+  private boolean evaluateExpression(PebbleTemplateImpl self, EvaluationContextImpl context,
+      Expression<Boolean> expression) {
+    Boolean evaluatedExpression = expression.evaluate(self, context);
+
+    if (evaluatedExpression == null) {
+      if (context.isStrictVariables()) {
         throw new PebbleException(null,
-            "null value used in or operator and strict variables is set to true", this
-            .getLineNumber(),
+            "null value used in and operator and strict variables is set to true",
+            this.getLineNumber(),
             self.getName());
       }
-    } else {
-      if (left == null) {
-        left = false;
-      }
-      if (right == null) {
-        right = false;
-      }
+      return false;
     }
-    return left || right;
+    return evaluatedExpression;
   }
 }
