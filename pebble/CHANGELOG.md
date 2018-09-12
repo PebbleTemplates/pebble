@@ -1,3 +1,6 @@
+## v3.0.5 (2018-09-30)
+- Cannot access List methods (#402)
+
 ## v3.0.4 (2018-09-09)
 - Make NOT operator more tolerant to argument type (#394)
 - Make ternary if operator more tolerant to argument type (#399) 
