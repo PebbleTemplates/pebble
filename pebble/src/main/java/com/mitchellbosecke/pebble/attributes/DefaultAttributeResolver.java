@@ -45,8 +45,11 @@ public class DefaultAttributeResolver implements AttributeResolver {
 
           // then lists
           if (instance instanceof List) {
-            return ListResolver.INSTANCE
+            ResolvedAttribute resolvedAttribute = ListResolver.INSTANCE
                 .resolve(instance, attributeNameValue, null, args, context, filename, lineNumber);
+            if (resolvedAttribute != null) {
+              return resolvedAttribute;
+            }
           }
         }
 
