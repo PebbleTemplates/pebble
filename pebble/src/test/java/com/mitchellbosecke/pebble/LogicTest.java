@@ -1106,4 +1106,47 @@ public class LogicTest {
 
   }
 
+  @Test
+  public void testListSizeEmpty() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+        .loader(new StringLoader())
+        .strictVariables(false)
+        .build();
+
+    String source = "{% if dirEntries.size > 0 %}\n"
+        + "<p>There are available files.</p>\n"
+        + "{% else %}\n"
+        + "<p>There are no available files.</p>\n"
+        + "{% endif %}";
+    PebbleTemplate template = pebble.getTemplate(source);
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("dirEntries", new ArrayList<>());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("<p>There are no available files.</p>\n", writer.toString());
+  }
+
+  @Test
+  public void testListSize() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+        .loader(new StringLoader())
+        .strictVariables(false)
+        .build();
+
+    String source = "{% if dirEntries.size > 0 %}\n"
+        + "<p>There are available files.</p>\n"
+        + "{% else %}\n"
+        + "<p>There are no available files.</p>\n"
+        + "{% endif %}";
+    PebbleTemplate template = pebble.getTemplate(source);
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("dirEntries", Arrays.asList("Test"));
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("<p>There are available files.</p>\n", writer.toString());
+  }
 }

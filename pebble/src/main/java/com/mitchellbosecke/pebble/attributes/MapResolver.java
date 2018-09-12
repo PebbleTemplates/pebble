@@ -23,7 +23,7 @@ class MapResolver implements AttributeResolver {
       int lineNumber) {
     Map<?, ?> object = (Map<?, ?>) instance;
     if (object.isEmpty()) {
-      return null;
+      return new ResolvedAttribute(null);
     }
 
     ResolvedAttribute resolvedAttribute;
