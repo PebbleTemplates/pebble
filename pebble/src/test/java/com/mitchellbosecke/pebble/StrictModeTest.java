@@ -1,7 +1,10 @@
 package com.mitchellbosecke.pebble;
 
+import static org.junit.Assert.assertEquals;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -67,4 +70,45 @@ public class StrictModeTest {
     }
   }
 
+  @Test
+  public void whenStrictVariableEnabledWithAndExpressionAndLeftOperandFalse_thenDontEvaluateRightExpression()
+      throws PebbleException, IOException {
+    PebbleEngine engine = new PebbleEngine
+        .Builder()
+        .loader(new StringLoader())
+        .strictVariables(true)
+        .autoEscaping(false)
+        .build();
+
+    PebbleTemplate template = engine.getTemplate("{%- set a = null -%}\n" +
+        "{{- a is not null and a.toLowerCase() == \"abc\" -}}\n" +
+        "{%- if a is not null and a.toLowerCase() == \"abc\" -%}\n" +
+        "Do something" +
+        "{%- endif -%}");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("false", writer.toString());
+  }
+
+  @Test
+  public void whenStrictVariableEnabledWithOrExpressionAndLeftOperandTrue_thenDontEvaluateRightExpression()
+      throws PebbleException, IOException {
+    PebbleEngine engine = new PebbleEngine
+        .Builder()
+        .loader(new StringLoader())
+        .strictVariables(true)
+        .autoEscaping(false)
+        .build();
+
+    PebbleTemplate template = engine.getTemplate("{%- set a = null -%}\n" +
+        "{{- a is null or a.toLowerCase() == \"abc\" -}}\n" +
+        "{%- if a is null or a.toLowerCase() == \"abc\" -%}\n" +
+        "Do something" +
+        "{%- endif -%}");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("trueDo something", writer.toString());
+  }
 }

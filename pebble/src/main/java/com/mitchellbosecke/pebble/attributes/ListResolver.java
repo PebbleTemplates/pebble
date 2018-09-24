@@ -24,7 +24,12 @@ class ListResolver implements AttributeResolver {
 
     @SuppressWarnings("unchecked") List<Object> list = (List<Object>) instance;
 
-    int index = this.getIndex(attributeName);
+    int index;
+    try {
+      index = Integer.parseInt(attributeName);
+    } catch (NumberFormatException e) {
+      return null;
+    }
     int length = list.size();
 
     if (index < 0 || index >= length) {
@@ -38,13 +43,5 @@ class ListResolver implements AttributeResolver {
     }
 
     return new ResolvedAttribute(list.get(index));
-  }
-
-  private int getIndex(String attributeName) {
-    try {
-      return Integer.parseInt(attributeName);
-    } catch (NumberFormatException e) {
-      return -1;
-    }
   }
 }

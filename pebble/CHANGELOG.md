@@ -1,5 +1,11 @@
-## v3.0.4 (xxxx-xx-xx)
+## v3.0.5 (2018-09-30)
+- Cannot access List methods (#402)
+
+## v3.0.4 (2018-09-09)
 - Make NOT operator more tolerant to argument type (#394)
+- Make ternary if operator more tolerant to argument type (#399) 
+- Adjust AndExpression and OrExpression logic (#398)
+- Add JSON escaping as part of the default escaping strategies (#395)
 
 ## v3.0.3 (2018-08-26)
 - Support more expressions for `if` operator (#387)
