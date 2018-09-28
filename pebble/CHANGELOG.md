@@ -1,5 +1,6 @@
 ## v3.0.5 (2018-09-30)
 - Cannot access List methods (#402)
+- Implement to boolean smart-casting in OR and AND operators (#405)
 
 ## v3.0.4 (2018-09-09)
 - Make NOT operator more tolerant to argument type (#394)
