@@ -12,6 +12,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 
+import static com.mitchellbosecke.pebble.utils.TypeUtils.compatibleCast;
+
 public class AndExpression extends BinaryExpression<Boolean> {
 
   @SuppressWarnings("unchecked")
@@ -28,7 +30,7 @@ public class AndExpression extends BinaryExpression<Boolean> {
 
   private boolean evaluateExpression(PebbleTemplateImpl self, EvaluationContextImpl context,
       Expression<Boolean> expression) {
-    Boolean evaluatedExpression = expression.evaluate(self, context);
+    Boolean evaluatedExpression = compatibleCast(expression.evaluate(self, context), Boolean.class);
 
     if (evaluatedExpression == null) {
       if (context.isStrictVariables()) {
