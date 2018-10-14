@@ -1,7 +1,9 @@
 package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import java.io.IOException;
@@ -48,6 +50,19 @@ public class ForTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("AlexBob", writer.toString());
+  }
+
+  @Test
+  public void testInvalidIdentifierName() {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
+
+    try {
+      String source = "{% for <= in users %}{% endfor %}";
+      pebble.getTemplate(source);
+      fail("Exception not thrown");
+    } catch (ParserException e) {
+      assertEquals("Unexpected token of value \"<=\" and type OPERATOR, expected token of type NAME ({% for <= in users %}{% endfor %}:1)", e.getMessage());
+    }
   }
 
   public static class User {
