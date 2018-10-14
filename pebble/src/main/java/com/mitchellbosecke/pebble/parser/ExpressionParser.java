@@ -595,8 +595,7 @@ public class ExpressionParser {
     // set the stream because this function may be called externally (for
     // and set token parsers)
     this.stream = this.parser.getStream();
-    Token token = this.stream.current();
-    token.test(Token.Type.NAME);
+    Token token = stream.expect(Token.Type.NAME);
 
     if (RESERVED_KEYWORDS.contains(token.getValue())) {
       throw new ParserException(null,
@@ -604,7 +603,6 @@ public class ExpressionParser {
           token.getLineNumber(), this.stream.getFilename());
     }
 
-    this.stream.next();
     return token.getValue();
   }
 
