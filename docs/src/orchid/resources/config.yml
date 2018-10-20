@@ -1,0 +1,59 @@
+site:
+  about:
+    siteName: 'Pebble Templates'
+    subtitle: 'A lightweight but rock solid Java templating engine.'
+
+theme:
+  primaryColor: '#72A6D0'
+  menu:
+    - type: 'separator'
+      title: 'About'
+    - type: 'page'
+      title: 'Home'
+      itemId: 'Home'
+    - type: 'page'
+      itemId: 'Contributing'
+    - type: 'separator'
+      title: 'Wiki'
+    - type: 'pageSubtree'
+      itemId: 'Wiki'
+    - type: 'separator'
+      title: 'API Docs'
+    - type: 'page'
+      title: 'Javadocs'
+      itemId: 'com.mitchellbosecke.pebble'
+  extraCss:
+    - 'assets/css/pygments.scss'
+    - 'assets/css/orchidJavadoc.scss'
+    - 'assets/css/extraCss.scss'
+
+services:
+  publications:
+    stages:
+      - type: ghPages
+        branch: gh-pages
+        latestDirName: latest
+        publishType: CleanBranch
+        username: cjbrooks12
+        repo: pebble
+
+allPages:
+  components:
+    - type: 'pageContent'
+    - type: 'prism'
+      languages:
+        - 'java'
+        - 'twig'
+        - 'markup'
+
+wiki:
+  defaultConfig:
+    includeIndexInPageTitle: false
+
+javadoc:
+  sourceDirs:
+    - '../../../../pebble/src/main/java'
+  pages:
+    menu:
+      - type: 'javadocPackages'
+      - type: 'javadocClasses'

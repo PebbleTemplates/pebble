@@ -22,3 +22,6 @@
 target/*
 /target
 /bin/
+
+.gradle/
+build/
