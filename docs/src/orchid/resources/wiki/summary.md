@@ -2,6 +2,7 @@
 - [Installation and Configuration](guide/installation.md)
 - [Spring Integration](guide/spring-integration.md)
 - [Spring Boot Integration](guide/spring-boot-integration.md)
+- [Pebble Spring Example](https://github.com/PebbleTemplates/pebble-example-spring)
 - [Basic Usage](guide/basic-usage.md)
 - [Escaping](guide/escaping.md)
 - [Extending Pebble](guide/extending-pebble.md)

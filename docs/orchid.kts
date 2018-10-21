@@ -4,14 +4,14 @@
 
 @file:DependsOn("com.github.holgerbrandl:kscript-annotations:1.2")
 
-@file:DependsOn("io.github.javaeden.orchid:OrchidCore:0.12.11")
-@file:DependsOn("io.github.javaeden.orchid:OrchidEditorial:0.12.11")
-@file:DependsOn("io.github.javaeden.orchid:OrchidSearch:0.12.11")
-@file:DependsOn("io.github.javaeden.orchid:OrchidPages:0.12.11")
-@file:DependsOn("io.github.javaeden.orchid:OrchidWiki:0.12.11")
-@file:DependsOn("io.github.javaeden.orchid:OrchidJavadoc:0.12.11")
-@file:DependsOn("io.github.javaeden.orchid:OrchidPluginDocs:0.12.11")
-@file:DependsOn("io.github.javaeden.orchid:OrchidSyntaxHighlighter:0.12.11")
+@file:DependsOn("io.github.javaeden.orchid:OrchidCore:0.12.12")
+@file:DependsOn("io.github.javaeden.orchid:OrchidEditorial:0.12.12")
+@file:DependsOn("io.github.javaeden.orchid:OrchidSearch:0.12.12")
+@file:DependsOn("io.github.javaeden.orchid:OrchidPages:0.12.12")
+@file:DependsOn("io.github.javaeden.orchid:OrchidWiki:0.12.12")
+@file:DependsOn("io.github.javaeden.orchid:OrchidJavadoc:0.12.12")
+@file:DependsOn("io.github.javaeden.orchid:OrchidPluginDocs:0.12.12")
+@file:DependsOn("io.github.javaeden.orchid:OrchidSyntaxHighlighter:0.12.12")
 
 import com.eden.common.util.EdenUtils
 import com.eden.orchid.Orchid

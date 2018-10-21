@@ -15,8 +15,7 @@ theme:
       itemId: 'Contributing'
     - type: 'separator'
       title: 'Wiki'
-    - type: 'pageSubtree'
-      itemId: 'Wiki'
+    - type: 'wiki'
     - type: 'separator'
       title: 'API Docs'
     - type: 'page'
@@ -25,7 +24,6 @@ theme:
   extraCss:
     - 'assets/css/pygments.scss'
     - 'assets/css/orchidJavadoc.scss'
-    - 'assets/css/extraCss.scss'
 
 services:
   publications:
