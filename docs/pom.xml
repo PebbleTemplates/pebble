@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.pebbletemplates</groupId>
+        <artifactId>pebble-project</artifactId>
+        <version>3.0.6-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>docs</artifactId>
+
+    <properties>
+        <orchid.version>0.12.15</orchid.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.github.javaeden.orchid</groupId>
+                <artifactId>orchid-maven-plugin</artifactId>
+                <version>${orchid.version}</version>
+
+                <!-- 1. Include all official Orchid plugins and themes -->
+                <dependencies>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidCore</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidEditorial</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidSearch</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidPages</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidWiki</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidJavadoc</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidPluginDocs</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidSyntaxHighlighter</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <!-- 3. Use the 'BsDoc' theme, and view the site locally at 'http://localhost:8080' -->
+                <configuration>
+                    <theme>Editorial</theme>
+                    <version>${project.version}</version>
+                    <baseUrl>https://pebbletemplates.io</baseUrl>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- 2. Get Orchid from Jcenter, Bintray, and Jitpack -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>kotlinx</id>
+            <url>https://kotlin.bintray.com/kotlinx</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>orchid</id>
+            <url>https://dl.bintray.com/javaeden/Orchid</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>eden</id>
+            <url>https://dl.bintray.com/javaeden/Eden</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

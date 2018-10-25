@@ -30,9 +30,8 @@ services:
     stages:
       - type: ghPages
         branch: gh-pages
-        latestDirName: latest
         publishType: CleanBranch
-        username: cjbrooks12
+        username: PebbleTemplates
         repo: pebble
 
 allPages:

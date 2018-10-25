@@ -10,6 +10,7 @@
   <modules>
     <module>pebble</module>
     <module>pebble-spring</module>
+    <module>docs</module>
   </modules>
 
   <name>Pebble Project</name>

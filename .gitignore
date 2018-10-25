@@ -19,7 +19,7 @@
 *.ipr
 *.iws
 
-target/*
+target/
 /target
 /bin/
 
