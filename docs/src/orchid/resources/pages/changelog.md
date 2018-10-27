@@ -1,0 +1,4 @@
+---
+components:
+  - type: changelog
+---

@@ -9,7 +9,11 @@
         <version>3.0.6-SNAPSHOT</version>
     </parent>
 
+    <name>Pebble docs</name>
+    <description>Pebble documentation</description>
+    <url>http://pebbletemplates.io</url>
     <artifactId>docs</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
         <orchid.version>0.12.15</orchid.version>
@@ -47,6 +51,11 @@
                     <dependency>
                         <groupId>io.github.javaeden.orchid</groupId>
                         <artifactId>OrchidWiki</artifactId>
+                        <version>${orchid.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.javaeden.orchid</groupId>
+                        <artifactId>OrchidChangelog</artifactId>
                         <version>${orchid.version}</version>
                     </dependency>
                     <dependency>

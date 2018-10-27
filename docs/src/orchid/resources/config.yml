@@ -15,6 +15,8 @@ theme:
       itemId: 'Twig Compatibility'
     - type: 'page'
       itemId: 'Contributing'
+    - type: 'page'
+      itemId: 'Changelog'
     - type: 'separator'
       title: 'Wiki'
     - type: 'wiki'
@@ -35,6 +37,8 @@ services:
         publishType: CleanBranch
         username: PebbleTemplates
         repo: pebble
+      - type: githubReleases
+        repo: 'PebbleTemplates/pebble'
 
 allPages:
   components:
