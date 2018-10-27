@@ -1,3 +1,6 @@
+---
+---
+
 # Contributing
 
 ## Help Wanted
@@ -13,7 +16,9 @@ General improvements are welcome, otherwise you can help tackle some of the [kno
 ## Getting Started
 - Fork the [repository](https://github.com/PebbleTemplates/pebble)
 - Make the fix.
-- Use maven to build and test: `mvn clean install`
+- Use maven to build and test:
+    - `mvn clean install` from root to build Pebble
+    - `mvn orchid:serve` from `docs/` to build and serve documentation on http://localhost:8080
 - Submit a pull request
 
 ## Understanding the Code
@@ -25,7 +30,7 @@ the template source to the `Lexer`.
 
 The `Lexer` is responsible for converting the template into a bunch of `Token` objects. A token is the smallest
 distinguishable unit in a template, i.e. it can not be broken down into more specific objects. A token can
-represent a delimiter (eg. `{{` ), or a function name, a string, plain text, or many other things. Once the
+represent a delimiter (eg. `{{ '{{' }}` ), or a function name, a string, plain text, or many other things. Once the
 lexer has established the entire stream of tokens which collectively make up the entire template, it returns
 this `TokenStream` back to the main `PebbleEngine`.
 
@@ -50,3 +55,10 @@ provided `Writer` object.
 ## Contributing Code
 Currently there aren't any formal guidelines. Just ensure that your changes include any
 necessary unit tests and send me a pull request on [github](https://github.com/PebbleTemplates/pebble)!
+
+## Acknowledgements
+Thanks to all the following contributors who are helping to make Pebble the best template engine available for Java. 
+
+{%- for contributor in data.contributors %}
+* [{{ contributor.name }}]({{ contributor.link }})
+{%- endfor %}
