@@ -1,0 +1,43 @@
+---
+title: Twig Compatibility
+---
+
+While Pebble was inspired by and generally has high compatibility with Twig, it is neither a complete nor an exact Twig
+implementation. There are features of Twig not supported by Pebble, there are features implemented in Pebble that are
+not supported by Twig, and some features might behave differently or use a different name or syntax. This page outlines
+the similarities and differences between Pebble and Twig.
+
+{{ compat('Tags', data['twig-compatibility'].tags ) }}
+{{ compat('Filters', data['twig-compatibility'].filters ) }}
+{{ compat('Functions', data['twig-compatibility'].functions ) }}
+{{ compat('Tests', data['twig-compatibility'].tests ) }}
+{{ compat('Operators', data['twig-compatibility'].operators ) }}
+
+{% macro compat(type, items) %}
+<br>
+<br>
+<h2>{{ type }}</h2>
+<table>
+    <thead>
+    <tr>
+        <td>Name</td>
+        <td>Pebble Support</td>
+        <td>Notes</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+    <tr>
+        <td><a href="{{ item.twigLink }}">{{ item.name }}</a></td>
+        <td>
+            {{ item.support }}
+            {% if item.page is not empty %}
+                {{ anchor('(docs)', item.page) }}
+            {% endif %}
+        </td>
+        <td>{{ item.notes | compileAs('md') }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}

@@ -12,6 +12,8 @@ theme:
       title: 'Home'
       itemId: 'Home'
     - type: 'page'
+      itemId: 'Twig Compatibility'
+    - type: 'page'
       itemId: 'Contributing'
     - type: 'separator'
       title: 'Wiki'
