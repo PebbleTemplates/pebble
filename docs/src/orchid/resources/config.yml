@@ -28,6 +28,7 @@ theme:
   extraCss:
     - 'assets/css/pygments.scss'
     - 'assets/css/orchidJavadoc.scss'
+    - 'assets/css/github-fork-ribbon.css'
 
 services:
   publications:
