@@ -1,0 +1,60 @@
+<div id="sidebar">
+    <div class="inner">
+
+        <!-- Search -->
+        <section id="search" class="alt">
+            <form data-orchid-search="{{ (searchIndices is not empty) ? searchIndices|join(',') : '' }}">
+                <input type="text" name="query" id="query" placeholder="Search"/>
+            </form>
+            <div class="box" id="search-results" data-orchid-search-results style="display: none;">
+                <b>Search Results</b>
+                <ul></ul>
+            </div>
+            <div class="box" id="search-progress" data-orchid-search-progress style="display: none;">
+                <div class="loader">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Menu -->
+        <nav id="siteNav" class="menu">
+            <header class="major">
+                <h2>{{ site.about.siteName }}</h2>
+            </header>
+            <ul class="top-level">
+                {% for menuItem in theme.menu.getMenuItems(page) %}
+                    {% include 'includes/menuItem' with {"menuItem": menuItem} %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% if not page.menu.isEmpty() %}
+        <nav class="menu">
+            <header class="major">
+                <h2>{{ page.title }}</h2>
+            </header>
+            <ul class="top-level">
+                {% for menuItem in page.menu.getMenuItems(page) %}
+                    {% include 'includes/menuItem' with {"menuItem": menuItem} %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        <!-- Section -->
+        <section>
+            <p class="text-center">
+                Currently {{ site.version }}.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright text-center">
+                &copy; PebbleTemplates. All rights reserved.
+                <br>
+                Site created with <a href="https://orchid.netlify.com">Orchid </a>,
+                design by <a href="https://html5up.net">HTML5 UP</a>.
+            </p>
+        </footer>
+
+    </div>
+</div>
