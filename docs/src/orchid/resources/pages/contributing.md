@@ -18,7 +18,7 @@ General improvements are welcome, otherwise you can help tackle some of the [kno
 - Make the fix.
 - Use maven to build and test:
     - `mvn clean install` from root to build Pebble
-    - `mvn orchid:serve` from `docs/` to build and serve documentation on http://localhost:8080
+    - `mvn orchid:serve -P release` from `docs/` to build and serve documentation on http://localhost:8080
 - Submit a pull request
 
 ## Understanding the Code

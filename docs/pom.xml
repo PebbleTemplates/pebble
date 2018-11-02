@@ -83,7 +83,7 @@
             <configuration>
               <theme>Editorial</theme>
               <version>${project.version}</version>
-              <baseUrl>http://pebbletemplates.io</baseUrl>
+              <baseUrl>//pebbletemplates.io</baseUrl>
             </configuration>
 
             <executions>
