@@ -1,10 +1,20 @@
 ---
 ---
 
-## Basic Usage
-For more information on installation and configuration, see {{ anchor('the installation guide', 'Installation and Configuration') }}.
-For more information on basic usage, see {{ anchor('the basic usage guide', 'Basic Usage') }}.
+Pebble is a Java templating engine inspired by <a href="https://twig.symfony.com/">Twig</a>.
+It features templates inheritance and easy-to-read syntax, ships with built-in <br/>autoescaping 
+for security, and includes integrated support for internationalization.
 
+## Features
+
+* **Rich set of built-in tags and filters**
+* **Template inheritance**: extract common areas of your content in a single ‘layout’ and make
+your templates inherit this layout.
+* **Extensible language**: new tags, filters and functions can be added to Pebble very easily.
+
+If you already know Twig, you can compare both engines in {{ anchor('the compatibility matrix', 'Twig Compatibility') }}.
+
+## Basic Usage
 First, add the following dependency to your pom.xml:
 ```xml
 <dependency>
@@ -78,3 +88,6 @@ The output should result in the following:
 </body>
 </html>
 ```
+
+For more information on installation and configuration, see {{ anchor('the installation guide', 'Installation and Configuration') }}.<br/>
+For more information on basic usage, see {{ anchor('the basic usage guide', 'Basic Usage') }}.

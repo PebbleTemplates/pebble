@@ -338,7 +338,9 @@ Expressions in a Pebble template are very similar to expressions found in Java.
 The simplest form of expressions are literals. Literals are representations for Java types such as strings and numbers.
 - `"Hello World"`: Everything between two double or single quotes is a string. You can use a backslash to escape
 quotation marks within the string.
-- `100 * 2.5`: Integers and floating point numbers are similar to their Java counterparts.
+- `"Hello #{who}"`: String interpolation is also possible using `#{}` inside quotes. In this example,
+if the value of the variable `who` is `"world"`, then the expression will be evaluated to `"Hello world"`.
+- `100 + 10l * 2.5`: Integers, longs and floating point numbers are similar to their Java counterparts.
 - `true` / `false`: Boolean values equivalent to their Java counterparts.
 - `null`: Represents no specific value, similar to it's Java counterpart. `none` is an alias for null.
 
