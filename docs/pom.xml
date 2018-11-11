@@ -22,7 +22,7 @@
 
   <profiles>
     <profile>
-      <id>release</id>
+      <id>doc</id>
       <build>
         <plugins>
           <plugin>
