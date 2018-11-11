@@ -2,7 +2,7 @@
 
 Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org/). It separates itself from the crowd with its inheritance feature and its easy-to-read syntax. It ships with built-in autoescaping for security, and it includes integrated support for internationalization.
 
-For more information please visit the [wiki](https://github.com/PebbleTemplates/pebble/wiki).
+For more information please visit the [website](https://pebbletemplates.io).
 
 # New group id
 Please note that the pebble's groupId has been updated as of version 2.5.0
