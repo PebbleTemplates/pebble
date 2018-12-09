@@ -46,7 +46,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Automatic-Module-Name>io.pebbletemplates.pebble.boot</Automatic-Module-Name>
+              <Automatic-Module-Name>io.pebbletemplates.spring.boot</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>

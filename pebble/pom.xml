@@ -75,7 +75,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Automatic-Module-Name>io.pebbletemplates.pebble</Automatic-Module-Name>
+              <Automatic-Module-Name>io.pebbletemplates</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>
