@@ -54,7 +54,6 @@ import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ParallelTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,6 +142,7 @@ public class CoreExtension extends AbstractExtension {
     filters.put("length", new LengthFilter());
     filters.put(ReplaceFilter.FILTER_NAME, new ReplaceFilter());
     filters.put(MergeFilter.FILTER_NAME, new MergeFilter());
+    filters.put(SplitFilter.FILTER_NAME, new SplitFilter());
     return filters;
   }
 
