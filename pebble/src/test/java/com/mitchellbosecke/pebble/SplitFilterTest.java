@@ -48,7 +48,7 @@ public class SplitFilterTest {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("{% set foo = \"one,two,three\" | split(',') %}"
+    PebbleTemplate template = pebble.getTemplate("{% set foo = 'one|two|three' | split('\\|') %}"
         + "{% for var in foo %}"
         + "{{ var }}"
         + "{% endfor %}");
