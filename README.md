@@ -10,7 +10,7 @@ Please note that the pebble's groupId has been updated as of version 2.5.0
 <dependency>
 	<groupId>io.pebbletemplates</groupId>
 	<artifactId>pebble</artifactId>
-	<version>3.0.7</version>
+	<version>3.0.8</version>
 </dependency>
 ```
 
