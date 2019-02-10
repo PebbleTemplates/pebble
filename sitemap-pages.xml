@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://pebbletemplates.io/CNAME</loc>
+        <lastmod>2019-02-10T16:54:40.489</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://pebbletemplates.io/changelog</loc>
+        <lastmod>2019-02-10T16:54:40.530</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://pebbletemplates.io/contributing</loc>
+        <lastmod>2019-02-10T16:54:40.552</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://pebbletemplates.io/twig-compatibility</loc>
+        <lastmod>2019-02-10T16:54:40.556</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    
+</urlset>

@@ -1,0 +1,1129 @@
+<!DOCTYPE HTML>
+<!--
+    Editorial by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+
+
+
+
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<meta name="generator" content="Orchid 0.12.17"/>
+<link rel="icon" href="https://pebbletemplates.io/favicon.ico">
+
+
+<meta name="robots" content="index, follow">
+
+
+
+<title>Basic Usage</title>
+
+
+<meta name="description" content="">
+
+
+
+<link rel="prev" href="https://pebbletemplates.io/wiki/guide/spring-boot-integration">
+
+
+<link rel="next" href="https://pebbletemplates.io/wiki/guide/escaping">
+
+
+<script>
+    window.site = {"orchidVersion":"0.12.17","baseUrl":"https://pebbletemplates.io","environment":"prod","version":"3.0.8"};
+</script>
+
+
+
+
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<!-- start:inject styles -->
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/2cadf0c2/assets/css/editorial_main.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/2cadf0c2/assets/css/editorial_orchidCustomizations.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/2cadf0c2/assets/css/orchidSearch.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/pygments.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/orchidJavadoc.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/github-fork-ribbon.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/ajax/libs/prism/1.8.4/themes/prism.min.css"/>
+<!-- end:inject styles -->
+
+</head>
+<body class="is-loading">
+
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <a class="github-fork-ribbon" href="https://github.com/PebbleTemplates" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+        <div class="inner">
+
+            <!-- Header -->
+            
+                <header id="header">
+    <a href="https://pebbletemplates.io" class="logo">Pebble Templates</a>
+    <ul class="icons">
+    
+    
+    
+    </ul>
+</header>
+            
+            
+            
+            
+                <section id="pageContent">
+                    <header class="major"><h2>Basic Usage</h2></header>
+                    <article>
+                        
+    <!-- start:inject components -->
+    
+        
+            
+                
+                    
+                        <h1 id="basic-usage">Basic Usage</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Pebble templates can be used to generate any sort of textual output. It is typically used to generate HTML but it can
+also be used to create CSS, XML, JS, etc. A template itself will contain whatever language you are attempting to output
+alongside Pebble-specific features and syntax. Here is a simple example that will generate a trivial HTML page:</p>
+<pre><code class="language-twig">&lt;html&gt;
+	&lt;head&gt;
+		&lt;title&gt;{{ websiteTitle }}&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		{{ content }}
+	&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>When you evaluate the template you will provide it with a &quot;context&quot; which is just a map of variables.
+This context should include the two variables above, <code>websiteTitle</code> and <code>content</code>.</p>
+<h2 id="set-up">Set Up</h2>
+<p>You will want to begin by creating a PebbleEngine object which is responsible for compiling your templates:</p>
+<pre><code class="language-java">PebbleEngine engine = new PebbleEngine.Builder().build();
+</code></pre>
+<p>And now, with your new PebbleEngine instance you can start compiling templates:</p>
+<pre><code class="language-java">PebbleTemplate compiledTemplate = engine.getTemplate(&quot;templates/home.html&quot;);
+</code></pre>
+<p>Finally, simply provide your compiled template with a java.io.Writer object and a Map of variables (the context)
+to get your output!</p>
+<pre><code class="language-java">Writer writer = new StringWriter();
+
+Map&lt;String, Object&gt; context = new HashMap&lt;&gt;();
+context.put(&quot;websiteTitle&quot;, &quot;My First Website&quot;);
+context.put(&quot;content&quot;, &quot;My Interesting Content&quot;);
+
+compiledTemplate.evaluate(writer, context);
+
+String output = writer.toString();
+</code></pre>
+<h2 id="syntax-reference">Syntax Reference</h2>
+<p>There are two primary delimiters used within a Pebble template: <code>{{ ... }}</code> and <code>{% ... %}</code>. The first set of delimiters
+will output the result of an expression. Expressions can be very simple (ex. a variable name) or much more complex.
+The second set of delimiters is used to change the control flow of the template; it can contain an if-statement,
+define a parent template, define a new block, etc.</p>
+<h2 id="variables">Variables</h2>
+<p>You can print variables directly to the output; for example, if the context contains a variable called <code>foo</code> which is a
+String with the value &quot;bar&quot; you can do the following which will output &quot;bar&quot;.</p>
+<pre><code class="language-twig">{{ foo }}
+</code></pre>
+<p>You can use the dot (.) notation to access attributes of variables. If the attribute contains any atypical
+characters, you can use the subscript notation ([]) instead.</p>
+<pre><code class="language-twig">{{ foo.bar }}
+{{ foo[&quot;bar&quot;] }}
+</code></pre>
+<p>Behind the scenes <code>foo.bar</code> will attempt the following techniques to to access the <code>bar</code> attribute of the <code>foo</code>
+variable:</p>
+<ul>
+<li>If <code>foo</code> is a map, <code>foo.get(&quot;bar&quot;)</code></li>
+<li><code>foo.getBar()</code></li>
+<li><code>foo.isBar()</code></li>
+<li><code>foo.hasBar()</code></li>
+<li><code>foo.bar()</code></li>
+<li><code>foo.bar</code></li>
+</ul>
+<p>If the value of variable (or attribute) is null it will output an empty string.</p>
+<h2 id="type-safety">Type Safety</h2>
+<p>Pebble templates are dynamically typed and any possible type safety issues won't occur until the actual runtime
+evaluation of your templates. Pebble does however allow you to choose how to handle type safety issues with the use
+of it's <code>strictVariables</code> setting. By default, <code>strictVariables</code> is set to <code>false</code> which means that the following:</p>
+<pre><code class="language-twig">{{ foo.bar }}
+</code></pre>
+<p>will print an empty string even if the object <code>foo</code> does not actually have an attribute called <code>bar</code>.
+If <code>strictVariables</code> is set to true, the above expression would throw an exception.</p>
+<p>When <code>strictVariables</code> is set to false your expressions are also null safe. The following expression will print an
+empty string even if foo and/or bar are null:</p>
+<pre><code class="language-twig">{{ foo.bar.baz }}
+</code></pre>
+<p>The <a href="https://pebbletemplates.io/wiki/filter/default">default</a> filter might come in handy for the above situations.</p>
+<h2 id="filters">Filters</h2>
+<p>Output can be further modified with the use of filters. Filters are separated from the variable using a
+pipe symbol (<code>|</code>) and may have optional arguments in parentheses. Multiple filters can be chained and the output
+of one filter is applied to the next.</p>
+<pre><code class="language-twig">{{ &quot;If life gives you lemons, eat lemons.&quot; | upper | abbreviate(13) }}
+</code></pre>
+<p>The above example will output the following:</p>
+<pre><code class="language-twig">IF LIFE GI...
+</code></pre>
+<h2 id="functions">Functions</h2>
+<p>Whereas filters are intended to modify existing content/variables, functions are intended to generate new content.
+Similar to other programming languages, functions are invoked via their name followed by parentheses (<code>()</code>).</p>
+<pre><code class="language-twig">{{ max(user.score, highscore) }}
+</code></pre>
+<h2 id="control-structure">Control Structure</h2>
+<p>Pebble provides several tags to control the flow of your template, two of the main ones being the <a href="https://pebbletemplates.io/wiki/tag/for">for</a> loop,
+and <a href="https://pebbletemplates.io/wiki/tag/if">if</a> statements.</p>
+<pre><code class="language-twig">{% for article in articles %}
+    &lt;h3&gt;{{ article.title }}&lt;/h3&gt;
+    &lt;p&gt;{{ article.content }}&lt;/p&gt;
+{% else %}
+    &lt;p&gt; There are no articles. &lt;/p&gt;
+{% endfor %}
+</code></pre>
+<pre><code class="language-twig">{% if category == &quot;news&quot; %}
+    {{ news }}
+{% elseif category == &quot;sports&quot; %}
+    {{ sports }}
+{% else %}
+    &lt;p&gt;Please select a category&lt;/p&gt;
+{% endif %}
+</code></pre>
+<h2 id="including-other-templates">Including other Templates</h2>
+<p>The <a href="https://pebbletemplates.io/wiki/tag/include">include</a> tag is used to include the rendered output of one template into another.</p>
+<pre><code class="language-twig">&lt;div class=&quot;sidebar&quot;&gt;
+	{% include &quot;advertisement.html&quot; %}
+&lt;/div&gt;
+</code></pre>
+<h2 id="template-inheritance">Template Inheritance</h2>
+<p>Template inheritance is the most powerful feature of Pebble. It allows templates to override sections of their parent
+template. In your parent template you define &quot;blocks&quot; which are the sections that are allowed to be overriden.</p>
+<p>First let us look at an example of a parent template:</p>
+<pre><code class="language-twig">&lt;html&gt;
+&lt;head&gt;
+	&lt;title&gt;{% block title %}My Website{% endblock %}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;div id=&quot;content&quot;&gt;
+		{% block content %}{% endblock %}
+	&lt;/div&gt;
+	&lt;div id=&quot;footer&quot;&gt;
+		{% block footer %}
+			Copyright 2013
+		{% endblock %}
+	&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</code></pre>
+<p>In the above example, we have used the <a href="https://pebbletemplates.io/wiki/tag/block">block</a> tag to define several sections that child templates are
+allowed to override.</p>
+<p>A child template might look like this:</p>
+<pre><code class="language-twig">{% extends &quot;parent.html&quot; %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+	&lt;h1&gt; Home &lt;/h1&gt;
+	&lt;p&gt; Welcome to my home page.&lt;/p&gt;
+{% endblock %}
+</code></pre>
+<p>The first line uses the <a href="https://pebbletemplates.io/wiki/tag/extends">extends</a> tag to declare the parent template. The extends tag should be the
+first tag in the template and there can only be one.</p>
+<p>Evaluating the child template will produce the following output:</p>
+<pre><code class="language-twig">&lt;html&gt;
+&lt;head&gt;
+	&lt;title&gt;Home&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;div id=&quot;content&quot;&gt;
+		&lt;h1&gt; Home &lt;/h1&gt;
+		&lt;p&gt; Welcome to my home page.&lt;/p&gt;
+	&lt;/div&gt;
+	&lt;div id=&quot;footer&quot;&gt;
+		Copyright 2013
+	&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>You may have noticed that in the above example, because the child template doesn't override the <code>footer</code> block,
+the value from the parent is used instead.</p>
+<p>Dynamic inheritance is possible by using an expression with the <code>extends</code> tag:</p>
+<pre><code class="language-twig">{% extends ajax ? 'ajax.html' : 'base.html' %}
+</code></pre>
+<h2 id="macros">Macros</h2>
+<p>Macros are lightweight and reusable template fragments. A macro is defined via the <a href="https://pebbletemplates.io/wiki/tag/macro">macro</a> tag:</p>
+<pre><code class="language-twig">{% macro input(type, name) %}
+	&lt;input type=&quot;{{ type }}&quot; name=&quot;{{ name }}&quot; /&gt;
+{% endmacro %}
+
+</code></pre>
+<p>And the macro will be invoked just like a function:</p>
+<pre><code class="language-twig">{{ input(&quot;text&quot;, &quot;name&quot;, &quot;Mitchell&quot;) }}
+</code></pre>
+<p>Child templates will have access to macros defined in a parent template. To use macros located in a completely
+different template, you can use the <a href="https://pebbletemplates.io/wiki/tag/import">import</a>) tag. A macro does not have access to the main context; the
+only variables it can access are it's local arguments.</p>
+<h2 id="named-arguments">Named Arguments</h2>
+<p>Using named arguments allows you to be more explicit with the values you are passing to a filter, function, test or
+macro. They also allow you to avoid specifying arguments for which you don't want to change the default value.</p>
+<pre><code class="language-twig">{{ stringDate | date(existingFormat=&quot;yyyy-MMMM-d&quot;, format=&quot;yyyy/MMMM/d&quot;) }}
+</code></pre>
+<p>Positional arguments can be used in conjunction with named arguments but all positional arguments must come before
+any named arguments:</p>
+<pre><code class="language-twig">{{ stringDate | date(&quot;yyyy/MMMM/d&quot;, existingFormat=&quot;yyyy-MMMM-d&quot;) }}
+</code></pre>
+<p>Macros are a great use case for named arguments because they also allow you to define default values for
+unused arguments:</p>
+<pre><code class="language-twig">{% macro input(type=&quot;text&quot;, name, value) %}
+	&lt;input type=&quot;{{ type }}&quot; name=&quot;{{ name }}&quot; value=&quot;{{ value }}&quot; /&gt;
+{% endmacro %}
+
+{{ input(name=&quot;country&quot;) }}
+
+{# will output: &lt;input type=&quot;text&quot; name=&quot;country&quot; value=&quot;&quot; /&gt; #}
+</code></pre>
+<h2 id="escaping">Escaping</h2>
+<p><a href="https://en.wikipedia.org/wiki/Cross-site_scripting">XSS vulnerabilites</a> are the most common types of security
+vulnerabilities in web applications and in order to avoid them you must escape potentially unsafe data before
+presenting it to the end user. Pebble provides autoescaping of all such data which is enabled by default.
+Autoescaping can be turned off, in which case Pebble provides an escape filter for more fine-grained manual escaping.</p>
+<p>The following is an example of how autoescaping will escape your context variables:</p>
+<pre><code class="language-twig">{% set danger = &quot;&lt;br&gt;&quot; %}
+{{ danger }}
+
+{# will output: &amp;lt;br&amp;gt; #}
+</code></pre>
+<p>If autoescaping is disabled you can still use the <a href="https://pebbletemplates.io/wiki/filter/escape">escape</a> filter to aid with manual escaping:</p>
+<pre><code class="language-twig">{% set danger = &quot;&lt;br&gt;&quot; %}
+{{ danger | escape }}
+
+{# will output: &amp;lt;br&amp;gt; #}
+</code></pre>
+<p>By default, the autoescaping mechanism and the escape filter assume that it is escaping within an HTML context.
+You may want to use an alternate escaping strategy depending on the context:</p>
+<pre><code class="language-twig">{% set danger = &quot;alert(...)&quot; %}
+&lt;script&gt;var username=&quot;{{ danger | escape(strategy=&quot;js&quot;) }}&quot;&lt;/script&gt;
+</code></pre>
+<p>See the <a href="https://pebbletemplates.io/wiki/guide/escaping">escaping guide</a> for more information on how autoescaping works, how to disable it, and the various
+escaping strategies that are available.</p>
+<h2 id="whitespace">Whitespace</h2>
+<p>The first newline after a pebble tag is automatically ignored; all other whitespace is ignored by Pebble and will be
+included in the rendered output.</p>
+<p>Pebble provides a whitespace control modifier to trim leading or trailing whitespace adjacent to any pebble tag.</p>
+<pre><code class="language-twig">&lt;p&gt; 		{{- &quot;no whitespace&quot; -}}		&lt;/p&gt;
+{# output: &quot;&lt;p&gt;no whitespace&lt;/p&gt;&quot; #}
+</code></pre>
+<p>It is also possible to only use the modifier on one side of the tag:</p>
+<pre><code class="language-twig">&lt;p&gt; 		{{- &quot;no leading whitespace&quot; }}		&lt;/p&gt;
+{# output: &quot;&lt;p&gt;no whitespace		&lt;/p&gt;&quot; #}
+</code></pre>
+<h2 id="comments">Comments</h2>
+<p>You can comment out any part of the template using the `` delimiters. These comments will not appear in
+the rendered output.</p>
+<pre><code class="language-twig">{# THIS IS A COMMENT #}
+{% for article in articles %}
+	&lt;h3&gt;{{ article.title }}&lt;/h3&gt;
+	&lt;p&gt;{{ article.content }}&lt;/p&gt;
+{% endfor %}
+</code></pre>
+<h2 id="expressions">Expressions</h2>
+<p>Expressions in a Pebble template are very similar to expressions found in Java.</p>
+<h3 id="literals">Literals</h3>
+<p>The simplest form of expressions are literals. Literals are representations for Java types such as strings and numbers.</p>
+<ul>
+<li><code>&quot;Hello World&quot;</code>: Everything between two double or single quotes is a string. You can use a backslash to escape
+quotation marks within the string.</li>
+<li><code>&quot;Hello #{who}&quot;</code>: String interpolation is also possible using <code>#{}</code> inside quotes. In this example,
+if the value of the variable <code>who</code> is <code>&quot;world&quot;</code>, then the expression will be evaluated to <code>&quot;Hello world&quot;</code>.</li>
+<li><code>100 + 10l * 2.5</code>: Integers, longs and floating point numbers are similar to their Java counterparts.</li>
+<li><code>true</code> / <code>false</code>: Boolean values equivalent to their Java counterparts.</li>
+<li><code>null</code>: Represents no specific value, similar to it's Java counterpart. <code>none</code> is an alias for null.</li>
+</ul>
+<h3 id="collections">Collections</h3>
+<p>Both lists and maps can be created directly within the template.</p>
+<ul>
+<li><code>[&quot;apple&quot;, &quot;banana&quot;, &quot;pear&quot;]</code>: A list of strings</li>
+<li><code>{&quot;apple&quot;:&quot;red&quot;, &quot;banana&quot;:&quot;yellow&quot;, &quot;pear&quot;:&quot;green&quot;}</code>: A map of strings</li>
+</ul>
+<p>The collections can contain expressions.</p>
+<h3 id="math">Math</h3>
+<p>Pebble allows you to calculate values using some basic mathematical operators. The following operators are supported:</p>
+<ul>
+<li><code>+</code>: Addition</li>
+<li><code>-</code>: Subtraction</li>
+<li><code>/</code>: Division</li>
+<li><code>%</code>: Modulus</li>
+<li><code>*</code>: Multiplication</li>
+</ul>
+<h3 id="logic">Logic</h3>
+<p>You can combine multiple expressions with the following operators:</p>
+<ul>
+<li><code>and</code>: Returns true if both operands are true</li>
+<li><code>or</code>: Returns true if either operand is true</li>
+<li><code>not</code>: Negates an expression</li>
+<li><code>(...)</code>: Groups expressions together</li>
+</ul>
+<h3 id="comparisons">Comparisons</h3>
+<p>The following comparison operators are supported in any expression: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&gt;=</code>, and <code>&lt;=</code>.</p>
+<pre><code class="language-twig">{% if user.age &gt;= 18 %}
+	...
+{% endif %}
+</code></pre>
+<h3 id="tests">Tests</h3>
+<p>The <code>is</code> operator performs tests. Tests can be used to test an expression for certain qualities.
+The right operand is the name of the test:</p>
+<pre><code class="language-twig">{% if 3 is odd %}
+	...
+{% endif %}
+</code></pre>
+<p>Tests can be negated by using the is not operator:</p>
+<pre><code class="language-twig">{% if name is not null %}
+	...
+{% endif %}
+</code></pre>
+<h3 id="conditional-ternary-operator">Conditional (Ternary) Operator</h3>
+<p>The conditional operator is similar to it's Java counterpart:</p>
+<pre><code class="language-twig">{{ foo ? &quot;yes&quot; : &quot;no&quot; }}
+</code></pre>
+<h3 id="operator-precedence">Operator Precedence</h3>
+<p>In order from highest to lowest precedence:</p>
+<ul>
+<li><code>.</code></li>
+<li><code>|</code></li>
+<li><code>%</code>, <code>/</code>, <code>*</code></li>
+<li><code>-</code>, <code>+</code></li>
+<li><code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code></li>
+<li><code>is</code>, <code>is not</code></li>
+<li><code>and</code></li>
+<li><code>or</code></li>
+</ul>
+<h3 id="ides-plugin">IDE's plugin</h3>
+<p>If you want to add IDE's syntax highlighting, you can install this <a href="https://plugins.jetbrains.com/idea/plugin/9407-pebble">plugin</a> for IntelliJ. Thank you to Bastien Jansen for his contribution.</p>
+
+                    
+                
+            
+        
+            
+        
+    
+    <!-- end:inject components -->
+
+
+                    </article>
+                </section>
+            
+        </div>
+        <hr>
+
+        <!-- Page Footer -->
+        <div class="inner">
+    <footer id="footer">
+        <div class="clearfix">
+            
+                <div class="float-left">
+                    <a href="https://pebbletemplates.io/wiki/guide/spring-boot-integration" class="button special small pill">
+                        <span>&larr;</span> Spring Boot Integration
+                    </a>
+                </div>
+            
+            
+                <div class="float-right">
+                    <a href="https://pebbletemplates.io/wiki/guide/escaping" class="button special small pill">
+                        Escaping<span>&rarr;</span>
+                    </a>
+                </div>
+            
+        </div>
+    </footer>
+</div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+    <div class="inner">
+
+        <!-- Search -->
+        <section id="search" class="alt">
+            <form data-orchid-search="">
+                <input type="text" name="query" id="query" placeholder="Search"/>
+            </form>
+            <div class="box" id="search-results" data-orchid-search-results style="display: none;">
+                <b>Search Results</b>
+                <ul></ul>
+            </div>
+            <div class="box" id="search-progress" data-orchid-search-progress style="display: none;">
+                <div class="loader">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Menu -->
+        <nav id="siteNav" class="menu">
+            <header class="major">
+                <h2>Pebble Templates</h2>
+            </header>
+            <ul class="top-level">
+                
+                    
+    
+    <li>
+        <a class="subheader">About</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io">Home</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/twig-compatibility">Twig Compatibility</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/contributing">Contributing</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/changelog">Changelog</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a class="subheader">Wiki</a>
+    </li>
+    
+
+                
+                    
+    <li>
+        <span class="opener">Guide</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/installation">Installation and Configuration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/spring-integration">Spring Integration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/spring-boot-integration">Spring Boot Integration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/basic-usage">Basic Usage</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/escaping">Escaping</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/extending-pebble">Extending Pebble</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/high-performance">High Performance Techniques</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Tag</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/autoescape">autoescape</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/block">block</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/cache">cache</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/extends">extends</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/filter">filter</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/from">from</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/flush">flush</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/for">for</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/if">if</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/import">import</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/include">include</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/macro">macro</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/parallel">parallel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/set">set</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/verbatim">verbatim</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Filter</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/abbreviate">abbreviate</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/abs">abs</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/capitalize">capitalize</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/date">date</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/default">default</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/escape">escape</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/first">first</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/join">join</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/last">last</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/length">length</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/lower">lower</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/numberformat">numberformat</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/raw">raw</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/replace">replace</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/reverse">reverse</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/rsort">rsort</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/slice">slice</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/sort">sort</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/title">title</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/trim">trim</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/upper">upper</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/urlencode">urlencode</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Function</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/blockFunction">block</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/i18n">i18n</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/max">max</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/min">min</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/parent">parent</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/range">range</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Test</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/empty">empty</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/even">even</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/map">map</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/null">null</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/odd">odd</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/iterable">iterable</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Operator</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/comparisons">comparisons</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/contains">contains</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/is">is</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/logic">logic</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/math">math</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/others">others</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    
+    <li>
+        <a class="subheader">API Docs</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/com/mitchellbosecke/pebble">Javadocs</a>
+    </li>
+    
+
+                
+            </ul>
+        </nav>
+        
+
+        <!-- Section -->
+        <section>
+            <p class="text-center">
+                Currently 3.0.8.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright text-center">
+                &copy; PebbleTemplates. All rights reserved.
+                <br>
+                Site created with <a href="https://orchid.netlify.com">Orchid </a>,
+                design by <a href="https://html5up.net">HTML5 UP</a>.
+            </p>
+        </footer>
+
+    </div>
+</div>
+</div>
+
+<!-- start:inject scripts -->
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/ajax/libs/skel/3.0.1/skel.min.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/editorial_util.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/editorial_main.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/editorial_orchidCustomizations.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/lunr/lunr.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/orchidSearch.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/prism.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-java.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-twig.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-markup.min.js"></script>
+<!-- end:inject scripts -->
+
+</body>
+</html>

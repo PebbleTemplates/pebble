@@ -1,0 +1,1099 @@
+<!DOCTYPE HTML>
+<!--
+    Editorial by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+
+
+
+
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<meta name="generator" content="Orchid 0.12.17"/>
+<link rel="icon" href="https://pebbletemplates.io/favicon.ico">
+
+
+<meta name="robots" content="index, follow">
+
+
+
+<title>Extending Pebble</title>
+
+
+<meta name="description" content="">
+
+
+
+<link rel="prev" href="https://pebbletemplates.io/wiki/guide/escaping">
+
+
+<link rel="next" href="https://pebbletemplates.io/wiki/guide/high-performance">
+
+
+<script>
+    window.site = {"orchidVersion":"0.12.17","baseUrl":"https://pebbletemplates.io","environment":"prod","version":"3.0.8"};
+</script>
+
+
+
+
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<!-- start:inject styles -->
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/2cadf0c2/assets/css/editorial_main.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/2cadf0c2/assets/css/editorial_orchidCustomizations.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/2cadf0c2/assets/css/orchidSearch.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/pygments.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/orchidJavadoc.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/github-fork-ribbon.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/ajax/libs/prism/1.8.4/themes/prism.min.css"/>
+<!-- end:inject styles -->
+
+</head>
+<body class="is-loading">
+
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <a class="github-fork-ribbon" href="https://github.com/PebbleTemplates" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+        <div class="inner">
+
+            <!-- Header -->
+            
+                <header id="header">
+    <a href="https://pebbletemplates.io" class="logo">Pebble Templates</a>
+    <ul class="icons">
+    
+    
+    
+    </ul>
+</header>
+            
+            
+            
+            
+                <section id="pageContent">
+                    <header class="major"><h2>Extending Pebble</h2></header>
+                    <article>
+                        
+    <!-- start:inject components -->
+    
+        
+            
+                
+                    
+                        <h1 id="extending-pebble">Extending Pebble</h1>
+<h2 id="overview">Overview</h2>
+<p>Pebble was designed to be flexible and accomodate the requirements of any project. You can add your own tags,
+functions, operators, filters, tests, and global variables. The majority of these are quite trivial to implement.</p>
+<p>Begin by creating a class that implements <code>Extension</code>. For your own convenience, I recommend extending
+<code>AbstractExtension</code> if you can. After implementing the required methods, register your extension with the <code>PebbleEngine</code>
+before compiling any templates:</p>
+<pre><code class="language-java">PebbleEngine engine = new PebbleEngine.Builder().extension(new CustomExtension()).build();
+</code></pre>
+<h2 id="filters">Filters</h2>
+<p>To create custom filters, implement the <code>getFilters()</code> method of your extension which will return a map of filter
+names and their corresponding implementations. A filter implementation must implement the <code>Filter</code> interface.
+The	<code>Filter</code> interface requires two methods to be implemented, <code>getArgumentNames()</code> and <code>apply()</code>. The
+<code>getArgumentNames()</code> method returns a list of Strings that define both the order and names of expected arguments.</p>
+<p>The <code>apply</code> method is the actual filter implementation. Here's the parameters definition.</p>
+<table>
+<thead>
+<tr><th>Parameter name</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>input</td><td>the data to be filtered</td></tr>
+<tr><td>args</td><td>the map of arguments the user may have provided</td></tr>
+<tr><td>self</td><td>An instance of <code>PebbleTemplate</code> which can be used to retrieve the template name for example</td></tr>
+<tr><td>context</td><td>An instance of <code>EvaluationContext</code> which can be used to retrieve the locale for example</td></tr>
+<tr><td>lineNumber</td><td>Useful when throwing exception to provide line number</td></tr>
+</tbody>
+</table>
+<p>Because Pebble is dynamically typed, you will have to downcast the arguments to the expected type.
+Here is an example of how the <a href="https://pebbletemplates.io/wiki/filter/upper">upper</a> filter might be implemented:</p>
+<pre><code class="language-java">public UpperFilter implements Filter {
+
+	@Override
+	public List&lt;String&gt; getArgumentNames() {
+		return null;
+	}
+
+	@Override
+	public Object apply(Object input, Map&lt;String, Object&gt; args, PebbleTemplate self, EvaluationContext context, int lineNumber){
+		if(input == null){
+			return null;
+		}
+		if (input instanceof String) {
+			return ((String) input).toUpperCase(context.getLocale());
+		} else {
+			return input.toString().toUpperCase(context.getLocale());
+		}
+	}
+
+}
+</code></pre>
+<h2 id="tests">Tests</h2>
+<p>Adding custom tests is very similar to custom filters. Implement the <code>getTests()</code> method within your
+extension which will return a map of test names and their corresponding implementations. A test
+implementation will implement the <code>Test</code> interface. The <code>Test</code> interface is exactly like the <code>Filter</code>
+interface except the apply method returns a boolean instead of an arbitrary object of any type.</p>
+<p>Here is an example of how the <a href="https://pebbletemplates.io/wiki/test/even">even</a> test might be implemented:</p>
+<pre><code class="language-java">public EvenTest implements Test {
+
+	@Override
+	public List&lt;String&gt; getArgumentNames() {
+		return null;
+	}
+
+	@Override
+	public boolean apply(Object input, Map&lt;String, Object&gt; args, PebbleTemplate self, EvaluationContext context, int lineNumber){
+		if (input == null) {
+			throw new PebbleException(null, &quot;Can not pass null value to \&quot;even\&quot; test.&quot;, lineNumber, self.getName());
+		}
+    
+		if (input instanceof Integer) {
+			return ((Integer) input) % 2 == 0;
+		} else {
+			return ((Long) input) % 2 == 0;
+		}
+	}
+
+}
+</code></pre>
+<h2 id="functions">Functions</h2>
+<p>Adding functions is also very similar to custom filters. First and foremost, it's important to
+understand the different intentions behind a function and a filter because it can often be ambiguous
+which one should be implemented. A filter is intended to modify existing content where a function is
+moreso intended to produce new content.</p>
+<p>To add functions, implement the <code>getFunctions()</code> method within your extension which will return a map of function
+names and their corresponding implementations. A function implementation will implement the <code>Function</code> interface.
+The	<code>Function</code> interface is very similar to the <code>Filter</code> and <code>Test</code> interfaces.</p>
+<p>Here is an example of how a fictional <code>fibonacciString</code> function might be implemented:</p>
+<pre><code class="language-java">public FibonnaciStringFunction implements Function {
+
+	@Override
+	public List&lt;String&gt; getArgumentNames() {
+		List&lt;String&gt; names = new ArrayList&lt;&gt;();
+		names.add(&quot;length&quot;);
+		return names;
+	}
+
+	@Override
+	public Object execute(Map&lt;String, Object&gt; args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
+		Integer length = (Integer)args.get(&quot;length&quot;);
+		Integer prev1 = 0;
+		Integer prev2 = 1;
+
+		StringBuilder result = new StringBuilder();
+
+		result.append(&quot;01&quot;);
+
+		for(int i = 2; i &lt; length; i++){
+			Integer next = prev1 + prev2;
+			result.append(next);
+			prev1 = prev2;
+			prev2 = next;
+		}
+		return result.toString();
+
+	}
+}
+</code></pre>
+<h2 id="positional-and-named-arguments">Positional and Named Arguments</h2>
+<p>For filters, tests, and functions it is required that you implement the <code>getArgumentNames</code> method even if it
+returns null. Returning a list of strings will allow the end user to call your filter/test/function using
+named arguments. Using the above fictional fibonacci function as an example, a user can invoke it in two different ways:</p>
+<pre><code class="language-twig">{{ fibonacci(10) }}
+{{ fibonacci(length=10) }}
+</code></pre>
+<p>If the end user excludes the names and only uses positional arguments, the argument values will still end up
+be mapped to the proper names when it's time to invoke the function's execute method. Your function implementation
+doesn't have to worry whether the user used positional or named arguments. It is important though that if the
+filter/function/test expects more than one argument, then the developer must communicate to the user the expected
+order of arguments in the chance that the user wants to invoke it without using names.</p>
+<p>Some functions such as the built in <code>min</code> and <code>max</code> functions accept an unlimited amount of arguments.
+For this to happen, your function must not accept any named arguments (i.e. your <code>getArgumentNames</code> method
+will return null or empty) and your `execute`` method will simply iterate over the values of the user provided
+argument map while ignoring the keys of that map (Pebble will use arbitrary keys if there are no names to map to).</p>
+<h2 id="global-variables">Global Variables</h2>
+<p>Adding global variables, which are variables that are accessbile to all templates, is very trivial.
+In your custom extension, implement the <code>getGlobalVariables()</code> method which returns a <code>Map&lt;String,Object&gt;</code>.
+The contents of this map will be merged into the context you provide to each template at the time of rendering.</p>
+<h2 id="operators">Operators</h2>
+<p>Operators are more complex to implement than filters or tests. To add custom operators, implement the
+<code>getBinaryOperators()</code> or the <code>getUnaryOperators()</code> method in your extension, or both. These methods return a
+list of <code>BinaryOperator</code> or <code>UnaryOperator</code> objects, respectively.</p>
+<p>Binary operators require the following information:</p>
+<ul>
+<li>Precedence: an integer relative to other operators which defines the order of operations.</li>
+<li>Symbol: a String representing the actual operator. This is typically a single character but doesn't have to be.</li>
+<li>Expression Class: A class that extends <code>BinaryExpression</code>. This class will perform the actual operator implementation.</li>
+<li>Associativity: Either left or right depending on how the operator is used.</li>
+</ul>
+<p>A unary operator is much the same except it's expression class must extend <code>UnaryExpression</code> and there is no associativity.</p>
+<p>The precedence values for existing core operators are as followed:</p>
+<ul>
+<li><code>or</code>: 10</li>
+<li><code>and</code>: 15</li>
+<li><code>is</code>: 20</li>
+<li><code>is not</code>: 20</li>
+<li><code>==</code>: 30</li>
+<li><code>!=</code>: 30</li>
+<li><code>&gt;</code>: 30</li>
+<li><code>&lt;</code>: 30</li>
+<li><code>&gt;=</code>: 30</li>
+<li><code>&lt;=</code>: 30</li>
+<li><code>+</code>: 40</li>
+<li><code>-</code>: 40</li>
+<li><code>not</code>: 50 (Unary)</li>
+<li><code>*</code>: 60</li>
+<li><code>/</code>: 60</li>
+<li><code>%</code>: 60</li>
+<li><code>|</code>: 100</li>
+<li><code>+</code>: 500 (Unary)</li>
+<li><code>-</code>: 500 (Unary)</li>
+</ul>
+<p>The following is an	example of how the addition operator (<code>+</code>) might have been implemented:</p>
+<pre><code class="language-java">public AdditionOperator implements BinaryOperator {
+
+	public int getPrecedence(){
+		return 30;
+	}
+
+	public String getSymbol(){
+		return &quot;+&quot;;
+	}
+
+	public Class&lt;? extends BinaryExpression&lt;?&gt;&gt; getNodeClass(){
+		return AdditionExpression.class;
+	}
+
+	public Associativity getAssociativity(){
+		return Associativity.LEFT;
+	}
+
+}
+</code></pre>
+<p>Alongside each operator class you will also need to implement a corresponding <code>BinaryExpression</code> class
+which actually implements the operator. The above example references a fictional <code>AdditionExpression</code> class
+which might look like the following:</p>
+<pre><code class="language-java">public AdditionExpression extends BinaryExpression&lt;Object&gt; {
+
+	@Override
+	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context){
+		Integer left = (Integer)getLeftExpression().evaluate(self, context);
+		Integer right = (Integer)getRightExpression().evaluate(self, context);
+
+		return left + right;
+	}
+
+}
+</code></pre>
+<p>In the above example you will notice that children of BinaryExpression have access to two other
+expressions, <code>leftExpression</code>, and <code>rightExpression</code>; these are the operands of your operator.
+Please note that in the above example both operands are casted to Integers but in reality you can't
+always make that assumption; the true addition expression is much more complex to handle different
+types of operands (Integers, Longs, Doubles, etc).</p>
+<h2 id="tags">Tags</h2>
+<p>Creating new tags is one of the most powerful abilities of Pebble. Your extension should start by
+implementing the <code>getTokenParsers()</code> method. A <code>TokenParser</code> is responsible for converting all
+necessary tokens to appropriate <code>RenderableNodes</code>. A token is a significant and irreducible
+group of characters found in a template (such as an operator, whitespace, variable name, delimiter, etc)
+and a <code>RenderableNode</code> is a Pebble class that is responsible for generating output.</p>
+<p>Let us look at an example of a <code>TokenParser</code>:</p>
+<pre><code class="language-java">public SetTokenParser extends AbstractTokenParser {
+
+	public String getTag(){
+		return &quot;set&quot;;
+	}
+
+	public RenderableNode parse(Token token) throws SyntaxException {
+		TokenStream stream = this.parser.getStream();
+		int lineNumber = token.getLineNumber();
+
+		// skip the &quot;set&quot; token
+		stream.next();
+
+		// use the built in expression parser to parse the variable name
+		NodeExpressionNewVariableName name = this.parser.getExpressionParser().parseNewVariableName();
+
+		stream.expect(Token.Type.PUNCTUATION, &quot;=&quot;);
+
+		// use the built in expression parser to parse the variable value
+		Expression&lt;?&gt; value = this.parser.getExpressionParser().parseExpression();
+
+		// expect to see &quot;%}&quot;
+		stream.expect(Token.Type.EXECUTE_END);
+
+		// NodeSet is composed of a name and a value
+		return new SetNode(lineNumber, name, value);
+	}
+
+}
+</code></pre>
+<p>The <code>getTag()</code> method must return the name of the tag. Pebble's main parser will use this name to determine
+when to delegate responsibility to your custom <code>TokenParser</code>. This example is parsing the <code>set</code> tag.</p>
+<p>The parse method is invoked whenever the primary parser encounters a set token. This method should return
+one <code>RenderableNode</code> instance which when rendered during the template evaluation, will write output to the
+provided Writer object. If the <code>RenderableNode</code> contains children nodes, it should invoke the render method
+of those nodes as well.</p>
+<p>The best way to learn all the details of parsing is to look at some of the tools used, as well as some examples.
+Here is a list of classes I suggest reading:</p>
+<ul>
+<li><code>TokenParser</code></li>
+<li><code>Parser</code></li>
+<li><code>SetTokenParser</code></li>
+<li><code>ForTokenParser</code></li>
+<li><code>IfNode</code></li>
+<li><code>SetNode</code></li>
+</ul>
+<h2 id="attribute-resolver-v3-only">Attribute resolver (v3 only)</h2>
+<p>To create a new attribute resolver, implement the <code>getAttributeResolver()</code> method of your extension which will return a list of
+attribute resolvers to run. A attribute resolver implementation must implement the <code>AttributeResolver</code> interface.
+The	<code>AttributeResolver</code> interface requires one method to be implemented, <code>resolve()</code>.</p>
+<p>The custom attribute resolver will be executed before all default pebble attribute resolvers. It replaces the
+<code>DynamicAttributeProvider</code> interface</p>
+<pre><code class="language-java">public class DefaultAttributeResolver implements AttributeResolver {
+
+  @Override
+  public ResolvedAttribute resolve(Object instance,
+                                   Object attributeNameValue,
+                                   Object[] argumentValues,
+                                   boolean isStrictVariables,
+                                   String filename,
+                                   int lineNumber) {
+    if (instance instanceof CustomObject) {
+      return &quot;customValue&quot;
+    }
+    return null;
+  }
+}
+</code></pre>
+
+                    
+                
+            
+        
+            
+        
+    
+    <!-- end:inject components -->
+
+
+                    </article>
+                </section>
+            
+        </div>
+        <hr>
+
+        <!-- Page Footer -->
+        <div class="inner">
+    <footer id="footer">
+        <div class="clearfix">
+            
+                <div class="float-left">
+                    <a href="https://pebbletemplates.io/wiki/guide/escaping" class="button special small pill">
+                        <span>&larr;</span> Escaping
+                    </a>
+                </div>
+            
+            
+                <div class="float-right">
+                    <a href="https://pebbletemplates.io/wiki/guide/high-performance" class="button special small pill">
+                        High Performance Techniques<span>&rarr;</span>
+                    </a>
+                </div>
+            
+        </div>
+    </footer>
+</div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+    <div class="inner">
+
+        <!-- Search -->
+        <section id="search" class="alt">
+            <form data-orchid-search="">
+                <input type="text" name="query" id="query" placeholder="Search"/>
+            </form>
+            <div class="box" id="search-results" data-orchid-search-results style="display: none;">
+                <b>Search Results</b>
+                <ul></ul>
+            </div>
+            <div class="box" id="search-progress" data-orchid-search-progress style="display: none;">
+                <div class="loader">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Menu -->
+        <nav id="siteNav" class="menu">
+            <header class="major">
+                <h2>Pebble Templates</h2>
+            </header>
+            <ul class="top-level">
+                
+                    
+    
+    <li>
+        <a class="subheader">About</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io">Home</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/twig-compatibility">Twig Compatibility</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/contributing">Contributing</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/changelog">Changelog</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a class="subheader">Wiki</a>
+    </li>
+    
+
+                
+                    
+    <li>
+        <span class="opener">Guide</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/installation">Installation and Configuration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/spring-integration">Spring Integration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/spring-boot-integration">Spring Boot Integration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/basic-usage">Basic Usage</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/escaping">Escaping</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/extending-pebble">Extending Pebble</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/high-performance">High Performance Techniques</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Tag</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/autoescape">autoescape</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/block">block</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/cache">cache</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/extends">extends</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/filter">filter</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/from">from</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/flush">flush</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/for">for</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/if">if</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/import">import</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/include">include</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/macro">macro</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/parallel">parallel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/set">set</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/verbatim">verbatim</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Filter</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/abbreviate">abbreviate</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/abs">abs</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/capitalize">capitalize</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/date">date</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/default">default</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/escape">escape</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/first">first</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/join">join</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/last">last</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/length">length</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/lower">lower</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/numberformat">numberformat</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/raw">raw</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/replace">replace</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/reverse">reverse</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/rsort">rsort</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/slice">slice</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/sort">sort</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/title">title</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/trim">trim</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/upper">upper</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/urlencode">urlencode</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Function</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/blockFunction">block</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/i18n">i18n</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/max">max</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/min">min</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/parent">parent</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/range">range</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Test</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/empty">empty</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/even">even</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/map">map</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/null">null</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/odd">odd</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/iterable">iterable</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Operator</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/comparisons">comparisons</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/contains">contains</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/is">is</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/logic">logic</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/math">math</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/others">others</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    
+    <li>
+        <a class="subheader">API Docs</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/com/mitchellbosecke/pebble">Javadocs</a>
+    </li>
+    
+
+                
+            </ul>
+        </nav>
+        
+
+        <!-- Section -->
+        <section>
+            <p class="text-center">
+                Currently 3.0.8.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright text-center">
+                &copy; PebbleTemplates. All rights reserved.
+                <br>
+                Site created with <a href="https://orchid.netlify.com">Orchid </a>,
+                design by <a href="https://html5up.net">HTML5 UP</a>.
+            </p>
+        </footer>
+
+    </div>
+</div>
+</div>
+
+<!-- start:inject scripts -->
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/ajax/libs/skel/3.0.1/skel.min.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/editorial_util.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/editorial_main.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/editorial_orchidCustomizations.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/lunr/lunr.js"></script>
+<script src="https://pebbletemplates.io/Editorial/2cadf0c2/assets/js/orchidSearch.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/prism.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-java.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-twig.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-markup.min.js"></script>
+<!-- end:inject scripts -->
+
+</body>
+</html>
