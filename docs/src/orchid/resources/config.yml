@@ -17,6 +17,9 @@ theme:
       itemId: 'Contributing'
     - type: 'page'
       itemId: 'Changelog'
+    - type: 'link'
+      title: 'Offline Documentation (PDF)'
+      url: '#{$0|baseUrl}/wiki/book.pdf'
     - type: 'separator'
       title: 'Wiki'
     - type: 'wiki'
@@ -53,6 +56,7 @@ allPages:
 wiki:
   defaultConfig:
     includeIndexInPageTitle: false
+    createPdf: true
 
 javadoc:
   sourceDirs:
