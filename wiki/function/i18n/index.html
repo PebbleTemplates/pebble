@@ -104,7 +104,7 @@ a key by the name of <code>greeting</code>. If the locale of that template was <
 <p>Going a little further, you can use variables within your message and pass a list of params to this
 function which will replace your variables using <code>MessageFormat</code>:</p>
 <pre><code class="language-twig">{# greeting.someone=Hello, {0} #}
-{{ i18n(&quot;messages&quot;,&quot;greeting&quot;, &quot;Jacob&quot;) }}
+{{ i18n(&quot;messages&quot;,&quot;greeting.someone&quot;, &quot;Jacob&quot;) }}
 
 {# output: Hello, Jacob #}
 </code></pre>
