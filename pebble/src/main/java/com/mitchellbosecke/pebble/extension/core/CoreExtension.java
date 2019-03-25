@@ -42,6 +42,7 @@ import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.operator.UnaryOperatorImpl;
 import com.mitchellbosecke.pebble.tokenParser.BlockTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.CacheTokenParser;
+import com.mitchellbosecke.pebble.tokenParser.EmbedTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ExtendsTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.FilterTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.FlushTokenParser;
@@ -54,6 +55,7 @@ import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ParallelTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +68,7 @@ public class CoreExtension extends AbstractExtension {
     List<TokenParser> parsers = new ArrayList<>();
     parsers.add(new BlockTokenParser());
     parsers.add(new ExtendsTokenParser());
+    parsers.add(new EmbedTokenParser());
     parsers.add(new FilterTokenParser());
     parsers.add(new FlushTokenParser());
     parsers.add(new ForTokenParser());

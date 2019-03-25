@@ -12,12 +12,17 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
+import com.mitchellbosecke.pebble.node.BlockNode;
+import com.mitchellbosecke.pebble.node.BodyNode;
+import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
 import com.mitchellbosecke.pebble.utils.Pair;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -51,7 +56,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
   /**
    * The root node of the AST to be rendered.
    */
-  private final RootNode rootNode;
+  private final RenderableNode rootNode;
 
   /**
    * Name of template. Used to help with debugging.
@@ -65,7 +70,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
    * @param root The root not to evaluate
    * @param name The name of the template
    */
-  public PebbleTemplateImpl(PebbleEngine engine, RootNode root, String name) {
+  public PebbleTemplateImpl(PebbleEngine engine, RenderableNode root, String name) {
     this.engine = engine;
     this.rootNode = root;
     this.name = name;
@@ -254,6 +259,64 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     }
     template.evaluate(writer, newContext);
     scopeChain.popScope();
+  }
+
+  /**
+   * Embed a template with {@code name} into this template and override its child blocks. This has the effect of
+   * essentially "including" a template (as with the `include` tag), but its blocks may be overridden in the calling
+   * template similar to extending a template.
+   *
+   * @param lineNo the line number of the node being evaluated
+   * @param writer the writer to which the output should be written to.
+   * @param context the context within which the template is rendered in.
+   * @param name the name of the template to include.
+   * @param additionalVariables the map with additional variables provided with the include tag to
+   * add within the embed tag.
+   * @param overriddenBlocks the blocks parsed out of the parent template that should override blocks in the embedded template
+   * @throws IOException Any error during the loading of the template
+   */
+  public void embedTemplate(
+          int lineNo,
+          Writer writer,
+          EvaluationContextImpl context,
+          String name,
+          Map<?, ?> additionalVariables,
+          List<BlockNode> overriddenBlocks
+  ) throws IOException {
+    // get the template to embed
+    String embeddedTemplateName = this.resolveRelativePath(name);
+    final PebbleTemplateImpl embeddedTemplate = (PebbleTemplateImpl) this.engine.getTemplate(embeddedTemplateName);
+
+    // push a child scope based on the current scope
+    context.scopedShallowWithoutInheritanceChain(embeddedTemplate, additionalVariables, (newContext) -> {
+
+      // create a fake root template to act as the parent of the embedded template. That root node simply renders the
+      // embedded template's own RootNode, but now we're able to isolate its template hierarchy and provide new blocks
+      // into that hierarchy
+      BodyNode embeddedTemplateBody = ((RootNode) embeddedTemplate.rootNode).getBody();
+      BodyNode bodyNode = new BodyNode(lineNo, Collections.singletonList(embeddedTemplateBody));
+      PebbleTemplateImpl fakeRootTemplate = new PebbleTemplateImpl(engine, bodyNode, embeddedTemplateName);
+
+      // push the blocks from the embedded template into the fake root, to make sure they are able to rendered if they
+      // are not overridden
+      for(Block block : embeddedTemplate.blocks.values()) {
+        fakeRootTemplate.registerBlock(block);
+      }
+
+      // push the overridden blocks into the embedded template, since they were added to the host template rather than
+      // the embdedded template during parsing. Overridden blocks must be present in the embedded template.
+      for(BlockNode blockNode : overriddenBlocks) {
+        if(!embeddedTemplate.hasBlock(blockNode.getName())) throw new PebbleException(null, "Block '" + blockNode.getName() + "' does not exist in the template being embedded!", lineNo, this.getName());
+        embeddedTemplate.registerBlock(blockNode.getBlock());
+      }
+
+      // push the new fake template root into the child context so blocks are resolved properly.
+      newContext.getHierarchy().pushAncestor(fakeRootTemplate);
+
+      // evaluate the embedded template. Its blocks will now override those defined in the fake root template using the
+      // same mechanism as for overriding blocks when extending a template
+      embeddedTemplate.evaluate(writer, newContext);
+    });
   }
 
   /**

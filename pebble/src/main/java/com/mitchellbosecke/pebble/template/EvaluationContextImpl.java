@@ -12,6 +12,9 @@ import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.cache.PebbleCache;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
+import com.mitchellbosecke.pebble.utils.Callbacks;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -251,5 +254,40 @@ public class EvaluationContextImpl implements EvaluationContext {
   @Override
   public Object getVariable(String key) {
     return this.scopeChain.get(key);
+  }
+
+  private void pushScope(
+          EvaluationContextImpl newContext,
+          Map<?, ?> additionalVariables,
+          Callbacks.PebbleConsumer<EvaluationContextImpl> scopedFunction
+  ) throws IOException {
+    ScopeChain scopeChain = newContext.getScopeChain();
+
+    // push a new local scope
+    scopeChain.pushScope();
+
+    // if there are additional variables to be added to this scope, add them now
+    if(additionalVariables != null) {
+      for (Map.Entry<?, ?> entry : additionalVariables.entrySet()) {
+        scopeChain.put((String) entry.getKey(), entry.getValue());
+      }
+    }
+
+    // run the callback that needs to be scoped
+    scopedFunction.accept(newContext);
+
+    // pop the new local scope
+    scopeChain.popScope();
+  }
+
+  public void scopedShallowWithoutInheritanceChain(
+          PebbleTemplateImpl template,
+          Map<?, ?> additionalVariables,
+          Callbacks.PebbleConsumer<EvaluationContextImpl> scopedFunction) throws IOException {
+    pushScope(
+            this.shallowCopyWithoutInheritanceChain(template),
+            additionalVariables,
+            scopedFunction
+    );
   }
 }

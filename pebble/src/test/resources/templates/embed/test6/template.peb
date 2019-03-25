@@ -1,0 +1,11 @@
+BEFORE ALL
+{% embed './template.base.peb' with {'foo': 'NEWFOO', 'bar': 'NEWBAR'} %}
+{% block embedBlock1 %}
+EMBED OVERRIDE [{{ bar }}]
+(
+parent={{ parent() }}
+)
+{% endblock %}
+{% endembed %}
+
+AFTER ALL
