@@ -1,0 +1,12 @@
+BEFORE ALL
+BEFORE BASE 3
+block1 base 1
+block2 base 2
+block3 base 3
+block4 embed
+parent=block4 base 3
+block1=block1 base 1
+block2=block2 base 2
+block3=block3 base 3
+AFTER BASE 3
+AFTER ALL

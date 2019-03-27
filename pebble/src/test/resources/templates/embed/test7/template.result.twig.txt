@@ -1,0 +1,8 @@
+BEFORE ALL
+BEFORE BASE 3
+block1 base 3
+block2 base 3
+block3 base 3
+block4 base 3
+AFTER BASE 3
+AFTER ALL

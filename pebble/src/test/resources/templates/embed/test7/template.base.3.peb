@@ -1,0 +1,14 @@
+BEFORE BASE 3
+{% block block1 %}
+block1 base 3
+{% endblock %}
+{% block block2 %}
+block2 base 3
+{% endblock %}
+{% block block3 %}
+block3 base 3
+{% endblock %}
+{% block block4 %}
+block4 base 3
+{% endblock %}
+AFTER BASE 3

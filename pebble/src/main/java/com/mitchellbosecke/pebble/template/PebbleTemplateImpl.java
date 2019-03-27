@@ -306,7 +306,6 @@ public class PebbleTemplateImpl implements PebbleTemplate {
       // push the overridden blocks into the embedded template, since they were added to the host template rather than
       // the embdedded template during parsing. Overridden blocks must be present in the embedded template.
       for(BlockNode blockNode : overriddenBlocks) {
-        if(!embeddedTemplate.hasBlock(blockNode.getName())) throw new PebbleException(null, "Block '" + blockNode.getName() + "' does not exist in the template being embedded!", lineNo, this.getName());
         embeddedTemplate.registerBlock(blockNode.getBlock());
       }
 

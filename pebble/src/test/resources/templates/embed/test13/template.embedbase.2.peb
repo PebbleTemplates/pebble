@@ -1,0 +1,4 @@
+{% extends 'template.embedbase.3.peb' %}
+{% block block2 %}
+block2 embed base 2
+{% endblock %}

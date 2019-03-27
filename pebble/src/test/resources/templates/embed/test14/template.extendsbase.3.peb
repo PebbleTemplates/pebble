@@ -1,0 +1,14 @@
+BEFORE EXTENDS BASE 3
+{% block block1 %}
+block1 extends base 3
+{% endblock %}
+{% block block2 %}
+block2 extends base 3
+{% endblock %}
+{% block block3 %}
+block3 extends base 3
+{% endblock %}
+{% block block4 %}
+block4 extends base 3
+{% endblock %}
+AFTER EXTENDS BASE 3

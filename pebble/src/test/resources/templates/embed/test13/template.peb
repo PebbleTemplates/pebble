@@ -1,0 +1,21 @@
+{% extends 'template.extendsbase.1.peb' %}
+    {% block block4 %}
+    BEFORE ALL
+    {% embed 'template.embedbase.1.peb' %}
+    {% block block4 %}
+    block4 embed embed
+    parent={{ parent() }}
+    block1={{ block('block1') }}
+    block2={{ block('block2') }}
+    block3={{ block('block3') }}
+    {% endblock %}
+    {% endembed %}
+
+    AFTER ALL
+
+    block4 extends extends
+    parent={{ parent() }}
+    block1={{ block('block1') }}
+    block2={{ block('block2') }}
+    block3={{ block('block3') }}
+{% endblock %}
