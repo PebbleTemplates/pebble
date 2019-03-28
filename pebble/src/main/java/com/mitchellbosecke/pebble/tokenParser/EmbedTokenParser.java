@@ -78,7 +78,10 @@ public class EmbedTokenParser implements TokenParser {
 
   private BlockNode parseBlock(Token token, Parser parser, TokenStream stream) {
     if(stream.current().test(Token.Type.TEXT)) {
-      stream.expect(Token.Type.TEXT);
+      Token textToken = stream.expect(Token.Type.TEXT);
+      if(textToken.getValue().trim().length() > 0) {
+        throw new ParserException(null, "A template that extends another one cannot include content outside blocks. Did you forget to put the content inside a {% block %} tag?", textToken.getLineNumber(), stream.getFilename());
+      }
     }
 
     stream.expect(Token.Type.EXECUTE_START);

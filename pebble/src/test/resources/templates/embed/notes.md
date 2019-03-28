@@ -34,3 +34,10 @@ The majority of these tests were compared to Twig for fidelity, using https://tw
 - test13 - The `extends` tag and `embed` tag maintain different template hierarchies. Blocks are resolved using the 
     proper hierarchy for the scope the `block()` and `parent()` functions are used in
 - test14 - Blocks do not bleed from the parent template hierarchy into the embed template hierarchy.
+
+## Error-checking Tests
+
+- test15 - Error thrown if content is added to the embed tag (instead of a block inside the embed)
+- test16 - Error thrown if content is added before a block in the the embed tag
+- test17 - Error thrown if content is added after a block in the the embed tag
+- test18 - Error thrown if content is added between blocks in the the embed tag

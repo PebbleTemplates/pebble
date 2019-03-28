@@ -1,0 +1,6 @@
+{% block block1 %}
+block1 embed base
+{% endblock %}
+{% block block2 %}
+block2 embed base
+{% endblock %}

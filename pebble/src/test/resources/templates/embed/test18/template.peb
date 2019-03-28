@@ -1,0 +1,9 @@
+{% embed 'template.base.peb' %}
+    {% block block1 %}
+    overridden
+    {% endblock %}
+    between blocks
+    {% block block2 %}
+    overridden
+    {% endblock %}
+{% endembed %}
