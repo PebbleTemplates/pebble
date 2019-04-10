@@ -16,7 +16,7 @@
   <url>http://pebbletemplates.io</url>
 
   <properties>
-    <orchid.version>0.12.17</orchid.version>
+    <orchid.version>0.16.4</orchid.version>
   </properties>
 
   <profiles>
@@ -33,32 +33,7 @@
             <dependencies>
               <dependency>
                 <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidCore</artifactId>
-                <version>${orchid.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidEditorial</artifactId>
-                <version>${orchid.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidSearch</artifactId>
-                <version>${orchid.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidPages</artifactId>
-                <version>${orchid.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidWiki</artifactId>
-                <version>${orchid.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidChangelog</artifactId>
+                <artifactId>OrchidDocs</artifactId>
                 <version>${orchid.version}</version>
               </dependency>
               <dependency>
@@ -69,11 +44,6 @@
               <dependency>
                 <groupId>io.github.javaeden.orchid</groupId>
                 <artifactId>OrchidPluginDocs</artifactId>
-                <version>${orchid.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidSyntaxHighlighter</artifactId>
                 <version>${orchid.version}</version>
               </dependency>
             </dependencies>
@@ -102,20 +72,12 @@
   <!-- 2. Get Orchid from Jcenter, Bintray, and Jitpack -->
   <pluginRepositories>
     <pluginRepository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com </url>
+    </pluginRepository>
+    <pluginRepository>
       <id>kotlinx</id>
       <url>https://kotlin.bintray.com/kotlinx</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>orchid</id>
-      <url>https://dl.bintray.com/javaeden/Orchid</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>eden</id>
-      <url>https://dl.bintray.com/javaeden/Eden</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>jitpack</id>
-      <url>https://jitpack.io</url>
     </pluginRepository>
   </pluginRepositories>
 </project>
