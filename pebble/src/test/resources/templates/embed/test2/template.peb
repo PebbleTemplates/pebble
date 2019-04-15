@@ -1,0 +1,8 @@
+BEFORE ALL
+{% embed './template.base.peb' %}
+{% block 'embedBlock1' %}
+EMBED OVERRIDE
+{% endblock %}
+{% endembed %}
+
+AFTER ALL

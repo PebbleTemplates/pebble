@@ -1,0 +1,4 @@
+{% extends 'template.base.3.peb' %}
+{% block block2 %}
+block2 base 2
+{% endblock %}

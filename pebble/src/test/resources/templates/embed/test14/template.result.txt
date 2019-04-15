@@ -1,0 +1,15 @@
+BEFORE EXTENDS BASE 3
+block1 extends base 1
+block2 extends base 2
+block3 extends base 3
+    BEFORE ALL
+    block1 embed base 1
+
+    AFTER ALL
+
+    block4 extends extends
+    parent=block4 extends base 3
+    block1=block1 extends base 1
+    block2=block2 extends base 2
+    block3=block3 extends base 3
+AFTER EXTENDS BASE 3

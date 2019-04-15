@@ -1,0 +1,1 @@
+A template that extends another one cannot include content outside blocks. Did you forget to put the content inside a {% block %} tag? (template.peb:6)

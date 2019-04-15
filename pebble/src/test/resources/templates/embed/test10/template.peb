@@ -1,0 +1,8 @@
+BEFORE ALL
+{% embed 'template.base.1.peb' %}
+{% block block4 %}
+block4 embed
+{% endblock %}
+{% endembed %}
+
+AFTER ALL
