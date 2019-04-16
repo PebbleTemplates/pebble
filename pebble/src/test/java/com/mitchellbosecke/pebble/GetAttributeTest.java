@@ -155,13 +155,16 @@ public class GetAttributeTest {
    * Make sure we are properly accounting for getting the class object from an Object in all
    * situations:
    *
-   * | AllowGetClass | Strict Variables | Access Type | Result  | | ------------- | ----------------
-   * | ----------- | ------- | | true          | false            | property    | allowed | | true |
-   * false            | method      | allowed | | true          | true             | property    |
-   * allowed | | true          | true             | method      | allowed | | false | false
-   *   | property    | throw   | | false         | false            | method | throw   | | false
-   *     | true             | property    | throw   | | false         | true             | method
-   * | throw   |
+   * | AllowGetClass | Strict Variables | Access Type | Result  |
+   * | ------------- | ---------------- | ----------- | ------- |
+   * | true          | false            | property    | allowed |
+   * | true          | false            | method      | allowed |
+   * | true          | true             | property    | allowed |
+   * | true          | true             | method      | allowed |
+   * | false         | false            | property    | throw   |
+   * | false         | false            | method      | throw   |
+   * | false         | true             | property    | throw   |
+   * | false         | true             | method      | throw   |
    */
 
   @Test
@@ -289,6 +292,72 @@ public class GetAttributeTest {
         .build();
 
     PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new SimpleObject());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+  }
+
+  @Test
+  public void testAccessingClass_AllowGetClassOnIsCaseInsensitive_Property()
+      throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+      .loader(new StringLoader())
+      .allowGetClass(true)
+      .build();
+
+    PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new SimpleObject());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
+  }
+
+  @Test(expected = ClassAccessException.class)
+  public void testAccessingClass_AllowGetClassOffIsCaseInsensitive_Property()
+      throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+      .loader(new StringLoader())
+      .allowGetClass(false)
+      .build();
+
+    PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new SimpleObject());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+  }
+
+  @Test
+  public void testAccessingClass_AllowGetClassOnIsCaseInsensitive_Method()
+      throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+      .loader(new StringLoader())
+      .allowGetClass(true)
+      .build();
+
+    PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new SimpleObject());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
+  }
+
+  @Test(expected = ClassAccessException.class)
+  public void testAccessingClass_AllowGetClassOffIsCaseInsensitive_Method()
+      throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+      .loader(new StringLoader())
+      .allowGetClass(false)
+      .build();
+
+    PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
     Map<String, Object> context = new HashMap<>();
     context.put("object", new SimpleObject());
 
