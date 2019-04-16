@@ -92,7 +92,7 @@ class MemberCacheUtils {
    */
   private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, String filename,
       int lineNumber, EvaluationOptions evaluationOptions) {
-    if (!evaluationOptions.isAllowGetClass() && name.equals("getClass")) {
+    if (!evaluationOptions.isAllowGetClass() && name.equalsIgnoreCase("getClass")) {
       throw new ClassAccessException(lineNumber, filename);
     }
 
