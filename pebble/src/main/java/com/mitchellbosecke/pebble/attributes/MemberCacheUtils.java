@@ -8,7 +8,10 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 class MemberCacheUtils {
@@ -45,45 +48,61 @@ class MemberCacheUtils {
     // capitalize first letter of attribute for the following attempts
     String attributeCapitalized =
         Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
+    
+    // search well known super classes first to avoid illegal reflective access
+    List<Class<?>> agenda = Arrays.asList(
+        List.class,
+        Set.class,
+        Map.class,
+        Map.Entry.class,
+        Collection.class,
+        Iterable.class,
+        clazz);
+    
+    for (Class<?> type : agenda) {
+      if (!type.isAssignableFrom(clazz)) {
+        continue;
+      }
+      
+      // check get method
+      Member result = this
+          .findMethod(type, "get" + attributeCapitalized, parameterTypes, filename, lineNumber,
+              evaluationOptions);
 
-    // check get method
-    Member result = this
-        .findMethod(clazz, "get" + attributeCapitalized, parameterTypes, filename, lineNumber,
+      // check is method
+      if (result == null) {
+        result = this
+            .findMethod(type, "is" + attributeCapitalized, parameterTypes, filename, lineNumber,
+                evaluationOptions);
+      }
+
+      // check has method
+      if (result == null) {
+        result = this
+            .findMethod(type, "has" + attributeCapitalized, parameterTypes, filename, lineNumber,
+                evaluationOptions);
+      }
+
+      // check if attribute is a public method
+      if (result == null) {
+        result = this.findMethod(type, attributeName, parameterTypes, filename, lineNumber,
             evaluationOptions);
+      }
 
-    // check is method
-    if (result == null) {
-      result = this
-          .findMethod(clazz, "is" + attributeCapitalized, parameterTypes, filename, lineNumber,
-              evaluationOptions);
-    }
-
-    // check has method
-    if (result == null) {
-      result = this
-          .findMethod(clazz, "has" + attributeCapitalized, parameterTypes, filename, lineNumber,
-              evaluationOptions);
-    }
-
-    // check if attribute is a public method
-    if (result == null) {
-      result = this.findMethod(clazz, attributeName, parameterTypes, filename, lineNumber,
-          evaluationOptions);
-    }
-
-    // public field
-    if (result == null) {
-      try {
-        result = clazz.getField(attributeName);
-      } catch (NoSuchFieldException | SecurityException e) {
+      // public field
+      if (result == null) {
+        try {
+          result = type.getField(attributeName);
+        } catch (NoSuchFieldException | SecurityException e) {
+        }
+      }
+      
+      if (result != null) {
+        ((AccessibleObject) result).setAccessible(true);
+        return result;
       }
     }
-
-    if (result != null) {
-      ((AccessibleObject) result).setAccessible(true);
-    }
-
-    return result;
+    return null;
   }
 
   /**

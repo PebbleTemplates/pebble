@@ -16,12 +16,13 @@ import com.mitchellbosecke.pebble.node.fornode.LazyRevIndex;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.template.ScopeChain;
-import com.mitchellbosecke.pebble.utils.PublicMapEntry;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Represents a "for" loop within the template.
@@ -150,7 +151,7 @@ public class ForNode extends AbstractRenderableNode {
       result = (Iterable<Object>) obj;
     } else if (obj instanceof Map) {
       // raw type
-      result = PublicMapEntry.fromEntrySet(((Map)obj).entrySet());
+      result = ((Map) obj).entrySet();
     } else if (obj.getClass().isArray()) {
       result = new ArrayIterable(obj);
     } else if (obj instanceof Enumeration) {
