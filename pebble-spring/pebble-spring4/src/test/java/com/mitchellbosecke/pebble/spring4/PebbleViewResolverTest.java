@@ -6,19 +6,8 @@
  */
 package com.mitchellbosecke.pebble.spring4;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.mitchellbosecke.pebble.spring4.config.MVCConfig;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +23,19 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ViewResolver;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test for the PebbleViewResolver
@@ -120,6 +122,15 @@ public class PebbleViewResolverTest {
     Map<String, Object> model = new HashMap<>();
     model.put(BindingResult.MODEL_KEY_PREFIX + FORM_NAME, this.mockBindingResult);
     return model;
+  }
+
+  @Test
+  public void whenRenderingAPage_givenPageWithBindingResultAndMacro_thenRenderingIsOK() throws Exception {
+    Map<String, Object> model = this.givenBindingResult();
+
+    String result = this.render("bindingResultWithMacroTest", model);
+
+    this.assertOutput(result, EXPECTED_RESPONSE_PATH + "/bindingResultWithMacroTest.html");
   }
 
   @Test

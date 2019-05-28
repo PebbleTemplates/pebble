@@ -8,10 +8,13 @@ package com.mitchellbosecke.pebble.spring.extension.function.bindingresult;
 
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.GlobalContext;
+
+import org.springframework.validation.BindingResult;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.validation.BindingResult;
 
 /**
  * Base class of the function interacting with the BindingResult
@@ -36,6 +39,13 @@ public abstract class BaseBindingResultFunction implements Function {
 
   protected BindingResult getBindingResult(String formName, EvaluationContext context) {
     String attribute = BindingResult.MODEL_KEY_PREFIX + formName;
-    return (BindingResult) context.getVariable(attribute);
+    BindingResult bindingResult = (BindingResult) context.getVariable(attribute);
+    if (bindingResult == null) {
+      GlobalContext globalContext = (GlobalContext) context.getVariable("_context");
+      if (globalContext != null) {
+        return (BindingResult) globalContext.get(attribute);
+      }
+    }
+    return bindingResult;
   }
 }

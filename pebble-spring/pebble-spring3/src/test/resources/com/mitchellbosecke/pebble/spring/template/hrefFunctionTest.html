@@ -6,6 +6,7 @@
 </head>
 
 <body>
+HrefFunction string interpolation = {{ href("/#{beans.foo.foo}") }}
 HrefFunction static = {{ href('/foobar') }}
 HrefFunction expression = {{ href('/' + beans.foo.foo) }}
 </body>
