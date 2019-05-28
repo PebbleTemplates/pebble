@@ -5,7 +5,7 @@ import javax.servlet.annotation.WebServlet;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.util.StringUtils;
 
 class WebServletHandler extends ServletComponentHandler {
