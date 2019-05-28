@@ -5,7 +5,7 @@ import javax.servlet.annotation.WebListener;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 
 class WebListenerHandler extends ServletComponentHandler {
 
