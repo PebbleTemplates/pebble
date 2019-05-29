@@ -4,7 +4,9 @@
 # Integration with Spring
 
 ## Example
-There is a fully working example project located on [github](https://github.com/PebbleTemplates/pebble-example-spring)
+There is the spring petclinic example which has been migrated to [pebble](https://github.com/PebbleTemplates/spring-petclinic) 
+
+There is also a fully working example project located on [github](https://github.com/PebbleTemplates/pebble-example-spring)
 which can be used as a reference. It is a very simple and bare-bones project designed to only portray the basics.
 To build the project, simply run `mvn install` and then deploy the resulting war file to a an application container.
 
