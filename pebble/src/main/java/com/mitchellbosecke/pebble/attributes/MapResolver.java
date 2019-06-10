@@ -26,25 +26,25 @@ class MapResolver implements AttributeResolver {
       return new ResolvedAttribute(null);
     }
 
-    ResolvedAttribute resolvedAttribute;
+    Object key;
     if (attributeNameValue != null && Number.class
         .isAssignableFrom(attributeNameValue.getClass())) {
       Number keyAsNumber = (Number) attributeNameValue;
 
       Class<?> keyClass = object.keySet().iterator().next().getClass();
-      Object key = this.cast(keyAsNumber, keyClass, filename, lineNumber);
-      resolvedAttribute = new ResolvedAttribute(object.get(key));
+      key = this.cast(keyAsNumber, keyClass, filename, lineNumber);
     } else {
-      resolvedAttribute = new ResolvedAttribute(object.get(attributeNameValue));
+      key = attributeNameValue;
     }
 
-    if (context.isStrictVariables() && resolvedAttribute.evaluatedValue == null) {
+    if(context.isStrictVariables() && !object.containsKey(key)) {
       throw new AttributeNotFoundException(null, String.format(
           "Attribute [%s] of [%s] does not exist or can not be accessed and strict variables is set to true.",
           attributeNameValue.toString(), object.getClass().getName()),
           attributeNameValue.toString(), lineNumber, filename);
     }
 
+    ResolvedAttribute resolvedAttribute = new ResolvedAttribute(object.get(key));
     return resolvedAttribute;
   }
 

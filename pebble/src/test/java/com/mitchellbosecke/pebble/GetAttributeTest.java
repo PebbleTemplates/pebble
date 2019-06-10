@@ -138,6 +138,43 @@ public class GetAttributeTest {
   }
 
   @Test
+  public void testNullMapValueWithoutStrictVariables() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("hello {{ map.name }}");
+    Map<String, Object> context = new HashMap<>();
+
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", null);
+    context.put("map", map);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello ", writer.toString());
+  }
+
+  /**
+   * Issue 446
+   */
+  @Test
+  public void testNullMapValueWithStrictVariables() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(true).build();
+
+    PebbleTemplate template = pebble.getTemplate("hello {{ map.name }}");
+    Map<String, Object> context = new HashMap<>();
+
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", null);
+    context.put("map", map);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello ", writer.toString());
+  }
+
+  @Test
   public void testMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
