@@ -36,7 +36,7 @@ theme:
 services:
   publications:
     stages:
-      - type: ghPages
+      - type: githubPages
         branch: gh-pages
         publishType: CleanBranch
         username: PebbleTemplates

@@ -16,7 +16,7 @@
   <url>http://pebbletemplates.io</url>
 
   <properties>
-    <orchid.version>0.16.4</orchid.version>
+    <orchid.version>0.17.1</orchid.version>
   </properties>
 
   <profiles>
@@ -44,6 +44,11 @@
               <dependency>
                 <groupId>io.github.javaeden.orchid</groupId>
                 <artifactId>OrchidPluginDocs</artifactId>
+                <version>${orchid.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>io.github.javaeden.orchid</groupId>
+                <artifactId>OrchidGithub</artifactId>
                 <version>${orchid.version}</version>
               </dependency>
             </dependencies>
