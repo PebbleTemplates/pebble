@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,9 +71,7 @@ public final class LexerImpl implements Lexer {
    * The state of the lexer is important so that we know what to expect next and to help discover
    * errors in the template (ex. unclosed comments).
    */
-  private State state;
-
-  private LinkedList<State> states;
+  private Stack<State> states;
 
   private enum State {
     DATA, EXECUTE, PRINT, COMMENT, STRING, STRING_INTERPOLATION
@@ -153,15 +152,16 @@ public final class LexerImpl implements Lexer {
       throw new ParserException(e, "Can not convert template Reader into a String", 0, name);
     }
 
-    /*
-     * Start in a DATA state. This state basically means that we are NOT in
-     * between a pair of meaningful delimiters.
-     */
-    this.state = State.DATA;
 
     this.tokens = new ArrayList<>();
-    this.states = new LinkedList<>();
+    this.states = new Stack<>();
     this.brackets = new LinkedList<>();
+
+    /*
+     * Start in a DATA state by pushing it to the state stack. This state basically means that we are NOT in
+     * between a pair of meaningful delimiters.
+     */
+    this.pushState(State.DATA);
 
     /*
      * loop through the entire source and apply different lexing methods
@@ -170,7 +170,7 @@ public final class LexerImpl implements Lexer {
      * This will always start on lexData();
      */
     while (this.source.length() > 0) {
-      switch (this.state) {
+      switch (this.states.peek()) {
         case DATA:
           this.lexData();
           break;
@@ -196,6 +196,7 @@ public final class LexerImpl implements Lexer {
 
     // end of file token
     this.pushToken(Token.Type.EOF);
+    this.popState();
 
     // make sure that all brackets have been closed, else throw an error
     if (!this.brackets.isEmpty()) {
@@ -620,20 +621,17 @@ public final class LexerImpl implements Lexer {
   }
 
   /**
-   * Pushes the current state onto the stack and then updates the current state to the new state.
-   *
-   * @param state The new state to use as the current state
+   * Updates the current state to the new state by pushing the current state onto the stack.
    */
   private void pushState(State state) {
-    this.states.push(this.state);
-    this.state = state;
+    this.states.push(state);
   }
 
   /**
    * Pop state from the stack
    */
   private void popState() {
-    this.state = this.states.pop();
+    this.states.pop();
   }
 
   /**
