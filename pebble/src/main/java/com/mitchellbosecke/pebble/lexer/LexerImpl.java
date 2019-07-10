@@ -22,7 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
+import java.util.Deque;
+import java.util.ArrayDeque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +72,7 @@ public final class LexerImpl implements Lexer {
    * The state of the lexer is important so that we know what to expect next and to help discover
    * errors in the template (ex. unclosed comments).
    */
-  private Stack<State> states;
+  private Deque<State> states;
 
   private enum State {
     DATA, EXECUTE, PRINT, COMMENT, STRING, STRING_INTERPOLATION
@@ -154,7 +155,7 @@ public final class LexerImpl implements Lexer {
 
 
     this.tokens = new ArrayList<>();
-    this.states = new Stack<>();
+    this.states = new ArrayDeque<>();
     this.brackets = new LinkedList<>();
 
     /*
