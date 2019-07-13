@@ -8,5 +8,5 @@ The above example will output the following:
 3.14
 ```
 
-## Argumnets
+## Arguments
 - format
