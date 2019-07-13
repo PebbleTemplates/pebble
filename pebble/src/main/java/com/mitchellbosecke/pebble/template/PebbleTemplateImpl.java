@@ -89,12 +89,18 @@ public class PebbleTemplateImpl implements PebbleTemplate {
   public void evaluate(Writer writer, Map<String, Object> map) throws IOException {
     EvaluationContextImpl context = this.initContext(null);
     context.getScopeChain().pushScope(map);
+
+    // Issue #449: if the provided map is immutable, this allows us to still set variables in the template context
+    context.getScopeChain().pushScope(new HashMap<>());
     this.evaluate(writer, context);
   }
 
   public void evaluate(Writer writer, Map<String, Object> map, Locale locale) throws IOException {
     EvaluationContextImpl context = this.initContext(locale);
     context.getScopeChain().pushScope(map);
+
+    // Issue #449: if the provided map is immutable, this allows us to still set variables in the template context
+    context.getScopeChain().pushScope(new HashMap<>());
     this.evaluate(writer, context);
   }
 
