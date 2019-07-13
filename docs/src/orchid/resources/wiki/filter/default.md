@@ -8,7 +8,7 @@ In the following example, if `foo`, `bar`, or `baz` are null the output will bec
 ```twig
 {{ foo.bar.baz | default("No baz") }}
 ```
-Note that the default filter will suppress any `AttributeNotFoundException` exceptions that will usually be thrown when `strictVariables` is set to `true.
+Note that the default filter will suppress any `AttributeNotFoundException` exceptions that will usually be thrown when `strictVariables` is set to `true`.
 
 ## Arguments
 - default

@@ -46,6 +46,7 @@
 - [rsort](filter/rsort.md)
 - [slice](filter/slice.md)
 - [sort](filter/sort.md)
+- [split](filter/split.md)
 - [title](filter/title.md)
 - [trim](filter/trim.md)
 - [upper](filter/upper.md)
