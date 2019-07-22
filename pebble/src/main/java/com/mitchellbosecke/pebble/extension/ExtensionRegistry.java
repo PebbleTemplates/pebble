@@ -59,74 +59,91 @@ public class ExtensionRegistry {
 
   private final List<AttributeResolver> attributeResolver = new ArrayList<>();
 
+  public ExtensionRegistry() {
+  }
+
   public ExtensionRegistry(Collection<? extends Extension> extensions) {
 
     for (Extension extension : extensions) {
-      // token parsers
-      List<TokenParser> tokenParsers = extension.getTokenParsers();
-      if (tokenParsers != null) {
-        for (TokenParser tokenParser : tokenParsers) {
-          this.tokenParsers.put(tokenParser.getTag(), tokenParser);
+      addExtension(extension);
+    }
+  }
+
+  public void addOperatorOverridingExtension(Extension extension) {
+    addExtension(extension, true);
+  }
+
+  public void addExtension(Extension extension) {
+    addExtension(extension, false);
+  }
+
+  private void addExtension(Extension extension, boolean operatorOverriding) {
+    // token parsers
+    List<TokenParser> tokenParsers = extension.getTokenParsers();
+    if (tokenParsers != null) {
+      for (TokenParser tokenParser : tokenParsers) {
+        this.tokenParsers.put(tokenParser.getTag(), tokenParser);
+      }
+    }
+
+    // binary operators
+    List<BinaryOperator> binaryOperators = extension.getBinaryOperators();
+    if (binaryOperators != null) {
+      for (BinaryOperator operator : binaryOperators) {
+        if (operatorOverriding) {
+          this.binaryOperators.put(operator.getSymbol(), operator);
+        } else {
+          this.binaryOperators.putIfAbsent(operator.getSymbol(), operator);
         }
       }
+    }
 
-      // binary operators
-      List<BinaryOperator> binaryOperators = extension.getBinaryOperators();
-      if (binaryOperators != null) {
-        for (BinaryOperator operator : binaryOperators) {
-          if (!this.binaryOperators
-              .containsKey(operator.getSymbol())) { // disallow overriding core operators
-            this.binaryOperators.put(operator.getSymbol(), operator);
-          }
+    // unary operators
+    List<UnaryOperator> unaryOperators = extension.getUnaryOperators();
+    if (unaryOperators != null) {
+      for (UnaryOperator operator : unaryOperators) {
+        if (operatorOverriding) {
+          this.unaryOperators.put(operator.getSymbol(), operator);
+        } else {
+          this.unaryOperators.putIfAbsent(operator.getSymbol(), operator);
         }
       }
+    }
 
-      // unary operators
-      List<UnaryOperator> unaryOperators = extension.getUnaryOperators();
-      if (unaryOperators != null) {
-        for (UnaryOperator operator : unaryOperators) {
-          if (!this.unaryOperators
-              .containsKey(operator.getSymbol())) { // disallow override core operators
-            this.unaryOperators.put(operator.getSymbol(), operator);
-          }
-        }
-      }
+    // filters
+    Map<String, Filter> filters = extension.getFilters();
+    if (filters != null) {
+      this.filters.putAll(filters);
+    }
 
-      // filters
-      Map<String, Filter> filters = extension.getFilters();
-      if (filters != null) {
-        this.filters.putAll(filters);
-      }
+    // tests
+    Map<String, Test> tests = extension.getTests();
+    if (tests != null) {
+      this.tests.putAll(tests);
+    }
 
-      // tests
-      Map<String, Test> tests = extension.getTests();
-      if (tests != null) {
-        this.tests.putAll(tests);
-      }
+    // functions
+    Map<String, Function> functions = extension.getFunctions();
+    if (functions != null) {
+      this.functions.putAll(functions);
+    }
 
-      // tests
-      Map<String, Function> functions = extension.getFunctions();
-      if (functions != null) {
-        this.functions.putAll(functions);
-      }
+    // global variables
+    Map<String, Object> globalVariables = extension.getGlobalVariables();
+    if (globalVariables != null) {
+      this.globalVariables.putAll(globalVariables);
+    }
 
-      // global variables
-      Map<String, Object> globalVariables = extension.getGlobalVariables();
-      if (globalVariables != null) {
-        this.globalVariables.putAll(globalVariables);
-      }
+    // node visitors
+    List<NodeVisitorFactory> nodeVisitors = extension.getNodeVisitors();
+    if (nodeVisitors != null) {
+      this.nodeVisitors.addAll(nodeVisitors);
+    }
 
-      // node visitors
-      List<NodeVisitorFactory> nodeVisitors = extension.getNodeVisitors();
-      if (nodeVisitors != null) {
-        this.nodeVisitors.addAll(nodeVisitors);
-      }
-
-      // attribute resolver
-      List<AttributeResolver> attributeResolvers = extension.getAttributeResolver();
-      if (attributeResolvers != null) {
-        this.attributeResolver.addAll(attributeResolvers);
-      }
+    // attribute resolver
+    List<AttributeResolver> attributeResolvers = extension.getAttributeResolver();
+    if (attributeResolvers != null) {
+      this.attributeResolver.addAll(attributeResolvers);
     }
   }
 
