@@ -79,9 +79,8 @@ public class PebbleEngine {
    * Constructor for the Pebble Engine given an instantiated Loader. This method does only load
    * those userProvidedExtensions listed here.
    *
-   * @param loader     The template loader for this engine
-   * @param syntax     the syntax to use for parsing the templates.
-   * @param extensions The userProvidedExtensions which should be loaded.
+   * @param loader The template loader for this engine
+   * @param syntax the syntax to use for parsing the templates.
    */
   private PebbleEngine(Loader<?> loader,
       Syntax syntax,
@@ -90,7 +89,7 @@ public class PebbleEngine {
       PebbleCache<CacheKey, Object> tagCache,
       PebbleCache<Object, PebbleTemplate> templateCache,
       ExecutorService executorService,
-      Collection<? extends Extension> extensions,
+      ExtensionRegistry extensionRegistry,
       ParserOptions parserOptions,
       EvaluationOptions evaluationOptions) {
 
@@ -101,7 +100,7 @@ public class PebbleEngine {
     this.tagCache = tagCache;
     this.executorService = executorService;
     this.templateCache = templateCache;
-    this.extensionRegistry = new ExtensionRegistry(extensions);
+    this.extensionRegistry = extensionRegistry;
     this.parserOptions = parserOptions;
     this.evaluationOptions = evaluationOptions;
   }
@@ -283,6 +282,8 @@ public class PebbleEngine {
 
     private boolean greedyMatchMethod = false;
 
+    private boolean allowOverrideCoreOperators = false;
+
     /**
      * Creates the builder.
      */
@@ -423,6 +424,17 @@ public class PebbleEngine {
     }
 
     /**
+     * Sets whether or not core operators overrides should be allowed.
+     *
+     * @param allowOverrideCoreOperators Whether or not core operators overrides should be allowed.
+     * @return This builder object
+     */
+    public Builder allowOverrideCoreOperators(boolean allowOverrideCoreOperators) {
+      this.allowOverrideCoreOperators = allowOverrideCoreOperators;
+      return this;
+    }
+
+    /**
      * Sets the default escaping strategy of the built-in escaper extension.
      *
      * @param strategy The name of the default escaping strategy
@@ -436,7 +448,7 @@ public class PebbleEngine {
     /**
      * Adds an escaping strategy to the built-in escaper extension.
      *
-     * @param name     The name of the escaping strategy
+     * @param name The name of the escaping strategy
      * @param strategy The strategy implementation
      * @return This builder object
      */
@@ -472,7 +484,7 @@ public class PebbleEngine {
      * Enable/disable treat literal decimal as Integer. Default is disabled, treated as Long.
      *
      * @param literalDecimalTreatedAsInteger toggle to enable/disable literal decimal treated as
-     *                                       integer
+     * integer
      * @return This builder object
      */
     public Builder literalDecimalTreatedAsInteger(boolean literalDecimalTreatedAsInteger) {
@@ -513,13 +525,7 @@ public class PebbleEngine {
      */
     public PebbleEngine build() {
 
-      // core extensions
-      List<Extension> extensions = new ArrayList<>();
-      extensions.add(new CoreExtension());
-      extensions.add(this.escaperExtension);
-      extensions.add(new I18nExtension());
-      extensions.addAll(this.userProvidedExtensions);
-      extensions.add(new AttributeResolverExtension());
+      ExtensionRegistry extensionRegistry = buildExtensionRegistry();
 
       // default loader
       if (this.loader == null) {
@@ -562,7 +568,27 @@ public class PebbleEngine {
 
       return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale,
           this.tagCache, this.templateCache,
-          this.executorService, extensions, parserOptions, evaluationOptions);
+          this.executorService, extensionRegistry, parserOptions, evaluationOptions);
+    }
+
+    private ExtensionRegistry buildExtensionRegistry() {
+      ExtensionRegistry extensionRegistry = new ExtensionRegistry();
+
+      extensionRegistry.addExtension(new CoreExtension());
+      extensionRegistry.addExtension(this.escaperExtension);
+      extensionRegistry.addExtension(new I18nExtension());
+
+      for (Extension userProvidedExtension : this.userProvidedExtensions) {
+        if (allowOverrideCoreOperators) {
+          extensionRegistry.addOperatorOverridingExtension(userProvidedExtension);
+        } else {
+          extensionRegistry.addExtension(userProvidedExtension);
+        }
+      }
+
+      extensionRegistry.addExtension(new AttributeResolverExtension());
+
+      return extensionRegistry;
     }
   }
 
