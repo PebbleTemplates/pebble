@@ -7,7 +7,7 @@ Spring Boot starter for autoconfiguring Pebble as an MVC ViewResolver.
 ## Basic Usage
 Add the starter dependency to your pom.xml:
 
-### spring-boot v1
+### spring-boot v2
 ```XML
 <dependency>
 	<groupId>io.pebbletemplates</groupId>
@@ -20,17 +20,17 @@ Or build.gradle:
 compile "io.pebbletemplates:pebble-spring-boot-starter:{{ site.version }}"
 ```
 
-### spring-boot v2
+### spring-boot v1
 ```XML
 <dependency>
 	<groupId>io.pebbletemplates</groupId>
-	<artifactId>pebble-spring-boot-2-starter</artifactId>
+	<artifactId>pebble-legacy-spring-boot-starter</artifactId>
 	<version>{{ site.version }}</version>
 </dependency>
 ```
 Or build.gradle:
 ```groovy
-compile "io.pebbletemplates:pebble-spring-boot-2-starter:{{ site.version }}"
+compile "io.pebbletemplates:pebble-legacy-spring-boot-starter:{{ site.version }}"
 ```
 
 This is enough for autoconfiguration to kick in. This includes:
