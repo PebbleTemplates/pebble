@@ -4,8 +4,8 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.spring.PebbleViewResolver;
-import com.mitchellbosecke.pebble.spring.extension.SpringExtension;
+import com.mitchellbosecke.pebble.spring4.PebbleViewResolver;
+import com.mitchellbosecke.pebble.spring4.extension.SpringExtension;
 import java.util.List;
 import javax.servlet.Servlet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -96,7 +96,7 @@ public class PebbleAutoConfiguration {
     @ConditionalOnMissingBean(name = "pebbleViewResolver")
     public PebbleViewResolver pebbleViewResolver() {
       PebbleViewResolver pvr = new PebbleViewResolver();
-      this.properties.applyToMvcViewResolver(pvr);
+      this.properties.applyToViewResolver(pvr);
 
       pvr.setPebbleEngine(this.pebbleEngine);
       if (this.pebbleEngine.getLoader() instanceof ClasspathLoader) {

@@ -3,7 +3,7 @@
   <parent>
     <groupId>io.pebbletemplates</groupId>
     <artifactId>pebble-spring</artifactId>
-    <version>3.0.11-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pebble-spring4</artifactId>
@@ -14,7 +14,7 @@
 
   <properties>
     <servlet-api.version>3.0.1</servlet-api.version>
-    <spring-framework.version>4.1.0.RELEASE</spring-framework.version>
+    <spring-framework.version>4.3.25.RELEASE</spring-framework.version>
   </properties>
 
   <dependencyManagement>
