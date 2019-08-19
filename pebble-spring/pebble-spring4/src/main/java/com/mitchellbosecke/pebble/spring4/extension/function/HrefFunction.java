@@ -1,13 +1,18 @@
 package com.mitchellbosecke.pebble.spring4.extension.function;
 
 import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.spring4.util.ViewUtils;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Pebble function which adds the context path to the given url
@@ -57,10 +62,14 @@ public class HrefFunction implements Function {
 
   private String getContextPath() {
     if (this.contextPath == null) {
-      this.contextPath = ViewUtils.getRequest().getContextPath();
+      this.contextPath = this.getRequest().getContextPath();
     }
-
     return this.contextPath;
+  }
+
+  private HttpServletRequest getRequest() {
+    ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+    return attr.getRequest();
   }
 
   /**
