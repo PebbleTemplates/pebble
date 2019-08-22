@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("pebble")
 public class PebbleProperties extends AbstractTemplateViewResolverProperties {
 
-  public static final String DEFAULT_PREFIX = "/templates/";
+  public static final String DEFAULT_PREFIX = "classpath:/templates/";
   public static final String DEFAULT_SUFFIX = ".pebble";
 
   private Locale defaultLocale;

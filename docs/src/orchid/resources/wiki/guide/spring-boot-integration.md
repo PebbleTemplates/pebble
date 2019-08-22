@@ -52,7 +52,7 @@ Pebble vs tested Boot versions (may work on older Boot releases).
 ## Boot externalized configuration
 A number of properties can be defined in Spring Boot externalized configuration, eg. ``application.properties``, starting with the prefix ``pebble``. See the corresponding [PebbleProperties.java](https://github.com/PebbleTemplates/pebble/blob/master/pebble-spring/pebble-spring-boot-starter/src/main/java/com/mitchellbosecke/pebble/boot/autoconfigure/PebbleProperties.java) for your starter version. Notable properties are:
 
-* ``pebble.prefix``: defines the prefix that will be prepended to the mvc view name. Defaults to ``/templates/``
+* ``pebble.prefix``: defines the prefix that will be prepended to the mvc view name. Defaults to ``classpath:/templates/``
 * ``pebble.suffix``: defines the suffix that will be appended to the mvc view name. Defaults to ``.pebble``
 * ``pebble.cache``: enables or disables PebbleEngine caches. Defaults to ``true``
 * ``pebble.contentType``: defines the content type that will be used to configure the ViewResolver. Defaults to ``text/html``
