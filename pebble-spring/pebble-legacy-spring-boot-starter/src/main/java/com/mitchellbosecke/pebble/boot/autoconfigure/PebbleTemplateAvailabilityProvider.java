@@ -7,6 +7,8 @@ import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
+import static org.springframework.core.io.ResourceLoader.CLASSPATH_URL_PREFIX;
+
 public class PebbleTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
   @Override
@@ -16,7 +18,7 @@ public class PebbleTemplateAvailabilityProvider implements TemplateAvailabilityP
       PropertyResolver resolver = new RelaxedPropertyResolver(environment, "pebble.");
       String prefix = resolver.getProperty("prefix", PebbleProperties.DEFAULT_PREFIX);
       String suffix = resolver.getProperty("suffix", PebbleProperties.DEFAULT_SUFFIX);
-      return resourceLoader.getResource(prefix + view + suffix).exists();
+      return resourceLoader.getResource(CLASSPATH_URL_PREFIX + prefix + view + suffix).exists();
     }
     return false;
   }
