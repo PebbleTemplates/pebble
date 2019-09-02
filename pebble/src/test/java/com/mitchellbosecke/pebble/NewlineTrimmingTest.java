@@ -61,8 +61,13 @@ public class NewlineTrimmingTest {
     assertEquals("val1val2", writer.toString());
   }
 
+  /**
+   * Given that Newline Trimming is disabled, 
+   * a template that contains one newline character with text on each line
+   * should output one newline character.
+   */
   @Test
-  public void testPrintSetToFalse() throws PebbleException, IOException {
+  public void testNewLineIncludedWhen_NewLineTrimmingIsFalse() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .newLineTrimming(false)
@@ -100,8 +105,13 @@ public class NewlineTrimmingTest {
     assertEquals("val1\nval2", writer.toString());
   }
 
+  /**
+   * Given that Newline Trimming is disabled, 
+   * a template that contains one or more consecutive newline characters
+   * should output one newline character.
+   */
   @Test
-  public void testPrintSetToFalseTwoNewlines() throws PebbleException, IOException {
+  public void testOneNewLineWhen_NewLineTrimmingFalseAndConsecutiveNewLinesInTemplate() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .newLineTrimming(false)
