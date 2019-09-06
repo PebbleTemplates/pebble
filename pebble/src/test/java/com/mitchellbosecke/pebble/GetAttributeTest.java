@@ -8,15 +8,15 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -25,7 +25,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class GetAttributeTest {
 
@@ -192,23 +194,22 @@ public class GetAttributeTest {
    * Make sure we are properly accounting for getting the class object from an Object in all
    * situations:
    *
-   * | AllowGetClass | Strict Variables | Access Type | Result  |
-   * | ------------- | ---------------- | ----------- | ------- |
-   * | true          | false            | property    | allowed |
-   * | true          | false            | method      | allowed |
-   * | true          | true             | property    | allowed |
-   * | true          | true             | method      | allowed |
-   * | false         | false            | property    | throw   |
-   * | false         | false            | method      | throw   |
-   * | false         | true             | property    | throw   |
-   * | false         | true             | method      | throw   |
+   * | AllowUnsafeMethods | Strict Variables | Access Type | Result  |
+   * | ------------------ | ---------------- | ----------- | ------- |
+   * | true               | false            | property    | allowed |
+   * | true               | false            | method      | allowed |
+   * | true               | true             | property    | allowed |
+   * | true               | true             | method      | allowed |
+   * | false              | false            | property    | throw   |
+   * | false              | false            | method      | throw   |
+   * | false              | true             | property    | throw   |
+   * | false              | true             | method      | throw   |
    */
-
   @Test
-  public void testAccessingClass_AllowGetClassOn_StrictVariableOff_Property()
+  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(true)
+        .allowUnsafeMethods(true)
         .strictVariables(false)
         .build();
 
@@ -222,10 +223,10 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowGetClassOn_StrictVariableOff_Method()
+  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(true)
+        .allowUnsafeMethods(true)
         .strictVariables(false)
         .build();
 
@@ -239,10 +240,10 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowGetClassOn_StrictVariableOn_Property()
+  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(true)
+        .allowUnsafeMethods(true)
         .strictVariables(true)
         .build();
 
@@ -256,10 +257,10 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowGetClassOn_StrictVariableOn_Method()
+  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(true)
+        .allowUnsafeMethods(true)
         .strictVariables(true)
         .build();
 
@@ -273,10 +274,10 @@ public class GetAttributeTest {
   }
 
   @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowGetClassOff_StrictVariableOff_Property()
+  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOff_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(false)
+        .allowUnsafeMethods(false)
         .strictVariables(false)
         .build();
 
@@ -289,10 +290,10 @@ public class GetAttributeTest {
   }
 
   @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowGetClassOff_StrictVariableOff_Method()
+  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOff_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(false)
+        .allowUnsafeMethods(false)
         .strictVariables(false)
         .build();
 
@@ -305,10 +306,10 @@ public class GetAttributeTest {
   }
 
   @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowGetClassOff_StrictVariableOn_Property()
+  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOn_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(false)
+        .allowUnsafeMethods(false)
         .strictVariables(true)
         .build();
 
@@ -321,10 +322,10 @@ public class GetAttributeTest {
   }
 
   @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowGetClassOff_StrictVariableOn_Method()
+  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOn_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowGetClass(false)
+        .allowUnsafeMethods(false)
         .strictVariables(true)
         .build();
 
@@ -337,11 +338,11 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowGetClassOnIsCaseInsensitive_Property()
+  public void testAccessingClass_AllowUnsafeMethodsOnIsCaseInsensitive_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
       .loader(new StringLoader())
-      .allowGetClass(true)
+        .allowUnsafeMethods(true)
       .build();
 
     PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
@@ -354,11 +355,11 @@ public class GetAttributeTest {
   }
 
   @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowGetClassOffIsCaseInsensitive_Property()
+  public void testAccessingClass_AllowUnsafeMethodsOffIsCaseInsensitive_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
       .loader(new StringLoader())
-      .allowGetClass(false)
+        .allowUnsafeMethods(false)
       .build();
 
     PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
@@ -370,11 +371,11 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowGetClassOnIsCaseInsensitive_Method()
+  public void testAccessingClass_AllowUnsafeMethodsOnIsCaseInsensitive_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
       .loader(new StringLoader())
-      .allowGetClass(true)
+        .allowUnsafeMethods(true)
       .build();
 
     PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
@@ -387,14 +388,30 @@ public class GetAttributeTest {
   }
 
   @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowGetClassOffIsCaseInsensitive_Method()
+  public void testAccessingClass_AllowUnsafeMethodsOffIsCaseInsensitive_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
       .loader(new StringLoader())
-      .allowGetClass(false)
+        .allowUnsafeMethods(false)
       .build();
 
     PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new SimpleObject());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+  }
+
+  @Test(expected = ClassAccessException.class)
+  public void testAccessingClass_AllowUnsafeMethodsOffForMethodNotify_thenThrowException()
+      throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+        .loader(new StringLoader())
+        .allowUnsafeMethods(false)
+        .build();
+
+    PebbleTemplate template = pebble.getTemplate("hello [{{ object.notify() }}]");
     Map<String, Object> context = new HashMap<>();
     context.put("object", new SimpleObject());
 
@@ -968,7 +985,7 @@ public class GetAttributeTest {
     }
 
     public String getStringFromLongs(Long first, long second) {
-      return String.valueOf(first) + " " + String.valueOf(second);
+      return first + " " + second;
     }
 
     public String getStringFromBoolean(boolean bool) {

@@ -39,10 +39,10 @@ import com.mitchellbosecke.pebble.parser.ParserOptions;
 import com.mitchellbosecke.pebble.template.EvaluationOptions;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -276,7 +276,7 @@ public class PebbleEngine {
 
     private EscaperExtension escaperExtension = new EscaperExtension();
 
-    private boolean allowGetClass;
+    private boolean allowUnsafeMethods;
 
     private boolean literalDecimalTreatedAsInteger = false;
 
@@ -470,13 +470,13 @@ public class PebbleEngine {
     }
 
     /**
-     * Enable/disable getClass access for attributes
+     * Enable/disable unsafe methods access for attributes
      *
-     * @param allowGetClass toggle to enable/disable getClass access
+     * @param allowUnsafeMethods toggle to enable/disable unsafe methods access
      * @return This builder object
      */
-    public Builder allowGetClass(boolean allowGetClass) {
-      this.allowGetClass = allowGetClass;
+    public Builder allowUnsafeMethods(boolean allowUnsafeMethods) {
+      this.allowUnsafeMethods = allowUnsafeMethods;
       return this;
     }
 
@@ -525,7 +525,7 @@ public class PebbleEngine {
      */
     public PebbleEngine build() {
 
-      ExtensionRegistry extensionRegistry = buildExtensionRegistry();
+      ExtensionRegistry extensionRegistry = this.buildExtensionRegistry();
 
       // default loader
       if (this.loader == null) {
@@ -563,7 +563,7 @@ public class PebbleEngine {
       parserOptions.setLiteralDecimalTreatedAsInteger(this.literalDecimalTreatedAsInteger);
 
       EvaluationOptions evaluationOptions = new EvaluationOptions();
-      evaluationOptions.setAllowGetClass(this.allowGetClass);
+      evaluationOptions.setAllowUnsafeMethods(this.allowUnsafeMethods);
       evaluationOptions.setGreedyMatchMethod(this.greedyMatchMethod);
 
       return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale,
@@ -579,7 +579,7 @@ public class PebbleEngine {
       extensionRegistry.addExtension(new I18nExtension());
 
       for (Extension userProvidedExtension : this.userProvidedExtensions) {
-        if (allowOverrideCoreOperators) {
+        if (this.allowOverrideCoreOperators) {
           extensionRegistry.addOperatorOverridingExtension(userProvidedExtension);
         } else {
           extensionRegistry.addExtension(userProvidedExtension);
