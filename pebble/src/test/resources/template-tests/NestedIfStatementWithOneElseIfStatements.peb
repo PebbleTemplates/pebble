@@ -4,8 +4,6 @@ text before for loop followed by blank line
 Item 1
 {% elseif item.itemType equals "ITEM_TYPE2" -%}
 Item 2
-{% elseif item.itemType equals "ITEM_TYPE3" -%}
-Item 3
 {%- endif -%}
-{% endfor %}
+{% endfor -%}
 text after for loop preceded by blank line

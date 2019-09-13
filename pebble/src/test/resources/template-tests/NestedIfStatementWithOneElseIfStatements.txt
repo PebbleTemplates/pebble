@@ -4,6 +4,4 @@ Item 1
 
 Item 2
 
-Item 3
-
 text after for loop preceded by blank line

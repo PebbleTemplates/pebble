@@ -81,9 +81,22 @@ public class WhiteSpaceControlWithNewLineTrimmingTests {
 	 * @throws IOException
 	 */
 	@Test
-	public void testNestedIfStatementWithThreeElseIfStatements() throws PebbleException, IOException {
-		String templateOutput = pebbleTestContext.executeTemplateFromFile("NestedIfStatementWithThreeElseIfStatements.peb");
-		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("NestedIfStatementWithThreeElseIfStatements.txt"));
+	public void testNestedIfStatementWithOneElseIfStatements() throws PebbleException, IOException {
+		String templateOutput = pebbleTestContext.executeTemplateFromFile("NestedIfStatementWithOneElseIfStatements.peb");
+		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("NestedIfStatementWithOneElseIfStatements.txt"));
+	}
+	
+	/**
+	 * Test the whitespace control for a template that has a <code>for</code> loop with a nested
+	 * <code>if</code> statement where some text is output for each item in the list.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testNestedIfStatementWithTwoElseIfStatements() throws PebbleException, IOException {
+		String templateOutput = pebbleTestContext.executeTemplateFromFile("NestedIfStatementWithTwoElseIfStatements.peb");
+		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("NestedIfStatementWithTwoElseIfStatements.txt"));
 	}
 	
 	/**
@@ -94,7 +107,7 @@ public class WhiteSpaceControlWithNewLineTrimmingTests {
 	 * @throws IOException
 	 */
 	@Test
-	public void testNestedIfStatementWithTwioElseIfStatements() throws IOException {
+	public void testNestedIfStatementWithThreeElseIfStatements() throws IOException {
 		String templateOutput = pebbleTestContext.executeTemplateFromFile("NestedIfStatementWithThreeElseIfStatements.peb");
 		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("NestedIfStatementWithThreeElseIfStatements.txt"));
 	}
