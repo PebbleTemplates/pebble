@@ -8,26 +8,26 @@ package com.mitchellbosecke.pebble.template;
 public class EvaluationOptions {
 
   /**
-   * toggle to enable/disable getClass access
+   * toggle to enable/disable unsafe methods access
    */
-  private boolean allowGetClass;
+  private boolean allowUnsafeMethods;
 
   /**
    * toggle to enable/disable greedy matching mode for finding java method
    */
   private boolean greedyMatchMethod;
 
-  public boolean isAllowGetClass() {
-    return allowGetClass;
+  public boolean isAllowUnsafeMethods() {
+    return this.allowUnsafeMethods;
   }
 
-  public EvaluationOptions setAllowGetClass(boolean allowGetClass) {
-    this.allowGetClass = allowGetClass;
+  public EvaluationOptions setAllowUnsafeMethods(boolean allowUnsafeMethods) {
+    this.allowUnsafeMethods = allowUnsafeMethods;
     return this;
   }
 
   public boolean isGreedyMatchMethod() {
-    return greedyMatchMethod;
+    return this.greedyMatchMethod;
   }
 
   public EvaluationOptions setGreedyMatchMethod(boolean greedyMatchMethod) {
