@@ -62,19 +62,6 @@ public class WhiteSpaceControlWithNewLineTrimmingTests {
 
 	/**
 	 * Test the whitespace control for a template that has a <code>for</code> loop with a nested
-	 * <code>if</code> statement where some text is output for each item in the list.
-	 * 
-	 * @throws PebbleException
-	 * @throws IOException
-	 */
-	@Test
-	public void testForLoopWithNestedIfStatement() throws PebbleException, IOException {
-		String templateOutput = pebbleTestContext.executeTemplateFromFile("ForLoopWithNestedIfStatement.peb");
-		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("ForLoopWithNestedIfStatement.txt"));
-	}
-
-	/**
-	 * Test the whitespace control for a template that has a <code>for</code> loop with a nested
 	 * <code>if</code> statement that uses a macro and the macro also has an if statement. 
 	 * 
 	 * @throws PebbleException
@@ -88,15 +75,27 @@ public class WhiteSpaceControlWithNewLineTrimmingTests {
 	
 	/**
 	 * Test the whitespace control for a template that has a <code>for</code> loop with a nested
+	 * <code>if</code> statement where some text is output for each item in the list.
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	@Test
+	public void testNestedIfStatementWithThreeElseIfStatements() throws PebbleException, IOException {
+		String templateOutput = pebbleTestContext.executeTemplateFromFile("NestedIfStatementWithThreeElseIfStatements.peb");
+		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("NestedIfStatementWithThreeElseIfStatements.txt"));
+	}
+	
+	/**
+	 * Test the whitespace control for a template that has a <code>for</code> loop with a nested
 	 * <code>if</code> statement that skips some of the items in the for loop.
 	 * 
 	 * @throws PebbleException
 	 * @throws IOException
 	 */
-	@Ignore("Fails due to extra blank line in the case that the if condition in the template is is not met")
 	@Test
-	public void testForLoopWithNestedIfStatementThatIsSkipped() throws IOException {
-		String templateOutput = pebbleTestContext.executeTemplateFromFile("ForLoopWithNestedIfStatementThatIsSkipped.peb");
-		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("ForLoopWithNestedIfStatementThatIsSkipped.txt"));
+	public void testNestedIfStatementWithTwioElseIfStatements() throws IOException {
+		String templateOutput = pebbleTestContext.executeTemplateFromFile("NestedIfStatementWithThreeElseIfStatements.peb");
+		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("NestedIfStatementWithThreeElseIfStatements.txt"));
 	}
 }
