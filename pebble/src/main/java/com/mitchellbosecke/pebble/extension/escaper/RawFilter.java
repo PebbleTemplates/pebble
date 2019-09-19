@@ -23,6 +23,9 @@ public class RawFilter implements Filter {
   @Override
   public Object apply(Object inputObject, Map<String, Object> args, PebbleTemplate self,
       EvaluationContext context, int lineNumber) {
+    if (inputObject instanceof StringResolver) {
+      return new SafeString(((StringResolver)inputObject).resolve(inputObject, self, context, lineNumber));
+    }
     return inputObject == null ? null : new SafeString(inputObject.toString());
   }
 

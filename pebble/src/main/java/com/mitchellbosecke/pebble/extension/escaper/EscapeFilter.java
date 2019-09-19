@@ -61,7 +61,12 @@ public class EscapeFilter implements Filter {
     if (inputObject == null || inputObject instanceof SafeString) {
       return inputObject;
     }
-    String input = StringUtils.toString(inputObject);
+    String input;
+    if (inputObject instanceof StringResolver) {
+      input = ((StringResolver)inputObject).resolve(inputObject, self, context, lineNumber);
+    } else {
+      input = StringUtils.toString(inputObject);
+    }
 
     String strategy = this.defaultStrategy;
 

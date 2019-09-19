@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotEquals;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.extension.escaper.StringResolver;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -291,6 +292,31 @@ public class EscaperExtensionTest {
     template.evaluate(writer, context);
 
     assertEquals("{\\\"a\\\": \\\"a/b/c\\\"}", writer.toString());
+  }
+
+  @Test
+  public void testStringResolver() throws PebbleException, IOException {
+      PebbleEngine pebble = new PebbleEngine.Builder()
+          .loader(new StringLoader())
+          .strictVariables(false)
+          .build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ object }} - {{ object | raw }}");
+
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new StringResolver() {
+        @Override
+        public String resolve(Object instance, PebbleTemplate self, EvaluationContext context,
+            int lineNumber)
+        {
+            return "yes<br/>";
+        }
+      });
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+
+      assertEquals("yes&lt;br/&gt; - yes<br/>", writer.toString());
   }
 
   public static class TestExtension extends AbstractExtension {
