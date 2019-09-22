@@ -67,7 +67,16 @@ public class ScopeChain {
    * @param map The known variables of this scope.
    */
   public void pushScope(Map<String, Object> map) {
-    Scope scope = new Scope(map, false);
+    Scope scope = new ScopeImpl(map, false);
+    this.stack.push(scope);
+  }
+
+  /**
+   * Push new scope to the chain
+   *
+   * @param scope Scope instance
+   */
+  public void pushScope(Scope scope) {
     this.stack.push(scope);
   }
 
@@ -75,7 +84,7 @@ public class ScopeChain {
    * Adds a new local scope to the scope chain
    */
   public void pushLocalScope() {
-    Scope scope = new Scope(new HashMap<>(), true);
+    Scope scope = new ScopeImpl(new HashMap<>(), true);
     this.stack.push(scope);
   }
 

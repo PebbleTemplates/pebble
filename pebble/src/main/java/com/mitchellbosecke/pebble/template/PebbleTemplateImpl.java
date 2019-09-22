@@ -104,6 +104,21 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     this.evaluate(writer, context);
   }
 
+  public void evaluate(Writer writer, Scope scope, Locale locale) throws IOException {
+    EvaluationContextImpl context = this.initContext(locale);
+    context.getScopeChain().pushScope(scope);
+
+    if (!scope.isWritable()) {
+      context.getScopeChain().pushScope(new HashMap<>());
+    }
+
+    this.evaluate(writer, context);
+  }
+
+  public void evaluate(Writer writer, Scope scope) throws IOException {
+    evaluate(writer, scope, null);
+  }
+
   public void evaluateBlock(String blockName, Writer writer) throws IOException {
     EvaluationContextImpl context = this.initContext(null);
     this.evaluate(new NoopWriter(), context);
