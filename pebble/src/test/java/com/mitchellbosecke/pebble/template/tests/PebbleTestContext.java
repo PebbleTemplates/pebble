@@ -55,7 +55,7 @@ public class PebbleTestContext {
 	}
 	
 	public void setNewLineTrimming(boolean b) {
-		this.newLineTrimming  = b;
+		this.newLineTrimming = b;
 	}
 	
 	/**

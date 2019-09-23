@@ -40,7 +40,7 @@ public class WhiteSpaceControlWithNewLineTrimmingTests {
 	/**
 	 * All tests in this class use this list of objects as the input to the template.
 	 */
-	private List<PebbleTestItem> listOfObjects = new ArrayList<PebbleTestItem>();
+	private List<PebbleTestItem> listOfObjects = null;
 	
 	/**
 	 * Used by each test and initialized before each test to simplify the 
@@ -50,13 +50,15 @@ public class WhiteSpaceControlWithNewLineTrimmingTests {
 	
 	@Before
 	public void setup() {
-		listOfObjects.add(new PebbleTestItem("Item 1", PebbleTestItemType.ITEM_TYPE1));
-		listOfObjects.add(new PebbleTestItem("Item 2", PebbleTestItemType.ITEM_TYPE2));
-		listOfObjects.add(new PebbleTestItem("Item 3", PebbleTestItemType.ITEM_TYPE3, true));
-		listOfObjects.add(new PebbleTestItem("Item 4", PebbleTestItemType.ITEM_TYPE4));
-		
 		pebbleTestContext = new PebbleTestContext();
 		pebbleTestContext.setNewLineTrimming(false);
+		
+		listOfObjects = new ArrayList<PebbleTestItem>();
+		listOfObjects.add(new PebbleTestItem("Item 1", PebbleTestItemType.ITEM_TYPE1));
+		listOfObjects.add(new PebbleTestItem("Item 2", PebbleTestItemType.ITEM_TYPE2));
+		listOfObjects.add(new PebbleTestItem("Item 3", PebbleTestItemType.ITEM_TYPE3));
+		listOfObjects.add(new PebbleTestItem("Item 4", PebbleTestItemType.ITEM_TYPE4, true));
+		
 		pebbleTestContext.setTemplateInput("items", listOfObjects);
 	}
 
@@ -71,6 +73,20 @@ public class WhiteSpaceControlWithNewLineTrimmingTests {
 	public void testForLoopWithNestedIfStatementAndMacro() throws PebbleException, IOException {;		
 		String templateOutput = pebbleTestContext.executeTemplateFromFile("ForLoopWithNestedIfStatementAndMacro.peb");
 		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("ForLoopWithNestedIfStatementAndMacro.txt"));
+	}
+	
+	/**
+	 * Test the whitespace control for a template that has a <code>for</code> loop with a nested
+	 * <code>if</code> statement that uses a macro and the macro also has an if statement. 
+	 * 
+	 * @throws PebbleException
+	 * @throws IOException
+	 */
+	// TODO not sure why the white space controls work the way that it does for this case.
+	@Test
+	public void testDoubleNestedIfStatement() throws PebbleException, IOException {
+		String templateOutput = pebbleTestContext.executeTemplateFromFile("DoubleNestedIfStatement.peb");
+		assertThat(templateOutput).contains(pebbleTestContext.getExpectedOutput("DoubleNestedIfStatement.txt"));
 	}
 	
 	/**
