@@ -196,6 +196,19 @@ public class PebbleTemplateImpl implements PebbleTemplate {
   }
 
   /**
+   * Return a shallow copy of this template.
+   *
+   * @return A new template instance with the same data
+   */
+  private PebbleTemplateImpl shallowCopy() {
+    PebbleTemplateImpl copy = new PebbleTemplateImpl(engine, rootNode, name);
+    copy.blocks.putAll(this.blocks);
+    copy.macros.putAll(this.macros);
+
+    return copy;
+  }
+
+  /**
    * Imports a template.
    *
    * @param context The evaluation context
@@ -291,7 +304,12 @@ public class PebbleTemplateImpl implements PebbleTemplate {
   ) throws IOException {
     // get the template to embed
     String embeddedTemplateName = this.resolveRelativePath(name);
-    final PebbleTemplateImpl embeddedTemplate = (PebbleTemplateImpl) this.engine.getTemplate(embeddedTemplateName);
+
+    // make a shallow copy of the template so we can safely modify its blocks without affecting other templates in the
+    // template cache. Include and extend will use the same object from the cache, so we need to make sure embeds do not
+    // impact those other tags or change anything in the cache.
+    final PebbleTemplateImpl embeddedTemplate =
+            ((PebbleTemplateImpl) this.engine.getTemplate(embeddedTemplateName)).shallowCopy();
 
     // push a child scope based on the current scope
     context.scopedShallowWithoutInheritanceChain(embeddedTemplate, additionalVariables, (newContext) -> {

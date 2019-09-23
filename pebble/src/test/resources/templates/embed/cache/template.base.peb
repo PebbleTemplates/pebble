@@ -1,0 +1,5 @@
+BEFORE BASE
+{% block embedBlock1 %}
+EMBED BASE
+{% endblock %}
+AFTER BASE
