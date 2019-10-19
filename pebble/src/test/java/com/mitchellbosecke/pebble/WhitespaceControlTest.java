@@ -10,38 +10,68 @@ package com.mitchellbosecke.pebble;
 
 import static org.junit.Assert.assertEquals;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Test;
+
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class WhitespaceControlTest {
 
+  /**
+   * A windows newline character (i.e. \n\r) in a template should be recognized
+   * and output as as a Windows newline character. The Windows newline character
+   * should not be converted to a Unix newline character (i.e. \n). 
+   * 
+   * @throws PebbleException
+   * @throws IOException
+   */
   @Test
-  public void testStandardizationOfNewlineCharacters() throws PebbleException, IOException {
+  public void testWindowsNewlineCharacter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
-    // windows
     PebbleTemplate windowsTemplate = pebble.getTemplate("\r\n");
     Writer windowsWriter = new StringWriter();
     windowsTemplate.evaluate(windowsWriter);
     assertEquals("\r\n", windowsWriter.toString());
+  }
+  
+  /**
+   * A Unix newline character (i.e. \n\r) in a template should be recognized
+   * and output as as a Unix newline character. The Unix newline character
+   * should not be converted to a Windows newline character (i.e. \r\n). 
+   * 
+   * @throws PebbleException
+   * @throws IOException
+   */
+  @Test
+  public void testUnixNewlineCharacter() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(true).build();
 
-    // unix
     PebbleTemplate unixTemplate = pebble.getTemplate("\n");
     Writer unixWriter = new StringWriter();
     unixTemplate.evaluate(unixWriter);
     assertEquals("\n", unixWriter.toString());
   }
 
+  /**
+   * A leading Whitespace Control Modifier in an expression delimiter (i.e. Pebble variable reference)
+   * should remove whitespace before the variable reference on the same line up to any
+   * surrounding text, i.e. a print delimiter.
+   * 
+   * @throws PebbleException
+   * @throws IOException
+   */
   @Test
-  public void testLeadingWhitespaceTrimWithPrintDelimiter() throws PebbleException, IOException {
+  public void testLeadingWhitespaceControlModifier() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -54,6 +84,36 @@ public class WhitespaceControlTest {
     assertEquals("<li>bar</li>", writer.toString());
   }
 
+  /**
+   * A trailing Whitespace Control Modifier in an expression delimiter (i.e. Pebble variable reference)
+   * should remove whitespace after the variable reference on the same line up to any
+   * surrounding text.
+   * 
+   * @throws PebbleException
+   * @throws IOException
+   */
+  @Test
+  public void testTrailingWhitespaceControlModifier() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(true).build();
+
+    PebbleTemplate template = pebble.getTemplate("<li>{{ foo -}}   	</li>");
+    Writer writer = new StringWriter();
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("foo", "bar");
+    template.evaluate(writer, context);
+    assertEquals("<li>bar</li>", writer.toString());
+  }
+  
+  /**
+   * A Whitespace Control Modifier in an expression delimiter (i.e. Pebble variable reference)
+   * should not have any effect if there is no whitespace immediately before or after the 
+   * variable reference. 
+   * 
+   * @throws PebbleException
+   * @throws IOException
+   */
   @Test
   public void testLeadingWhitespaceTrimWithoutOutsideText() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
@@ -68,22 +128,16 @@ public class WhitespaceControlTest {
     assertEquals("bar", writer.toString());
   }
 
+  /**
+   * A leading and trailing Whitespace Control Modifiers in an expression delimiter 
+   * (i.e. Pebble variable reference) should remove whitespace before and after 
+   * the variable reference on the same line up to any surrounding text.
+   * 
+   * @throws PebbleException
+   * @throws IOException
+   */
   @Test
-  public void testTrailingWhitespaceTrimWithPrintDelimiter() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(true).build();
-
-    PebbleTemplate template = pebble.getTemplate("<li>{{ foo -}}   	</li>");
-    Writer writer = new StringWriter();
-
-    Map<String, Object> context = new HashMap<>();
-    context.put("foo", "bar");
-    template.evaluate(writer, context);
-    assertEquals("<li>bar</li>", writer.toString());
-  }
-
-  @Test
-  public void testWhitespaceTrimInPresenceOfMultipleTags() throws PebbleException, IOException {
+  public void testLeadingAndTrailingWhitespaceControlModifier() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -97,8 +151,15 @@ public class WhitespaceControlTest {
     assertEquals("bar <li>bar</li> bar", writer.toString());
   }
 
+  /**
+   * Newline characters immediately before or after a Whitespace Control Modifier 
+   * should be removed.
+   * 
+   * @throws PebbleException
+   * @throws IOException
+   */
   @Test
-  public void testWhitespaceTrimRemovesNewlines() throws PebbleException, IOException {
+  public void testWhitespaceControlModifierRemovesNewlines() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 

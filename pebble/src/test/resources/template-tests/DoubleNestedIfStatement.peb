@@ -1,0 +1,16 @@
+text before for loop followed by blank line
+{% for item in items %}
+{% if item.itemType equals "ITEM_TYPE1" -%}
+Item 1
+{% elseif item.itemType equals "ITEM_TYPE2" -%}
+Item 2
+{% elseif item.itemType equals "ITEM_TYPE3" -%}
+Item 3
+{% elseif item.itemType equals "ITEM_TYPE4" -%}
+{% if item.hasPrefix -%}
+Item Prefix
+{% endif -%}
+Item 4
+{% endif -%}
+{% endfor %}
+text after for loop preceded by blank line

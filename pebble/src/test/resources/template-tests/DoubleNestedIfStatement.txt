@@ -1,0 +1,12 @@
+text before for loop followed by blank line
+
+Item 1
+
+Item 2
+
+Item 3
+
+Item Prefix
+Item 4
+
+text after for loop preceded by blank line

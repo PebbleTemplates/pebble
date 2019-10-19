@@ -1,0 +1,17 @@
+text before for loop followed by blank line
+{% for item in items %}
+{% if item.itemType equals "ITEM_TYPE1" -%}
+{{ item.name }}
+{% else -%}
+{{ itemStatement(item) }}
+{% endif -%}
+{% endfor %}
+text after for loop preceded by blank line
+
+
+{%- macro itemStatement(item) -%}
+{%- if item.hasPrefix == true -%}
+Prefix Text
+{% endif -%}
+{{ item.name }}
+{%- endmacro -%}
