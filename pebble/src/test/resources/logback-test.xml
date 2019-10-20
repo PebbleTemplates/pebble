@@ -10,6 +10,7 @@
     <appender-ref ref="STDOUT"/>
   </root>
   
-  <logger name="com.mitchellbosecke.pebble.template.tests" level="DEBUG"/>
+  <logger name="com.mitchellbosecke.pebble.template.tests" level="INFO"/>
+  <logger name="com.mitchellbosecke.pebble.lexer" level="INFO"/>
   
 </configuration>

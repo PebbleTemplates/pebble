@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * An implementation of CharSequence that is tuned to be used specifically by {@link LexerImpl}. It
  * is possible to advance through the sequence without allocating a copy and it is possible to
@@ -13,6 +16,8 @@ import java.util.Arrays;
  * @author mbosecke
  */
 public class TemplateSource implements CharSequence {
+
+  private final Logger logger = LoggerFactory.getLogger(TemplateSource.class);
 
   /**
    * The characters found within the template.
@@ -110,7 +115,7 @@ public class TemplateSource implements CharSequence {
    * @param amount Amount of characters to advance by
    */
   public void advance(int amount) {
-
+	logger.debug("Advancing amoun: {}", amount);
     int index = 0;
     while (index < amount) {
       int sizeOfNewline = advanceThroughNewline(index);
@@ -128,17 +133,15 @@ public class TemplateSource implements CharSequence {
 
   public void advanceThroughWhitespace() {
     int index = 0;
-
     while (Character.isWhitespace(this.charAt(index))) {
       int sizeOfNewline = advanceThroughNewline(index);
-
       if (sizeOfNewline > 0) {
         index += sizeOfNewline;
       } else {
         index++;
       }
     }
-
+    logger.debug("Advanced through {} characters of whitespace.", index);
     this.size -= index;
     this.offset += index;
   }

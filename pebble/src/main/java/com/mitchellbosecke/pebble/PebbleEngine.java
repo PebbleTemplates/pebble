@@ -47,6 +47,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The main class used for compiling templates. The PebbleEngine is responsible for delegating
  * responsibility to the lexer, parser, compiler, and template cache.
@@ -55,6 +58,8 @@ import java.util.concurrent.ExecutorService;
  */
 public class PebbleEngine {
 
+  private final Logger logger = LoggerFactory.getLogger(PebbleEngine.class);
+	
   private final Loader<?> loader;
 
   private final Syntax syntax;
@@ -148,13 +153,15 @@ public class PebbleEngine {
   private PebbleTemplate getPebbleTemplate(String templateName, Loader loader, Object cacheKey) {
 
     Reader templateReader = loader.getReader(cacheKey);
-
+    
     try {
+      logger.debug("Tokenizing template named {}", templateName);
       LexerImpl lexer = new LexerImpl(this.syntax,
           this.extensionRegistry.getUnaryOperators().values(),
           this.extensionRegistry.getBinaryOperators().values());
       TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
-
+      logger.trace("TokenStream: {}", tokenStream);
+      
       Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
           this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers(),
           this.parserOptions);
