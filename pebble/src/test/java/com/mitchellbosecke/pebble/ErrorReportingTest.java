@@ -8,8 +8,8 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -70,23 +70,27 @@ public class ErrorReportingTest {
     template.evaluate(new StringWriter());
   }
 
-  @Test
-  public void testMissingRootPropertyInStrictMode() throws PebbleException, IOException {
+  /**
+   * An error should occur when a Pebble Template Engine instance is configured with
+   * Strict Variables set to true and a template is executed that contains a references
+   * to an undefined property. 
+   */
+  @Test(expected = RootAttributeNotFoundException.class)
+  public void testInvalidPropertyReferenceInStrictMode() throws PebbleException, IOException {
     //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).build();
-    PebbleTemplate template = pebble
-        .getTemplate("templates/template.errorReportingMissingRootProperty.peb");
-
-    this.thrown.expect(allOf(
-        instanceOf(RootAttributeNotFoundException.class),
-        hasProperty("attributeName", is("root"))
-        )
-    );
-    this.thrown.expectMessage(
-        "Root attribute [root] does not exist or can not be accessed and strict variables is set to true. (templates/template.errorReportingMissingRootProperty.peb:2)");
-
-    //Act
-    template.evaluate(new StringWriter());
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(true)
+        .build();
+    
+    PebbleTemplate template = pebble.getTemplate("{{ root }}");
+    
+    try {
+      template.evaluate(new StringWriter());
+    } catch (RootAttributeNotFoundException e) {
+      assertThat(e.getAttributeName()).isEqualTo("root");
+      assertThat(e.getMessage()).contains("Root attribute [root] does not exist or can not be accessed");
+      throw e;
+    }
   }
 
 }

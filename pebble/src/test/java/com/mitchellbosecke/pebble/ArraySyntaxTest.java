@@ -8,27 +8,21 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
-import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class ArraySyntaxTest {
-
-  @Rule
-  public final ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void testArraySyntax() throws PebbleException, IOException {
@@ -97,19 +91,21 @@ public class ArraySyntaxTest {
         writer.toString());
   }
 
+  /**
+   * The template engine should thrown an exception when processing
+   * a template that contains incomplete array syntax.
+   */
   @Test
   public void testIncompleteArraySyntax() throws PebbleException {
-    //Arrange
+    // given a Pebble Engine and template text that contains incomplete array syntax
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
-
     String source = "{{ [,] }}";
-
-    this.thrown.expect(ParserException.class);
-    this.thrown.expectMessage(startsWith("Unexpected token"));
-
-    //Act + Assert
-    pebble.getTemplate(source);
+    // A Parser Exception should be thrown with a message indicating that there was an unexpected token
+    assertThatExceptionOfType(ParserException.class).isThrownBy(() -> { 
+        pebble.getTemplate(source); 
+      }
+    ).withMessageStartingWith("Unexpected token");
   }
 
   @SuppressWarnings("serial")
@@ -490,11 +486,12 @@ public class ArraySyntaxTest {
 
     Writer writer = new StringWriter();
 
-    this.thrown.expect(PebbleException.class);
-    this.thrown.expectMessage(startsWith("Could not perform addition"));
-
     //Act + Assert
-    template.evaluate(writer, new HashMap<>());
+    // A Pebble Exception should be thrown with a message indicating that the addition operation failed
+    assertThatExceptionOfType(PebbleException.class).isThrownBy(() -> { 
+        template.evaluate(writer, new HashMap<>()); 
+      }
+    ).withMessageStartingWith("Could not perform addition");
   }
 
   @Test
@@ -536,11 +533,12 @@ public class ArraySyntaxTest {
 
     Writer writer = new StringWriter();
 
-    this.thrown.expect(PebbleException.class);
-    this.thrown.expectMessage(startsWith("Could not perform subtraction"));
-
     //Act + Assert
-    template.evaluate(writer, new HashMap<>());
+    // A Pebble Exception should be thrown with a message indicating that subtraction failed
+    assertThatExceptionOfType(PebbleException.class).isThrownBy(() -> {
+        template.evaluate(writer, new HashMap<>()); 
+      }
+    ).withMessageStartingWith("Could not perform subtraction");
   }
 
   @Test

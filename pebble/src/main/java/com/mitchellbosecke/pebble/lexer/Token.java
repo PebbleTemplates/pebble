@@ -3,8 +3,8 @@
  *
  * Copyright (c) 2014 by Mitchell Bösecke
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file that was distributed
+ * with this source code.
  */
 package com.mitchellbosecke.pebble.lexer;
 
@@ -66,6 +66,7 @@ public class Token {
 
   @Override
   public String toString() {
-    return "Token[" + this.getType() + "](" + this.getValue() + ")";
+    return "Token [value=" + value + ", type=" + type + ", lineNumber=" + lineNumber + "]";
   }
+
 }

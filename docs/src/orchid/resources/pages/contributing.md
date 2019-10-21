@@ -52,9 +52,35 @@ will call `render()` on it's root node which in turn will call `render()` on eac
 This process recurses throughout the whole node tree until all nodes have rendered themselves to the
 provided `Writer` object.
 
+## Documentation
+
+The documentation website is generated using [Orchid](https://orchid.netlify.com/). 
+
+The documentation files are under the `src/orchid/resources` directory.
+
 ## Contributing Code
 Currently there aren't any formal guidelines. Just ensure that your changes include any
 necessary unit tests and send me a pull request on [github](https://github.com/PebbleTemplates/pebble)!
+
+## Standards and Guidelines
+
+### Code Formatting Standards
+
+1. Use [Google Style Guide](https://google.github.io/styleguide/javaguide.html) formatting conventions.
+   1. Configuring IntelliJ to use the Google Style Guide Formatter.
+      1. Clone the [Google Style Git Repo](https://github.com/google/styleguide).
+      2. Open **Preferences -> Editor -> Code Style -> Java**. 
+      4. Click on the gear and select **Import Scheme -> IntelliJ IDEA code style XML** and import the file **intellij-java-google-style.xml** from the [Google Style Git Repo](https://github.com/google/styleguide).
+   2. Configuring Eclipse to use the Google Style Guide Formatter.
+      1. Clone the [Google Style Git Repo](https://github.com/google/styleguide).
+      2. Select **Preference -> Java -> Code Style -> Formatter**.
+      3. Select **Import** and specify the file **eclipse-java-google-style.xml** from the [Google Style Git Repo](https://github.com/google/styleguide).
+
+### Unit Test Guidelines
+
+1. Use [AssertJ]() for all Unit and Integration tests. 
+2. A javadoc description should be included for each test method.
+3. The purpose of each test should be clear from the test method name.
 
 ## Acknowledgements
 Thanks to all the following contributors who are helping to make Pebble the best template engine available for Java. 
