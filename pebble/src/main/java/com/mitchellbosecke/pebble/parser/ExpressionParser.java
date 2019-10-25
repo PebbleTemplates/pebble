@@ -337,16 +337,19 @@ public class ExpressionParser {
 
   private Expression<?> parseStringExpression() throws ParserException {
     List<Expression<?>> nodes = new ArrayList<>();
+    Token.Type previousNodeType = null;
 
     // Sequential strings are not OK, but strings can follow interpolation
     while (true) {
-      if (this.stream.current().test(Token.Type.STRING)) {
+      if (this.stream.current().test(Token.Type.STRING) && Token.Type.STRING != previousNodeType) {
         Token token = this.stream.expect(Token.Type.STRING);
         nodes.add(new LiteralStringExpression(token.getValue(), token.getLineNumber()));
+        previousNodeType = Token.Type.STRING;
       } else if (this.stream.current().test(Token.Type.STRING_INTERPOLATION_START)) {
         this.stream.expect(Token.Type.STRING_INTERPOLATION_START);
         nodes.add(this.parseExpression());
         this.stream.expect(Token.Type.STRING_INTERPOLATION_END);
+        previousNodeType = Token.Type.STRING_INTERPOLATION_END;
       } else {
         break;
       }
