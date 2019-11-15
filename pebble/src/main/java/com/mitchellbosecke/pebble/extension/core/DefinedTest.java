@@ -6,8 +6,7 @@ import java.util.Map;
 
 /**
  * Implementation for the test function 'defined'.
- * <p>
- * <p>
+ *
  * Inversion of 'null' test function to provide better compatibility with the original twig version
  * and JTwig.
  *
