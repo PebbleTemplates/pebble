@@ -8,6 +8,7 @@ jdk:
     - openjdk8
     - openjdk11
     - openjdk12
+    - openjdk13
 
 after_success:
   - export VERSION=$(echo "cat //*[local-name()='project']/*[local-name()='version']/text()" | xmllint --nocdata --shell pom.xml | sed '1d;$d')
