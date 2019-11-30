@@ -1,20 +1,20 @@
 package com.mitchellbosecke.pebble;
 
+import static java.lang.System.lineSeparator;
+import static org.junit.Assert.assertEquals;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.DelegatingLoader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 
 public class EmbedCachingTagTest {
@@ -27,42 +27,42 @@ public class EmbedCachingTagTest {
         ClasspathLoader classpathLoader = new ClasspathLoader();
         classpathLoader.setPrefix("templates/embed/cache");
 
-        pebble = new PebbleEngine.Builder()
-                .loader(new DelegatingLoader(Arrays.asList(
-                        classpathLoader,
-                        stringLoader
-                )))
-                .strictVariables(false)
-                .cacheActive(true)
-                .build();
+        this.pebble = new PebbleEngine.Builder()
+            .loader(new DelegatingLoader(Arrays.asList(
+                classpathLoader,
+                stringLoader
+            )))
+            .strictVariables(false)
+            .cacheActive(true)
+            .build();
 
         Writer writer = new StringWriter();
-        context = new HashMap<>();
-        context.put("foo", "FOO");
-        context.put("bar", "BAR");
+        this.context = new HashMap<>();
+        this.context.put("foo", "FOO");
+        this.context.put("bar", "BAR");
     }
 
     @Test
     public void testEmbedNotChangingCachedTemplate() throws PebbleException, IOException {
         Writer writer1 = new StringWriter();
-        PebbleTemplate template1 = pebble.getTemplate("template1.peb");
-        template1.evaluate(writer1, context);
+        PebbleTemplate template1 = this.pebble.getTemplate("template1.peb");
+        template1.evaluate(writer1, this.context);
         String result1 = writer1.toString();
 
         Writer writer2 = new StringWriter();
-        PebbleTemplate template2 = pebble.getTemplate("template2.peb");
-        template2.evaluate(writer2, context);
+        PebbleTemplate template2 = this.pebble.getTemplate("template2.peb");
+        template2.evaluate(writer2, this.context);
         String result2 = writer2.toString();
 
         assertEquals("" +
-                "BEFORE BASE\n" +
-                "EMBED OVERRIDE\n" +
+                "BEFORE BASE" + lineSeparator() +
+                "EMBED OVERRIDE" + lineSeparator() +
                 "AFTER BASE",
-                result1
+            result1
         );
         assertEquals("" +
-                "BEFORE BASE\n" +
-                "EMBED BASE\n" +
+                "BEFORE BASE" + lineSeparator() +
+                "EMBED BASE" + lineSeparator() +
                 "AFTER BASE",
                 result2
         );
