@@ -105,6 +105,15 @@ public PebbleViewResolver pebbleViewResolver() {
    return new PebbleViewResolver();
 }
 ```
+
+For reactive app, you need to use the bean name ``pebbleReactiveViewResolver``:
+```java
+@Bean
+public PebbleReactiveViewResolver pebbleReactiveViewResolver() {
+   return new PebbleReactiveViewResolver(...);
+}
+```
+
 PLEASE NOTE: you need to change the Loader's prefix and suffix to match the custom ViewResolver's values.
 
 ### Using Pebble for other tasks

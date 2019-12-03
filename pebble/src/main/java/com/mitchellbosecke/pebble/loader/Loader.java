@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+
 import java.io.Reader;
 
 /**
@@ -101,4 +102,5 @@ public interface Loader<T> {
    */
   T createCacheKey(String templateName);
 
+  boolean resourceExists(String templateName);
 }

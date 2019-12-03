@@ -9,9 +9,10 @@ package com.mitchellbosecke.pebble.spring.config;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.spring.PebbleViewResolver;
 import com.mitchellbosecke.pebble.spring.bean.SomeBean;
 import com.mitchellbosecke.pebble.spring.extension.SpringExtension;
+import com.mitchellbosecke.pebble.spring.servlet.PebbleViewResolver;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

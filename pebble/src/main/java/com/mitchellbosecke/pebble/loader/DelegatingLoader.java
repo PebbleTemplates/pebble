@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
+
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,7 +90,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
   @Override
   public void setSuffix(String suffix) {
     this.suffix = suffix;
-    for (Loader<?> loader: this.loaders) {
+    for (Loader<?> loader : this.loaders) {
       loader.setSuffix(suffix);
     }
   }
@@ -101,7 +102,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
   @Override
   public void setPrefix(String prefix) {
     this.prefix = prefix;
-    for (Loader<?> loader: this.loaders) {
+    for (Loader<?> loader : this.loaders) {
       loader.setPrefix(prefix);
     }
   }
@@ -113,7 +114,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
   @Override
   public void setCharset(String charset) {
     this.charset = charset;
-    for (Loader<?> loader: this.loaders) {
+    for (Loader<?> loader : this.loaders) {
       loader.setCharset(charset);
     }
   }
@@ -141,5 +142,15 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
     }
 
     return new DelegatingLoaderCacheKey(keys, templateName);
+  }
+
+  @Override
+  public boolean resourceExists(String templateName) {
+    for (Loader<?> loader : this.loaders) {
+      if (loader.resourceExists(templateName)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
