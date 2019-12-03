@@ -35,7 +35,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     public Loader templateLoader(){
-        return new ServletLoader(servletContext);
+        return new ServletLoader(this.servletContext);
     }
     
     @Bean
@@ -47,7 +47,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public PebbleEngine pebbleEngine() {
          return new PebbleEngine.Builder()
                 .loader(this.templateLoader())
-                .extension(springExtension())
+                .extension(this.springExtension())
                 .build();
     }
 
@@ -56,7 +56,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         PebbleViewResolver viewResolver = new PebbleViewResolver();
         viewResolver.setPrefix("/WEB-INF/templates/");
         viewResolver.setSuffix(".html");
-        viewResolver.setPebbleEngine(pebbleEngine());
+        viewResolver.setPebbleEngine(this.pebbleEngine());
         return viewResolver;
     }
 
@@ -75,7 +75,7 @@ public class ProfileController {
 	@RequestMapping
 	public ModelAndView getUserProfile(@RequestParam("id") long id) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("user", userService.getUser(id));
+		mav.addObject("user", this.userService.getUser(id));
 		mav.setViewName("profile");
 		return mav;
 	}
@@ -168,7 +168,7 @@ To output any error:
 A timer in PebbleView is available to output the time taken to process a template. Just add the following config to your log4j.xml
 
 ```xml
-<Logger name="com.mitchellbosecke.pebble.spring.PebbleView.timer" level="DEBUG" additivity="false">
+<Logger name="com.mitchellbosecke.pebble.spring.servlet.PebbleView.timer" level="DEBUG" additivity="false">
       <AppenderRef ref="STDOUT" />
 </Logger> 
 ```

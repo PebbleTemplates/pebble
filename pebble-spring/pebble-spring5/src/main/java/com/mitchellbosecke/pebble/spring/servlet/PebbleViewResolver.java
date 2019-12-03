@@ -4,10 +4,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package com.mitchellbosecke.pebble.spring;
+package com.mitchellbosecke.pebble.spring.servlet;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.Loader;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;

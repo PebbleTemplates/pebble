@@ -1,17 +1,20 @@
-package com.mitchellbosecke.pebble.boot;
+package com.mitchellbosecke.pebble.boot.autoconfigure;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-import java.io.StringWriter;
+import com.mitchellbosecke.pebble.boot.NonWebApplication;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+import java.io.StringWriter;
+
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = NonWebApplication.class)
-public class CoreTests {
+public class NonWebAppTests {
 
   @Autowired
   private PebbleEngine pebbleEngine;
@@ -19,7 +22,7 @@ public class CoreTests {
   @Test
   public void testOk() throws Exception {
     StringWriter sw = new StringWriter();
-    pebbleEngine.getTemplate("hello").evaluate(sw);
+    this.pebbleEngine.getTemplate("hello").evaluate(sw);
     Assert.assertTrue(sw.toString() != null && !sw.toString().isEmpty());
   }
 

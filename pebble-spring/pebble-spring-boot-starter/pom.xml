@@ -25,6 +25,12 @@
       <optional>true</optional>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+      <version>${boot.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>io.pebbletemplates</groupId>
       <artifactId>pebble-spring5</artifactId>
       <version>${project.version}</version>

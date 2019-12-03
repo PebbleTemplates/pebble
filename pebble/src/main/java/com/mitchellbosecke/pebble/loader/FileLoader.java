@@ -10,6 +10,10 @@ package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.utils.PathUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,8 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This loader searches for a file located anywhere on the filesystem. It uses java.io.File to
@@ -39,7 +41,30 @@ public class FileLoader implements Loader<String> {
 
   @Override
   public Reader getReader(String templateName) {
+    // try to load File
+    InputStream is = null;
+    File file = this.getFile(templateName);
+    if (file.exists() && file.isFile()) {
+      try {
+        is = new FileInputStream(file);
+      } catch (FileNotFoundException e) {
+      }
+    }
 
+    if (is == null) {
+      throw new LoaderException(null,
+          "Could not find template \"" + templateName + "\"");
+    }
+
+    try {
+      return new BufferedReader(new InputStreamReader(is, this.charset));
+    } catch (UnsupportedEncodingException e) {
+    }
+
+    return null;
+  }
+
+  private File getFile(String templateName) {
     // add the prefix and ensure the prefix ends with a separator character
     StringBuilder path = new StringBuilder();
     if (this.getPrefix() != null) {
@@ -71,26 +96,7 @@ public class FileLoader implements Loader<String> {
     }
 
     // try to load File
-    InputStream is = null;
-    File file = new File(path.toString(), templateName);
-    if (file.exists() && file.isFile()) {
-      try {
-        is = new FileInputStream(file);
-      } catch (FileNotFoundException e) {
-      }
-    }
-
-    if (is == null) {
-      throw new LoaderException(null,
-          "Could not find template \"" + path.toString() + templateName + "\"");
-    }
-
-    try {
-      return new BufferedReader(new InputStreamReader(is, this.charset));
-    } catch (UnsupportedEncodingException e) {
-    }
-
-    return null;
+    return new File(path.toString(), templateName);
   }
 
   public String getSuffix() {
@@ -128,5 +134,10 @@ public class FileLoader implements Loader<String> {
   @Override
   public String createCacheKey(String templateName) {
     return templateName;
+  }
+
+  @Override
+  public boolean resourceExists(String templateName) {
+    return this.getFile(templateName).exists();
   }
 }

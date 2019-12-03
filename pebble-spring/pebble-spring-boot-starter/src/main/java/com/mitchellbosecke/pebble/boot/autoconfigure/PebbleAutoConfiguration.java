@@ -4,23 +4,27 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.spring.PebbleViewResolver;
 import com.mitchellbosecke.pebble.spring.extension.SpringExtension;
-import java.util.List;
-import javax.servlet.Servlet;
+import com.mitchellbosecke.pebble.spring.reactive.PebbleReactiveViewResolver;
+import com.mitchellbosecke.pebble.spring.servlet.PebbleViewResolver;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 @ConditionalOnClass(PebbleEngine.class)
-@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@AutoConfigureAfter({WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class})
 @EnableConfigurationProperties(PebbleProperties.class)
 public class PebbleAutoConfiguration {
 
@@ -40,7 +44,6 @@ public class PebbleAutoConfiguration {
       loader.setSuffix(this.properties.getSuffix());
       return loader;
     }
-
   }
 
   @Configuration
@@ -82,9 +85,8 @@ public class PebbleAutoConfiguration {
   }
 
   @Configuration
-  @ConditionalOnWebApplication
-  @ConditionalOnClass({Servlet.class})
-  public static class PebbleViewResolverConfiguration {
+  @ConditionalOnWebApplication(type = Type.SERVLET)
+  public static class PebbleWebMvcConfiguration {
 
     @Autowired
     private PebbleProperties properties;
@@ -105,6 +107,33 @@ public class PebbleAutoConfiguration {
       }
 
       return pvr;
+    }
+  }
+
+  @Configuration
+  @ConditionalOnWebApplication(type = Type.REACTIVE)
+  public static class PebbleReactiveConfiguration {
+
+    @Autowired
+    private PebbleProperties properties;
+
+    @Autowired
+    private PebbleEngine pebbleEngine;
+
+    @Bean
+    @ConditionalOnMissingBean(name = "pebbleReactiveViewResolver")
+    public PebbleReactiveViewResolver pebbleReactiveViewResolver() {
+      String prefix = this.properties.getPrefix();
+      if (this.pebbleEngine.getLoader() instanceof ClasspathLoader) {
+        // classpathloader doesn't like leading slashes in paths
+        prefix = stripLeadingSlash(this.properties.getPrefix());
+      }
+      PebbleReactiveViewResolver resolver = new PebbleReactiveViewResolver(this.pebbleEngine);
+      resolver.setPrefix(prefix);
+      resolver.setSuffix(this.properties.getSuffix());
+      resolver.setViewNames(this.properties.getViewNames());
+      resolver.setRequestContextAttribute(this.properties.getRequestContextAttribute());
+      return resolver;
     }
   }
 

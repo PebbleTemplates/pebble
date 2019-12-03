@@ -8,14 +8,14 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -29,7 +29,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ConcurrencyTest {
 
@@ -324,6 +326,10 @@ public class ConcurrencyTest {
         return templateName;
       }
 
+      @Override
+      public boolean resourceExists(String templateName) {
+        return true;
+      }
     };
 
     PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
