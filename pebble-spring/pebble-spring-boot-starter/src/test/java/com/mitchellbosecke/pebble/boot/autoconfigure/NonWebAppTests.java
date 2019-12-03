@@ -3,27 +3,24 @@ package com.mitchellbosecke.pebble.boot.autoconfigure;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.boot.NonWebApplication;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.StringWriter;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest(classes = NonWebApplication.class)
-public class NonWebAppTests {
+class NonWebAppTests {
 
   @Autowired
   private PebbleEngine pebbleEngine;
 
   @Test
-  public void testOk() throws Exception {
+  void testOk() throws Exception {
     StringWriter sw = new StringWriter();
     this.pebbleEngine.getTemplate("hello").evaluate(sw);
-    Assert.assertTrue(sw.toString() != null && !sw.toString().isEmpty());
+    assertThat(sw.toString() != null && !sw.toString().isEmpty()).isTrue();
   }
-
 }
