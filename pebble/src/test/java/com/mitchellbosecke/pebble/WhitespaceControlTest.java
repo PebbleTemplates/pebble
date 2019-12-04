@@ -8,7 +8,11 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,24 +20,17 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
-public class WhitespaceControlTest {
+class WhitespaceControlTest {
 
   /**
    * A windows newline character (i.e. \n\r) in a template should be recognized
    * and output as as a Windows newline character. The Windows newline character
-   * should not be converted to a Unix newline character (i.e. \n). 
-   * 
-   * @throws PebbleException
-   * @throws IOException
+   * should not be converted to a Unix newline character (i.e. \n).
    */
   @Test
-  public void testWindowsNewlineCharacter() throws PebbleException, IOException {
+  void testWindowsNewlineCharacter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -42,17 +39,14 @@ public class WhitespaceControlTest {
     windowsTemplate.evaluate(windowsWriter);
     assertEquals("\r\n", windowsWriter.toString());
   }
-  
+
   /**
    * A Unix newline character (i.e. \n\r) in a template should be recognized
    * and output as as a Unix newline character. The Unix newline character
-   * should not be converted to a Windows newline character (i.e. \r\n). 
-   * 
-   * @throws PebbleException
-   * @throws IOException
+   * should not be converted to a Windows newline character (i.e. \r\n).
    */
   @Test
-  public void testUnixNewlineCharacter() throws PebbleException, IOException {
+  void testUnixNewlineCharacter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -66,12 +60,12 @@ public class WhitespaceControlTest {
    * A leading Whitespace Control Modifier in an expression delimiter (i.e. Pebble variable reference)
    * should remove whitespace before the variable reference on the same line up to any
    * surrounding text, i.e. a print delimiter.
-   * 
+   *
    * @throws PebbleException
    * @throws IOException
    */
   @Test
-  public void testLeadingWhitespaceControlModifier() throws PebbleException, IOException {
+  void testLeadingWhitespaceControlModifier() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -88,12 +82,12 @@ public class WhitespaceControlTest {
    * A trailing Whitespace Control Modifier in an expression delimiter (i.e. Pebble variable reference)
    * should remove whitespace after the variable reference on the same line up to any
    * surrounding text.
-   * 
+   *
    * @throws PebbleException
    * @throws IOException
    */
   @Test
-  public void testTrailingWhitespaceControlModifier() throws PebbleException, IOException {
+  void testTrailingWhitespaceControlModifier() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -105,17 +99,17 @@ public class WhitespaceControlTest {
     template.evaluate(writer, context);
     assertEquals("<li>bar</li>", writer.toString());
   }
-  
+
   /**
    * A Whitespace Control Modifier in an expression delimiter (i.e. Pebble variable reference)
    * should not have any effect if there is no whitespace immediately before or after the 
    * variable reference. 
-   * 
+   *
    * @throws PebbleException
    * @throws IOException
    */
   @Test
-  public void testLeadingWhitespaceTrimWithoutOutsideText() throws PebbleException, IOException {
+  void testLeadingWhitespaceTrimWithoutOutsideText() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -132,12 +126,12 @@ public class WhitespaceControlTest {
    * A leading and trailing Whitespace Control Modifiers in an expression delimiter 
    * (i.e. Pebble variable reference) should remove whitespace before and after 
    * the variable reference on the same line up to any surrounding text.
-   * 
+   *
    * @throws PebbleException
    * @throws IOException
    */
   @Test
-  public void testLeadingAndTrailingWhitespaceControlModifier() throws PebbleException, IOException {
+  void testLeadingAndTrailingWhitespaceControlModifier() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -154,12 +148,12 @@ public class WhitespaceControlTest {
   /**
    * Newline characters immediately before or after a Whitespace Control Modifier 
    * should be removed.
-   * 
+   *
    * @throws PebbleException
    * @throws IOException
    */
   @Test
-  public void testWhitespaceControlModifierRemovesNewlines() throws PebbleException, IOException {
+  void testWhitespaceControlModifierRemovesNewlines() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -173,7 +167,7 @@ public class WhitespaceControlTest {
   }
 
   @Test
-  public void testWhitespaceTrimWithExecuteDelimiter() throws PebbleException, IOException {
+  void testWhitespaceTrimWithExecuteDelimiter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -188,7 +182,7 @@ public class WhitespaceControlTest {
   }
 
   @Test
-  public void testLeadingWhitespaceTrimWithCommentDelimiter() throws PebbleException, IOException {
+  void testLeadingWhitespaceTrimWithCommentDelimiter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -200,7 +194,7 @@ public class WhitespaceControlTest {
   }
 
   @Test
-  public void testTrailingWhitespaceTrimWithCommentDelimiter() throws PebbleException, IOException {
+  void testTrailingWhitespaceTrimWithCommentDelimiter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -212,7 +206,7 @@ public class WhitespaceControlTest {
   }
 
   @Test
-  public void testLeadingWhitespaceTrimWithVerbatimTag() throws PebbleException, IOException {
+  void testLeadingWhitespaceTrimWithVerbatimTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -225,7 +219,7 @@ public class WhitespaceControlTest {
   }
 
   @Test
-  public void testTrailingWhitespaceTrimWithVerbatimTag() throws PebbleException, IOException {
+  void testTrailingWhitespaceTrimWithVerbatimTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 

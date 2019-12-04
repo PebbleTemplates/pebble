@@ -8,21 +8,23 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Locale;
-import org.junit.Test;
 
-public class I18nExtensionTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class I18nExtensionTest {
 
   @Test
-  public void testSimpleLookup() throws PebbleException, IOException {
+  void testSimpleLookup() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
 
     PebbleTemplate template = pebble.getTemplate("{{ i18n('testMessages','greeting') }}");
@@ -33,7 +35,7 @@ public class I18nExtensionTest {
   }
 
   @Test
-  public void testMessageWithNamedArguments() throws PebbleException, IOException {
+  void testMessageWithNamedArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
 
     PebbleTemplate template = pebble
@@ -45,7 +47,7 @@ public class I18nExtensionTest {
   }
 
   @Test
-  public void testLookupWithLocale() throws PebbleException, IOException {
+  void testLookupWithLocale() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
 
     PebbleTemplate template = pebble.getTemplate("{{ i18n('testMessages','greeting') }}");
@@ -56,7 +58,7 @@ public class I18nExtensionTest {
   }
 
   @Test
-  public void testLookupSpecialChar() throws PebbleException, IOException {
+  void testLookupSpecialChar() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
 
     PebbleTemplate template = pebble
@@ -68,7 +70,7 @@ public class I18nExtensionTest {
   }
 
   @Test
-  public void testMessageWithParams() throws PebbleException, IOException {
+  void testMessageWithParams() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
 
     PebbleTemplate template = pebble

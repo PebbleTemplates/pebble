@@ -1,24 +1,26 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests if equals is working with enums.
  */
-public class EnumEqualsTest {
+class EnumEqualsTest {
 
   @Test
-  public void testEnumComparision() throws PebbleException, IOException {
+  void testEnumComparision() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 

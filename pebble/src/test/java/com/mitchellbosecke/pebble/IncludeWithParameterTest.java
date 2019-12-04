@@ -1,28 +1,30 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This class tests if includes with parameters work.
  *
  * @author Thomas Hunziker
  */
-public class IncludeWithParameterTest {
+class IncludeWithParameterTest {
 
   /**
    * Test if parameters are processed correctly.
    */
   @Test
-  public void testIncludeWithParameters() throws PebbleException, IOException {
+  void testIncludeWithParameters() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.includeWithParameter1.peb");
     Map<String, Object> context = new HashMap<>();
@@ -41,7 +43,7 @@ public class IncludeWithParameterTest {
   }
 
   @Test
-  public void testIncludeWithParametersIsolated() throws PebbleException, IOException {
+  void testIncludeWithParametersIsolated() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble

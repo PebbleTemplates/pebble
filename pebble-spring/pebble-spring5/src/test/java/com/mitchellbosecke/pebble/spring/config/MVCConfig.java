@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ViewResolver;
  *
  * @author Eric Bussieres
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MVCConfig {
 
   @Bean
@@ -41,9 +41,10 @@ public class MVCConfig {
   }
 
   @Bean
-  public PebbleEngine pebbleEngine(SpringExtension springExtension) {
+  public PebbleEngine pebbleEngine(SpringExtension springExtension,
+                                   Loader<?> templateLoader) {
     return new PebbleEngine.Builder()
-        .loader(this.templateLoader())
+        .loader(templateLoader)
         .strictVariables(false)
         .extension(springExtension)
         .build();

@@ -8,11 +8,11 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -24,9 +24,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
 
-public class CacheTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+class CacheTest {
 
   private static final String LINE_SEPARATOR = System.lineSeparator();
 
@@ -35,7 +37,7 @@ public class CacheTest {
    * same name but under different directories.
    */
   @Test
-  public void templatesWithSameNameOverridingCache() throws PebbleException, IOException {
+  void templatesWithSameNameOverridingCache() throws PebbleException, IOException {
     PebbleEngine engine = new PebbleEngine.Builder().strictVariables(false).build();
 
     PebbleTemplate cache1 = engine.getTemplate("templates/cache/cache1/template.cache.peb");
@@ -59,7 +61,7 @@ public class CacheTest {
    * cached. This is an issue because a template can have many different children.
    */
   @Test
-  public void ensureChildTemplateNotCached() throws PebbleException, IOException {
+  void ensureChildTemplateNotCached() throws PebbleException, IOException {
     PebbleEngine engine = new PebbleEngine.Builder().strictVariables(false).build();
 
     PebbleTemplate cache1 = engine.getTemplate("templates/cache/template.cacheChild.peb");
@@ -87,7 +89,7 @@ public class CacheTest {
    * It occurred when rendering two templates that share the same parent template.
    */
   @Test
-  public void templateCachedButBytecodeCleared() throws PebbleException, IOException {
+  void templateCachedButBytecodeCleared() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template1 = pebble.getTemplate("templates/template.parent.peb");
     PebbleTemplate template2 = pebble.getTemplate("templates/template.parent2.peb");
@@ -111,7 +113,7 @@ public class CacheTest {
   }
 
   @Test
-  public void testConcurrentCacheHitting() throws InterruptedException, PebbleException {
+  void testConcurrentCacheHitting() throws InterruptedException, PebbleException {
     final PebbleEngine engine = new PebbleEngine.Builder().strictVariables(false).build();
 
     final ExecutorService es = Executors.newCachedThreadPool();

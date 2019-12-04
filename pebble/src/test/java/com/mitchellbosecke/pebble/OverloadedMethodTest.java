@@ -8,20 +8,22 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // These tests verify correct behavior when resolving overloaded methods in a model class. See issue #367
-public class OverloadedMethodTest {
+class OverloadedMethodTest {
 
 // Verify that an overloaded method will select the correct version of the method to call based on the input type
 //----------------------------------------------------------------------------------------------------------------------
@@ -63,11 +65,11 @@ public class OverloadedMethodTest {
     }
 
     @Test
-    public void testWithLiteralString() throws PebbleException, IOException {
+    void testWithLiteralString() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder()
-                .loader(new StringLoader())
-                .strictVariables(false)
-                .build();
+            .loader(new StringLoader())
+            .strictVariables(false)
+            .build();
 
         String input = "{{ model.testMethod(\"one\") }}";
         String expected = "string input: one";
@@ -83,42 +85,42 @@ public class OverloadedMethodTest {
     }
 
     @Test
-    public void testWithContextString() throws PebbleException, IOException {
+    void testWithContextString() throws PebbleException, IOException {
         this.testWithModel(new Model(), "one", "string input: one");
     }
 
     @Test
-    public void testWithInteger() throws PebbleException, IOException {
+    void testWithInteger() throws PebbleException, IOException {
         this.testWithModel(new Model(), 1, "Integer input: 1");
     }
 
     @Test
-    public void testWithLong() throws PebbleException, IOException {
+    void testWithLong() throws PebbleException, IOException {
         this.testWithModel(new Model(), 1L, "Long input: 1");
     }
 
     @Test
-    public void testWithObject() throws PebbleException, IOException {
+    void testWithObject() throws PebbleException, IOException {
         this.testWithModel(new Model(), this, "other input: " + this.getClass().toString());
     }
 
     @Test
-    public void testWithStringString() throws PebbleException, IOException {
+    void testWithStringString() throws PebbleException, IOException {
         this.testModelWith2Inputs("", "", "string-string inputs");
     }
 
     @Test
-    public void testWithStringObject() throws PebbleException, IOException {
+    void testWithStringObject() throws PebbleException, IOException {
         this.testModelWith2Inputs("", this, "string-object inputs");
     }
 
     @Test
-    public void testWithObjectString() throws PebbleException, IOException {
+    void testWithObjectString() throws PebbleException, IOException {
         this.testModelWith2Inputs(this, "", "object-string inputs");
     }
 
     @Test
-    public void testWithObjectObject() throws PebbleException, IOException {
+    void testWithObjectObject() throws PebbleException, IOException {
         this.testModelWith2Inputs(this, this, "object-object inputs");
     }
 
@@ -155,11 +157,11 @@ public class OverloadedMethodTest {
     }
 
     @Test
-    public void testWithMultipleCalls() throws PebbleException, IOException {
+    void testWithMultipleCalls() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder()
-                .loader(new StringLoader())
-                .strictVariables(false)
-                .build();
+            .loader(new StringLoader())
+            .strictVariables(false)
+            .build();
 
         String input = "{{ model.testMethod(BaseClass) }}, {{ model.testMethod(ChildClass1) }}, {{ model.testMethod(ChildClass2) }}";
         String expected = "BaseClass input, ChildClass1 input, ChildClass2 input";
@@ -221,32 +223,32 @@ public class OverloadedMethodTest {
     }
 
     @Test
-    public void testWithBaseClass() throws PebbleException, IOException {
+    void testWithBaseClass() throws PebbleException, IOException {
         this.testWithModel(new Model3(), new BaseClass(), "BaseClass input");
     }
 
     @Test
-    public void testWithChildClass1() throws PebbleException, IOException {
+    void testWithChildClass1() throws PebbleException, IOException {
         this.testWithModel(new Model3(), new ChildClass1(), "ChildClass1 input");
     }
 
     @Test
-    public void testWithChildClass2() throws PebbleException, IOException {
+    void testWithChildClass2() throws PebbleException, IOException {
         this.testWithModel(new Model3(), new ChildClass2(), "ChildClass2 input");
     }
 
     @Test
-    public void testWithChildClass3() throws PebbleException, IOException {
+    void testWithChildClass3() throws PebbleException, IOException {
         this.testWithModel(new Model3(), new ChildClass3(), "ChildClass3 input");
     }
 
     @Test
-    public void testWithChildClass4() throws PebbleException, IOException {
+    void testWithChildClass4() throws PebbleException, IOException {
         this.testWithModel(new Model3(), new ChildClass4(), "ChildClass4 input");
     }
 
     @Test
-    public void testWithChildClass5() throws PebbleException, IOException {
+    void testWithChildClass5() throws PebbleException, IOException {
         this.testWithModel(new Model3(), new ChildClass5(), "ChildClass5 input");
     }
 

@@ -8,26 +8,28 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import org.junit.Test;
 
-public class WritingTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class WritingTest {
 
   /**
    * There was an issue where the pebble engine was closing the provided writer. This is wrong.
    */
   @Test
-  public void testMultipleEvaluationsWithOneWriter() throws PebbleException, IOException {
+  void testMultipleEvaluationsWithOneWriter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
 
     PebbleTemplate template1 = pebble.getTemplate("first");
@@ -53,7 +55,7 @@ public class WritingTest {
    * another parallel thread's character buffer.
    */
   @Test
-  public void testParallelCharacterBuffersBeingOverriden() throws PebbleException, IOException {
+  void testParallelCharacterBuffersBeingOverriden() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .executorService(Executors.newCachedThreadPool()).build();
     String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end {% parallel %}{{ slowObject.third }}{% endparallel %}";

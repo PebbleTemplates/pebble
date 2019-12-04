@@ -1,22 +1,24 @@
 package com.mitchellbosecke.pebble;
 
-import static java.util.Locale.CANADA;
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
-public class RenderSingleBlockTest {
+import static java.util.Locale.CANADA;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class RenderSingleBlockTest {
 
   @Test
-  public void testRenderSingleBlock() throws PebbleException, IOException {
+  void testRenderSingleBlock() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -33,7 +35,7 @@ public class RenderSingleBlockTest {
   }
 
   @Test
-  public void testRenderSingleBlockWithLocale() throws PebbleException, IOException {
+  void testRenderSingleBlockWithLocale() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -50,7 +52,7 @@ public class RenderSingleBlockTest {
   }
 
   @Test
-  public void testRenderSingleBlockWithContext() throws PebbleException, IOException {
+  void testRenderSingleBlockWithContext() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -71,7 +73,7 @@ public class RenderSingleBlockTest {
   }
 
   @Test
-  public void testRenderSingleBlockWithContextAndLocale() throws PebbleException, IOException {
+  void testRenderSingleBlockWithContextAndLocale() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -92,7 +94,7 @@ public class RenderSingleBlockTest {
   }
 
   @Test
-  public void testRenderSingleExtendedBlock() throws PebbleException, IOException {
+  void testRenderSingleExtendedBlock() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).build();
     PebbleTemplate template = pebble
         .getTemplate("templates/single-block/template.renderextendedblock1.peb");

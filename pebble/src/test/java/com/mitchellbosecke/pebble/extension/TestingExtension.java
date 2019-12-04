@@ -2,9 +2,7 @@ package com.mitchellbosecke.pebble.extension;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Ignore;
 
-@Ignore
 public class TestingExtension extends AbstractExtension {
 
   private InvocationCountingFunction invocationCountingFunction = new InvocationCountingFunction();
@@ -12,7 +10,7 @@ public class TestingExtension extends AbstractExtension {
   @Override
   public Map<String, Function> getFunctions() {
     Map<String, Function> functions = new HashMap<>();
-    functions.put("invocationCountingFunction", invocationCountingFunction);
+    functions.put("invocationCountingFunction", this.invocationCountingFunction);
     return functions;
   }
 
@@ -26,7 +24,7 @@ public class TestingExtension extends AbstractExtension {
   }
 
   public InvocationCountingFunction getInvocationCountingFunction() {
-    return invocationCountingFunction;
+    return this.invocationCountingFunction;
   }
 
 }
