@@ -8,23 +8,25 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
-public class AttributeSubscriptSyntaxTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class AttributeSubscriptSyntaxTest {
 
   @SuppressWarnings("serial")
   @Test
-  public void testAccessingValueWithSubscript() throws PebbleException, IOException {
+  void testAccessingValueWithSubscript() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -46,7 +48,7 @@ public class AttributeSubscriptSyntaxTest {
 
   @SuppressWarnings("serial")
   @Test
-  public void testAccessingValueWithExpressionSubscript() throws PebbleException, IOException {
+  void testAccessingValueWithExpressionSubscript() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -76,7 +78,7 @@ public class AttributeSubscriptSyntaxTest {
 
   @SuppressWarnings("serial")
   @Test
-  public void testAccessingValueWithIntegerExpressionSubscript()
+  void testAccessingValueWithIntegerExpressionSubscript()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -109,7 +111,7 @@ public class AttributeSubscriptSyntaxTest {
 
   @SuppressWarnings("serial")
   @Test
-  public void testAccessingNestedValuesWithSubscript() throws PebbleException, IOException {
+  void testAccessingNestedValuesWithSubscript() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -136,7 +138,7 @@ public class AttributeSubscriptSyntaxTest {
 
   @SuppressWarnings("serial")
   @Test
-  public void testMixAndMatchingAttributeSyntax() throws PebbleException, IOException {
+  void testMixAndMatchingAttributeSyntax() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 

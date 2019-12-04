@@ -1,7 +1,5 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
@@ -14,26 +12,30 @@ import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This tests tests the parallel parsing / compilation of templates.
  *
  * @author Thomas Hunziker
  */
-public class TestParallelParsing {
+class TestParallelParsing {
 
   /**
    * Tests if the parse is working correctly within a multi threading environment.
    */
   @Test
-  public void testParser() throws InterruptedException {
+  void testParser() throws InterruptedException {
     final PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true)
         .extension(new DelayExtension()).build();
 

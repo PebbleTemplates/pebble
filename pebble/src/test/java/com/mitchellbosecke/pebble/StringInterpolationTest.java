@@ -1,172 +1,176 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
-public class StringInterpolationTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class StringInterpolationTest {
 
   @Test
-  public void testSimpleVariableInterpolation() throws Exception {
+  void testSimpleVariableInterpolation() throws Exception {
     String source = "{{ \"Hello, #{name}\" }}";
     Map<String, Object> ctx = new HashMap<>();
     ctx.put("name", "joe");
-    assertEquals("Hello, joe", evaluate(source, ctx));
+    assertEquals("Hello, joe", this.evaluate(source, ctx));
   }
 
   @Test
-  public void testExpressionInterpolation() throws Exception {
+  void testExpressionInterpolation() throws Exception {
     String src = "{{ \"1 plus 2 equals #{1 + 2}\" }}";
-    assertEquals("1 plus 2 equals 3", evaluate(src));
-  }
-
-  @Test(expected = PebbleException.class)
-  public void testUnclosedInterpolation() throws Exception {
-    String src = "{{ \" #{ 1 +\" }}";
-
-    evaluate(src);
+    assertEquals("1 plus 2 equals 3", this.evaluate(src));
   }
 
   @Test
-  public void testDoubleClosedInterpolation() throws Exception {
+  void testUnclosedInterpolation() throws Exception {
+    assertThrows(PebbleException.class, () -> {
+      String src = "{{ \" #{ 1 +\" }}";
+      this.evaluate(src);
+    });
+  }
+
+  @Test
+  void testDoubleClosedInterpolation() throws Exception {
     String src = "{{ \"#{3}}\" }}";
-    assertEquals("3}", evaluate(src));
+    assertEquals("3}", this.evaluate(src));
   }
 
   @Test
-  public void testFunctionInInterpolation() throws Exception {
+  void testFunctionInInterpolation() throws Exception {
     String src = "{{ \"Maximum: #{ max(5, 10) } \" }}";
-    assertEquals("Maximum: 10 ", evaluate(src));
+    assertEquals("Maximum: 10 ", this.evaluate(src));
   }
 
   @Test
-  public void testVerbatimInterpolation() throws Exception {
+  void testVerbatimInterpolation() throws Exception {
     String src = "{% verbatim %}{{ \"Sum: #{ 1 + 2 }\" }}{% endverbatim %}";
-    assertEquals("{{ \"Sum: #{ 1 + 2 }\" }}", evaluate(src));
+    assertEquals("{{ \"Sum: #{ 1 + 2 }\" }}", this.evaluate(src));
   }
 
   @Test
-  public void testInterpolationWithEscapedQuotes() throws Exception {
+  void testInterpolationWithEscapedQuotes() throws Exception {
     String str = "{{ \"The cow says: #{\"\\\"moo\\\"\"}\" }}";
-    assertEquals("The cow says: \"moo\"", evaluate(str));
+    assertEquals("The cow says: \"moo\"", this.evaluate(str));
   }
 
   @Test
-  public void testNestedInterpolation0() throws Exception {
+  void testNestedInterpolation0() throws Exception {
     String src = "{{ \"Nested: #{ outer + \" #{ inner }\" }\" }}";
     Map<String, Object> ctx = new HashMap<>();
     ctx.put("outer", "OUTER");
     ctx.put("inner", "INNER");
-    assertEquals("Nested: OUTER INNER", evaluate(src, ctx));
+    assertEquals("Nested: OUTER INNER", this.evaluate(src, ctx));
   }
 
   @Test
-  public void testNestedInterpolation1() throws Exception {
+  void testNestedInterpolation1() throws Exception {
     String src = "{{ \"#{\"#{\"#{'hi'}\"}\"}\" }}";
-    assertEquals("hi", evaluate(src));
+    assertEquals("hi", this.evaluate(src));
   }
 
   @Test
-  public void testInterpolationWhitespace0() throws Exception {
+  void testInterpolationWhitespace0() throws Exception {
     String src = "{{ \"Outer: #{3+4}\" }}";
-    assertEquals("Outer: 7", evaluate(src));
+    assertEquals("Outer: 7", this.evaluate(src));
   }
 
   @Test
-  public void testInterpolationWhitespace1() throws Exception {
+  void testInterpolationWhitespace1() throws Exception {
     String src = "{{ \"Outer: #{ 3 + 4 }\" }}";
-    assertEquals("Outer: 7", evaluate(src));
+    assertEquals("Outer: 7", this.evaluate(src));
   }
 
   @Test
-  public void testInterpolationWhitespace2() throws Exception {
+  void testInterpolationWhitespace2() throws Exception {
     String src = "{{ \"Outer:#{ 3 + 4 }\" }}";
-    assertEquals("Outer:7", evaluate(src));
+    assertEquals("Outer:7", this.evaluate(src));
   }
 
   @Test
-  public void testInterpolationWhitespace3() throws Exception {
+  void testInterpolationWhitespace3() throws Exception {
     String src = "{{ \"Outer:#{ 3 + 4 } \" }}";
-    assertEquals("Outer:7 ", evaluate(src));
+    assertEquals("Outer:7 ", this.evaluate(src));
   }
 
   @Test
-  public void testInterpolationWhitespace4() throws Exception {
+  void testInterpolationWhitespace4() throws Exception {
     String src = "{{ \"Outer:  #{ 3 + 4 }  \" }}";
-    assertEquals("Outer:  7  ", evaluate(src));
+    assertEquals("Outer:  7  ", this.evaluate(src));
   }
 
   @Test
-  public void testStringWithNumberSigns() throws Exception {
+  void testStringWithNumberSigns() throws Exception {
     String src = "{{ \"#bang #crash }!!\" }}";
-    assertEquals("#bang #crash }!!", evaluate(src));
+    assertEquals("#bang #crash }!!", this.evaluate(src));
   }
 
   @Test
-  public void testStringWithNumberSignsAndInterpolation() throws Exception {
+  void testStringWithNumberSignsAndInterpolation() throws Exception {
     String src = "{{ \"The cow said ##{'moo'}#\" }}";
-    assertEquals("The cow said #moo#", evaluate(src));
+    assertEquals("The cow said #moo#", this.evaluate(src));
   }
 
   @Test
-  public void testWhitespaceBetweenNumberSignAndCurlyBrace() throws Exception {
+  void testWhitespaceBetweenNumberSignAndCurlyBrace() throws Exception {
     String src = "{{ \"Green eggs and # {ham}\" }}";
-    assertEquals("Green eggs and # {ham}", evaluate(src));
+    assertEquals("Green eggs and # {ham}", this.evaluate(src));
   }
 
   @Test
-  public void testStringInsideInterpolation() throws Exception {
+  void testStringInsideInterpolation() throws Exception {
     String src = "{{ \"Outer: #{ \"inner\" }\" }}";
-    assertEquals("Outer: inner", evaluate(src));
+    assertEquals("Outer: inner", this.evaluate(src));
   }
 
   @Test
-  public void testSingleQuoteNoInterpolation() throws Exception {
+  void testSingleQuoteNoInterpolation() throws Exception {
     String src = "{{ '#{3}'}}";
-    assertEquals("#{3}", evaluate(src));
+    assertEquals("#{3}", this.evaluate(src));
   }
 
   @Test
-  public void testSingleQuoteInsideInterpolation() throws Exception {
+  void testSingleQuoteInsideInterpolation() throws Exception {
     String src = "{{ \"The cow says: #{'moo' + '#{moo}'}\" }}";
-    assertEquals("The cow says: moo#{moo}", evaluate(src));
+    assertEquals("The cow says: moo#{moo}", this.evaluate(src));
   }
 
   @Test
-  public void testSequentialInterpolations0() throws Exception {
+  void testSequentialInterpolations0() throws Exception {
     String src = "{{ \"#{1+1}#{2+2}\" }}";
-    assertEquals("24", evaluate(src));
+    assertEquals("24", this.evaluate(src));
   }
 
   @Test
-  public void testSequentialInterpolations1() throws Exception {
+  void testSequentialInterpolations1() throws Exception {
     String src = "{{ \"The #{'cow'} says #{'moo'} and jumps #{'over'} the #{'moon'}\"}}";
-    assertEquals("The cow says moo and jumps over the moon", evaluate(src));
+    assertEquals("The cow says moo and jumps over the moon", this.evaluate(src));
   }
 
   @Test
-  public void testVariableContainingInterplationSyntax() throws Exception {
+  void testVariableContainingInterplationSyntax() throws Exception {
     String src = "{{ \"Hey #{name}\" }}";
     Map<String, Object> ctx = new HashMap<>();
     ctx.put("name", "#{1+1}");
-    assertEquals("Hey #{1+1}", evaluate(src, ctx));
+    assertEquals("Hey #{1+1}", this.evaluate(src, ctx));
   }
 
   @Test
-  public void testNewlineInInterpolation() throws Exception {
+  void testNewlineInInterpolation() throws Exception {
     String src = "{{ \"Sum = #{ 'egg\negg'}\" }}";
-    assertEquals("Sum = egg\negg", evaluate(src));
+    assertEquals("Sum = egg\negg", this.evaluate(src));
   }
 
   private String evaluate(String template) throws PebbleException, IOException {
-    return evaluate(template, null);
+    return this.evaluate(template, null);
   }
 
   private String evaluate(String template, Map<String, Object> context)

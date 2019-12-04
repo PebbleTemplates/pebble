@@ -8,12 +8,13 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -24,17 +25,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class ParsingOdditiesTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-  @Rule
-  public final ExpectedException thrown = ExpectedException.none();
+class ParsingOdditiesTest {
 
   @Test
-  public void testEscapeCharactersText() throws PebbleException, IOException {
+  void testEscapeCharactersText() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.escapeCharactersInText.peb");
     Map<String, Object> context = new HashMap<>();
@@ -43,7 +41,7 @@ public class ParsingOdditiesTest {
   }
 
   @Test
-  public void testExpressionInArguments() throws PebbleException, IOException {
+  void testExpressionInArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -56,7 +54,7 @@ public class ParsingOdditiesTest {
   }
 
   @Test
-  public void testPositionalAndNamedArguments()
+  void testPositionalAndNamedArguments()
       throws PebbleException, IOException, ParseException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
@@ -76,22 +74,20 @@ public class ParsingOdditiesTest {
   }
 
   @Test
-  public void testPositionalArgumentAfterNamedArguments() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false)
-        .defaultLocale(Locale.ENGLISH).build();
+  void testPositionalArgumentAfterNamedArguments() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false)
+          .defaultLocale(Locale.ENGLISH).build();
 
-    String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
+      String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testVariableNamePrefixedWithOperatorName() throws PebbleException, IOException {
+  void testVariableNamePrefixedWithOperatorName() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -109,7 +105,7 @@ public class ParsingOdditiesTest {
   }
 
   @Test
-  public void testAttributeNamePrefixedWithOperatorName() throws PebbleException, IOException {
+  void testAttributeNamePrefixedWithOperatorName() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -130,21 +126,23 @@ public class ParsingOdditiesTest {
     }
   }
 
-  @Test(expected = PebbleException.class)
-  public void testIncorrectlyNamedArgument() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testIncorrectlyNamedArgument() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    PebbleTemplate template = pebble
-        .getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
+      PebbleTemplate template = pebble
+          .getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer);
-    assertEquals("This is a tes...", writer.toString());
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+      assertEquals("This is a tes...", writer.toString());
+    });
   }
 
   @Test
-  public void testStringConstantWithLinebreak() throws PebbleException, IOException {
+  void testStringConstantWithLinebreak() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -156,21 +154,19 @@ public class ParsingOdditiesTest {
   }
 
   @Test
-  public void testStringWithDifferentQuotationMarks() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testStringWithDifferentQuotationMarks() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{'test\"}}";
+      String source = "{{'test\"}}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testSingleQuoteWithinDoubleQuotes() throws PebbleException, IOException {
+  void testSingleQuoteWithinDoubleQuotes() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 

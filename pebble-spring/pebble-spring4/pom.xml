@@ -15,6 +15,8 @@
   <properties>
     <servlet-api.version>3.0.1</servlet-api.version>
     <spring-framework.version>4.3.25.RELEASE</spring-framework.version>
+    <junit.version>4.12</junit.version>
+    <mockito.version>2.3.5</mockito.version>
   </properties>
 
   <dependencyManagement>
@@ -55,11 +57,13 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

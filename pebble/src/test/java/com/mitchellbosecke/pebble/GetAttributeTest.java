@@ -15,7 +15,7 @@ import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -26,13 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class GetAttributeTest {
+class GetAttributeTest {
 
   @Test
-  public void testOneLayerAttributeNesting() throws PebbleException, IOException {
+  void testOneLayerAttributeNesting() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -46,7 +47,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAttributeCacheHitting() throws PebbleException, IOException {
+  void testAttributeCacheHitting() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -59,7 +60,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testMultiLayerAttributeNesting() throws PebbleException, IOException {
+  void testMultiLayerAttributeNesting() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -74,7 +75,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testHashmapAttribute() throws PebbleException, IOException {
+  void testHashmapAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -90,7 +91,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testHashmapAttributeWithArgumentOfNull() throws PebbleException, IOException {
+  void testHashmapAttributeWithArgumentOfNull() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
     PebbleTemplate template = pebble.getTemplate("hello {{ object[missingContextProperty] }}");
     Map<String, Object> context = new HashMap<>();
@@ -104,7 +105,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testNonExistingHashMapAttributeWithoutStrictVariables()
+  void testNonExistingHashMapAttributeWithoutStrictVariables()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -122,25 +123,27 @@ public class GetAttributeTest {
     assertEquals("", writer.toString());
   }
 
-  @Test(expected = AttributeNotFoundException.class)
-  public void testNonExistingMapAttributeWithStrictVariables() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(true).build();
+  @Test
+  void testNonExistingMapAttributeWithStrictVariables() throws PebbleException, IOException {
+    assertThrows(AttributeNotFoundException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(true).build();
 
-    String source = "{{ object.nonExisting }}";
-    PebbleTemplate template = pebble.getTemplate(source);
+      String source = "{{ object.nonExisting }}";
+      PebbleTemplate template = pebble.getTemplate(source);
 
-    Map<String, Object> context = new HashMap<>();
-    Map<String, String> map = new HashMap<>();
-    map.put("name", "Steve");
-    context.put("object", map);
+      Map<String, Object> context = new HashMap<>();
+      Map<String, String> map = new HashMap<>();
+      map.put("name", "Steve");
+      context.put("object", map);
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testNullMapValueWithoutStrictVariables() throws PebbleException, IOException {
+  void testNullMapValueWithoutStrictVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -160,7 +163,7 @@ public class GetAttributeTest {
    * Issue 446
    */
   @Test
-  public void testNullMapValueWithStrictVariables() throws PebbleException, IOException {
+  void testNullMapValueWithStrictVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -177,7 +180,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testMethodAttribute() throws PebbleException, IOException {
+  void testMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -206,7 +209,7 @@ public class GetAttributeTest {
    * | false              | true             | method      | throw   |
    */
   @Test
-  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Property()
+  void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .allowUnsafeMethods(true)
@@ -223,7 +226,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Method()
+  void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .allowUnsafeMethods(true)
@@ -240,7 +243,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Property()
+  void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .allowUnsafeMethods(true)
@@ -257,7 +260,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Method()
+  void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .allowUnsafeMethods(true)
@@ -271,152 +274,166 @@ public class GetAttributeTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
-  }
-
-  @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOff_Property()
-      throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowUnsafeMethods(false)
-        .strictVariables(false)
-        .build();
-
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-  }
-
-  @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOff_Method()
-      throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowUnsafeMethods(false)
-        .strictVariables(false)
-        .build();
-
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-  }
-
-  @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOn_Property()
-      throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowUnsafeMethods(false)
-        .strictVariables(true)
-        .build();
-
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-  }
-
-  @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOn_Method()
-      throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .allowUnsafeMethods(false)
-        .strictVariables(true)
-        .build();
-
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
   }
 
   @Test
-  public void testAccessingClass_AllowUnsafeMethodsOnIsCaseInsensitive_Property()
+  void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOff_Property()
       throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder()
-      .loader(new StringLoader())
-        .allowUnsafeMethods(true)
-      .build();
+    assertThrows(ClassAccessException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .allowUnsafeMethods(false)
+          .strictVariables(false)
+          .build();
 
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
+      PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new SimpleObject());
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-    assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
-  }
-
-  @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowUnsafeMethodsOffIsCaseInsensitive_Property()
-      throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder()
-      .loader(new StringLoader())
-        .allowUnsafeMethods(false)
-      .build();
-
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testAccessingClass_AllowUnsafeMethodsOnIsCaseInsensitive_Method()
+  void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOff_Method()
       throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder()
-      .loader(new StringLoader())
-        .allowUnsafeMethods(true)
-      .build();
+    assertThrows(ClassAccessException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .allowUnsafeMethods(false)
+          .strictVariables(false)
+          .build();
 
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
+      PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new SimpleObject());
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-    assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
-  @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowUnsafeMethodsOffIsCaseInsensitive_Method()
+  @Test
+  void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOn_Property()
       throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder()
-      .loader(new StringLoader())
-        .allowUnsafeMethods(false)
-      .build();
+    assertThrows(ClassAccessException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .allowUnsafeMethods(false)
+          .strictVariables(true)
+          .build();
 
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new SimpleObject());
+      PebbleTemplate template = pebble.getTemplate("hello [{{ object.class }}]");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new SimpleObject());
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
-  @Test(expected = ClassAccessException.class)
-  public void testAccessingClass_AllowUnsafeMethodsOffForMethodNotify_thenThrowException()
+  @Test
+  void testAccessingClass_AllowUnsafeMethodsOff_StrictVariableOn_Method()
+      throws PebbleException, IOException {
+    assertThrows(ClassAccessException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .allowUnsafeMethods(false)
+          .strictVariables(true)
+          .build();
+
+      PebbleTemplate template = pebble.getTemplate("hello [{{ object.getClass() }}]");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new SimpleObject());
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
+  void testAccessingClass_AllowUnsafeMethodsOnIsCaseInsensitive_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
-        .allowUnsafeMethods(false)
+        .allowUnsafeMethods(true)
         .build();
 
-    PebbleTemplate template = pebble.getTemplate("hello [{{ object.notify() }}]");
+    PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
     Map<String, Object> context = new HashMap<>();
     context.put("object", new SimpleObject());
 
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
+    assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
+  }
+
+  @Test
+  void testAccessingClass_AllowUnsafeMethodsOffIsCaseInsensitive_Property()
+      throws PebbleException, IOException {
+    assertThrows(ClassAccessException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder()
+          .loader(new StringLoader())
+          .allowUnsafeMethods(false)
+          .build();
+
+      PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new SimpleObject());
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
+  void testAccessingClass_AllowUnsafeMethodsOnIsCaseInsensitive_Method()
+      throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder()
+        .loader(new StringLoader())
+        .allowUnsafeMethods(true)
+        .build();
+
+    PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new SimpleObject());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello [" + SimpleObject.class.toString() + "]", writer.toString());
+  }
+
+  @Test
+  void testAccessingClass_AllowUnsafeMethodsOffIsCaseInsensitive_Method()
+      throws PebbleException, IOException {
+    assertThrows(ClassAccessException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder()
+          .loader(new StringLoader())
+          .allowUnsafeMethods(false)
+          .build();
+
+      PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new SimpleObject());
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
+  void testAccessingClass_AllowUnsafeMethodsOffForMethodNotify_thenThrowException()
+      throws PebbleException, IOException {
+    assertThrows(ClassAccessException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder()
+          .loader(new StringLoader())
+          .allowUnsafeMethods(false)
+          .build();
+
+      PebbleTemplate template = pebble.getTemplate("hello [{{ object.notify() }}]");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new SimpleObject());
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   /**
@@ -424,7 +441,7 @@ public class GetAttributeTest {
    * the caching doesnt have any negative side effects.
    */
   @Test
-  public void testMethodAttributeWithDifferentObjects() throws PebbleException, IOException {
+  void testMethodAttributeWithDifferentObjects() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -443,7 +460,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithArgument() throws PebbleException, IOException {
+  void testBeanMethodWithArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -457,7 +474,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithLongArgument() throws PebbleException, IOException {
+  void testBeanMethodWithLongArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -471,7 +488,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithLongArgument2() throws PebbleException, IOException {
+  void testBeanMethodWithLongArgument2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -485,7 +502,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithTreatLiteralDecimalAsLong() throws PebbleException, IOException {
+  void testBeanMethodWithTreatLiteralDecimalAsLong() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).literalDecimalTreatedAsInteger(false)
         .greedyMatchMethod(false).build();
@@ -505,7 +522,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithTreatNumberAsInteger() throws PebbleException, IOException {
+  void testBeanMethodWithTreatNumberAsInteger() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).literalDecimalTreatedAsInteger(true)
         .build();
@@ -520,7 +537,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithGreedyMatchArgument() throws PebbleException, IOException {
+  void testBeanMethodWithGreedyMatchArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).greedyMatchMethod(true).build();
 
@@ -535,7 +552,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithOverloadedArgument() throws PebbleException, IOException {
+  void testBeanMethodWithOverloadedArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -549,7 +566,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithTwoArguments() throws PebbleException, IOException {
+  void testBeanMethodWithTwoArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -563,7 +580,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testGetMethodAttribute() throws PebbleException, IOException {
+  void testGetMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -577,7 +594,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testHasMethodAttribute() throws PebbleException, IOException {
+  void testHasMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -591,7 +608,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testIsMethodAttribute() throws PebbleException, IOException {
+  void testIsMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -605,7 +622,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testComplexNestedAttributes() throws PebbleException, IOException {
+  void testComplexNestedAttributes() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -619,19 +636,21 @@ public class GetAttributeTest {
     assertEquals("hello Steve. My name is Steve.", writer.toString());
   }
 
-  @Test(expected = RootAttributeNotFoundException.class)
-  public void testAttributeOfNullObjectWithStrictVariables() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(true).build();
+  @Test
+  void testAttributeOfNullObjectWithStrictVariables() throws PebbleException, IOException {
+    assertThrows(RootAttributeNotFoundException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(true).build();
 
-    PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
+      PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer);
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+    });
   }
 
   @Test
-  public void testAttributeOfNullObjectWithoutStrictVariables()
+  void testAttributeOfNullObjectWithoutStrictVariables()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -647,7 +666,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testNonExistingAttributeWithoutStrictVariables() throws PebbleException, IOException {
+  void testNonExistingAttributeWithoutStrictVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -660,22 +679,24 @@ public class GetAttributeTest {
     assertEquals("hello ", writer.toString());
   }
 
-  @Test(expected = AttributeNotFoundException.class)
-  public void testNonExistingAttributeWithStrictVariables() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(true).build();
+  @Test
+  void testNonExistingAttributeWithStrictVariables() throws PebbleException, IOException {
+    assertThrows(AttributeNotFoundException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(true).build();
 
-    PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
-    Map<String, Object> context = new HashMap<>();
-    context.put("object", new Object());
+      PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new Object());
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-    assertEquals("hello ", writer.toString());
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+      assertEquals("hello ", writer.toString());
+    });
   }
 
   @Test
-  public void testNullAttributeWithoutStrictVariables() throws PebbleException, IOException {
+  void testNullAttributeWithoutStrictVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -693,7 +714,7 @@ public class GetAttributeTest {
    * Should behave the same as it does with strictVariables = false.
    */
   @Test
-  public void testNullAttributeWithStrictVariables() throws PebbleException, IOException {
+  void testNullAttributeWithStrictVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -708,7 +729,7 @@ public class GetAttributeTest {
   }
 
   @Test()
-  public void testPrimitiveAttribute() throws PebbleException, IOException {
+  void testPrimitiveAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -722,7 +743,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testArrayIndexAttribute() throws PebbleException, IOException {
+  void testArrayIndexAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -740,7 +761,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testListIndexAttribute() throws PebbleException, IOException {
+  void testListIndexAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -760,27 +781,29 @@ public class GetAttributeTest {
   /**
    * Tests retrieving a non-existing index from a list with strict mode on.
    */
-  @Test(expected = AttributeNotFoundException.class)
-  public void testListNonExistingIndexAttributeWithStrictMode()
+  @Test
+  void testListNonExistingIndexAttributeWithStrictMode()
       throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(true).build();
+    assertThrows(AttributeNotFoundException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(true).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ arr[1] }}");
-    Map<String, Object> context = new HashMap<>();
-    List<String> data = new ArrayList<>();
-    context.put("arr", data);
+      PebbleTemplate template = pebble.getTemplate("{{ arr[1] }}");
+      Map<String, Object> context = new HashMap<>();
+      List<String> data = new ArrayList<>();
+      context.put("arr", data);
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-    assertEquals("Two", writer.toString());
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+      assertEquals("Two", writer.toString());
+    });
   }
 
   /**
    * Tests retrieving a non-existing index from a list with strict mode off.
    */
   @Test
-  public void testListNonExistingIndexAttribute() throws PebbleException, IOException {
+  void testListNonExistingIndexAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -795,7 +818,7 @@ public class GetAttributeTest {
   }
 
   @Test()
-  public void testInheritedAttribute() throws PebbleException, IOException {
+  void testInheritedAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -816,7 +839,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAccessingValueWithSubscriptInLoop() throws PebbleException, IOException {
+  void testAccessingValueWithSubscriptInLoop() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -946,7 +969,7 @@ public class GetAttributeTest {
   }
 
   @Test()
-  public void testPrimitiveArgument() throws PebbleException, IOException {
+  void testPrimitiveArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -964,7 +987,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testBeanMethodWithNullArgument() throws PebbleException, IOException {
+  void testBeanMethodWithNullArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -994,7 +1017,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAttributePrimitiveAccessWithEmptyMap() throws Exception {
+  void testAttributePrimitiveAccessWithEmptyMap() throws Exception {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -1009,7 +1032,7 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAttributePrimitiveAccessWithInteger() throws Exception {
+  void testAttributePrimitiveAccessWithInteger() throws Exception {
     String result = this.testAttributePrimitiveAccess(1);
 
     assertEquals("hello Steve", result);
@@ -1031,35 +1054,35 @@ public class GetAttributeTest {
   }
 
   @Test
-  public void testAttributePrimitiveAccessWithLong() throws Exception {
+  void testAttributePrimitiveAccessWithLong() throws Exception {
     String result = this.testAttributePrimitiveAccess(1L);
 
     assertEquals("hello Steve", result);
   }
 
   @Test
-  public void testAttributePrimitiveAccessWithDouble() throws Exception {
+  void testAttributePrimitiveAccessWithDouble() throws Exception {
     String result = this.testAttributePrimitiveAccess(1.05D);
 
     assertEquals("hello Steve", result);
   }
 
   @Test
-  public void testAttributePrimitiveAccessWithFloat() throws Exception {
+  void testAttributePrimitiveAccessWithFloat() throws Exception {
     String result = this.testAttributePrimitiveAccess(1.05F);
 
     assertEquals("hello Steve", result);
   }
 
   @Test
-  public void testAttributePrimitiveAccessWithShort() throws Exception {
+  void testAttributePrimitiveAccessWithShort() throws Exception {
     String result = this.testAttributePrimitiveAccess((short) 1);
 
     assertEquals("hello Steve", result);
   }
 
   @Test
-  public void testAttributePrimitiveAccessWithByte() throws Exception {
+  void testAttributePrimitiveAccessWithByte() throws Exception {
     String result = this.testAttributePrimitiveAccess((byte) 1);
 
     assertEquals("hello Steve", result);

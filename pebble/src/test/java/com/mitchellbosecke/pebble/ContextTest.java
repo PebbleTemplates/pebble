@@ -12,7 +12,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -26,13 +27,14 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ContextTest {
+class ContextTest {
 
   @SuppressWarnings("serial")
   @Test
-  public void testLazyMap() throws PebbleException, IOException {
+  void testLazyMap() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -64,7 +66,7 @@ public class ContextTest {
   }
 
   @Test
-  public void testMissingContextVariableWithoutStrictVariables()
+  void testMissingContextVariableWithoutStrictVariables()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -75,18 +77,20 @@ public class ContextTest {
     assertEquals("", writer.toString());
   }
 
-  @Test(expected = RootAttributeNotFoundException.class)
-  public void testMissingContextVariableWithStrictVariables() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(true).build();
+  @Test
+  void testMissingContextVariableWithStrictVariables() throws PebbleException, IOException {
+    assertThrows(RootAttributeNotFoundException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(true).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ foo }}");
-    Writer writer = new StringWriter();
-    template.evaluate(writer);
+      PebbleTemplate template = pebble.getTemplate("{{ foo }}");
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+    });
   }
 
   @Test
-  public void testExistingButNullContextVariableWithStrictVariables()
+  void testExistingButNullContextVariableWithStrictVariables()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
@@ -102,7 +106,7 @@ public class ContextTest {
   }
 
   @Test
-  public void testDefaultLocale() throws PebbleException, IOException {
+  void testDefaultLocale() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .defaultLocale(Locale.CANADA_FRENCH).build();
@@ -114,7 +118,7 @@ public class ContextTest {
   }
 
   @Test
-  public void testLocaleProvidedDuringEvaluation() throws PebbleException, IOException {
+  void testLocaleProvidedDuringEvaluation() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .defaultLocale(Locale.CANADA).build();
@@ -126,7 +130,7 @@ public class ContextTest {
   }
 
   @Test
-  public void testGlobalTemplateName() throws PebbleException, IOException {
+  void testGlobalTemplateName() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("{{ template.name }}");
@@ -136,25 +140,27 @@ public class ContextTest {
     assertEquals("{{ template.name }}", writer.toString());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void testImmutableMapThrows() throws PebbleException, IOException {
-    Map<String, Object> originalMap = new HashMap<>();
-    originalMap.put("contextVariable", "context variable value");
-    Map<String, Object> immutableMap = new ImmutableMap<>(originalMap);
+  @Test
+  void testImmutableMapThrows() throws PebbleException, IOException {
+    assertThrows(UnsupportedOperationException.class, () -> {
+      Map<String, Object> originalMap = new HashMap<>();
+      originalMap.put("contextVariable", "context variable value");
+      Map<String, Object> immutableMap = new ImmutableMap<>(originalMap);
 
-    immutableMap.put("templateVariable", "template variable value");
+      immutableMap.put("templateVariable", "template variable value");
+    });
   }
 
   @Test
-  public void testImmutableContext() throws PebbleException, IOException {
+  void testImmutableContext() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine
-            .Builder()
-            .loader(new StringLoader())
-            .strictVariables(false)
-            .build();
+        .Builder()
+        .loader(new StringLoader())
+        .strictVariables(false)
+        .build();
     PebbleTemplate template = pebble.getTemplate("" +
-            "{% set templateVariable = 'template variable value' %}" +
-            "{{ contextVariable }} - {{ templateVariable }}");
+        "{% set templateVariable = 'template variable value' %}" +
+        "{{ contextVariable }} - {{ templateVariable }}");
 
     Writer writer = new StringWriter();
 
@@ -175,27 +181,27 @@ public class ContextTest {
 
     @Override
     public int size() {
-      return delegate.size();
+      return this.delegate.size();
     }
 
     @Override
     public boolean isEmpty() {
-      return delegate.isEmpty();
+      return this.delegate.isEmpty();
     }
 
     @Override
     public boolean containsKey(Object key) {
-      return delegate.containsKey(key);
+      return this.delegate.containsKey(key);
     }
 
     @Override
     public boolean containsValue(Object value) {
-      return delegate.containsValue(value);
+      return this.delegate.containsValue(value);
     }
 
     @Override
     public U get(Object key) {
-      return delegate.get(key);
+      return this.delegate.get(key);
     }
 
     @Override
@@ -220,37 +226,37 @@ public class ContextTest {
 
     @Override
     public Set<T> keySet() {
-      return delegate.keySet();
+      return this.delegate.keySet();
     }
 
     @Override
     public Collection<U> values() {
-      return delegate.values();
+      return this.delegate.values();
     }
 
     @Override
     public Set<Entry<T, U>> entrySet() {
-      return delegate.entrySet();
+      return this.delegate.entrySet();
     }
 
     @Override
     public boolean equals(Object o) {
-      return delegate.equals(o);
+      return this.delegate.equals(o);
     }
 
     @Override
     public int hashCode() {
-      return delegate.hashCode();
+      return this.delegate.hashCode();
     }
 
     @Override
     public U getOrDefault(Object key, U defaultValue) {
-      return delegate.getOrDefault(key, defaultValue);
+      return this.delegate.getOrDefault(key, defaultValue);
     }
 
     @Override
     public void forEach(BiConsumer<? super T, ? super U> action) {
-      delegate.forEach(action);
+      this.delegate.forEach(action);
     }
 
     @Override

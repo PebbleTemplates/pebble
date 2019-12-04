@@ -1,22 +1,24 @@
 package com.mitchellbosecke.pebble.extension.escaper;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
-public class RawFilterTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class RawFilterTest {
 
   @Test
-  public void testRawFilter() throws PebbleException, IOException {
+  void testRawFilter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("{{ text | upper | raw }}");
@@ -28,7 +30,7 @@ public class RawFilterTest {
   }
 
   @Test
-  public void testRawFilterNotBeingLast() throws PebbleException, IOException {
+  void testRawFilterNotBeingLast() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("{{ text | raw | upper}}");
@@ -40,7 +42,7 @@ public class RawFilterTest {
   }
 
   @Test
-  public void testRawFilterWithinAutoescapeToken() throws PebbleException, IOException {
+  void testRawFilterWithinAutoescapeToken() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .autoEscaping(false).build();
@@ -54,7 +56,7 @@ public class RawFilterTest {
   }
 
   @Test
-  public void testRawFilterWithJsonObject() throws PebbleException, IOException {
+  void testRawFilterWithJsonObject() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("{{ text | raw }}");
@@ -66,7 +68,7 @@ public class RawFilterTest {
   }
 
   @Test
-  public void testRawFilterWithNullObject() throws PebbleException, IOException {
+  void testRawFilterWithNullObject() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("{{ text | raw }}");

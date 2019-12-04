@@ -1,21 +1,21 @@
 package com.mitchellbosecke.pebble.lexer;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.Reader;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
 import com.mitchellbosecke.pebble.extension.core.CoreExtension;
 import com.mitchellbosecke.pebble.lexer.Token.Type;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 
-public class LexerImplTest {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Reader;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class LexerImplTest {
 
   @SuppressWarnings("unused")
   private final Logger logger = LoggerFactory.getLogger(LexerImplTest.class);
@@ -32,161 +32,161 @@ public class LexerImplTest {
   /**
    * Configure and instantiate a Lexer instance before each test.
    */
-  @Before
-  public void setup() {
-	Syntax syntax = new Syntax.Builder().setEnableNewLineTrimming(false).build();
+  @BeforeEach
+  void setup() {
+    Syntax syntax = new Syntax.Builder().setEnableNewLineTrimming(false).build();
 
-	ExtensionRegistry extensionRegistry = new ExtensionRegistry();
+    ExtensionRegistry extensionRegistry = new ExtensionRegistry();
     extensionRegistry.addExtension(new CoreExtension());
 
-	this.lexer = new LexerImpl(syntax,
-      extensionRegistry.getUnaryOperators().values(),
-      extensionRegistry.getBinaryOperators().values());
+    this.lexer = new LexerImpl(syntax,
+        extensionRegistry.getUnaryOperators().values(),
+        extensionRegistry.getBinaryOperators().values());
   }
 
   /**
    * Test Tokenizing text.
    */
   @Test
-  public void testTokenizeText() {
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader(" template content ");
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	assertThat(tokenStream.peek(0).getType()).isEqualTo(Type.TEXT);
-	assertThat(tokenStream.peek(0).getValue()).isEqualTo(" template content ");
-	assertThat(tokenStream.peek(1).getType()).isEqualTo(Type.EOF);
+  void testTokenizeText() {
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader(" template content ");
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    assertThat(tokenStream.peek(0).getType()).isEqualTo(Type.TEXT);
+    assertThat(tokenStream.peek(0).getValue()).isEqualTo(" template content ");
+    assertThat(tokenStream.peek(1).getType()).isEqualTo(Type.EOF);
   }
-  
+
   /**
    * Test tokenizing an expression, e.g. {{ expression }}
    */
   @Test
-  public void testTokenizeExpression() {
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader("{{ whatever }}");
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	assertThat(tokenStream.peek(0).getType()).isEqualTo(Type.PRINT_START);
-	assertThat(tokenStream.peek(0).getValue()).isNull(); 
-	
-	assertThat(tokenStream.peek(1).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(1).getValue()).isEqualTo("whatever");
-	
-	assertThat(tokenStream.peek(2).getType()).isEqualTo(Type.PRINT_END);
-	assertThat(tokenStream.peek(2).getValue()).isEqualTo("}}");
-	
-	assertThat(tokenStream.peek(3).getType()).isEqualTo(Type.EOF);
-	assertThat(tokenStream.peek(3).getValue()).isNull(); 
+  void testTokenizeExpression() {
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader("{{ whatever }}");
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    assertThat(tokenStream.peek(0).getType()).isEqualTo(Type.PRINT_START);
+    assertThat(tokenStream.peek(0).getValue()).isNull();
+
+    assertThat(tokenStream.peek(1).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(1).getValue()).isEqualTo("whatever");
+
+    assertThat(tokenStream.peek(2).getType()).isEqualTo(Type.PRINT_END);
+    assertThat(tokenStream.peek(2).getValue()).isEqualTo("}}");
+
+    assertThat(tokenStream.peek(3).getType()).isEqualTo(Type.EOF);
+    assertThat(tokenStream.peek(3).getValue()).isNull();
   }
-  
+
   /**
    * Test tokenizing Punctuation, such as the dot in item.itemType
    */
   @Test
-  public void testPunctuation() {
-	
-	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder
-		.append("{% if item.itemType %}");
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader(stringBuilder.toString());
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	int i = 0;
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
-	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.PUNCTUATION);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo(".");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("itemType");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
+  void testPunctuation() {
+
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder
+        .append("{% if item.itemType %}");
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader(stringBuilder.toString());
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    int i = 0;
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
+    assertThat(tokenStream.peek(i++).getValue()).isNull();
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.PUNCTUATION);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo(".");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("itemType");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
 	
 	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EOF);
 	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
   }
-  
+
   /**
    * Test tokenizing an if statement that includes an operation and a String token
    */
   @Test
-  public void testIfStatementWithOperatorAndStringToken() {
-	
-	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder
-		.append("{% if item equals \"string1\" %}");
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader(stringBuilder.toString());
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	int i = 0;
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
-	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.OPERATOR);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("equals");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.STRING);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("string1");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
+  void testIfStatementWithOperatorAndStringToken() {
+
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder
+        .append("{% if item equals \"string1\" %}");
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader(stringBuilder.toString());
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    int i = 0;
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
+    assertThat(tokenStream.peek(i++).getValue()).isNull();
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.OPERATOR);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("equals");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.STRING);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("string1");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
   }
-  
+
   /**
    * Test tokenize an "if" statement
    */
   @Test
-  public void testIfStatement() {
-	
-	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder
-		.append("{% if item equals \"whatever\" %}\n")
-		.append("some text\n")
-		.append("{% endif %}");
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader(stringBuilder.toString());
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	int i = 0;
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
-	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.OPERATOR);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("equals");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.STRING);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("whatever");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
+  void testIfStatement() {
+
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder
+        .append("{% if item equals \"whatever\" %}\n")
+        .append("some text\n")
+        .append("{% endif %}");
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader(stringBuilder.toString());
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    int i = 0;
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
+    assertThat(tokenStream.peek(i++).getValue()).isNull();
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.OPERATOR);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("equals");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.STRING);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("whatever");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
 
 	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.TEXT);
 	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("\nsome text\n");
@@ -203,40 +203,40 @@ public class LexerImplTest {
 	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EOF);
 	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
   }
-  
+
   /**
    * Test tokenizing a For Loop
    */
   @Test
-  public void testTokenizeForLoop() {
-	
-	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder
-		.append("{% for item in items %}\n")
-		.append("stuff\n")
-		.append("{% endfor %}");
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader(stringBuilder.toString());
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	assertThat(tokenStream.peek(0).getType()).isEqualTo(Type.EXECUTE_START);
-	assertThat(tokenStream.peek(0).getValue()).isNull(); 
-	
-	assertThat(tokenStream.peek(1).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(1).getValue()).isEqualTo("for");
-	
-	assertThat(tokenStream.peek(2).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(2).getValue()).isEqualTo("item");
-	
-	assertThat(tokenStream.peek(3).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(3).getValue()).isEqualTo("in");
-	
-	assertThat(tokenStream.peek(4).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(4).getValue()).isEqualTo("items");
-	
-	assertThat(tokenStream.peek(5).getType()).isEqualTo(Type.EXECUTE_END);
-	assertThat(tokenStream.peek(5).getValue()).isEqualTo("%}");
+  void testTokenizeForLoop() {
+
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder
+        .append("{% for item in items %}\n")
+        .append("stuff\n")
+        .append("{% endfor %}");
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader(stringBuilder.toString());
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    assertThat(tokenStream.peek(0).getType()).isEqualTo(Type.EXECUTE_START);
+    assertThat(tokenStream.peek(0).getValue()).isNull();
+
+    assertThat(tokenStream.peek(1).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(1).getValue()).isEqualTo("for");
+
+    assertThat(tokenStream.peek(2).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(2).getValue()).isEqualTo("item");
+
+    assertThat(tokenStream.peek(3).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(3).getValue()).isEqualTo("in");
+
+    assertThat(tokenStream.peek(4).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(4).getValue()).isEqualTo("items");
+
+    assertThat(tokenStream.peek(5).getType()).isEqualTo(Type.EXECUTE_END);
+    assertThat(tokenStream.peek(5).getValue()).isEqualTo("%}");
 	
 	assertThat(tokenStream.peek(6).getType()).isEqualTo(Type.TEXT);
 	assertThat(tokenStream.peek(6).getValue()).isEqualTo("\nstuff\n");
@@ -253,41 +253,41 @@ public class LexerImplTest {
 	assertThat(tokenStream.peek(10).getType()).isEqualTo(Type.EOF);
 	assertThat(tokenStream.peek(10).getValue()).isNull(); 
   }
-  
+
   /**
    * Test tokenizing an if statement with a Whitespace Control character, i.e. the "-"
    */
   @Test
-  public void testIfStatementWithWhitespaceControl() {
-	
-	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder
-		.append("{% if item equals \"whatever\" -%}\n")
-		.append("some text\n")
-		.append("{%- endif %}");
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader(stringBuilder.toString());
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	int i = 0;
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
-	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.OPERATOR);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("equals");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.STRING);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("whatever");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
+  void testIfStatementWithWhitespaceControl() {
+
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder
+        .append("{% if item equals \"whatever\" -%}\n")
+        .append("some text\n")
+        .append("{%- endif %}");
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader(stringBuilder.toString());
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    int i = 0;
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
+    assertThat(tokenStream.peek(i++).getValue()).isNull();
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("if");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.OPERATOR);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("equals");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.STRING);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("whatever");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");
 
 	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.TEXT);
 	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("some text");
@@ -304,47 +304,47 @@ public class LexerImplTest {
 	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EOF);
 	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
   }
-  
+
   /**
    * Test a combination of template syntax to demonstrate a complex token stream
    */
   @Test
-  public void testComplexTemplate() {
-	
-	StringBuilder stringBuilder = new StringBuilder();
-	stringBuilder
-		.append("text before for loop followed by blank line\n")
-		.append("{% for item in items %}\n")
-		.append("{% if item.itemType equals \"ITEM_TYPE1\" -%}\n")
-		.append("Item 1\n")
-		.append("{% elseif item.itemType equals \"ITEM_TYPE2\" -%}\n")
-		.append("Item 2\n")
-		.append("{%- endif -%}")
-		.append("{% endfor -%}")
-		.append("text after for loop preceded by blank line");
-	Loader<String> loader = new StringLoader();
-	Reader templateReader = loader.getReader(stringBuilder.toString());
-	 
-	TokenStream tokenStream = this.lexer.tokenize(templateReader, TEMPLATE_NAME);
-	
-	int i = 0;
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.TEXT);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("text before for loop followed by blank line\n");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
-	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("for");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
+  void testComplexTemplate() {
 
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("in");
-	
-	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
-	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("items");
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder
+        .append("text before for loop followed by blank line\n")
+        .append("{% for item in items %}\n")
+        .append("{% if item.itemType equals \"ITEM_TYPE1\" -%}\n")
+        .append("Item 1\n")
+        .append("{% elseif item.itemType equals \"ITEM_TYPE2\" -%}\n")
+        .append("Item 2\n")
+        .append("{%- endif -%}")
+        .append("{% endfor -%}")
+        .append("text after for loop preceded by blank line");
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader(stringBuilder.toString());
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    int i = 0;
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.TEXT);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("text before for loop followed by blank line\n");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_START);
+    assertThat(tokenStream.peek(i++).getValue()).isNull();
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("for");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("item");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("in");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("items");
 	
 	assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EXECUTE_END);
 	assertThat(tokenStream.peek(i++).getValue()).isEqualTo("%}");

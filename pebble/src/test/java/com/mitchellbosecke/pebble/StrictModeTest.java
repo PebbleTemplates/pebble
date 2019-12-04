@@ -1,32 +1,34 @@
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests if strict mode works in any case.
  *
  * @author Thomas Hunziker
  */
-public class StrictModeTest {
+class StrictModeTest {
 
 
   /**
    * Tests that the line number and file name is correctly passed to the exception in strict mode.
    */
   @Test()
-  public void testComplexVariable() throws PebbleException, IOException {
+  void testComplexVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).build();
 
     PebbleTemplate template = pebble
@@ -38,11 +40,10 @@ public class StrictModeTest {
 
     try {
       template.evaluate(writer, context);
-      Assert.fail(
-          "Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
+      fail("Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
     } catch (RootAttributeNotFoundException e) {
-      Assert.assertEquals(e.getFileName(), "templates/template.strictModeComplexExpression.peb");
-      Assert.assertEquals(e.getLineNumber(), (Integer) 2);
+      assertEquals(e.getFileName(), "templates/template.strictModeComplexExpression.peb");
+      assertEquals(e.getLineNumber(), (Integer) 2);
     }
   }
 
@@ -50,7 +51,7 @@ public class StrictModeTest {
    * Tests that the line number and file name is correctly passed to the exception in strict mode.
    */
   @Test()
-  public void testSimpleVariable() throws PebbleException, IOException {
+  void testSimpleVariable() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true).build();
     PebbleTemplate template = pebble
@@ -62,16 +63,16 @@ public class StrictModeTest {
 
     try {
       template.evaluate(writer, context);
-      Assert.fail(
+      fail(
           "Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
     } catch (RootAttributeNotFoundException e) {
-      Assert.assertEquals("templates/template.strictModeSimpleExpression.peb", e.getFileName());
-      Assert.assertEquals((Integer) 2, e.getLineNumber());
+      assertEquals("templates/template.strictModeSimpleExpression.peb", e.getFileName());
+      assertEquals((Integer) 2, e.getLineNumber());
     }
   }
 
   @Test
-  public void whenStrictVariableEnabledWithAndExpressionAndLeftOperandFalse_thenDontEvaluateRightExpression()
+  void whenStrictVariableEnabledWithAndExpressionAndLeftOperandFalse_thenDontEvaluateRightExpression()
       throws PebbleException, IOException {
     PebbleEngine engine = new PebbleEngine
         .Builder()
@@ -92,7 +93,7 @@ public class StrictModeTest {
   }
 
   @Test
-  public void whenStrictVariableEnabledWithOrExpressionAndLeftOperandTrue_thenDontEvaluateRightExpression()
+  void whenStrictVariableEnabledWithOrExpressionAndLeftOperandTrue_thenDontEvaluateRightExpression()
       throws PebbleException, IOException {
     PebbleEngine engine = new PebbleEngine
         .Builder()

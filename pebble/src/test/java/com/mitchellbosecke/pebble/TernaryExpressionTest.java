@@ -8,210 +8,182 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class TernaryExpressionTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-  @Rule
-  public final ExpectedException thrown = ExpectedException.none();
+class TernaryExpressionTest {
 
   @Test
-  public void testTernaryFail1() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail1() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 'true' }}";
+      String source = "{{ 1 > 1 ? 'true' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail2() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail2() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? : 'true' }}";
+      String source = "{{ 1 > 1 ? : 'true' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail3() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail3() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 'true' : }}";
+      String source = "{{ 1 > 1 ? 'true' : }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail4() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail4() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? : }}";
+      String source = "{{ 1 > 1 ? : }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail5() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail5() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? : ? 'true' : 'false' }}";
+      String source = "{{ 1 > 1 ? : ? 'true' : 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail6() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail6() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? true ? 'true' : 'false' }}";
+      String source = "{{ 1 > 1 ? true ? 'true' : 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail7() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail7() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? : false ? 'true' : 'false' }}";
+      String source = "{{ 1 > 1 ? : false ? 'true' : 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail8() throws PebbleException {
-    //arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail8() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 2 > 2 ? 'true' : 'false' }}";
+      String source = "{{ 1 > 1 ? 2 > 2 ? 'true' : 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail9() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail9() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 2 > 2 ? : 'false' : 'false' }}";
+      String source = "{{ 1 > 1 ? 2 > 2 ? : 'false' : 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail10() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail10() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 2 > 2 ? : : 'false' }}";
+      String source = "{{ 1 > 1 ? 2 > 2 ? : : 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail11() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail11() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? 'false' }}";
+      String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail12() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail12() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : 'false' }}";
+      String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : 'false' }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernaryFail13() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testTernaryFail13() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : }}";
+      String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testTernary1() throws PebbleException, IOException {
+  void testTernary1() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -224,7 +196,7 @@ public class TernaryExpressionTest {
   }
 
   @Test
-  public void testTernary2() throws PebbleException, IOException {
+  void testTernary2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -237,7 +209,7 @@ public class TernaryExpressionTest {
   }
 
   @Test
-  public void testTernary3() throws PebbleException, IOException {
+  void testTernary3() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -250,7 +222,7 @@ public class TernaryExpressionTest {
   }
 
   @Test
-  public void testComplexTernary1() throws PebbleException, IOException {
+  void testComplexTernary1() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -265,7 +237,7 @@ public class TernaryExpressionTest {
   }
 
   @Test
-  public void testComplexTernary2() throws PebbleException, IOException {
+  void testComplexTernary2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -280,72 +252,72 @@ public class TernaryExpressionTest {
   }
 
   @Test
-  public void testTernaryIntTrue() throws IOException {
+  void testTernaryIntTrue() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate(
-            "{{ 1 ? 'true' : 'false' }}");
+        "{{ 1 ? 'true' : 'false' }}");
     StringWriter writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("true", writer.toString());
   }
 
   @Test
-  public void testTernaryIntFalse() throws IOException {
+  void testTernaryIntFalse() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate(
-            "{{ 0 ? 'true' : 'false' }}");
+        "{{ 0 ? 'true' : 'false' }}");
     StringWriter writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("false", writer.toString());
   }
 
   @Test
-  public void testTernaryStringTrue() throws IOException {
+  void testTernaryStringTrue() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate(
-            "{{ 'not empty' ? 'true' : 'false' }}");
+        "{{ 'not empty' ? 'true' : 'false' }}");
     StringWriter writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("true", writer.toString());
   }
 
   @Test
-  public void testTernaryStringFalse() throws IOException {
+  void testTernaryStringFalse() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate(
-            "{{ '' ? 'true' : 'false' }}");
+        "{{ '' ? 'true' : 'false' }}");
     StringWriter writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("false", writer.toString());
   }
 
   @Test
-  public void testTernaryDecimalTrue() throws IOException {
+  void testTernaryDecimalTrue() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate(
-            "{{ 0.000001 ? 'true' : 'false' }}");
+        "{{ 0.000001 ? 'true' : 'false' }}");
     StringWriter writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("true", writer.toString());
   }
 
   @Test
-  public void testTernaryDecimalFalse() throws IOException {
+  void testTernaryDecimalFalse() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate(
-            "{{ 0.00000 ? 'true' : 'false' }}");
+        "{{ 0.00000 ? 'true' : 'false' }}");
     StringWriter writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("false", writer.toString());

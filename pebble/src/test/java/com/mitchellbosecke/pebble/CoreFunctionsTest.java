@@ -9,24 +9,27 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
-public class CoreFunctionsTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class CoreFunctionsTest {
 
   public static final String LINE_SEPARATOR = System.lineSeparator();
 
   @Test
-  public void testBlockFunction() throws PebbleException, IOException {
+  void testBlockFunction() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/function/template.block.peb");
 
@@ -36,7 +39,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testParentFunction() throws PebbleException, IOException {
+  void testParentFunction() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/function/template.child.peb");
 
@@ -52,7 +55,7 @@ public class CoreFunctionsTest {
    * parent() function.
    */
   @Test
-  public void testParentBlockHasAccessToContext() throws PebbleException, IOException {
+  void testParentBlockHasAccessToContext() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble
         .getTemplate("templates/function/template.childWithContext.peb");
@@ -63,7 +66,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testParentThenMacro() throws PebbleException, IOException {
+  void testParentThenMacro() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble
         .getTemplate("templates/function/template.childThenParentThenMacro.peb");
@@ -77,7 +80,7 @@ public class CoreFunctionsTest {
    * Two levels of parent functions would cause a stack overflow error, #61.
    */
   @Test
-  public void testParentFunctionWithTwoLevels() throws PebbleException, IOException {
+  void testParentFunctionWithTwoLevels() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/function/template.subchild.peb");
 
@@ -89,7 +92,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testMinFunction() throws PebbleException, IOException {
+  void testMinFunction() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -105,7 +108,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testMaxFunction() throws PebbleException, IOException {
+  void testMaxFunction() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -121,7 +124,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunction() throws PebbleException, IOException {
+  void testRangeFunction() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -136,7 +139,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionIncrement2() throws PebbleException, IOException {
+  void testRangeFunctionIncrement2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -151,7 +154,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionDecrement2() throws PebbleException, IOException {
+  void testRangeFunctionDecrement2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -165,22 +168,24 @@ public class CoreFunctionsTest {
     assertEquals("1086420", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testRangeFunctionIncrement0() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testRangeFunctionIncrement0() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{% for i in range(0,5,0) %}{{ i }}{% endfor %}";
-    PebbleTemplate template = pebble.getTemplate(source);
+      String source = "{% for i in range(0,5,0) %}{{ i }}{% endfor %}";
+      PebbleTemplate template = pebble.getTemplate(source);
 
-    Map<String, Object> context = new HashMap<>();
+      Map<String, Object> context = new HashMap<>();
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testRangeFunctionChar() throws PebbleException, IOException {
+  void testRangeFunctionChar() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -195,7 +200,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionCharIncrement2() throws PebbleException, IOException {
+  void testRangeFunctionCharIncrement2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -210,7 +215,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionCharDecrement2() throws PebbleException, IOException {
+  void testRangeFunctionCharDecrement2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -224,22 +229,24 @@ public class CoreFunctionsTest {
     assertEquals("fdb", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testRangeFunctionCharIncrement0() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testRangeFunctionCharIncrement0() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{% for i in range('a','e',0) %}{{ i }}{% endfor %}";
-    PebbleTemplate template = pebble.getTemplate(source);
+      String source = "{% for i in range('a','e',0) %}{{ i }}{% endfor %}";
+      PebbleTemplate template = pebble.getTemplate(source);
 
-    Map<String, Object> context = new HashMap<>();
+      Map<String, Object> context = new HashMap<>();
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testRangeFunctionLongVariable() throws PebbleException, IOException {
+  void testRangeFunctionLongVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -255,7 +262,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionDoubleVariable() throws PebbleException, IOException {
+  void testRangeFunctionDoubleVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -271,7 +278,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionIntegerVariable() throws PebbleException, IOException {
+  void testRangeFunctionIntegerVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -287,7 +294,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionIncrementIntegerVariable() throws PebbleException, IOException {
+  void testRangeFunctionIncrementIntegerVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -304,7 +311,7 @@ public class CoreFunctionsTest {
   }
 
   @Test
-  public void testRangeFunctionIncrementDoubleVariable() throws PebbleException, IOException {
+  void testRangeFunctionIncrementDoubleVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 

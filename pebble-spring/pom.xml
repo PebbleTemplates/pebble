@@ -21,29 +21,12 @@
   <description>Pebble Spring Project</description>
   <url>http://pebbletemplates.io</url>
 
-  <properties>
-    <junit.version>4.12</junit.version>
-    <mockito.version>2.3.5</mockito.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>io.pebbletemplates</groupId>
         <artifactId>pebble</artifactId>
         <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${mockito.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

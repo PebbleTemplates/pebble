@@ -9,13 +9,14 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -26,14 +27,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import org.junit.Test;
+import java.util.concurrent.TimeUnit;
 
-public class CoreTagsTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+
+class CoreTagsTest {
 
   public static final String LINE_SEPARATOR = System.lineSeparator();
 
   @Test
-  public void testBlock() throws PebbleException, IOException {
+  void testBlock() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.grandfather.peb");
     Writer writer = new StringWriter();
@@ -44,7 +49,7 @@ public class CoreTagsTest {
    * This ensures that block inheritance works properly even if it skips a generation.
    */
   @Test
-  public void skipGenerationBlock() throws PebbleException, IOException {
+  void skipGenerationBlock() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.skipGenerationBlock1.peb");
     Writer writer = new StringWriter();
@@ -56,7 +61,7 @@ public class CoreTagsTest {
    * The template used to fail if the user wrapped the block name in quotes.
    */
   @Test
-  public void testBlockWithStringLiteralName() throws PebbleException, IOException {
+  void testBlockWithStringLiteralName() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -69,7 +74,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testIf() throws PebbleException, IOException {
+  void testIf() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -88,7 +93,7 @@ public class CoreTagsTest {
    * Issue #34
    */
   @Test
-  public void testIfThenElse() throws PebbleException, IOException {
+  void testIfThenElse() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -105,7 +110,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testIfWithDirectProperty() throws PebbleException, IOException {
+  void testIfWithDirectProperty() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -121,7 +126,7 @@ public class CoreTagsTest {
 
 
   @Test
-  public void testIfWhenInvalidOrNoEndifTag() throws PebbleException {
+  void testIfWhenInvalidOrNoEndifTag() throws PebbleException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     String source = "{% if variable %}smth{ endif %}";
@@ -138,7 +143,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testFlush() throws PebbleException, IOException {
+  void testFlush() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -154,7 +159,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testFor() throws PebbleException, IOException {
+  void testFor() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -173,7 +178,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testForWithIterable() throws PebbleException, IOException {
+  void testForWithIterable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -211,7 +216,7 @@ public class CoreTagsTest {
 
 
   @Test
-  public void testForWithMap() throws PebbleException, IOException {
+  void testForWithMap() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -231,7 +236,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testForSequenceNumber() throws PebbleException, IOException {
+  void testForSequenceNumber() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -244,21 +249,23 @@ public class CoreTagsTest {
     assertEquals("012345", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testForSequenceNumberException() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testForSequenceNumberException() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{% for i in 'a'..5 %}{{i}}{% endfor %}";
-    PebbleTemplate template = pebble.getTemplate(source);
-    Map<String, Object> context = new HashMap<>();
+      String source = "{% for i in 'a'..5 %}{{i}}{% endfor %}";
+      PebbleTemplate template = pebble.getTemplate(source);
+      Map<String, Object> context = new HashMap<>();
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testForWhenInvalidOrNoEndforTag() throws PebbleException {
+  void testForWhenInvalidOrNoEndforTag() throws PebbleException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     String source = "{% for i in 'a'..5 %}{{i}}% endfor %}";
@@ -275,7 +282,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testFilterTag() throws PebbleException, IOException {
+  void testFilterTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -288,7 +295,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testChainedFilterTag() throws PebbleException, IOException {
+  void testChainedFilterTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -304,7 +311,7 @@ public class CoreTagsTest {
    * Issue #15
    */
   @Test
-  public void testForIteratingOverProperty() throws PebbleException, IOException {
+  void testForIteratingOverProperty() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -324,7 +331,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testForWithNullIterable() throws PebbleException, IOException {
+  void testForWithNullIterable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -340,7 +347,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testForWithArray() throws PebbleException, IOException {
+  void testForWithArray() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -361,7 +368,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testForWithArrayOfPrimitives() throws PebbleException, IOException {
+  void testForWithArrayOfPrimitives() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -386,7 +393,7 @@ public class CoreTagsTest {
    * variable name being declared twice.
    */
   @Test
-  public void multipleForLoops() throws PebbleException, IOException {
+  void multipleForLoops() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -406,7 +413,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testForElse() throws PebbleException, IOException {
+  void testForElse() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -423,7 +430,7 @@ public class CoreTagsTest {
 
 
   @Test
-  public void testCache() throws PebbleException, IOException {
+  void testCache() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -445,7 +452,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testDisabledCache() throws PebbleException, IOException {
+  void testDisabledCache() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .cacheActive(false).build();
@@ -468,7 +475,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testCacheWithVariable() throws PebbleException, IOException {
+  void testCacheWithVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -490,20 +497,22 @@ public class CoreTagsTest {
     assertEquals("true", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testCacheWithNoName() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testCacheWithNoName() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{% cache %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
-    PebbleTemplate template = pebble.getTemplate(source);
+      String source = "{% cache %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
+      PebbleTemplate template = pebble.getTemplate(source);
 
-    Map<String, Object> context = new HashMap<>();
-    context.put("foobar", true);
+      Map<String, Object> context = new HashMap<>();
+      context.put("foobar", true);
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-    assertEquals("true", writer.toString());
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+      assertEquals("true", writer.toString());
+    });
   }
 
   public static class SimpleObjectA {
@@ -514,7 +523,7 @@ public class CoreTagsTest {
       return this.value;
     }
 
-    public void setValue(String value) {
+    void setValue(String value) {
       this.value = value;
     }
   }
@@ -533,7 +542,7 @@ public class CoreTagsTest {
       return this.value;
     }
 
-    public void setValue(String value) {
+    void setValue(String value) {
       this.value = value;
     }
   }
@@ -545,7 +554,7 @@ public class CoreTagsTest {
    * Issue #57
    */
   @Test
-  public void testMemberCacheWithNullObject() throws PebbleException, IOException {
+  void testMemberCacheWithNullObject() throws PebbleException, IOException {
     SimpleObjectA a = new SimpleObjectA();
     a.setValue("A");
 
@@ -574,7 +583,7 @@ public class CoreTagsTest {
    * Pull #62
    */
   @Test
-  public void testMemberCacheWithDifferingObjectTypes() throws PebbleException, IOException {
+  void testMemberCacheWithDifferingObjectTypes() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -602,7 +611,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testImportWithinBlock() throws PebbleException, IOException {
+  void testImportWithinBlock() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.importWithinBlock.peb");
 
@@ -614,7 +623,7 @@ public class CoreTagsTest {
 
 
   @Test
-  public void testDynamicInclude() throws PebbleException, IOException {
+  void testDynamicInclude() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.include.dynamic.peb");
 
@@ -631,18 +640,20 @@ public class CoreTagsTest {
     assertEquals("admin footer", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testNonExistingMacroOrFunction() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
-    PebbleTemplate template = pebble.getTemplate("{{ nonExisting('test') }}");
+  @Test
+  void testNonExistingMacroOrFunction() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
+      PebbleTemplate template = pebble.getTemplate("{{ nonExisting('test') }}");
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer);
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+    });
   }
 
   @Test
-  public void testInclude() throws PebbleException, IOException {
+  void testInclude() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.include1.peb");
 
@@ -657,7 +668,7 @@ public class CoreTagsTest {
    * There was an issue when including a template that had it's own inheritance chain.
    */
   @Test
-  public void testIncludeInheritance() throws PebbleException, IOException {
+  void testIncludeInheritance() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.includeInheritance1.peb");
 
@@ -667,7 +678,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testIncludeWithinBlock() throws PebbleException, IOException {
+  void testIncludeWithinBlock() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.includeWithinBlock.peb");
 
@@ -680,7 +691,7 @@ public class CoreTagsTest {
    * Issue #16
    */
   @Test
-  public void testIncludePropagatesContext() throws PebbleException, IOException {
+  void testIncludePropagatesContext() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.includePropagatesContext.peb");
     Writer writer = new StringWriter();
@@ -694,7 +705,7 @@ public class CoreTagsTest {
    * Ensures that when including a template it is safe to have conflicting block names.
    */
   @Test
-  public void testIncludeOverridesBlocks() throws PebbleException, IOException {
+  void testIncludeOverridesBlocks() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.includeOverrideBlock.peb");
 
@@ -708,7 +719,7 @@ public class CoreTagsTest {
    * Ensures that an include with a variable override works even if a null value is passed.
    */
   @Test
-  public void testIncludeOverridesVariable() throws PebbleException, IOException {
+  void testIncludeOverridesVariable() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.includeOverrideVariable1.peb");
 
@@ -718,7 +729,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testSet() throws PebbleException, IOException {
+  void testSet() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -733,7 +744,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testSetInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
+  void testSetInChildTemplateOutsideOfBlock() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.set.child.peb");
 
@@ -743,7 +754,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testReSetInForLoop() throws PebbleException, IOException {
+  void testReSetInForLoop() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -764,7 +775,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testVerbatim() throws PebbleException, IOException {
+  void testVerbatim() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble
@@ -777,8 +788,9 @@ public class CoreTagsTest {
     assertEquals("{{ foo }}{{ bar }}", writer.toString());
   }
 
-  @Test(timeout = 300)
-  public void testParallel() throws PebbleException, IOException {
+  @Test
+  @Timeout(value = 300, unit = TimeUnit.MILLISECONDS)
+  void testParallel() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .executorService(Executors.newCachedThreadPool()).build();
@@ -800,7 +812,7 @@ public class CoreTagsTest {
    * issue where the evaluation context wasn't thread safe.
    */
   @Test
-  public void testParallelTagWhileEvaluationContextIsChanging()
+  void testParallelTagWhileEvaluationContextIsChanging()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
@@ -820,8 +832,9 @@ public class CoreTagsTest {
   /**
    * Nested parallel tags were throwing an error.
    */
-  @Test(timeout = 500)
-  public void testNestedParallel() throws PebbleException, IOException {
+  @Test
+  @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)
+  void testNestedParallel() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .executorService(Executors.newCachedThreadPool()).build();
@@ -842,8 +855,9 @@ public class CoreTagsTest {
     assertEquals("fourth first fourth first", writer.toString());
   }
 
-  @Test(timeout = 300)
-  public void testIncludeWithinParallelTag() throws PebbleException, IOException {
+  @Test
+  @Timeout(value = 300, unit = TimeUnit.MILLISECONDS)
+  void testIncludeWithinParallelTag() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true)
         .executorService(Executors.newCachedThreadPool()).build();
@@ -859,7 +873,7 @@ public class CoreTagsTest {
   }
 
   @Test
-  public void testParallelWithoutExecutorService() throws PebbleException, IOException {
+  void testParallelWithoutExecutorService() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -880,7 +894,7 @@ public class CoreTagsTest {
    * Issue #159
    */
   @Test
-  public void testParallelWithImport() throws PebbleException, IOException {
+  void testParallelWithImport() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .executorService(Executors.newCachedThreadPool()).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.parallelWithImport.peb");
@@ -955,7 +969,7 @@ public class CoreTagsTest {
       return this.users;
     }
 
-    public void setUsers(List<User> users) {
+    void setUsers(List<User> users) {
       this.users = users;
     }
   }
