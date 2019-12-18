@@ -143,6 +143,23 @@ class GetAttributeTest {
   }
 
   @Test
+  void testNonExistingMapAttributeWithStrictVariablesAndEmptyMap() throws PebbleException, IOException {
+    assertThrows(AttributeNotFoundException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(true).build();
+
+      String source = "{{ object.nonExisting }}";
+      PebbleTemplate template = pebble.getTemplate(source);
+
+      Map<String, Object> context = new HashMap<>();
+      context.put("object", new HashMap<>());
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
   void testNullMapValueWithoutStrictVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
