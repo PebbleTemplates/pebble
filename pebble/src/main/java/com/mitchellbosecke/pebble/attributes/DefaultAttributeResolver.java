@@ -1,11 +1,9 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import com.mitchellbosecke.pebble.error.MethodAccessException;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 import com.mitchellbosecke.pebble.utils.TypeUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
@@ -16,6 +14,7 @@ import java.util.Map;
 public class DefaultAttributeResolver implements AttributeResolver {
 
   private final MemberCacheUtils memberCacheUtils = new MemberCacheUtils();
+  private final MethodAccessValidator methodAccessValidator = new MethodAccessValidator();
 
   @Override
   public ResolvedAttribute resolve(Object instance,
@@ -97,15 +96,15 @@ public class DefaultAttributeResolver implements AttributeResolver {
    * Invoke the "Member" that was found via reflection.
    */
   private Object invokeMember(Object object, Member member, Object[] argumentValues,
-      String filename, int lineNumber,
-      boolean allowUnsafeMethods) {
+      String filename, int lineNumber, boolean allowUnsafeMethods) {
     Object result = null;
     try {
       if (member instanceof Method) {
         argumentValues = TypeUtils
             .compatibleCast(argumentValues, ((Method) member).getParameterTypes());
         if (!allowUnsafeMethods) {
-          checkIfAccessIsAllowed(object, (Method) member, filename, lineNumber);
+          methodAccessValidator
+              .checkIfAccessIsAllowed(object, (Method) member, filename, lineNumber);
         }
         result = ((Method) member).invoke(object, argumentValues);
       } else if (member instanceof Field) {
@@ -116,16 +115,5 @@ public class DefaultAttributeResolver implements AttributeResolver {
       throw new RuntimeException(e);
     }
     return result;
-  }
-
-  private void checkIfAccessIsAllowed(Object object, Method member, String filename,
-      int lineNumber) {
-    if (isObjectUnsafe(object)) {
-      throw new MethodAccessException(member, filename, lineNumber);
-    }
-  }
-
-  protected boolean isObjectUnsafe(Object object) {
-    return object instanceof Class || object instanceof Runtime;
   }
 }

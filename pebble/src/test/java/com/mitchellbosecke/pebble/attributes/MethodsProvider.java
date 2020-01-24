@@ -11,20 +11,28 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-class UnsafeMethods {
+class MethodsProvider {
 
-  private static final String UNSAFE_METHODS_PROPERTIES = "/unsafeMethods.properties";
-  private static final Set<Method> UNSAFE_METHODS = createUnsafeMethodsSet();
+  private static final String UNSAFE_METHODS_PROPERTIES = "/security/unsafeMethods.properties";
+  private static final String ALLOWED_METHODS_PROPERTIES = "/security/allowedMethods.properties";
 
-  UnsafeMethods() { }
+  static final Set<Method> UNSAFE_METHODS = createUnsafeMethodsSet();
+  static final Set<Method> ALLOWED_METHODS = createAllowedMethodsSet();
 
-  boolean isUnsafeMethod(Method method) {
-    return UNSAFE_METHODS.contains(method);
+  MethodsProvider() {
   }
 
-  private static final Set<Method> createUnsafeMethodsSet() {
+  private static Set<Method> createAllowedMethodsSet() {
+    return createMethodsSet(ALLOWED_METHODS_PROPERTIES);
+  }
+
+  private static Set<Method> createUnsafeMethodsSet() {
+    return createMethodsSet(UNSAFE_METHODS_PROPERTIES);
+  }
+
+  private static Set<Method> createMethodsSet(String filename) {
     try {
-      Properties props = loadProperties(UNSAFE_METHODS_PROPERTIES);
+      Properties props = loadProperties(filename);
       Set<Method> set = new HashSet<>(props.size() * 4 / 3, 1f);
       Map<String, Class> primClasses = createPrimitiveClassesMap();
       for (Object key : props.keySet()) {
@@ -32,7 +40,8 @@ class UnsafeMethods {
       }
       return set;
     } catch (Exception e) {
-      throw new RuntimeException("Could not load unsafe method set", e);
+      throw new RuntimeException(String.format("Could not load method set from file %s", filename),
+          e);
     }
   }
 
@@ -72,14 +81,8 @@ class UnsafeMethods {
 
   private static Properties loadProperties(String resource) throws IOException {
     Properties props = new Properties();
-    InputStream is = null;
-    try {
-      is = UnsafeMethods.class.getResourceAsStream(resource);
+    try (InputStream is = MethodsProvider.class.getResourceAsStream(resource)) {
       props.load(is);
-    } finally {
-      if (is != null) {
-        is.close();
-      }
     }
     return props;
   }

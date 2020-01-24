@@ -1,9 +1,7 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.EvaluationOptions;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -16,7 +14,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 class MemberCacheUtils {
-  private final UnsafeMethods unsafeMethods = new UnsafeMethods();
   private final ConcurrentHashMap<MemberCacheKey, Member> memberCache = new ConcurrentHashMap<>(100,
       0.9f, 1);
 
@@ -146,7 +143,6 @@ class MemberCacheUtils {
       }
     }
     if(bestMatch != null) {
-      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, bestMatch);
       return bestMatch;
     }
 
@@ -163,19 +159,12 @@ class MemberCacheUtils {
         }
 
         if (compatibleTypes) {
-          this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, candidate);
           return candidate;
         }
       }
     }
 
     return null;
-  }
-
-  private void verifyUnsafeMethod(String filename, int lineNumber, EvaluationOptions evaluationOptions, Method method) {
-    if (!evaluationOptions.isAllowUnsafeMethods() && this.unsafeMethods.isUnsafeMethod(method)) {
-      throw new ClassAccessException(lineNumber, filename);
-    }
   }
 
   /**
