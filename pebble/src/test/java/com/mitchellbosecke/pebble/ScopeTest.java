@@ -23,6 +23,6 @@ class ScopeTest {
         expected.add("key1");
         expected.add("key2");
 
-        assertEquals(expected, scope.GetKeys());
+        assertEquals(expected, scope.getKeys());
     }
 }
