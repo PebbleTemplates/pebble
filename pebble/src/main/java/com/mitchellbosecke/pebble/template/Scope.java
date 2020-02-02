@@ -103,7 +103,7 @@ public class Scope {
    *
    * @return A set of keys
    */
-  public Set<String> GetKeys(){
+  public Set<String> getKeys(){
     return backingMap.keySet();
   }
 }
