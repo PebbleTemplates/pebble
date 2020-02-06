@@ -9,6 +9,7 @@
 package com.mitchellbosecke.pebble.template;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Map;
 
 /**
@@ -95,5 +96,14 @@ public class Scope {
    */
   public boolean isLocal() {
     return this.local;
+  }
+
+  /**
+   * Returns keys of all the variables at this scope.
+   *
+   * @return A set of keys
+   */
+  public Set<String> getKeys(){
+    return backingMap.keySet();
   }
 }
