@@ -9,6 +9,8 @@ public class ParserOptions {
 
   private boolean literalDecimalTreatedAsInteger;
 
+  private boolean literalNumbersAsBigDecimals;
+
   public boolean isLiteralDecimalTreatedAsInteger() {
     return literalDecimalTreatedAsInteger;
   }
@@ -17,4 +19,15 @@ public class ParserOptions {
     this.literalDecimalTreatedAsInteger = literalDecimalTreatedAsInteger;
     return this;
   }
+
+  public boolean isLiteralNumbersAsBigDecimals() {
+    return literalNumbersAsBigDecimals;
+  }
+
+  public ParserOptions setLiteralNumbersAsBigDecimals(boolean literalNumbersAsBigDecimals) {
+    this.literalNumbersAsBigDecimals = literalNumbersAsBigDecimals;
+    return this;
+  }
+
+
 }
