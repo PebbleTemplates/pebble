@@ -291,8 +291,6 @@ public class PebbleEngine {
 
     private boolean allowOverrideCoreOperators = false;
 
-    private boolean failOnUnknownFunctions = false;
-
     private boolean literalNumbersAsBigDecimals = false;
 
     /**
