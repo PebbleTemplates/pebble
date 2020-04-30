@@ -86,4 +86,5 @@ All the settings are set during the construction of the `PebbleEngine` object.
 | `strictVariables` | If set to true, Pebble will throw an exception if you try to access a variable or attribute that does not exist (or an attribute of a null variable). If set to false, your template will treat non-existing variables/attributes as null without ever skipping a beat. | `false` |
 | `allowUnsafeMethods` | If set to false, Pebble will throw an exception if you try to access unsafe methods. Unsafe methods are defined [here](https://github.com/PebbleTemplates/pebble/tree/master/pebble/src/main/resources/unsafeMethods.properties) | `true` in 2.x, 'false' in v3.x |
 | `literalDecimalTreatedAsInteger` | option for toggling to enable/disable literal decimal treated as integer | `false` |
+| `literalNumbersAsBigDecimals` | option for toggling to enable/disable literal numbers treated as BigDecimals | `false` |
 | `greedyMatchMethod` | option for toggling to enable/disable greedy matching mode for finding java method. Reduce the limit of the parameter type, try to find other method which has compatible parameter types. | `false` |
