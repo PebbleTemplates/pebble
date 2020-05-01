@@ -569,6 +569,35 @@ class GetAttributeTest {
   }
 
   @Test
+  void testBeanMethodWithNumberLiteralsAsBigDecimals() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(true).literalNumbersAsBigDecimals(true)
+            .build();
+
+    PebbleTemplate template = pebble.getTemplate("hello {{ 1234567890123456789012345678901234567890 }}");
+    Map<String, Object> context = new HashMap<>();
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello 1234567890123456789012345678901234567890", writer.toString());
+  }
+
+  @Test
+  void testBeanMethodWithoutNumberLiteralsAsBigDecimals() throws PebbleException, IOException {
+    assertThrows(NumberFormatException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+              .strictVariables(true).literalNumbersAsBigDecimals(false)
+              .build();
+
+      PebbleTemplate template = pebble.getTemplate("hello {{ 1234567890123456789012345678901234567890 }}");
+      Map<String, Object> context = new HashMap<>();
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
   void testBeanMethodWithOverloadedArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();

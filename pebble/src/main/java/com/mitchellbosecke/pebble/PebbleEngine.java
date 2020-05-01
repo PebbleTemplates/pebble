@@ -164,7 +164,7 @@ public class PebbleEngine {
       
       Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
           this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers(),
-          this.parserOptions);
+              this.parserOptions);
       RootNode root = parser.parse(tokenStream);
 
       PebbleTemplateImpl instance = new PebbleTemplateImpl(this, root, templateName);
@@ -290,6 +290,8 @@ public class PebbleEngine {
     private boolean greedyMatchMethod = false;
 
     private boolean allowOverrideCoreOperators = false;
+
+    private boolean literalNumbersAsBigDecimals = false;
 
     /**
      * Creates the builder.
@@ -500,6 +502,18 @@ public class PebbleEngine {
     }
 
     /**
+     * Enable/disable treat literal numbers as BigDecimals. Default is disabled, treated as Long/Double.
+     *
+     * @param literalNumbersAsBigDecimals toggle to enable/disable literal numbers treated as
+     * BigDecimals
+     * @return This builder object
+     */
+    public Builder literalNumbersAsBigDecimals(boolean literalNumbersAsBigDecimals) {
+      this.literalNumbersAsBigDecimals = literalNumbersAsBigDecimals;
+      return this;
+    }
+
+    /**
      * Enable/disable greedy matching mode for finding java method. Default is disabled. If enabled,
      * when can not find perfect method (method name, parameter length and parameter type are all
      * satisfied), reduce the limit of the parameter type, try to find other method which has
@@ -568,6 +582,7 @@ public class PebbleEngine {
 
       ParserOptions parserOptions = new ParserOptions();
       parserOptions.setLiteralDecimalTreatedAsInteger(this.literalDecimalTreatedAsInteger);
+      parserOptions.setLiteralNumbersAsBigDecimals(this.literalNumbersAsBigDecimals);
 
       EvaluationOptions evaluationOptions = new EvaluationOptions();
       evaluationOptions.setAllowUnsafeMethods(this.allowUnsafeMethods);
