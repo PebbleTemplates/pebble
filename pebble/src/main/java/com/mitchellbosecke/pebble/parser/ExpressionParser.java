@@ -22,7 +22,6 @@ import com.mitchellbosecke.pebble.node.expression.BlockFunctionExpression;
 import com.mitchellbosecke.pebble.node.expression.ConcatenateExpression;
 import com.mitchellbosecke.pebble.node.expression.ContextVariableExpression;
 import com.mitchellbosecke.pebble.node.expression.Expression;
-import com.mitchellbosecke.pebble.node.expression.FilterExpression;
 import com.mitchellbosecke.pebble.node.expression.FilterInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.FunctionOrMacroInvocationExpression;
 import com.mitchellbosecke.pebble.node.expression.GetAttributeExpression;
@@ -34,13 +33,12 @@ import com.mitchellbosecke.pebble.node.expression.LiteralLongExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralNullExpression;
 import com.mitchellbosecke.pebble.node.expression.LiteralStringExpression;
 import com.mitchellbosecke.pebble.node.expression.MapExpression;
-import com.mitchellbosecke.pebble.node.expression.NegativeTestExpression;
 import com.mitchellbosecke.pebble.node.expression.ParentFunctionExpression;
-import com.mitchellbosecke.pebble.node.expression.PositiveTestExpression;
 import com.mitchellbosecke.pebble.node.expression.TernaryExpression;
 import com.mitchellbosecke.pebble.node.expression.UnaryExpression;
 import com.mitchellbosecke.pebble.operator.Associativity;
 import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.BinaryOperatorType;
 import com.mitchellbosecke.pebble.operator.UnaryOperator;
 
 import java.math.BigDecimal;
@@ -180,13 +178,12 @@ public class ExpressionParser {
 
       // the right hand expression of the FILTER operator is handled in a
       // unique way
-      if (FilterExpression.class.equals(operator.getNodeClass())) {
+      if (operator.getType() == BinaryOperatorType.FILTER) {
         expressionRight = this.parseFilterInvocationExpression();
       }
       // the right hand expression of TEST operators is handled in a
       // unique way
-      else if (PositiveTestExpression.class.equals(operator.getNodeClass())
-          || NegativeTestExpression.class.equals(operator.getNodeClass())) {
+      else if (operator.getType() == BinaryOperatorType.TEST) {
         expressionRight = this.parseTestInvocationExpression();
       } else {
         /*
@@ -204,16 +201,16 @@ public class ExpressionParser {
        * expression we are creating.
        */
       BinaryExpression<?> finalExpression;
-      Class<? extends BinaryExpression<?>> operatorNodeClass = operator.getNodeClass();
+
       try {
-        finalExpression = operatorNodeClass.newInstance();
-        finalExpression.setLineNumber(this.stream.current().getLineNumber());
-      } catch (InstantiationException | IllegalAccessException e) {
+        finalExpression = operator.getInstance();
+      } catch (RuntimeException e) {
         throw new ParserException(e,
-            "Error instantiating operator node [" + operatorNodeClass.getName() + "]",
+            "Error instantiating operator node",
             token.getLineNumber(), this.stream.getFilename());
       }
 
+      finalExpression.setLineNumber(this.stream.current().getLineNumber());
       finalExpression.setLeft(expression);
       finalExpression.setRight(expressionRight);
 
@@ -578,7 +575,7 @@ public class ExpressionParser {
           throw new ParserException(null,
               "Positional arguments must be declared before any named arguments.",
               this.stream.current()
-              .getLineNumber(),
+                  .getLineNumber(),
               this.stream.getFilename());
         }
         positionalArgs.add(new PositionalArgumentNode(argumentValue));

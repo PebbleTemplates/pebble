@@ -16,7 +16,9 @@ public interface BinaryOperator {
 
   String getSymbol();
 
-  Class<? extends BinaryExpression<?>> getNodeClass();
+  BinaryExpression<?> getInstance();
+
+  BinaryOperatorType getType();
 
   Associativity getAssociativity();
 
