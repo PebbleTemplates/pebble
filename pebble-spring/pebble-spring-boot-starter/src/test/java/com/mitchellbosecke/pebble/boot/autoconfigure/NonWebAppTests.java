@@ -1,17 +1,16 @@
 package com.mitchellbosecke.pebble.boot.autoconfigure;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.boot.NonWebApplication;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.boot.Application;
+import java.io.StringWriter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.StringWriter;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest(classes = NonWebApplication.class)
+@SpringBootTest(classes = Application.class,
+    properties = "spring.main.web-application-type=none")
 class NonWebAppTests {
 
   @Autowired

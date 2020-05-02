@@ -1,11 +1,14 @@
 package com.mitchellbosecke.pebble.boot.autoconfigure;
 
+import static java.util.Locale.CHINESE;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.spring.extension.SpringExtension;
 import com.mitchellbosecke.pebble.spring.reactive.PebbleReactiveViewResolver;
 import com.mitchellbosecke.pebble.spring.servlet.PebbleViewResolver;
-
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
@@ -13,11 +16,6 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebAp
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import java.util.Locale;
-
-import static java.util.Locale.CHINESE;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class PebbleAutoConfigurationTest {
 
@@ -37,9 +35,9 @@ class PebbleAutoConfigurationTest {
 
   @Test
   void registerCompilerForServletApp() {
-    this.loadWithServlet(CustomCompilerConfiguration.class);
+    this.loadWithServlet(CustomPebbleEngineCompilerConfiguration.class);
     assertThat(this.webContext.getBeansOfType(Loader.class)).hasSize(1);
-    assertThat(this.webContext.getBeansOfType(SpringExtension.class)).isEmpty();
+    assertThat(this.webContext.getBeansOfType(SpringExtension.class)).hasSize(1);
     assertThat(this.webContext.getBeansOfType(PebbleEngine.class)).hasSize(1);
     assertThat(this.webContext.getBean(PebbleEngine.class).getDefaultLocale()).isEqualTo(DEFAULT_LOCALE);
     assertThat(this.webContext.getBeansOfType(PebbleViewResolver.class)).hasSize(1);
@@ -59,9 +57,9 @@ class PebbleAutoConfigurationTest {
 
   @Test
   void registerCompilerForReactiveApp() {
-    this.loadWithReactive(CustomCompilerConfiguration.class);
+    this.loadWithReactive(CustomPebbleEngineCompilerConfiguration.class);
     assertThat(this.reactiveWebContext.getBeansOfType(Loader.class)).hasSize(1);
-    assertThat(this.reactiveWebContext.getBeansOfType(SpringExtension.class)).isEmpty();
+    assertThat(this.reactiveWebContext.getBeansOfType(SpringExtension.class)).hasSize(1);
     assertThat(this.reactiveWebContext.getBeansOfType(PebbleEngine.class)).hasSize(1);
     assertThat(this.reactiveWebContext.getBean(PebbleEngine.class).getDefaultLocale()).isEqualTo(DEFAULT_LOCALE);
     assertThat(this.reactiveWebContext.getBeansOfType(PebbleReactiveViewResolver.class)).hasSize(1);
@@ -95,13 +93,17 @@ class PebbleAutoConfigurationTest {
   }
 
   @Configuration(proxyBeanMethods = false)
-  protected static class CustomCompilerConfiguration {
+  protected static class CustomPebbleEngineCompilerConfiguration {
 
     @Bean
     public PebbleEngine pebbleEngine() {
       return new PebbleEngine.Builder().defaultLocale(DEFAULT_LOCALE).build();
     }
 
+    @Bean
+    public SpringExtension customSpringExtension() {
+      return new SpringExtension();
+    }
   }
 
 }
