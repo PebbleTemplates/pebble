@@ -82,8 +82,7 @@ public class SliceFilter implements Filter {
     if (argTo != null) {
       to = ((Number) argTo).intValue();
       if (to > length) {
-        throw new PebbleException(null, "toIndex must be smaller than input size: " + length,
-            lineNumber, self.getName());
+        to = length;
       } else if (from >= to) {
         throw new PebbleException(null, "toIndex must be greater than fromIndex", lineNumber,
             self.getName());

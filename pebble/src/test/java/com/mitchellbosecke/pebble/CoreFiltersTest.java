@@ -8,15 +8,17 @@
  */
 package com.mitchellbosecke.pebble;
 
+import static java.lang.Boolean.TRUE;
+import static java.util.Collections.emptyList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -36,11 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import static java.lang.Boolean.TRUE;
-import static java.util.Collections.emptyList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 class CoreFiltersTest {
 
@@ -1013,19 +1011,18 @@ class CoreFiltersTest {
   }
 
   @Test
-  void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
-    assertThrows(PebbleException.class, () -> {
-      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-          .strictVariables(false).build();
+  void testSliceWithToIndexGreaterThanCollectionSize() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
 
-      PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,1000) }}");
+    PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,1000) }}");
 
-      Map<String, Object> context = new HashMap<>();
-      context.put("name", "Alex");
+    Map<String, Object> context = new HashMap<>();
+    context.put("name", "Alex");
 
-      Writer writer = new StringWriter();
-      template.evaluate(writer, context);
-    });
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("Alex", writer.toString());
   }
 
   @Test
