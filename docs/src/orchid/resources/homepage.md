@@ -88,4 +88,5 @@ The output should result in the following:
 ```
 
 For more information on installation and configuration, see {{ anchor('the installation guide', 'Installation and Configuration') }}.<br/>
-For more information on basic usage, see {{ anchor('the basic usage guide', 'Basic Usage') }}.
+For more information on basic usage, see {{ anchor('the basic usage guide', 'Basic Usage') }}.<br/>
+For Spring Boot integration, see {{ anchor('the Spring Boot integration guide', 'Spring Boot Integration') }}.
