@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -101,8 +102,8 @@ class PebbleAutoConfigurationTest {
     }
 
     @Bean
-    public SpringExtension customSpringExtension() {
-      return new SpringExtension();
+    public SpringExtension customSpringExtension(MessageSource messageSource) {
+      return new SpringExtension(messageSource);
     }
   }
 
