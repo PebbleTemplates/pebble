@@ -24,13 +24,12 @@ class MemberCacheUtils {
   Member cacheMember(Object instance,
       String attributeName,
       Class<?>[] argumentTypes,
-      EvaluationContextImpl context,
-      String filename,
-      int lineNumber) {
-    Member member = this.reflect(instance, attributeName, argumentTypes, filename, lineNumber,
+      EvaluationContextImpl context) {
+    Member member = this.reflect(instance, attributeName, argumentTypes,
         context.getEvaluationOptions());
     if (member != null) {
-      this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes), member);
+      this.memberCache
+          .put(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes), member);
     }
     return member;
   }
@@ -39,14 +38,14 @@ class MemberCacheUtils {
    * Performs the actual reflection to obtain a "Member" from a class.
    */
   private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes,
-      String filename, int lineNumber, EvaluationOptions evaluationOptions) {
+      EvaluationOptions evaluationOptions) {
 
     Class<?> clazz = object.getClass();
 
     // capitalize first letter of attribute for the following attempts
     String attributeCapitalized =
         Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
-    
+
     // search well known super classes first to avoid illegal reflective access
     List<Class<?>> agenda = Arrays.asList(
         List.class,
@@ -64,27 +63,23 @@ class MemberCacheUtils {
       
       // check get method
       Member result = this
-          .findMethod(type, "get" + attributeCapitalized, parameterTypes, filename, lineNumber,
-              evaluationOptions);
+          .findMethod(type, "get" + attributeCapitalized, parameterTypes, evaluationOptions);
 
       // check is method
       if (result == null) {
         result = this
-            .findMethod(type, "is" + attributeCapitalized, parameterTypes, filename, lineNumber,
-                evaluationOptions);
+            .findMethod(type, "is" + attributeCapitalized, parameterTypes, evaluationOptions);
       }
 
       // check has method
       if (result == null) {
         result = this
-            .findMethod(type, "has" + attributeCapitalized, parameterTypes, filename, lineNumber,
-                evaluationOptions);
+            .findMethod(type, "has" + attributeCapitalized, parameterTypes, evaluationOptions);
       }
 
       // check if attribute is a public method
       if (result == null) {
-        result = this.findMethod(type, attributeName, parameterTypes, filename, lineNumber,
-            evaluationOptions);
+        result = this.findMethod(type, attributeName, parameterTypes, evaluationOptions);
       }
 
       // public field
@@ -107,8 +102,8 @@ class MemberCacheUtils {
    * Finds an appropriate method by comparing if parameter types are compatible. This is more
    * relaxed than class.getMethod.
    */
-  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, String filename,
-      int lineNumber, EvaluationOptions evaluationOptions) {
+  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes,
+      EvaluationOptions evaluationOptions) {
     List<Method> candidates = this.getCandidates(clazz, name, requiredTypes);
 
     // perfect match

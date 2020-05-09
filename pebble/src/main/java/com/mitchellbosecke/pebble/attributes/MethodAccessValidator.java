@@ -6,32 +6,38 @@ import java.lang.reflect.Method;
 
 public class MethodAccessValidator {
 
-  private static final String[] FORBIDDEN_OBJECT_CLASS_METHODS = {"getClass", "wait", "notify",
+  private static final String[] FORBIDDEN_OBJECT_CLASS_METHODS = {"getClass",
+      "wait",
+      "notify",
       "notifyAll"};
 
   void checkIfAccessIsAllowed(Object object, Method member, String filename, int lineNumber) {
-    if (isAccessUnsafe(object, member)) {
+    if (this.isAccessUnsafe(object, member)) {
       throw new ClassAccessException(member, filename, lineNumber);
     }
   }
 
-  protected boolean isAccessUnsafe(Object object, Method member) {
-    return object instanceof Class || object instanceof Runtime || object instanceof Thread
-        || object instanceof ThreadGroup || object instanceof System
-        || object instanceof AccessibleObject || isUnsafeMethodOfObjectClass(member);
+  private boolean isAccessUnsafe(Object object, Method member) {
+    return object instanceof Class
+        || object instanceof Runtime
+        || object instanceof Thread
+        || object instanceof ThreadGroup
+        || object instanceof System
+        || object instanceof AccessibleObject
+        || this.isUnsafeMethodOfObjectClass(member);
   }
 
   private boolean isUnsafeMethodOfObjectClass(Method member) {
-    return isAnyOfMethods(member, "java.lang.Object", FORBIDDEN_OBJECT_CLASS_METHODS);
+    return this.isAnyOfMethods(member, "java.lang.Object", FORBIDDEN_OBJECT_CLASS_METHODS);
   }
 
   private boolean isAnyOfMethods(Method member, String declaringClass, String... methods) {
-    if (!hasDeclaringClass(member, declaringClass)) {
+    if (!this.hasDeclaringClass(member, declaringClass)) {
       return false;
     }
 
     for (String method : methods) {
-      if (isMethodWithName(member, method)) {
+      if (this.isMethodWithName(member, method)) {
         return true;
       }
     }

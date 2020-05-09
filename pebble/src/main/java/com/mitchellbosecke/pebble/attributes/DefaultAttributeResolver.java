@@ -60,8 +60,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
                   lineNumber);
         }
 
-        member = this.memberCacheUtils
-            .cacheMember(instance, attributeName, argumentTypes, context, filename, lineNumber);
+        member = this.memberCacheUtils.cacheMember(instance, attributeName, argumentTypes, context);
       }
 
       if (member != null) {
@@ -103,14 +102,13 @@ public class DefaultAttributeResolver implements AttributeResolver {
         argumentValues = TypeUtils
             .compatibleCast(argumentValues, ((Method) member).getParameterTypes());
         if (!allowUnsafeMethods) {
-          methodAccessValidator
+          this.methodAccessValidator
               .checkIfAccessIsAllowed(object, (Method) member, filename, lineNumber);
         }
         result = ((Method) member).invoke(object, argumentValues);
       } else if (member instanceof Field) {
         result = ((Field) member).get(object);
       }
-
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException(e);
     }
