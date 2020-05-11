@@ -28,24 +28,16 @@ public class MethodAccessValidator {
   }
 
   private boolean isUnsafeMethodOfObjectClass(Method member) {
-    return this.isAnyOfMethods(member, "java.lang.Object", FORBIDDEN_OBJECT_CLASS_METHODS);
+    return this.isAnyOfMethods(member, FORBIDDEN_OBJECT_CLASS_METHODS);
   }
 
-  private boolean isAnyOfMethods(Method member, String declaringClass, String... methods) {
-    if (!this.hasDeclaringClass(member, declaringClass)) {
-      return false;
-    }
-
+  private boolean isAnyOfMethods(Method member, String... methods) {
     for (String method : methods) {
       if (this.isMethodWithName(member, method)) {
         return true;
       }
     }
     return false;
-  }
-
-  private boolean hasDeclaringClass(Method member, String declaringClass) {
-    return member.getDeclaringClass().getName().equals(declaringClass);
   }
 
   private boolean isMethodWithName(Method member, String method) {
