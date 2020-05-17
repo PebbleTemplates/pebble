@@ -8,18 +8,17 @@ package com.mitchellbosecke.pebble.spring.servlet;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.Loader;
-
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 public class PebbleViewResolver extends AbstractTemplateViewResolver implements InitializingBean {
 
   private String characterEncoding = "UTF-8";
-  private PebbleEngine pebbleEngine;
+  private final PebbleEngine pebbleEngine;
 
-  public PebbleViewResolver() {
+  public PebbleViewResolver(PebbleEngine pebbleEngine) {
+    this.pebbleEngine = pebbleEngine;
     this.setViewClass(this.requiredViewClass());
   }
 
@@ -32,11 +31,6 @@ public class PebbleViewResolver extends AbstractTemplateViewResolver implements 
 
   public void setCharacterEncoding(String characterEncoding) {
     this.characterEncoding = characterEncoding;
-  }
-
-  @Required
-  public void setPebbleEngine(PebbleEngine pebbleEngine) {
-    this.pebbleEngine = pebbleEngine;
   }
 
   @Override

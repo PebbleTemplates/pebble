@@ -61,10 +61,9 @@ public class MVCConfig {
 
   @Bean
   public ViewResolver viewResolver(PebbleEngine pebbleEngine) {
-    PebbleViewResolver viewResolver = new PebbleViewResolver();
+    PebbleViewResolver viewResolver = new PebbleViewResolver(pebbleEngine);
     viewResolver.setPrefix("com/mitchellbosecke/pebble/spring/template/");
     viewResolver.setSuffix(".html");
-    viewResolver.setPebbleEngine(pebbleEngine);
     viewResolver.setContentType("text/html");
     return viewResolver;
   }

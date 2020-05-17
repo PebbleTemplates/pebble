@@ -74,5 +74,16 @@ class ReactiveAppTest {
 
     assertThat(result).isEqualTo("Hola Boot! Tested!");
   }
+
+  @Test
+  void testBeansAccess() throws Exception {
+    String result = this.client.get().uri("/beans.action").exchange()
+        .expectStatus().isOk()
+        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+        .expectBody(String.class)
+        .returnResult().getResponseBody();
+
+    assertThat(result).isEqualTo("beans:bar");
+  }
 }
 

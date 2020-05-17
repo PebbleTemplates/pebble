@@ -26,4 +26,9 @@ public class Controllers {
     return "extensions";
   }
 
+  @RequestMapping("/beans.action")
+  public String beans() {
+    return "beans";
+  }
+
 }

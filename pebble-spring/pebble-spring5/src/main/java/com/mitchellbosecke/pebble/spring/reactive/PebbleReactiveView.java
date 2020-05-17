@@ -1,9 +1,17 @@
 package com.mitchellbosecke.pebble.spring.reactive;
 
+import static java.util.Optional.ofNullable;
+
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.spring.context.Beans;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Locale;
+import java.util.Map;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -12,19 +20,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.server.ServerWebExchange;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.Locale;
-import java.util.Map;
-
-import static java.util.Optional.ofNullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class PebbleReactiveView extends AbstractUrlBasedView {
+
+  private static final String BEANS_VARIABLE_NAME = "beans";
 
   private PebbleEngine pebbleEngine;
   private String templateName;
@@ -47,12 +48,17 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
     try {
       Charset charset = this.getCharset(contentType);
       Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
+      this.addVariablesToModel(renderAttributes);
       this.evaluateTemplate(renderAttributes, locale, writer);
     } catch (Exception ex) {
       DataBufferUtils.release(dataBuffer);
       return Mono.error(ex);
     }
     return exchange.getResponse().writeWith(Flux.just(dataBuffer));
+  }
+
+  private void addVariablesToModel(Map<String, Object> model) {
+    model.put(BEANS_VARIABLE_NAME, new Beans(this.getApplicationContext()));
   }
 
   private Charset getCharset(@Nullable MediaType mediaType) {
