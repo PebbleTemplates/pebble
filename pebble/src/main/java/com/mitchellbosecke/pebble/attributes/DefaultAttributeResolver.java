@@ -1,9 +1,7 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
-import com.mitchellbosecke.pebble.template.EvaluationOptions;
 import com.mitchellbosecke.pebble.template.MacroAttributeProvider;
 import com.mitchellbosecke.pebble.utils.TypeUtils;
 import java.lang.reflect.Field;
@@ -61,12 +59,12 @@ public class DefaultAttributeResolver implements AttributeResolver {
                   lineNumber);
         }
 
-        member = this.memberCacheUtils.cacheMember(instance, attributeName, argumentTypes, context);
+        member = this.memberCacheUtils
+            .cacheMember(instance, attributeName, argumentTypes, context, filename, lineNumber);
       }
 
       if (member != null) {
-        return new ResolvedAttribute(this.invokeMember(instance, member, argumentValues,
-            filename, lineNumber, context.getEvaluationOptions()));
+        return new ResolvedAttribute(this.invokeMember(instance, member, argumentValues));
       }
     }
     return null;
@@ -93,17 +91,11 @@ public class DefaultAttributeResolver implements AttributeResolver {
   /**
    * Invoke the "Member" that was found via reflection.
    */
-  private Object invokeMember(Object object, Member member, Object[] argumentValues,
-      String filename, int lineNumber, EvaluationOptions evaluationOptions) {
+  private Object invokeMember(Object object, Member member, Object[] argumentValues) {
     Object result = null;
     try {
       if (member instanceof Method) {
         Method method = (Method) member;
-        boolean methodAccessAllowed = evaluationOptions.getMethodAccessValidator()
-            .isMethodAccessAllowed(object, method);
-        if (!methodAccessAllowed) {
-          throw new ClassAccessException(method, filename, lineNumber);
-        }
         argumentValues = TypeUtils.compatibleCast(argumentValues, method.getParameterTypes());
         result = method.invoke(object, argumentValues);
       } else if (member instanceof Field) {

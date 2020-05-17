@@ -1,5 +1,6 @@
 package com.mitchellbosecke.pebble.attributes;
 
+import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.EvaluationOptions;
 import java.lang.reflect.AccessibleObject;
@@ -24,9 +25,11 @@ class MemberCacheUtils {
   Member cacheMember(Object instance,
       String attributeName,
       Class<?>[] argumentTypes,
-      EvaluationContextImpl context) {
+      EvaluationContextImpl context,
+      String filename,
+      int lineNumber) {
     Member member = this.reflect(instance, attributeName, argumentTypes,
-        context.getEvaluationOptions());
+        filename, lineNumber, context.getEvaluationOptions());
     if (member != null) {
       this.memberCache
           .put(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes), member);
@@ -38,7 +41,7 @@ class MemberCacheUtils {
    * Performs the actual reflection to obtain a "Member" from a class.
    */
   private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes,
-      EvaluationOptions evaluationOptions) {
+      String filename, int lineNumber, EvaluationOptions evaluationOptions) {
 
     Class<?> clazz = object.getClass();
 
@@ -63,23 +66,28 @@ class MemberCacheUtils {
       
       // check get method
       Member result = this
-          .findMethod(type, "get" + attributeCapitalized, parameterTypes, evaluationOptions);
+          .findMethod(object, type, "get" + attributeCapitalized, parameterTypes, filename,
+              lineNumber, evaluationOptions);
 
       // check is method
       if (result == null) {
         result = this
-            .findMethod(type, "is" + attributeCapitalized, parameterTypes, evaluationOptions);
+            .findMethod(object, type, "is" + attributeCapitalized, parameterTypes, filename,
+                lineNumber, evaluationOptions);
       }
 
       // check has method
       if (result == null) {
-        result = this.findMethod(type, "has" + attributeCapitalized, parameterTypes,
-            evaluationOptions);
+        result = this
+            .findMethod(object, type, "has" + attributeCapitalized, parameterTypes, filename,
+                lineNumber,
+                evaluationOptions);
       }
 
       // check if attribute is a public method
       if (result == null) {
-        result = this.findMethod(type, attributeName, parameterTypes, evaluationOptions);
+        result = this.findMethod(object, type, attributeName, parameterTypes, filename, lineNumber,
+            evaluationOptions);
       }
 
       // public field
@@ -102,8 +110,8 @@ class MemberCacheUtils {
    * Finds an appropriate method by comparing if parameter types are compatible. This is more
    * relaxed than class.getMethod.
    */
-  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes,
-      EvaluationOptions evaluationOptions) {
+  private Method findMethod(Object object, Class<?> clazz, String name, Class<?>[] requiredTypes,
+      String filename, int lineNumber, EvaluationOptions evaluationOptions) {
     List<Method> candidates = this.getCandidates(clazz, name, requiredTypes);
 
     // perfect match
@@ -138,6 +146,7 @@ class MemberCacheUtils {
       }
     }
     if(bestMatch != null) {
+      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, bestMatch);
       return bestMatch;
     }
 
@@ -154,6 +163,7 @@ class MemberCacheUtils {
         }
 
         if (compatibleTypes) {
+          this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, candidate);
           return candidate;
         }
       }
@@ -161,6 +171,16 @@ class MemberCacheUtils {
 
     return null;
   }
+
+  private void verifyUnsafeMethod(String filename, int lineNumber,
+      EvaluationOptions evaluationOptions, Object object, Method method) {
+    boolean methodAccessAllowed = evaluationOptions.getMethodAccessValidator()
+        .isMethodAccessAllowed(object, method);
+    if (!methodAccessAllowed) {
+      throw new ClassAccessException(method, filename, lineNumber);
+    }
+  }
+
 
   /**
    * Performs a widening conversion (primitive to boxed type)
