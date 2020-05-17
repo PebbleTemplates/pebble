@@ -8,30 +8,28 @@ import com.mitchellbosecke.pebble.attributes.methodaccess.MethodAccessValidator;
  * @author yanxiyue
  */
 public class EvaluationOptions {
+
   /**
    * toggle to enable/disable greedy matching mode for finding java method
    */
-  private boolean greedyMatchMethod;
+  private final boolean greedyMatchMethod;
 
   /**
    * Validator that can be used to validate object/method access
    */
-  private MethodAccessValidator methodAccessValidator;
+  private final MethodAccessValidator methodAccessValidator;
+
+  public EvaluationOptions(boolean greedyMatchMethod,
+      MethodAccessValidator methodAccessValidator) {
+    this.greedyMatchMethod = greedyMatchMethod;
+    this.methodAccessValidator = methodAccessValidator;
+  }
 
   public boolean isGreedyMatchMethod() {
     return this.greedyMatchMethod;
   }
 
-  public void setGreedyMatchMethod(boolean greedyMatchMethod) {
-    this.greedyMatchMethod = greedyMatchMethod;
-  }
-
   public MethodAccessValidator getMethodAccessValidator() {
     return this.methodAccessValidator;
-  }
-
-  public void setMethodAccessValidator(
-      MethodAccessValidator methodAccessValidator) {
-    this.methodAccessValidator = methodAccessValidator;
   }
 }

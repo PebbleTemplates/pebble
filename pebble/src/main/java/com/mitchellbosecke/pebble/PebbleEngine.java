@@ -583,10 +583,8 @@ public class PebbleEngine {
       parserOptions.setLiteralDecimalTreatedAsInteger(this.literalDecimalTreatedAsInteger);
       parserOptions.setLiteralNumbersAsBigDecimals(this.literalNumbersAsBigDecimals);
 
-      EvaluationOptions evaluationOptions = new EvaluationOptions();
-      evaluationOptions.setMethodAccessValidator(this.methodAccessValidator);
-      evaluationOptions.setGreedyMatchMethod(this.greedyMatchMethod);
-
+      EvaluationOptions evaluationOptions = new EvaluationOptions(this.greedyMatchMethod,
+          this.methodAccessValidator);
       return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale,
           this.tagCache, this.templateCache,
           this.executorService, extensionRegistry, parserOptions, evaluationOptions);
