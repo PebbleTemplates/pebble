@@ -54,6 +54,7 @@ A number of properties can be defined in Spring Boot externalized configuration,
 * ``pebble.exposeSessionAttributes``: defines whether all session attributes should be added to the model prior to merging with the template for the ViewResolver. Defaults to ``false``
 * ``pebble.defaultLocale``: defines the default locale that will be used to configure the PebbleEngine. Defaults to ``null``
 * ``pebble.strictVariables``: enable or disable the strict variable checking in the PebbleEngine. Defaults to ``false``
+* ``pebble.greedyMatchMethod``: enable or disable the greedy matching mode for finding java method in the PebbleEngine. Defaults to ``false``
 
 ## Examples
 There is the spring petclinic example which has been migrated to [pebble](https://github.com/PebbleTemplates/spring-petclinic) 
@@ -86,7 +87,7 @@ public Loader<?> pebbleLoader() {
    return new MyCustomLoader();
 }
 ```
-PLEASE NOTE: this loader's prefix and suffix will be both overwritten when the ViewResolver is configured. You should use the externalized configuration for changing these properties.
+**PLEASE NOTE**: this loader's prefix and suffix will be both overwritten when the ViewResolver is configured. You should use the externalized configuration for changing these properties.
 
 ### Customizing the PebbleEngine
 Likewise, you can build a custom engine and make it the default by using the bean name ``pebbleEngine``:
@@ -97,8 +98,17 @@ public PebbleEngine pebbleEngine() {
 }
 ```
 
+### Customizing the MethodAccessValidator
+You can provide your own MethodAccessValidator or switch to NoOpMethodAccessValidator by providing a MethodAccessValidator Bean
+```java
+@Bean
+public MethodAccessValidator methodAccessValidator() {
+  return new NoOpMethodAccessValidator();
+}
+```
+
 ### Customizing the ViewResolver
-And the same goes for the ViewResolver, using the bean name ``pebbleViewResolver``:
+And the same goes for the ViewResolver
 ```java
 @Bean
 public PebbleViewResolver pebbleViewResolver() {
@@ -106,7 +116,7 @@ public PebbleViewResolver pebbleViewResolver() {
 }
 ```
 
-For reactive app, you need to use the bean name ``pebbleReactiveViewResolver``:
+For reactive app
 ```java
 @Bean
 public PebbleReactiveViewResolver pebbleReactiveViewResolver() {

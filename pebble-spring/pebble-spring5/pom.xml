@@ -15,7 +15,7 @@
 
   <properties>
     <servlet-api.version>3.1.0</servlet-api.version>
-    <spring-framework.version>5.2.1.RELEASE</spring-framework.version>
+    <spring-framework.version>5.2.6.RELEASE</spring-framework.version>
     <mockito-junit-jupiter.version>3.1.0</mockito-junit-jupiter.version>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
   </properties>

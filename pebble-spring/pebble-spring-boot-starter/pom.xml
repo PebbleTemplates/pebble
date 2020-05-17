@@ -10,11 +10,11 @@
   <artifactId>pebble-spring-boot-starter</artifactId>
 
   <name>Pebble Spring Boot 2 Starter</name>
-  <description>Spring Boot 2 starter or Pebble Template Engine</description>
+  <description>Spring Boot 2 starter for Pebble Template Engine</description>
   <url>http://pebbletemplates.io</url>
 
   <properties>
-    <boot.version>2.2.6.RELEASE</boot.version>
+    <boot.version>2.3.0.RELEASE</boot.version>
   </properties>
 
   <dependencies>
