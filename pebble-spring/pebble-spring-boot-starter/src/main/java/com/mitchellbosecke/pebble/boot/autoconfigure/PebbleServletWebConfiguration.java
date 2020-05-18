@@ -17,10 +17,8 @@ class PebbleServletWebConfiguration extends AbstractPebbleConfiguration {
   @ConditionalOnMissingBean(name = "pebbleViewResolver")
   PebbleViewResolver pebbleViewResolver(PebbleProperties properties,
       PebbleEngine pebbleEngine) {
-    PebbleViewResolver pvr = new PebbleViewResolver();
+    PebbleViewResolver pvr = new PebbleViewResolver(pebbleEngine);
     properties.applyToMvcViewResolver(pvr);
-
-    pvr.setPebbleEngine(pebbleEngine);
     if (pebbleEngine.getLoader() instanceof ClasspathLoader) {
       // classpathloader doesn't like leading slashes in paths
       pvr.setPrefix(this.stripLeadingSlash(properties.getPrefix()));

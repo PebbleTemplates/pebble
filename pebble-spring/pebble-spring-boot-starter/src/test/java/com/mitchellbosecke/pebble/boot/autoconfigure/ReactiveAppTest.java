@@ -36,7 +36,7 @@ class ReactiveAppTest {
         .expectBody(String.class)
         .returnResult().getResponseBody();
 
-    assertThat(result).isEqualTo("ctx path:");
+    assertThat(result).isEqualTo("ctx path:/contextPath.action");
   }
 
   @Test
@@ -73,6 +73,28 @@ class ReactiveAppTest {
         .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("Hola Boot! Tested!");
+  }
+
+  @Test
+  void testBeansAccess() throws Exception {
+    String result = this.client.get().uri("/beans.action").exchange()
+        .expectStatus().isOk()
+        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+        .expectBody(String.class)
+        .returnResult().getResponseBody();
+
+    assertThat(result).isEqualTo("beans:bar");
+  }
+
+  @Test
+  void testResponseAccess() throws Exception {
+    String result = this.client.get().uri("/response.action").exchange()
+        .expectStatus().isOk()
+        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+        .expectBody(String.class)
+        .returnResult().getResponseBody();
+
+    assertThat(result).isEqualTo("response:200 OK");
   }
 }
 

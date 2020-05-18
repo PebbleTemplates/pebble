@@ -1,1 +1,1 @@
-ctx path:{{request.contextPath}}
+ctx path:{{request.contextPath}}{{request.path}}

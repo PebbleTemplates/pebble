@@ -26,4 +26,14 @@ public class Controllers {
     return "extensions";
   }
 
+  @RequestMapping("/beans.action")
+  public String beans() {
+    return "beans";
+  }
+
+  @RequestMapping("/response.action")
+  public String response() {
+    return "responseObject";
+  }
+
 }

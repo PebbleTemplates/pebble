@@ -1,7 +1,6 @@
 package com.mitchellbosecke.pebble.spring.reactive;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
-
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
 
@@ -26,9 +25,5 @@ public class PebbleReactiveViewResolver extends UrlBasedViewResolver {
   @Override
   protected Class<?> requiredViewClass() {
     return PebbleReactiveView.class;
-  }
-
-  public PebbleEngine getPebbleEngine() {
-    return this.pebbleEngine;
   }
 }
