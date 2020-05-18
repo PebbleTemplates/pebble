@@ -31,4 +31,9 @@ public class Controllers {
     return "beans";
   }
 
+  @RequestMapping("/response.action")
+  public String response() {
+    return "responseObject";
+  }
+
 }

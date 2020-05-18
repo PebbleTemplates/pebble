@@ -26,6 +26,9 @@ import reactor.core.publisher.Mono;
 public class PebbleReactiveView extends AbstractUrlBasedView {
 
   private static final String BEANS_VARIABLE_NAME = "beans";
+  private static final String REQUEST_VARIABLE_NAME = "request";
+  private static final String RESPONSE_VARIABLE_NAME = "response";
+  private static final String SESSION_VARIABLE_NAME = "session";
 
   private PebbleEngine pebbleEngine;
   private String templateName;
@@ -48,7 +51,7 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
     try {
       Charset charset = this.getCharset(contentType);
       Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
-      this.addVariablesToModel(renderAttributes);
+      this.addVariablesToModel(renderAttributes, exchange);
       this.evaluateTemplate(renderAttributes, locale, writer);
     } catch (Exception ex) {
       DataBufferUtils.release(dataBuffer);
@@ -57,8 +60,11 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
     return exchange.getResponse().writeWith(Flux.just(dataBuffer));
   }
 
-  private void addVariablesToModel(Map<String, Object> model) {
+  private void addVariablesToModel(Map<String, Object> model, ServerWebExchange exchange) {
     model.put(BEANS_VARIABLE_NAME, new Beans(this.getApplicationContext()));
+    model.put(REQUEST_VARIABLE_NAME, exchange.getRequest());
+    model.put(RESPONSE_VARIABLE_NAME, exchange.getResponse());
+    model.put(SESSION_VARIABLE_NAME, exchange.getSession());
   }
 
   private Charset getCharset(@Nullable MediaType mediaType) {

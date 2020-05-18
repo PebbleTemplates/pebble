@@ -78,4 +78,11 @@ class ServletAppTest {
         .andExpect(content().string("beans:bar"));
   }
 
+  @Test
+  void testResponseAccess() throws Exception {
+    this.mockMvc.perform(get("/response.action"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+        .andExpect(content().string("response:200"));
+  }
 }
