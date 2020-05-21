@@ -3,7 +3,6 @@ package com.mitchellbosecke.pebble.attributes;
 import com.mitchellbosecke.pebble.error.ClassAccessException;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.EvaluationOptions;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -16,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 class MemberCacheUtils {
-  private final UnsafeMethods unsafeMethods = new UnsafeMethods();
   private final ConcurrentHashMap<MemberCacheKey, Member> memberCache = new ConcurrentHashMap<>(100,
       0.9f, 1);
 
@@ -30,10 +28,11 @@ class MemberCacheUtils {
       EvaluationContextImpl context,
       String filename,
       int lineNumber) {
-    Member member = this.reflect(instance, attributeName, argumentTypes, filename, lineNumber,
-        context.getEvaluationOptions());
+    Member member = this.reflect(instance, attributeName, argumentTypes,
+        filename, lineNumber, context.getEvaluationOptions());
     if (member != null) {
-      this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes), member);
+      this.memberCache
+          .put(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes), member);
     }
     return member;
   }
@@ -49,7 +48,7 @@ class MemberCacheUtils {
     // capitalize first letter of attribute for the following attempts
     String attributeCapitalized =
         Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
-    
+
     // search well known super classes first to avoid illegal reflective access
     List<Class<?>> agenda = Arrays.asList(
         List.class,
@@ -67,26 +66,27 @@ class MemberCacheUtils {
       
       // check get method
       Member result = this
-          .findMethod(type, "get" + attributeCapitalized, parameterTypes, filename, lineNumber,
-              evaluationOptions);
+          .findMethod(object, type, "get" + attributeCapitalized, parameterTypes, filename,
+              lineNumber, evaluationOptions);
 
       // check is method
       if (result == null) {
         result = this
-            .findMethod(type, "is" + attributeCapitalized, parameterTypes, filename, lineNumber,
-                evaluationOptions);
+            .findMethod(object, type, "is" + attributeCapitalized, parameterTypes, filename,
+                lineNumber, evaluationOptions);
       }
 
       // check has method
       if (result == null) {
         result = this
-            .findMethod(type, "has" + attributeCapitalized, parameterTypes, filename, lineNumber,
+            .findMethod(object, type, "has" + attributeCapitalized, parameterTypes, filename,
+                lineNumber,
                 evaluationOptions);
       }
 
       // check if attribute is a public method
       if (result == null) {
-        result = this.findMethod(type, attributeName, parameterTypes, filename, lineNumber,
+        result = this.findMethod(object, type, attributeName, parameterTypes, filename, lineNumber,
             evaluationOptions);
       }
 
@@ -110,8 +110,8 @@ class MemberCacheUtils {
    * Finds an appropriate method by comparing if parameter types are compatible. This is more
    * relaxed than class.getMethod.
    */
-  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes, String filename,
-      int lineNumber, EvaluationOptions evaluationOptions) {
+  private Method findMethod(Object object, Class<?> clazz, String name, Class<?>[] requiredTypes,
+      String filename, int lineNumber, EvaluationOptions evaluationOptions) {
     List<Method> candidates = this.getCandidates(clazz, name, requiredTypes);
 
     // perfect match
@@ -146,7 +146,7 @@ class MemberCacheUtils {
       }
     }
     if(bestMatch != null) {
-      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, bestMatch);
+      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, bestMatch);
       return bestMatch;
     }
 
@@ -163,7 +163,7 @@ class MemberCacheUtils {
         }
 
         if (compatibleTypes) {
-          this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, candidate);
+          this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, candidate);
           return candidate;
         }
       }
@@ -172,11 +172,15 @@ class MemberCacheUtils {
     return null;
   }
 
-  private void verifyUnsafeMethod(String filename, int lineNumber, EvaluationOptions evaluationOptions, Method method) {
-    if (!evaluationOptions.isAllowUnsafeMethods() && this.unsafeMethods.isUnsafeMethod(method)) {
-      throw new ClassAccessException(lineNumber, filename);
+  private void verifyUnsafeMethod(String filename, int lineNumber,
+      EvaluationOptions evaluationOptions, Object object, Method method) {
+    boolean methodAccessAllowed = evaluationOptions.getMethodAccessValidator()
+        .isMethodAccessAllowed(object, method);
+    if (!methodAccessAllowed) {
+      throw new ClassAccessException(method, filename, lineNumber);
     }
   }
+
 
   /**
    * Performs a widening conversion (primitive to boxed type)

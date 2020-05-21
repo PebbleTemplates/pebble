@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 class PebbleServletWebConfiguration extends AbstractPebbleConfiguration {
 
   @Bean
-  @ConditionalOnMissingBean(name = "pebbleViewResolver")
+  @ConditionalOnMissingBean
   PebbleViewResolver pebbleViewResolver(PebbleProperties properties,
       PebbleEngine pebbleEngine) {
     PebbleViewResolver pvr = new PebbleViewResolver(pebbleEngine);

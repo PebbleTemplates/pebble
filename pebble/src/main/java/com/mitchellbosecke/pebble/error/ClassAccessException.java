@@ -8,12 +8,15 @@
  */
 package com.mitchellbosecke.pebble.error;
 
+import java.lang.reflect.Method;
+
 public class ClassAccessException extends PebbleException {
 
   private static final long serialVersionUID = 5109892021088141417L;
 
-  public ClassAccessException(Integer lineNumber, String filename) {
-    super(null, "For security reasons access to class/getClass attribute is denied.", lineNumber,
+  public ClassAccessException(Method method, String filename, Integer lineNumber) {
+    super(null, String.format("For security reasons access to %s method is denied.", method),
+        lineNumber,
         filename);
   }
 }

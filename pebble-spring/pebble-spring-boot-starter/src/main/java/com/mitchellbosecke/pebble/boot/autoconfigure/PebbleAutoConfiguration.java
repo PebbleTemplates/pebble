@@ -1,6 +1,7 @@
 package com.mitchellbosecke.pebble.boot.autoconfigure;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.attributes.methodaccess.MethodAccessValidator;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
@@ -34,7 +35,7 @@ public class PebbleAutoConfiguration extends AbstractPebbleConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public SpringExtension pebbleSpringExtension(MessageSource messageSource) {
+  public SpringExtension springExtension(MessageSource messageSource) {
     return new SpringExtension(messageSource);
   }
 
@@ -43,7 +44,8 @@ public class PebbleAutoConfiguration extends AbstractPebbleConfiguration {
   public PebbleEngine pebbleEngine(PebbleProperties properties,
       Loader<?> pebbleLoader,
       SpringExtension springExtension,
-      @Nullable List<Extension> extensions) {
+      @Nullable List<Extension> extensions,
+      @Nullable MethodAccessValidator methodAccessValidator) {
     PebbleEngine.Builder builder = new PebbleEngine.Builder();
     builder.loader(pebbleLoader);
     builder.extension(springExtension);
@@ -58,6 +60,9 @@ public class PebbleAutoConfiguration extends AbstractPebbleConfiguration {
     }
     builder.strictVariables(properties.isStrictVariables());
     builder.greedyMatchMethod(properties.isGreedyMatchMethod());
+    if (methodAccessValidator != null) {
+      builder.methodAccessValidator(methodAccessValidator);
+    }
     return builder.build();
   }
 }
