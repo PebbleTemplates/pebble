@@ -8,8 +8,6 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.attributes.ResolvedAttribute;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -18,6 +16,9 @@ import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -25,15 +26,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
 
-public class ExtendingPebbleTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ExtendingPebbleTest {
 
   /**
    * Issue #51
    */
   @Test
-  public void testFilterWithoutArgumentsCanAccessEvaluationContext()
+  void testFilterWithoutArgumentsCanAccessEvaluationContext()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
@@ -49,7 +51,7 @@ public class ExtendingPebbleTest {
   }
 
   @Test
-  public void testCustomAttributeResolverEvaluateFirst() throws PebbleException, IOException {
+  void testCustomAttributeResolverEvaluateFirst() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .strictVariables(false)

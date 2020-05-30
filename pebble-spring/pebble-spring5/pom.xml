@@ -4,7 +4,7 @@
   <parent>
     <artifactId>pebble-spring</artifactId>
     <groupId>io.pebbletemplates</groupId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>pebble-spring5</artifactId>
@@ -15,7 +15,9 @@
 
   <properties>
     <servlet-api.version>3.1.0</servlet-api.version>
-    <spring-framework.version>5.1.9.RELEASE</spring-framework.version>
+    <spring-framework.version>5.2.6.RELEASE</spring-framework.version>
+    <mockito-junit-jupiter.version>3.1.0</mockito-junit-jupiter.version>
+    <junit-jupiter.version>5.5.2</junit-jupiter.version>
   </properties>
 
   <dependencyManagement>
@@ -46,6 +48,11 @@
       <artifactId>spring-webmvc</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webflux</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- TEST -->
     <dependency>
@@ -54,13 +61,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito-junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

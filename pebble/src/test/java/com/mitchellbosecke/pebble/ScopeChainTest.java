@@ -8,19 +8,20 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.ScopeChain;
-import org.junit.Test;
 
-public class ScopeChainTest {
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class ScopeChainTest {
 
   @Test
-  public void testSet() throws PebbleException {
+  void testSet() throws PebbleException {
     ScopeChain scopeChain = new ScopeChain();
     scopeChain.pushScope();
     scopeChain.set("key", "value");
@@ -38,7 +39,7 @@ public class ScopeChainTest {
   }
 
   @Test
-  public void testGetValueWithLocalScopeFirstInChainAndValueInAnotherScope() {
+  void testGetValueWithLocalScopeFirstInChainAndValueInAnotherScope() {
     ScopeChain scopeChain = new ScopeChain();
     scopeChain.pushScope();
     scopeChain.set("key", "value");
@@ -51,7 +52,7 @@ public class ScopeChainTest {
   }
 
   @Test
-  public void testGetValueWithLocalScopeNotFirstInChainAndValueInAnotherScope() {
+  void testGetValueWithLocalScopeNotFirstInChainAndValueInAnotherScope() {
     ScopeChain scopeChain = new ScopeChain();
     scopeChain.pushScope();
     scopeChain.set("key", "value");
@@ -68,7 +69,7 @@ public class ScopeChainTest {
   }
 
   @Test
-  public void testContainsKeyWithLocalScopeFirstInChainAndValueInAnotherScope() {
+  void testContainsKeyWithLocalScopeFirstInChainAndValueInAnotherScope() {
     ScopeChain scopeChain = new ScopeChain();
     scopeChain.pushScope();
     scopeChain.set("key", "value");
@@ -81,7 +82,7 @@ public class ScopeChainTest {
   }
 
   @Test
-  public void testContainsKeyWithLocalScopeNotFirstInChainAndValueInAnotherScope() {
+  void testContainsKeyWithLocalScopeNotFirstInChainAndValueInAnotherScope() {
     ScopeChain scopeChain = new ScopeChain();
     scopeChain.pushScope();
     scopeChain.set("key", "value");

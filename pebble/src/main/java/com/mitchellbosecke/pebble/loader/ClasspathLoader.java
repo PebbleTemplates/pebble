@@ -10,13 +10,15 @@ package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.utils.PathUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Uses a classloader to find templates located on the classpath.
@@ -47,7 +49,26 @@ public class ClasspathLoader implements Loader<String> {
 
   @Override
   public Reader getReader(String templateName) {
+    String location = this.getLocation(templateName);
 
+    logger.debug("Looking for template in {}.", location);
+
+    // perform the lookup
+    InputStream is = this.rcl.getResourceAsStream(location);
+
+    if (is == null) {
+      throw new LoaderException(null, "Could not find template \"" + location + "\"");
+    }
+
+    try {
+      return new BufferedReader(new InputStreamReader(is, this.charset));
+    } catch (UnsupportedEncodingException e) {
+    }
+
+    return null;
+  }
+
+  private String getLocation(String templateName) {
     // append the prefix and make sure prefix ends with a separator character
     StringBuilder path = new StringBuilder(128);
     if (this.getPrefix() != null) {
@@ -64,22 +85,7 @@ public class ClasspathLoader implements Loader<String> {
     if (this.getSuffix() != null) {
       path.append(this.getSuffix());
     }
-    String location = path.toString();
-    logger.debug("Looking for template in {}.", location);
-
-    // perform the lookup
-    InputStream is = this.rcl.getResourceAsStream(location);
-
-    if (is == null) {
-      throw new LoaderException(null, "Could not find template \"" + location + "\"");
-    }
-
-    try {
-      return new BufferedReader(new InputStreamReader(is, this.charset));
-    } catch (UnsupportedEncodingException e) {
-    }
-
-    return null;
+    return path.toString();
   }
 
   public String getSuffix() {
@@ -117,5 +123,10 @@ public class ClasspathLoader implements Loader<String> {
   @Override
   public String createCacheKey(String templateName) {
     return templateName;
+  }
+
+  @Override
+  public boolean resourceExists(String templateName) {
+    return this.rcl.getResource(this.getLocation(templateName)) != null;
   }
 }

@@ -1,5 +1,7 @@
 package com.mitchellbosecke.pebble.template;
 
+import com.mitchellbosecke.pebble.attributes.methodaccess.MethodAccessValidator;
+
 /**
  * Evaluation options.
  *
@@ -8,30 +10,26 @@ package com.mitchellbosecke.pebble.template;
 public class EvaluationOptions {
 
   /**
-   * toggle to enable/disable unsafe methods access
-   */
-  private boolean allowUnsafeMethods;
-
-  /**
    * toggle to enable/disable greedy matching mode for finding java method
    */
-  private boolean greedyMatchMethod;
+  private final boolean greedyMatchMethod;
 
-  public boolean isAllowUnsafeMethods() {
-    return this.allowUnsafeMethods;
-  }
+  /**
+   * Validator that can be used to validate object/method access
+   */
+  private final MethodAccessValidator methodAccessValidator;
 
-  public EvaluationOptions setAllowUnsafeMethods(boolean allowUnsafeMethods) {
-    this.allowUnsafeMethods = allowUnsafeMethods;
-    return this;
+  public EvaluationOptions(boolean greedyMatchMethod,
+      MethodAccessValidator methodAccessValidator) {
+    this.greedyMatchMethod = greedyMatchMethod;
+    this.methodAccessValidator = methodAccessValidator;
   }
 
   public boolean isGreedyMatchMethod() {
     return this.greedyMatchMethod;
   }
 
-  public EvaluationOptions setGreedyMatchMethod(boolean greedyMatchMethod) {
-    this.greedyMatchMethod = greedyMatchMethod;
-    return this;
+  public MethodAccessValidator getMethodAccessValidator() {
+    return this.methodAccessValidator;
   }
 }

@@ -2,14 +2,18 @@ package com.mitchellbosecke.pebble.loader;
 
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.utils.PathUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+
 import javax.servlet.ServletContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Loader that uses a servlet context to find templates.
@@ -41,34 +45,18 @@ public class ServletLoader implements Loader<String> {
     Reader reader = null;
 
     InputStream is = null;
+    String location = this.getLocation(templateName);
 
-    // Add the prefix and make sure that it ends with a separator character
-    StringBuilder path = new StringBuilder(128);
-    if (getPrefix() != null) {
-
-      path.append(getPrefix());
-
-      // we do NOT use OS dependent separators here; getResourceAsStream
-      // explicitly requires forward slashes.
-      if (!getPrefix().endsWith(Character.toString(expectedSeparator))) {
-        path.append(expectedSeparator);
-      }
-    }
-    path.append(templateName);
-    if (getSuffix() != null) {
-      path.append(getSuffix());
-    }
-    String location = path.toString();
     logger.debug("Looking for template in {}.", location);
 
-    is = context.getResourceAsStream(location);
+    is = this.context.getResourceAsStream(location);
 
     if (is == null) {
       throw new LoaderException(null, "Could not find template \"" + location + "\"");
     }
 
     try {
-      isr = new InputStreamReader(is, charset);
+      isr = new InputStreamReader(is, this.charset);
       reader = new BufferedReader(isr);
     } catch (UnsupportedEncodingException e) {
     }
@@ -76,8 +64,28 @@ public class ServletLoader implements Loader<String> {
     return reader;
   }
 
+  private String getLocation(String templateName) {
+    // Add the prefix and make sure that it ends with a separator character
+    StringBuilder path = new StringBuilder(128);
+    if (this.getPrefix() != null) {
+
+      path.append(this.getPrefix());
+
+      // we do NOT use OS dependent separators here; getResourceAsStream
+      // explicitly requires forward slashes.
+      if (!this.getPrefix().endsWith(Character.toString(this.expectedSeparator))) {
+        path.append(this.expectedSeparator);
+      }
+    }
+    path.append(templateName);
+    if (this.getSuffix() != null) {
+      path.append(this.getSuffix());
+    }
+    return path.toString();
+  }
+
   public String getSuffix() {
-    return suffix;
+    return this.suffix;
   }
 
   @Override
@@ -86,7 +94,7 @@ public class ServletLoader implements Loader<String> {
   }
 
   public String getPrefix() {
-    return prefix;
+    return this.prefix;
   }
 
   @Override
@@ -95,7 +103,7 @@ public class ServletLoader implements Loader<String> {
   }
 
   public String getCharset() {
-    return charset;
+    return this.charset;
   }
 
   @Override
@@ -105,7 +113,7 @@ public class ServletLoader implements Loader<String> {
 
   @Override
   public String resolveRelativePath(String relativePath, String anchorPath) {
-    return PathUtils.resolveRelativePath(relativePath, anchorPath, expectedSeparator);
+    return PathUtils.resolveRelativePath(relativePath, anchorPath, this.expectedSeparator);
   }
 
   @Override
@@ -113,4 +121,12 @@ public class ServletLoader implements Loader<String> {
     return templateName;
   }
 
+  @Override
+  public boolean resourceExists(String templateName) {
+    try {
+      return this.context.getResource(this.getLocation(templateName)) != null;
+    } catch (MalformedURLException e) {
+      return false;
+    }
+  }
 }

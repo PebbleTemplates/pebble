@@ -4,22 +4,25 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package com.mitchellbosecke.pebble.spring;
+package com.mitchellbosecke.pebble.spring.servlet;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.spring.context.Beans;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Locale;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.AbstractTemplateView;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class PebbleView extends AbstractTemplateView {
 
@@ -36,7 +39,7 @@ public class PebbleView extends AbstractTemplateView {
    * </p>
    * <p>
    * The value of this constant is
-   * <tt>com.mitchellbosecke.pebble.spring.PebbleView.timer</tt>. This allows
+   * <tt>com.mitchellbosecke.pebble.spring.servlet.PebbleView.timer</tt>. This allows
    * you to set a specific configuration and/or appenders for timing info at your logging system
    * configuration.
    * </p>

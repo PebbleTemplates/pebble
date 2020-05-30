@@ -18,7 +18,6 @@ import com.mitchellbosecke.pebble.spring.extension.function.bindingresult.HasFie
 import com.mitchellbosecke.pebble.spring.extension.function.bindingresult.HasGlobalErrorsFunction;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 /**
@@ -30,8 +29,11 @@ import org.springframework.context.MessageSource;
  */
 public class SpringExtension extends AbstractExtension {
 
-  @Autowired
-  private MessageSource messageSource;
+  private final MessageSource messageSource;
+
+  public SpringExtension(MessageSource messageSource) {
+    this.messageSource = messageSource;
+  }
 
   @Override
   public Map<String, Function> getFunctions() {

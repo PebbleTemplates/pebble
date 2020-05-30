@@ -8,6 +8,10 @@
  */
 package com.mitchellbosecke.pebble.extension.core;
 
+import static com.mitchellbosecke.pebble.operator.BinaryOperatorType.FILTER;
+import static com.mitchellbosecke.pebble.operator.BinaryOperatorType.NORMAL;
+import static com.mitchellbosecke.pebble.operator.BinaryOperatorType.TEST;
+
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
@@ -55,7 +59,6 @@ import com.mitchellbosecke.pebble.tokenParser.MacroTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.ParallelTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.SetTokenParser;
 import com.mitchellbosecke.pebble.tokenParser.TokenParser;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,26 +100,26 @@ public class CoreExtension extends AbstractExtension {
   @Override
   public List<BinaryOperator> getBinaryOperators() {
     List<BinaryOperator> operators = new ArrayList<>();
-    operators.add(new BinaryOperatorImpl("or", 10, OrExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("and", 15, AndExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("is", 20, PositiveTestExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("is not", 20, NegativeTestExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("contains", 20, ContainsExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("==", 30, EqualsExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("equals", 30, EqualsExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("!=", 30, NotEqualsExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl(">", 30, GreaterThanExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("<", 30, LessThanExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl(">=", 30, GreaterThanEqualsExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("<=", 30, LessThanEqualsExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("+", 40, AddExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("-", 40, SubtractExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("*", 60, MultiplyExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("/", 60, DivideExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("%", 60, ModulusExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("|", 100, FilterExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("~", 110, ConcatenateExpression.class, Associativity.LEFT));
-    operators.add(new BinaryOperatorImpl("..", 120, RangeExpression.class, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("or", 10, OrExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("and", 15, AndExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("is", 20, PositiveTestExpression::new, TEST, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("is not", 20, NegativeTestExpression::new, TEST, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("contains", 20, ContainsExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("==", 30, EqualsExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("equals", 30, EqualsExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("!=", 30, NotEqualsExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl(">", 30, GreaterThanExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("<", 30, LessThanExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl(">=", 30, GreaterThanEqualsExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("<=", 30, LessThanEqualsExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("+", 40, AddExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("-", 40, SubtractExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("*", 60, MultiplyExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("/", 60, DivideExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("%", 60, ModulusExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("|", 100, FilterExpression::new, FILTER, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("~", 110, ConcatenateExpression::new, NORMAL, Associativity.LEFT));
+    operators.add(new BinaryOperatorImpl("..", 120, RangeExpression::new, NORMAL, Associativity.LEFT));
 
     return operators;
   }

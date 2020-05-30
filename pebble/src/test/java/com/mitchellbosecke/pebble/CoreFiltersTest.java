@@ -8,16 +8,15 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static java.lang.Boolean.TRUE;
-import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -37,12 +36,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.junit.Test;
 
-public class CoreFiltersTest {
+import static java.lang.Boolean.TRUE;
+import static java.util.Collections.emptyList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class CoreFiltersTest {
 
   @Test
-  public void testAbs() throws PebbleException, IOException {
+  void testAbs() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -54,7 +57,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testAbsDouble() throws PebbleException, IOException {
+  void testAbsDouble() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -66,7 +69,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testChainedFiltersWithNullInput() throws PebbleException, IOException {
+  void testChainedFiltersWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -77,7 +80,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testLower() throws PebbleException, IOException {
+  void testLower() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -89,7 +92,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testLowerWithNullInput() throws PebbleException, IOException {
+  void testLowerWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -101,7 +104,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testUpper() throws PebbleException, IOException {
+  void testUpper() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -112,7 +115,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testUpperWithNullInput() throws PebbleException, IOException {
+  void testUpperWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -123,7 +126,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testDate() throws ParseException, PebbleException, IOException {
+  void testDate() throws ParseException, PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .defaultLocale(Locale.ENGLISH).build();
@@ -144,7 +147,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testDateJava8() throws PebbleException, IOException {
+  void testDateJava8() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine
         .Builder()
         .loader(new StringLoader())
@@ -181,7 +184,7 @@ public class CoreFiltersTest {
 
 
   @Test
-  public void testDateWithNamedArguments() throws ParseException, PebbleException, IOException {
+  void testDateWithNamedArguments() throws ParseException, PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .defaultLocale(Locale.ENGLISH).build();
@@ -200,7 +203,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testDateWithNullInput() throws PebbleException, IOException {
+  void testDateWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -214,7 +217,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testDateWithNumberInput() throws IOException {
+  void testDateWithNumberInput() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -229,23 +232,25 @@ public class CoreFiltersTest {
     assertEquals("02/07/2018", writer.toString());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testDateWithUnsupportedInput() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testDateWithUnsupportedInput() throws IOException {
+    assertThrows(IllegalArgumentException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ unsupportedDateType | date(\"MM/dd/yyyy\") }}";
+      String source = "{{ unsupportedDateType | date(\"MM/dd/yyyy\") }}";
 
-    PebbleTemplate template = pebble.getTemplate(source);
-    Map<String, Object> context = new HashMap<>();
-    context.put("unsupportedDateType", TRUE);
+      PebbleTemplate template = pebble.getTemplate(source);
+      Map<String, Object> context = new HashMap<>();
+      context.put("unsupportedDateType", TRUE);
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testUrlEncode() throws PebbleException, IOException {
+  void testUrlEncode() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -256,7 +261,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testUrlEncodeWithNullInput() throws PebbleException, IOException {
+  void testUrlEncodeWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -267,7 +272,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testNumberFormatFilterWithFormat() throws PebbleException, IOException {
+  void testNumberFormatFilterWithFormat() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .defaultLocale(Locale.ENGLISH).build();
@@ -283,7 +288,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testNumberFormatFilterWithNamedArgument() throws PebbleException, IOException {
+  void testNumberFormatFilterWithNamedArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .defaultLocale(Locale.US).build();
@@ -299,7 +304,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testNumberFormatFilterWithNullInput() throws PebbleException, IOException {
+  void testNumberFormatFilterWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -311,7 +316,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testNumberFormatFilterWithLocale() throws PebbleException, IOException {
+  void testNumberFormatFilterWithLocale() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
         .defaultLocale(Locale.ENGLISH).build();
@@ -324,7 +329,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testAbbreviate() throws PebbleException, IOException {
+  void testAbbreviate() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -337,7 +342,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testAbbreviateWithNamedArguments() throws PebbleException, IOException {
+  void testAbbreviateWithNamedArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -350,7 +355,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testAbbreviateWithNullInput() throws PebbleException, IOException {
+  void testAbbreviateWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -362,7 +367,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testAbbreviateWithSmallLength() throws PebbleException, IOException {
+  void testAbbreviateWithSmallLength() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("{{ text | abbreviate(2)}}");
@@ -374,7 +379,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testCapitalize() throws PebbleException, IOException {
+  void testCapitalize() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -387,7 +392,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testCapitalizeWithLeadingWhitespace() throws PebbleException, IOException {
+  void testCapitalizeWithLeadingWhitespace() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -400,7 +405,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testCapitalizeWithNullInput() throws PebbleException, IOException {
+  void testCapitalizeWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -412,7 +417,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testCapitalizeWithEmptyString() throws PebbleException, IOException {
+  void testCapitalizeWithEmptyString() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -424,7 +429,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testSortFilter() throws PebbleException, IOException {
+  void testSortFilter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -446,7 +451,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testRsortFilter() throws PebbleException, IOException {
+  void testRsortFilter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -468,7 +473,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testReverseFilter() throws PebbleException, IOException {
+  void testReverseFilter() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -487,7 +492,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testTitle() throws PebbleException, IOException {
+  void testTitle() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -500,7 +505,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testTitleWithLeadingWhitespace() throws PebbleException, IOException {
+  void testTitleWithLeadingWhitespace() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -512,7 +517,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testTrim() throws PebbleException, IOException {
+  void testTrim() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -525,7 +530,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testTrimWithNullInput() throws PebbleException, IOException {
+  void testTrimWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -537,7 +542,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testDefault() throws PebbleException, IOException {
+  void testDefault() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -558,7 +563,7 @@ public class CoreFiltersTest {
    * @throws Exception thrown when something went wrong.
    */
   @Test
-  public void testDefaultFilterWithStrictMode() throws Exception {
+  void testDefaultFilterWithStrictMode() throws Exception {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
@@ -574,7 +579,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testDefaultWithNamedArguments() throws PebbleException, IOException {
+  void testDefaultWithNamedArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -588,7 +593,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testFirst() throws PebbleException, IOException {
+  void testFirst() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -608,7 +613,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testFirstWithNullInput() throws PebbleException, IOException {
+  void testFirstWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -623,7 +628,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testFirstWithStringInput() throws PebbleException, IOException {
+  void testFirstWithStringInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -638,7 +643,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testFirstWithEmptyCollection() throws PebbleException, IOException {
+  void testFirstWithEmptyCollection() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -653,7 +658,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoin() throws PebbleException, IOException {
+  void testJoin() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -673,7 +678,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithoutGlue() throws PebbleException, IOException {
+  void testJoinWithoutGlue() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -693,7 +698,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithNumbers() throws PebbleException, IOException {
+  void testJoinWithNumbers() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -713,7 +718,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithNullInput() throws PebbleException, IOException {
+  void testJoinWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -725,7 +730,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithStringArray() throws PebbleException, IOException {
+  void testJoinWithStringArray() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -742,7 +747,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithStringArrayWithoutGlue() throws PebbleException, IOException {
+  void testJoinWithStringArrayWithoutGlue() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -759,7 +764,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithNumbersArray() throws PebbleException, IOException {
+  void testJoinWithNumbersArray() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -776,7 +781,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithEmptyNumbersArray() throws PebbleException, IOException {
+  void testJoinWithEmptyNumbersArray() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -793,7 +798,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testJoinWithFloatArray() throws PebbleException, IOException {
+  void testJoinWithFloatArray() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -810,7 +815,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testLast() throws PebbleException, IOException {
+  void testLast() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -830,7 +835,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testLastWithNullInput() throws PebbleException, IOException {
+  void testLastWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -842,7 +847,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testLastWithStringInput() throws PebbleException, IOException {
+  void testLastWithStringInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -857,7 +862,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testLastWithArrayInput() throws PebbleException, IOException {
+  void testLastWithArrayInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -872,7 +877,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testLastWithPrimitiveArrayInput() throws PebbleException, IOException {
+  void testLastWithPrimitiveArrayInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -887,7 +892,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testFirstWithArrayInput() throws PebbleException, IOException {
+  void testFirstWithArrayInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -902,7 +907,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testFirstWithPrimitiveArrayInput() throws PebbleException, IOException {
+  void testFirstWithPrimitiveArrayInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -930,7 +935,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testSliceWithNullInput() throws PebbleException, IOException {
+  void testSliceWithNullInput() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -944,7 +949,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testSliceWithDefaultArgs() throws PebbleException, IOException {
+  void testSliceWithDefaultArgs() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -958,22 +963,24 @@ public class CoreFiltersTest {
     assertEquals("Alex", writer.toString());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testSliceWithInvalidFirstArg() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testSliceWithInvalidFirstArg() throws PebbleException, IOException {
+    assertThrows(IllegalArgumentException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ name | slice(-1) }}");
+      PebbleTemplate template = pebble.getTemplate("{{ name | slice(-1) }}");
 
-    Map<String, Object> context = new HashMap<>();
-    context.put("name", "Alex");
+      Map<String, Object> context = new HashMap<>();
+      context.put("name", "Alex");
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testSliceWithIntegerArguments() throws PebbleException, IOException {
+  void testSliceWithIntegerArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -989,36 +996,40 @@ public class CoreFiltersTest {
     assertEquals("cd", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,-1) }}");
+      PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,-1) }}");
 
-    Map<String, Object> context = new HashMap<>();
-    context.put("name", "Alex");
+      Map<String, Object> context = new HashMap<>();
+      context.put("name", "Alex");
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
-  }
-
-  @Test(expected = PebbleException.class)
-  public void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
-
-    PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,1000) }}");
-
-    Map<String, Object> context = new HashMap<>();
-    context.put("name", "Alex");
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   @Test
-  public void testSliceWithString() throws PebbleException, IOException {
+  void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ name | slice(0,1000) }}");
+
+      Map<String, Object> context = new HashMap<>();
+      context.put("name", "Alex");
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
+  void testSliceWithString() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -1033,7 +1044,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testSliceWithList() throws PebbleException, IOException {
+  void testSliceWithList() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -1055,7 +1066,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testSliceWithStringArray() throws PebbleException, IOException {
+  void testSliceWithStringArray() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -1071,7 +1082,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testSliceWithPrimitivesArray() throws PebbleException, IOException {
+  void testSliceWithPrimitivesArray() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -1136,25 +1147,27 @@ public class CoreFiltersTest {
     assertEquals("2", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testSliceWithInvalidInputType() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testSliceWithInvalidInputType() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ names | slice(2,5) }}");
+      PebbleTemplate template = pebble.getTemplate("{{ names | slice(2,5) }}");
 
-    Map<String, Object> context = new HashMap<>();
-    context.put("names", Long.valueOf(1));
+      Map<String, Object> context = new HashMap<>();
+      context.put("names", Long.valueOf(1));
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
   /**
    * Tests {@link LengthFilter} with different inputs.
    */
   @Test
-  public void testLengthFilterInputs() {
+  void testLengthFilterInputs() {
     LengthFilter filter = new LengthFilter();
 
     assertEquals(0, filter.apply(null, null, null, null, 0));
@@ -1173,7 +1186,7 @@ public class CoreFiltersTest {
    * Tests {@link LengthFilter} if the length filter is working within templates.
    */
   @Test
-  public void testLengthFilterInTemplate() throws PebbleException, IOException {
+  void testLengthFilterInTemplate() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -1191,7 +1204,7 @@ public class CoreFiltersTest {
    * Tests {@link ReplaceFilter} if the length filter is working within templates.
    */
   @Test
-  public void testReplaceFilterInTemplate() throws PebbleException, IOException {
+  void testReplaceFilterInTemplate() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -1208,7 +1221,7 @@ public class CoreFiltersTest {
   }
 
   @Test
-  public void testMergeOk() throws PebbleException, IOException {
+  void testMergeOk() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .extension(new TestingExtension()).strictVariables(false).build();
 
@@ -1225,45 +1238,51 @@ public class CoreFiltersTest {
     assertEquals("{one=1, two=2} two [1,2] 2 [1,2]", writer.toString());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void testMergeMapWithStringAndFail() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testMergeMapWithStringAndFail() throws PebbleException, IOException {
+    assertThrows(UnsupportedOperationException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ {'one':1}|merge('No way!') }}");
+      PebbleTemplate template = pebble.getTemplate("{{ {'one':1}|merge('No way!') }}");
 
-    Map<String, Object> context = new HashMap<>();
+      Map<String, Object> context = new HashMap<>();
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
-  @Test(expected = PebbleException.class)
-  public void testMergeListWithStringAndFail() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testMergeListWithStringAndFail() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ [1]|merge('No way!') }}");
+      PebbleTemplate template = pebble.getTemplate("{{ [1]|merge('No way!') }}");
 
-    Map<String, Object> context = new HashMap<>();
+      Map<String, Object> context = new HashMap<>();
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
-  @Test(expected = PebbleException.class)
-  public void testMergeDifferentArraysAndFail() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testMergeDifferentArraysAndFail() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("{{ arr1|merge(arr2) }}");
+      PebbleTemplate template = pebble.getTemplate("{{ arr1|merge(arr2) }}");
 
-    Map<String, Object> context = new HashMap<>();
-    context.put("arr1", new int[]{1});
-    context.put("arr2", new String[]{"2"});
+      Map<String, Object> context = new HashMap<>();
+      context.put("arr1", new int[]{1});
+      context.put("arr2", new String[]{"2"});
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, context);
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
   }
 
 }

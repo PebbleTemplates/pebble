@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
+
 import java.util.Map;
 
 class MapResolver implements AttributeResolver {
@@ -22,7 +23,7 @@ class MapResolver implements AttributeResolver {
       String filename,
       int lineNumber) {
     Map<?, ?> object = (Map<?, ?>) instance;
-    if (object.isEmpty()) {
+    if (object.isEmpty() && !context.isStrictVariables()) {
       return new ResolvedAttribute(null);
     }
 

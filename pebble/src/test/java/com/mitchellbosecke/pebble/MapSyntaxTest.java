@@ -8,30 +8,28 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class MapSyntaxTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-  @Rule
-  public final ExpectedException thrown = ExpectedException.none();
+class MapSyntaxTest {
 
   @Test
-  public void testMapSyntax() throws PebbleException, IOException {
+  void testMapSyntax() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -44,7 +42,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testSimpleMap() throws PebbleException, IOException {
+  void testSimpleMap() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -57,7 +55,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void test2ElementMap() throws PebbleException, IOException {
+  void test2ElementMap() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .extension(new TestingExtension())
         .strictVariables(false).build();
@@ -71,7 +69,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void test2ElementMap2() throws PebbleException, IOException {
+  void test2ElementMap2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .extension(new TestingExtension())
         .strictVariables(false).build();
@@ -85,7 +83,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testNElementMap() throws PebbleException, IOException {
+  void testNElementMap() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .extension(new TestingExtension())
         .strictVariables(false).build();
@@ -100,78 +98,68 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testIncompleteMapSyntax() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testIncompleteMapSyntax() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ {,} }}";
+      String source = "{{ {,} }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testIncompleteMapSyntax2() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testIncompleteMapSyntax2() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ {'key'} }}";
+      String source = "{{ {'key'} }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testIncompleteMapSyntax3() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testIncompleteMapSyntax3() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ {'key':} }}";
+      String source = "{{ {'key':} }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testIncompleteMapSyntax4() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testIncompleteMapSyntax4() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ {:'value'} }}";
+      String source = "{{ {:'value'} }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @Test
-  public void testIncompleteMapSyntax5() throws PebbleException {
-    //Arrange
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  void testIncompleteMapSyntax5() throws PebbleException {
+    assertThrows(ParserException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{{ {'key':'value',} }}";
+      String source = "{{ {'key':'value',} }}";
 
-    this.thrown.expect(ParserException.class);
-
-    //Act + Assert
-    pebble.getTemplate(source);
+      pebble.getTemplate(source);
+    });
   }
 
   @SuppressWarnings("serial")
   @Test
-  public void testMapWithExpressions() throws PebbleException, IOException {
+  void testMapWithExpressions() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .extension(new TestingExtension())
         .strictVariables(false).build();
@@ -195,7 +183,7 @@ public class MapSyntaxTest {
 
   @SuppressWarnings({"serial", "unused"})
   @Test
-  public void testMapWithComplexExpressions() throws PebbleException, IOException {
+  void testMapWithComplexExpressions() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .extension(new TestingExtension())
         .strictVariables(false).build();
@@ -229,7 +217,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testSetCommand() throws PebbleException, IOException {
+  void testSetCommand() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -244,7 +232,7 @@ public class MapSyntaxTest {
   // this tests use string 'contains' semantics because entry order can't be
   // trusted
   @Test
-  public void testForTag() throws PebbleException, IOException {
+  void testForTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -260,7 +248,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testForTag2() throws PebbleException, IOException {
+  void testForTag2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -276,7 +264,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testForElseTag() throws PebbleException, IOException {
+  void testForElseTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -289,7 +277,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testIfTag() throws PebbleException, IOException {
+  void testIfTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -302,7 +290,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testMacroTag() throws PebbleException, IOException {
+  void testMacroTag() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -315,7 +303,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testMacroTagNamedArguments() throws PebbleException, IOException {
+  void testMacroTagNamedArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -328,32 +316,36 @@ public class MapSyntaxTest {
   }
 
   // no operator overloading for maps
-  @Test(expected = PebbleException.class)
-  public void testAdditionOverloading() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testAdditionOverloading() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{% set map = {'Bob':'Marley'} + 1 %}{{ map }}";
-    PebbleTemplate template = pebble.getTemplate(source);
+      String source = "{% set map = {'Bob':'Marley'} + 1 %}{{ map }}";
+      PebbleTemplate template = pebble.getTemplate(source);
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer, new HashMap<>());
-  }
-
-  @Test(expected = PebbleException.class)
-  public void testSubtractionOverloading() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
-
-    String source = "{% set map = {'Bob':'Marley'} - 1 %}{{ map }}";
-    PebbleTemplate template = pebble.getTemplate(source);
-
-    Writer writer = new StringWriter();
-    template.evaluate(writer, new HashMap<>());
+      Writer writer = new StringWriter();
+      template.evaluate(writer, new HashMap<>());
+    });
   }
 
   @Test
-  public void testEmptyTest() throws PebbleException, IOException {
+  void testSubtractionOverloading() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
+
+      String source = "{% set map = {'Bob':'Marley'} - 1 %}{{ map }}";
+      PebbleTemplate template = pebble.getTemplate(source);
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, new HashMap<>());
+    });
+  }
+
+  @Test
+  void testEmptyTest() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -366,7 +358,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testEmptyTest2() throws PebbleException, IOException {
+  void testEmptyTest2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -379,7 +371,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testIterableTest() throws PebbleException, IOException {
+  void testIterableTest() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -392,7 +384,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testContainsOperator() throws PebbleException, IOException {
+  void testContainsOperator() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -405,7 +397,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testContainsOperator2() throws PebbleException, IOException {
+  void testContainsOperator2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -418,7 +410,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testContainsOperator3() throws PebbleException, IOException {
+  void testContainsOperator3() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -431,7 +423,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testNestedMaps() throws PebbleException, IOException {
+  void testNestedMaps() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -444,7 +436,7 @@ public class MapSyntaxTest {
   }
 
   @Test
-  public void testNestedArrayInMap() throws PebbleException, IOException {
+  void testNestedArrayInMap() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -459,7 +451,7 @@ public class MapSyntaxTest {
   // brace syntax regression tests
 
   @Test
-  public void testBraceSyntax() throws PebbleException, IOException {
+  void testBraceSyntax() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 

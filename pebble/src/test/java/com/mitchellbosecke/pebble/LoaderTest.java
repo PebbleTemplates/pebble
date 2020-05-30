@@ -8,9 +8,6 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
@@ -19,6 +16,9 @@ import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -32,12 +32,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
 
-public class LoaderTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+class LoaderTest {
 
   @Test
-  public void testClassLoaderLoader() throws PebbleException, IOException {
+  void testClassLoaderLoader() throws PebbleException, IOException {
     Loader<?> loader = new ClasspathLoader();
     loader.setPrefix("templates");
     loader.setSuffix(".peb");
@@ -50,7 +52,7 @@ public class LoaderTest {
   }
 
   @Test
-  public void testClassLoaderLoaderWithNestedTemplate() throws PebbleException, IOException {
+  void testClassLoaderLoaderWithNestedTemplate() throws PebbleException, IOException {
     Loader<?> loader = new ClasspathLoader();
     loader.setPrefix("templates");
     loader.setSuffix(".peb");
@@ -63,7 +65,7 @@ public class LoaderTest {
   }
 
   @Test
-  public void testClassLoaderLoaderWithNestedTemplateInJar() throws PebbleException, IOException {
+  void testClassLoaderLoaderWithNestedTemplateInJar() throws PebbleException, IOException {
     URL resource = this.getClass().getResource("/templateinjar.jar");
     assertNotNull(resource);
     Loader<?> loader = new ClasspathLoader(new URLClassLoader(new URL[]{resource}, null));
@@ -78,7 +80,7 @@ public class LoaderTest {
   }
 
   @Test
-  public void testFileLoader() throws PebbleException, IOException, URISyntaxException {
+  void testFileLoader() throws PebbleException, IOException, URISyntaxException {
     Loader<?> loader = new FileLoader();
     loader.setSuffix(".suffix");
     PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
@@ -91,7 +93,7 @@ public class LoaderTest {
   }
 
   @Test
-  public void testDelegatingLoader() throws PebbleException, IOException {
+  void testDelegatingLoader() throws PebbleException, IOException {
     List<Loader<?>> loaders = new ArrayList<>();
     loaders.add(new StringLoaderFailure());
     loaders.add(new StringLoaderOne());
@@ -107,7 +109,7 @@ public class LoaderTest {
   }
 
   @Test
-  public void testGetLiteralTemplate() throws IOException {
+  void testGetLiteralTemplate() throws IOException {
     PebbleEngine engine = new PebbleEngine.Builder().build();
     PebbleTemplate template = engine.getLiteralTemplate("hello {{ object }}");
 

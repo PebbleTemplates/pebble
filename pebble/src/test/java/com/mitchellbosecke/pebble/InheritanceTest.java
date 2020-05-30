@@ -8,24 +8,26 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
-public class InheritanceTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class InheritanceTest {
 
   private static final String LINE_SEPARATOR = System.lineSeparator();
 
   @Test
-  public void testSimpleInheritance() throws PebbleException, IOException {
+  void testSimpleInheritance() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.parent.peb");
 
@@ -39,7 +41,7 @@ public class InheritanceTest {
   }
 
   @Test
-  public void testMultiLevelInheritance() throws PebbleException, IOException {
+  void testMultiLevelInheritance() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.child.peb");
 
@@ -53,7 +55,7 @@ public class InheritanceTest {
   }
 
   @Test
-  public void testDynamicInheritance() throws PebbleException, IOException {
+  void testDynamicInheritance() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
     PebbleTemplate template = pebble.getTemplate("templates/template.dynamicChild.peb");
     Map<String, Object> context = new HashMap<>();
@@ -70,7 +72,7 @@ public class InheritanceTest {
   }
 
   @Test
-  public void testNullParent() throws PebbleException, IOException {
+  void testNullParent() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
     PebbleTemplate template = pebble

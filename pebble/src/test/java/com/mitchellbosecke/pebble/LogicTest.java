@@ -8,13 +8,13 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.utils.Pair;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -25,12 +25,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
 
-public class LogicTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+class LogicTest {
 
   @Test
-  public void testUnaryOperators() throws PebbleException, IOException {
+  void testUnaryOperators() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -43,7 +45,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testNotUnaryOperator() throws PebbleException, IOException {
+  void testNotUnaryOperator() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -76,7 +78,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testNotUnaryOperatorWithStrictVariables() throws PebbleException, IOException {
+  void testNotUnaryOperatorWithStrictVariables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -118,7 +120,7 @@ public class LogicTest {
    * Issue #36
    */
   @Test
-  public void testTruthinessOfNullVariableWithoutStrictMode() throws PebbleException, IOException {
+  void testTruthinessOfNullVariableWithoutStrictMode() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -150,7 +152,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testTruthinessOfNullVariableWithStrictMode() throws PebbleException, IOException {
+  void testTruthinessOfNullVariableWithStrictMode() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 
@@ -189,7 +191,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testBinaryOperators() throws PebbleException, IOException {
+  void testBinaryOperators() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -206,7 +208,7 @@ public class LogicTest {
    * java's algebraic operators.
    */
   @Test
-  public void testBinaryOperatorOnAttribute() throws PebbleException, IOException {
+  void testBinaryOperatorOnAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -223,7 +225,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testBinaryOperatorsBigDecimal() throws PebbleException, IOException {
+  void testBinaryOperatorsBigDecimal() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -241,7 +243,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testBinaryOperatorsBigDecimalWithDouble() throws PebbleException, IOException {
+  void testBinaryOperatorsBigDecimalWithDouble() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -259,7 +261,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testBinaryOperatorsBigInteger() throws PebbleException, IOException {
+  void testBinaryOperatorsBigInteger() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -277,7 +279,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testBinaryOperatorsBigIntegerWithLong() throws PebbleException, IOException {
+  void testBinaryOperatorsBigIntegerWithLong() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -295,7 +297,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testBinaryOperatorsShort() throws PebbleException, IOException {
+  void testBinaryOperatorsShort() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -317,7 +319,7 @@ public class LogicTest {
    * java's algebraic operators.
    */
   @Test
-  public void testUnaryOperatorOnAttribute() throws PebbleException, IOException {
+  void testUnaryOperatorOnAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -332,7 +334,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testNotUnaryOperatorOnAttribute() throws PebbleException, IOException {
+  void testNotUnaryOperatorOnAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -347,7 +349,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testLogicOperatorOnAttributes() throws PebbleException, IOException {
+  void testLogicOperatorOnAttributes() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -363,7 +365,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testLogicOperatorsWithNullValues() throws PebbleException, IOException {
+  void testLogicOperatorsWithNullValues() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -405,7 +407,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testLogicOperatorsWithNullValuesWithStrictVariables()
+  void testLogicOperatorsWithNullValuesWithStrictVariables()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
@@ -495,7 +497,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testNotOperatorPrecedence() throws IOException {
+  void testNotOperatorPrecedence() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -510,7 +512,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testNotOperatorWithParenthesisPrecedence() throws IOException {
+  void testNotOperatorWithParenthesisPrecedence() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -525,7 +527,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testTernary() throws PebbleException, IOException {
+  void testTernary() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -539,7 +541,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testComparisons() throws PebbleException, IOException {
+  void testComparisons() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -567,7 +569,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testComparisonsOnDifferingOperands() throws PebbleException, IOException {
+  void testComparisonsOnDifferingOperands() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -581,7 +583,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testEqualsOperator() throws PebbleException, IOException {
+  void testEqualsOperator() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -597,7 +599,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testEqualsOperatorWithNulls() throws PebbleException, IOException {
+  void testEqualsOperatorWithNulls() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -613,7 +615,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testNotEqualsOperator() throws PebbleException, IOException {
+  void testNotEqualsOperator() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -629,7 +631,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testEqualsOperatorWithPrimitives() throws PebbleException, IOException {
+  void testEqualsOperatorWithPrimitives() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -652,7 +654,7 @@ public class LogicTest {
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
   @Test()
-  public void testEqualsOperatorWithNumberObjects() throws PebbleException, IOException {
+  void testEqualsOperatorWithNumberObjects() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -687,7 +689,7 @@ public class LogicTest {
    * AbstractPebbleTemplate returns Objects and Objects can not be compared to primitives.
    */
   @Test()
-  public void testComparisonWithAttributeOperand() throws PebbleException, IOException {
+  void testComparisonWithAttributeOperand() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -706,7 +708,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testComparisonBigDecimal() throws PebbleException, IOException {
+  void testComparisonBigDecimal() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -738,7 +740,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testComparisonWithNull() throws PebbleException, IOException {
+  void testComparisonWithNull() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -756,7 +758,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testComparisonWithNull2() throws PebbleException, IOException {
+  void testComparisonWithNull2() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -774,7 +776,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testComparisonBigDecimalWithDouble() throws PebbleException, IOException {
+  void testComparisonBigDecimalWithDouble() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -817,7 +819,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testIsOperatorPrecedence() throws PebbleException, IOException {
+  void testIsOperatorPrecedence() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -831,7 +833,7 @@ public class LogicTest {
   }
 
   @Test()
-  public void testIsOperatorPrecedenceWithAnd() throws PebbleException, IOException {
+  void testIsOperatorPrecedenceWithAnd() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -845,7 +847,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsOperator() throws PebbleException, IOException {
+  void testContainsOperator() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -862,7 +864,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsOperatorWithNull() throws PebbleException, IOException {
+  void testContainsOperatorWithNull() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -877,7 +879,7 @@ public class LogicTest {
 
   @SuppressWarnings("serial")
   @Test
-  public void testContainsOperator2() throws PebbleException, IOException {
+  void testContainsOperator2() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -901,7 +903,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsOperator4() throws PebbleException, IOException {
+  void testContainsOperator4() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -918,7 +920,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsOperator5() throws PebbleException, IOException {
+  void testContainsOperator5() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -935,7 +937,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsOperatorWithAnd() throws PebbleException, IOException {
+  void testContainsOperatorWithAnd() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -952,7 +954,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsOperatorWithOr() throws PebbleException, IOException {
+  void testContainsOperatorWithOr() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -969,7 +971,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsOperatorWithNot() throws PebbleException, IOException {
+  void testContainsOperatorWithNot() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -986,7 +988,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testContainsWithArrays() throws PebbleException, IOException {
+  void testContainsWithArrays() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -1064,7 +1066,7 @@ public class LogicTest {
    * Tests if the string concatenation is working.
    */
   @Test
-  public void testStringConcatenation() throws PebbleException, IOException {
+  void testStringConcatenation() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -1087,7 +1089,7 @@ public class LogicTest {
    * Tests if the macro output SafeString concatenation is working.
    */
   @Test
-  public void testMacroSafeStringConcatenation() throws PebbleException, IOException {
+  void testMacroSafeStringConcatenation() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -1107,7 +1109,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testListSizeEmpty() throws IOException {
+  void testListSizeEmpty() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .strictVariables(false)
@@ -1129,7 +1131,7 @@ public class LogicTest {
   }
 
   @Test
-  public void testListSize() throws IOException {
+  void testListSize() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .strictVariables(false)

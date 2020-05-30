@@ -95,9 +95,9 @@ public class DefaultAttributeResolver implements AttributeResolver {
     Object result = null;
     try {
       if (member instanceof Method) {
-        argumentValues = TypeUtils
-            .compatibleCast(argumentValues, ((Method) member).getParameterTypes());
-        result = ((Method) member).invoke(object, argumentValues);
+        Method method = (Method) member;
+        argumentValues = TypeUtils.compatibleCast(argumentValues, method.getParameterTypes());
+        result = method.invoke(object, argumentValues);
       } else if (member instanceof Field) {
         result = ((Field) member).get(object);
       }

@@ -9,6 +9,8 @@
 package com.mitchellbosecke.pebble;
 
 
+import com.mitchellbosecke.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
+import com.mitchellbosecke.pebble.attributes.methodaccess.MethodAccessValidator;
 import com.mitchellbosecke.pebble.cache.CacheKey;
 import com.mitchellbosecke.pebble.cache.PebbleCache;
 import com.mitchellbosecke.pebble.cache.tag.ConcurrentMapTagCache;
@@ -39,14 +41,13 @@ import com.mitchellbosecke.pebble.parser.ParserOptions;
 import com.mitchellbosecke.pebble.template.EvaluationOptions;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,16 +156,16 @@ public class PebbleEngine {
     Reader templateReader = loader.getReader(cacheKey);
     
     try {
-      logger.debug("Tokenizing template named {}", templateName);
+      this.logger.debug("Tokenizing template named {}", templateName);
       LexerImpl lexer = new LexerImpl(this.syntax,
           this.extensionRegistry.getUnaryOperators().values(),
           this.extensionRegistry.getBinaryOperators().values());
       TokenStream tokenStream = lexer.tokenize(templateReader, templateName);
-      logger.trace("TokenStream: {}", tokenStream);
+      this.logger.trace("TokenStream: {}", tokenStream);
       
       Parser parser = new ParserImpl(this.extensionRegistry.getUnaryOperators(),
           this.extensionRegistry.getBinaryOperators(), this.extensionRegistry.getTokenParsers(),
-          this.parserOptions);
+              this.parserOptions);
       RootNode root = parser.parse(tokenStream);
 
       PebbleTemplateImpl instance = new PebbleTemplateImpl(this, root, templateName);
@@ -263,7 +264,7 @@ public class PebbleEngine {
 
     private Loader<?> loader;
 
-    private List<Extension> userProvidedExtensions = new ArrayList<>();
+    private final List<Extension> userProvidedExtensions = new ArrayList<>();
 
     private Syntax syntax;
 
@@ -281,15 +282,17 @@ public class PebbleEngine {
 
     private PebbleCache<CacheKey, Object> tagCache;
 
-    private EscaperExtension escaperExtension = new EscaperExtension();
-
-    private boolean allowUnsafeMethods;
+    private final EscaperExtension escaperExtension = new EscaperExtension();
 
     private boolean literalDecimalTreatedAsInteger = false;
 
     private boolean greedyMatchMethod = false;
 
     private boolean allowOverrideCoreOperators = false;
+
+    private boolean literalNumbersAsBigDecimals = false;
+
+    private MethodAccessValidator methodAccessValidator = new BlacklistMethodAccessValidator();
 
     /**
      * Creates the builder.
@@ -316,9 +319,7 @@ public class PebbleEngine {
      * @return This builder object
      */
     public Builder extension(Extension... extensions) {
-      for (Extension extension : extensions) {
-        this.userProvidedExtensions.add(extension);
-      }
+      Collections.addAll(this.userProvidedExtensions, extensions);
       return this;
     }
 
@@ -477,13 +478,13 @@ public class PebbleEngine {
     }
 
     /**
-     * Enable/disable unsafe methods access for attributes
+     * Validator that can be used to validate object/method access
      *
-     * @param allowUnsafeMethods toggle to enable/disable unsafe methods access
+     * @param methodAccessValidator Validator that can be used to validate object/method access
      * @return This builder object
      */
-    public Builder allowUnsafeMethods(boolean allowUnsafeMethods) {
-      this.allowUnsafeMethods = allowUnsafeMethods;
+    public Builder methodAccessValidator(MethodAccessValidator methodAccessValidator) {
+      this.methodAccessValidator = methodAccessValidator;
       return this;
     }
 
@@ -496,6 +497,18 @@ public class PebbleEngine {
      */
     public Builder literalDecimalTreatedAsInteger(boolean literalDecimalTreatedAsInteger) {
       this.literalDecimalTreatedAsInteger = literalDecimalTreatedAsInteger;
+      return this;
+    }
+
+    /**
+     * Enable/disable treat literal numbers as BigDecimals. Default is disabled, treated as Long/Double.
+     *
+     * @param literalNumbersAsBigDecimals toggle to enable/disable literal numbers treated as
+     * BigDecimals
+     * @return This builder object
+     */
+    public Builder literalNumbersAsBigDecimals(boolean literalNumbersAsBigDecimals) {
+      this.literalNumbersAsBigDecimals = literalNumbersAsBigDecimals;
       return this;
     }
 
@@ -568,11 +581,10 @@ public class PebbleEngine {
 
       ParserOptions parserOptions = new ParserOptions();
       parserOptions.setLiteralDecimalTreatedAsInteger(this.literalDecimalTreatedAsInteger);
+      parserOptions.setLiteralNumbersAsBigDecimals(this.literalNumbersAsBigDecimals);
 
-      EvaluationOptions evaluationOptions = new EvaluationOptions();
-      evaluationOptions.setAllowUnsafeMethods(this.allowUnsafeMethods);
-      evaluationOptions.setGreedyMatchMethod(this.greedyMatchMethod);
-
+      EvaluationOptions evaluationOptions = new EvaluationOptions(this.greedyMatchMethod,
+          this.methodAccessValidator);
       return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale,
           this.tagCache, this.templateCache,
           this.executorService, extensionRegistry, parserOptions, evaluationOptions);

@@ -1,28 +1,30 @@
 package com.mitchellbosecke.pebble.macro;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test calls of macros
  */
-public class TestMacroCalls {
+class TestMacroCalls {
 
 
   /**
    * Checks, if macros are called to often
    */
   @Test
-  public void testMultipleMacroCalls() throws PebbleException, IOException {
+  void testMultipleMacroCalls() throws PebbleException, IOException {
     // Build a pebble engine with one configured filter ("testfilter" - TestFilter.java)
     PebbleEngine pebble = new PebbleEngine.Builder()
         .extension(new PebbleExtension())
@@ -48,7 +50,7 @@ public class TestMacroCalls {
   }
 
   @Test
-  public void testMacroCallsWithImportAs() throws PebbleException, IOException {
+  void testMacroCallsWithImportAs() throws PebbleException, IOException {
     // Build a pebble engine with one configured filter ("testfilter" - TestFilter.java)
     PebbleEngine pebble = new PebbleEngine.Builder()
         .extension(new PebbleExtension())
@@ -74,7 +76,7 @@ public class TestMacroCalls {
   }
 
   @Test
-  public void testMacroCallsWithFromToken() throws PebbleException, IOException {
+  void testMacroCallsWithFromToken() throws PebbleException, IOException {
     // Build a pebble engine with one configured filter ("testfilter" - TestFilter.java)
     PebbleEngine pebble = new PebbleEngine.Builder()
         .extension(new PebbleExtension())
@@ -100,7 +102,7 @@ public class TestMacroCalls {
   }
 
   @Test
-  public void testInvalidMacroWithFromToken() throws IOException {
+  void testInvalidMacroWithFromToken() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().build();
 
     try {
@@ -115,7 +117,7 @@ public class TestMacroCalls {
   }
 
   @Test
-  public void testInvalidMacro() throws IOException {
+  void testInvalidMacro() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().build();
 
     try {
@@ -130,7 +132,7 @@ public class TestMacroCalls {
   }
 
   @Test
-  public void testInvalidSameAliasMacroWithFromToken() throws IOException {
+  void testInvalidSameAliasMacroWithFromToken() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().build();
 
     try {
@@ -145,7 +147,7 @@ public class TestMacroCalls {
   }
 
   @Test
-  public void testInvalidSameAliasMacroWithImportAsToken() throws IOException {
+  void testInvalidSameAliasMacroWithImportAsToken() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().build();
 
     try {

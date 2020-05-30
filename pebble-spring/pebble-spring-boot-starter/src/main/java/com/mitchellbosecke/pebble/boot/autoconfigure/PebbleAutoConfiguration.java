@@ -1,121 +1,68 @@
 package com.mitchellbosecke.pebble.boot.autoconfigure;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.attributes.methodaccess.MethodAccessValidator;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.spring.PebbleViewResolver;
 import com.mitchellbosecke.pebble.spring.extension.SpringExtension;
 import java.util.List;
-import javax.servlet.Servlet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.lang.Nullable;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(PebbleEngine.class)
-@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(PebbleProperties.class)
-public class PebbleAutoConfiguration {
+@Import({PebbleServletWebConfiguration.class, PebbleReactiveWebConfiguration.class})
+public class PebbleAutoConfiguration extends AbstractPebbleConfiguration {
 
-  @Configuration
+  @Bean
   @ConditionalOnMissingBean(name = "pebbleLoader")
-  public static class DefaultLoaderConfiguration {
-
-    @Autowired
-    private PebbleProperties properties;
-
-    @Bean
-    public Loader<?> pebbleLoader() {
-      ClasspathLoader loader = new ClasspathLoader();
-      loader.setCharset(this.properties.getCharsetName());
-      // classpath loader does not like leading slashes in resource paths
-      loader.setPrefix(stripLeadingSlash(this.properties.getPrefix()));
-      loader.setSuffix(this.properties.getSuffix());
-      return loader;
-    }
-
+  public Loader<?> pebbleLoader(PebbleProperties properties) {
+    ClasspathLoader loader = new ClasspathLoader();
+    loader.setCharset(properties.getCharsetName());
+    // classpath loader does not like leading slashes in resource paths
+    loader.setPrefix(this.stripLeadingSlash(properties.getPrefix()));
+    loader.setSuffix(properties.getSuffix());
+    return loader;
   }
 
-  @Configuration
+  @Bean
+  @ConditionalOnMissingBean
+  public SpringExtension springExtension(MessageSource messageSource) {
+    return new SpringExtension(messageSource);
+  }
+
+  @Bean
   @ConditionalOnMissingBean(name = "pebbleEngine")
-  public static class PebbleDefaultConfiguration {
-
-    @Autowired
-    private PebbleProperties properties;
-
-    @Autowired
-    private Loader<?> pebbleLoader;
-
-    @Autowired(required = false)
-    private List<Extension> extensions;
-
-    @Bean
-    public SpringExtension pebbleSpringExtension() {
-      return new SpringExtension();
+  public PebbleEngine pebbleEngine(PebbleProperties properties,
+      Loader<?> pebbleLoader,
+      SpringExtension springExtension,
+      @Nullable List<Extension> extensions,
+      @Nullable MethodAccessValidator methodAccessValidator) {
+    PebbleEngine.Builder builder = new PebbleEngine.Builder();
+    builder.loader(pebbleLoader);
+    builder.extension(springExtension);
+    if (extensions != null && !extensions.isEmpty()) {
+      builder.extension(extensions.toArray(new Extension[extensions.size()]));
     }
-
-    @Bean
-    public PebbleEngine pebbleEngine() {
-      PebbleEngine.Builder builder = new PebbleEngine.Builder();
-      builder.loader(this.pebbleLoader);
-      builder.extension(this.pebbleSpringExtension());
-      if (this.extensions != null && !this.extensions.isEmpty()) {
-        builder.extension(this.extensions.toArray(new Extension[this.extensions.size()]));
-      }
-      if (!this.properties.isCache()) {
-        builder.cacheActive(false);
-      }
-      if (this.properties.getDefaultLocale() != null) {
-        builder.defaultLocale(this.properties.getDefaultLocale());
-      }
-      builder.strictVariables(this.properties.isStrictVariables());
-      builder.greedyMatchMethod(this.properties.isGreedyMatchMethod());
-      return builder.build();
+    if (!properties.isCache()) {
+      builder.cacheActive(false);
     }
+    if (properties.getDefaultLocale() != null) {
+      builder.defaultLocale(properties.getDefaultLocale());
+    }
+    builder.strictVariables(properties.isStrictVariables());
+    builder.greedyMatchMethod(properties.isGreedyMatchMethod());
+    if (methodAccessValidator != null) {
+      builder.methodAccessValidator(methodAccessValidator);
+    }
+    return builder.build();
   }
-
-  @Configuration
-  @ConditionalOnWebApplication
-  @ConditionalOnClass({Servlet.class})
-  public static class PebbleViewResolverConfiguration {
-
-    @Autowired
-    private PebbleProperties properties;
-
-    @Autowired
-    private PebbleEngine pebbleEngine;
-
-    @Bean
-    @ConditionalOnMissingBean(name = "pebbleViewResolver")
-    public PebbleViewResolver pebbleViewResolver() {
-      PebbleViewResolver pvr = new PebbleViewResolver();
-      this.properties.applyToMvcViewResolver(pvr);
-
-      pvr.setPebbleEngine(this.pebbleEngine);
-      if (this.pebbleEngine.getLoader() instanceof ClasspathLoader) {
-        // classpathloader doesn't like leading slashes in paths
-        pvr.setPrefix(stripLeadingSlash(this.properties.getPrefix()));
-      }
-
-      return pvr;
-    }
-  }
-
-  private static String stripLeadingSlash(String value) {
-    if (value == null) {
-      return null;
-    }
-    if (value.startsWith("/")) {
-      return value.substring(1);
-    }
-    return value;
-  }
-
 }

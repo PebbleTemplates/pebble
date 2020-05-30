@@ -48,4 +48,8 @@ public class StringLoader implements Loader<String> {
     return templateName;
   }
 
+  @Override
+  public boolean resourceExists(String templateName) {
+    return true;
+  }
 }

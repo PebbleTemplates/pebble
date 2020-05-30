@@ -10,7 +10,7 @@ As of version 3.1.0 and in order to follow this naming [recommendation](https://
 | Old artifactId | New artifactId | spring-boot version |
 | --- | --- | --- |
 | pebble-spring-boot-starter | pebble-legacy-spring-boot-starter | 1.5.x |
-| pebble-spring-boot-2-starter | pebble-spring-boot-starter | 2.1.x |
+| pebble-spring-boot-2-starter | pebble-spring-boot-starter | 2.x.x |
 
 # New group id
 Please note that the pebble's groupId has been updated as of version 2.5.0
@@ -18,7 +18,7 @@ Please note that the pebble's groupId has been updated as of version 2.5.0
 <dependency>
 	<groupId>io.pebbletemplates</groupId>
 	<artifactId>pebble</artifactId>
-	<version>3.1.0</version>
+	<version>3.1.4</version>
 </dependency>
 ```
 

@@ -8,14 +8,14 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -29,9 +29,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
 
-public class ConcurrencyTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+class ConcurrencyTest {
 
   private static Random r = new SecureRandom();
 
@@ -54,7 +56,7 @@ public class ConcurrencyTest {
   }
 
   @Test
-  public void testConcurrentEvaluation() throws InterruptedException, PebbleException {
+  void testConcurrentEvaluation() throws InterruptedException, PebbleException {
     PebbleEngine engine = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -118,7 +120,7 @@ public class ConcurrencyTest {
    * scenes).
    */
   @Test
-  public void testThreadSafeCompilationOfMultipleTemplates()
+  void testThreadSafeCompilationOfMultipleTemplates()
       throws InterruptedException, PebbleException {
     final PebbleEngine engine = new PebbleEngine.Builder().templateCache(null)
         .strictVariables(false).build();
@@ -209,7 +211,7 @@ public class ConcurrencyTest {
    * Issue #40
    */
   @Test
-  public void testConcurrentEvaluationWithDifferingLocals()
+  void testConcurrentEvaluationWithDifferingLocals()
       throws InterruptedException, PebbleException {
 
     final PebbleEngine engine = new PebbleEngine.Builder().loader(new StringLoader())
@@ -267,7 +269,7 @@ public class ConcurrencyTest {
   }
 
   @Test
-  public void testConcurrentEvaluationWithImportingMacros() throws PebbleException, IOException {
+  void testConcurrentEvaluationWithImportingMacros() throws PebbleException, IOException {
     Loader<String> loader = new Loader<String>() {
       private final String TEMPLATE =
           "{% import \"macro\" %}"
@@ -324,6 +326,10 @@ public class ConcurrencyTest {
         return templateName;
       }
 
+      @Override
+      public boolean resourceExists(String templateName) {
+        return true;
+      }
     };
 
     PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
@@ -351,7 +357,7 @@ public class ConcurrencyTest {
   }
 
   @Test
-  public void testConcurrentEvaluationWithException() throws PebbleException {
+  void testConcurrentEvaluationWithException() throws PebbleException {
     PebbleEngine engine = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -389,7 +395,6 @@ public class ConcurrencyTest {
 
     executor.shutdown();
 
-    assertEquals("Expection the result of multiple threads and single thread execution to match.",
-        singleThreadResult.toString(), multipleThreadResult.toString());
+    assertEquals(singleThreadResult.toString(), multipleThreadResult.toString(), "Expection the result of multiple threads and single thread execution to match.");
   }
 }

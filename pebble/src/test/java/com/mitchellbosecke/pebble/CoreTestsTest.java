@@ -8,11 +8,12 @@
  */
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -20,12 +21,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
 
-public class CoreTestsTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class CoreTestsTest {
 
   @Test
-  public void testEven() throws PebbleException, IOException {
+  void testEven() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -42,7 +45,7 @@ public class CoreTestsTest {
    * force it to take an int as an input.
    */
   @Test
-  public void testEvenWithInteger() throws PebbleException, IOException {
+  void testEvenWithInteger() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -56,20 +59,22 @@ public class CoreTestsTest {
     assertEquals("yes", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testNullEven() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testNullEven() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{% if null is even %}yes{% else %}no{% endif %}";
-    PebbleTemplate template = pebble.getTemplate(source);
+      String source = "{% if null is even %}yes{% else %}no{% endif %}";
+      PebbleTemplate template = pebble.getTemplate(source);
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer);
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+    });
   }
 
   @Test
-  public void testOdd() throws PebbleException, IOException {
+  void testOdd() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -86,7 +91,7 @@ public class CoreTestsTest {
    * force it to take an int as an input.
    */
   @Test
-  public void testOddWithInteger() throws PebbleException, IOException {
+  void testOddWithInteger() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -100,20 +105,22 @@ public class CoreTestsTest {
     assertEquals("yes", writer.toString());
   }
 
-  @Test(expected = PebbleException.class)
-  public void testNullOdd() throws PebbleException, IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .strictVariables(false).build();
+  @Test
+  void testNullOdd() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
 
-    String source = "{% if null is odd %}yes{% else %}no{% endif %}";
-    PebbleTemplate template = pebble.getTemplate(source);
+      String source = "{% if null is odd %}yes{% else %}no{% endif %}";
+      PebbleTemplate template = pebble.getTemplate(source);
 
-    Writer writer = new StringWriter();
-    template.evaluate(writer);
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+    });
   }
 
   @Test
-  public void testNull() throws PebbleException, IOException {
+  void testNull() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -128,7 +135,7 @@ public class CoreTestsTest {
   }
 
   @Test
-  public void testEmpty() throws PebbleException, IOException {
+  void testEmpty() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -143,7 +150,7 @@ public class CoreTestsTest {
   }
 
   @Test
-  public void testIterables() throws PebbleException, IOException {
+  void testIterables() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -160,7 +167,7 @@ public class CoreTestsTest {
   }
 
   @Test
-  public void testIsnt() throws PebbleException, IOException {
+  void testIsnt() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -178,7 +185,7 @@ public class CoreTestsTest {
    * Issue #27
    */
   @Test
-  public void testNegativeTest() throws PebbleException, IOException {
+  void testNegativeTest() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -196,7 +203,7 @@ public class CoreTestsTest {
    * Issue #27
    */
   @Test
-  public void testNegativeTestOnAttribute() throws PebbleException, IOException {
+  void testNegativeTestOnAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -210,7 +217,7 @@ public class CoreTestsTest {
   }
 
   @Test
-  public void testMapTest() throws PebbleException, IOException {
+  void testMapTest() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -227,7 +234,7 @@ public class CoreTestsTest {
    * Tests if the test function 'defined' is working.
    */
   @Test
-  public void testDefined() throws PebbleException, IOException {
+  void testDefined() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -245,7 +252,7 @@ public class CoreTestsTest {
    * Tests if the test function 'defined' is working on maps.
    */
   @Test
-  public void testDefinedWithMap() throws PebbleException, IOException {
+  void testDefinedWithMap() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(true).build();
 

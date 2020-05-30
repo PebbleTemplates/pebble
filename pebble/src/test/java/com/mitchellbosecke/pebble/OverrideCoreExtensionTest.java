@@ -1,8 +1,5 @@
 package com.mitchellbosecke.pebble;
 
-import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -19,18 +16,23 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
 
-public class OverrideCoreExtensionTest {
+import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class OverrideCoreExtensionTest {
 
   @Test
-  public void testOverrideCodeExtensionFunction() throws IOException {
+  void testOverrideCodeExtensionFunction() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .extension(new TestExtension())
@@ -44,7 +46,7 @@ public class OverrideCoreExtensionTest {
   }
 
   @Test
-  public void testOverrideCodeExtensionFilter() throws IOException {
+  void testOverrideCodeExtensionFilter() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .extension(new TestExtension())
@@ -58,7 +60,7 @@ public class OverrideCoreExtensionTest {
   }
 
   @Test
-  public void testOverrideCoreExtensionUnaryOperator() throws IOException {
+  void testOverrideCoreExtensionUnaryOperator() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .extension(new TestExtension())
@@ -73,7 +75,7 @@ public class OverrideCoreExtensionTest {
   }
 
   @Test
-  public void testByDefaultPreventsOverrideCoreExtensionUnaryOperator() throws IOException {
+  void testByDefaultPreventsOverrideCoreExtensionUnaryOperator() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .extension(new TestExtension())
@@ -87,7 +89,7 @@ public class OverrideCoreExtensionTest {
   }
 
   @Test
-  public void testOverrideCoreExtensionBinaryOperator() throws IOException {
+  void testOverrideCoreExtensionBinaryOperator() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .extension(new TestExtension())
@@ -102,7 +104,7 @@ public class OverrideCoreExtensionTest {
   }
 
   @Test
-  public void testByDefaultPreventsOverrideCoreExtensionBinaryOperator() throws IOException {
+  void testByDefaultPreventsOverrideCoreExtensionBinaryOperator() throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
         .extension(new TestExtension())

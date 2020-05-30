@@ -9,9 +9,9 @@ package com.mitchellbosecke.pebble.spring.config;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.spring.PebbleViewResolver;
 import com.mitchellbosecke.pebble.spring.bean.SomeBean;
 import com.mitchellbosecke.pebble.spring.extension.SpringExtension;
+import com.mitchellbosecke.pebble.spring.servlet.PebbleViewResolver;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ViewResolver;
  *
  * @author Eric Bussieres
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MVCConfig {
 
   @Bean
@@ -40,17 +40,18 @@ public class MVCConfig {
   }
 
   @Bean
-  public PebbleEngine pebbleEngine(SpringExtension springExtension) {
+  public PebbleEngine pebbleEngine(SpringExtension springExtension,
+                                   Loader<?> templateLoader) {
     return new PebbleEngine.Builder()
-        .loader(this.templateLoader())
+        .loader(templateLoader)
         .strictVariables(false)
         .extension(springExtension)
         .build();
   }
 
   @Bean
-  public SpringExtension springExtension() {
-    return new SpringExtension();
+  public SpringExtension springExtension(MessageSource messageSource) {
+    return new SpringExtension(messageSource);
   }
 
   @Bean
@@ -60,10 +61,9 @@ public class MVCConfig {
 
   @Bean
   public ViewResolver viewResolver(PebbleEngine pebbleEngine) {
-    PebbleViewResolver viewResolver = new PebbleViewResolver();
+    PebbleViewResolver viewResolver = new PebbleViewResolver(pebbleEngine);
     viewResolver.setPrefix("com/mitchellbosecke/pebble/spring/template/");
     viewResolver.setSuffix(".html");
-    viewResolver.setPebbleEngine(pebbleEngine);
     viewResolver.setContentType("text/html");
     return viewResolver;
   }

@@ -1,21 +1,23 @@
 package com.mitchellbosecke.pebble.node;
 
-import static org.junit.Assert.assertEquals;
-
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
+import org.junit.jupiter.api.Test;
+
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
-public class ForNodeTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ForNodeTest {
 
   @Test
-  public void testVariableScope() throws Exception {
+  void testVariableScope() throws Exception {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -43,7 +45,7 @@ public class ForNodeTest {
   }
 
   @Test
-  public void testNestedLoop() throws Exception {
+  void testNestedLoop() throws Exception {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -65,7 +67,7 @@ public class ForNodeTest {
   }
 
   @Test
-  public void testLoopIndex() throws Exception {
+  void testLoopIndex() throws Exception {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -89,7 +91,7 @@ public class ForNodeTest {
   }
 
   @Test
-  public void loopOverEnumeration() throws Exception {
+  void loopOverEnumeration() throws Exception {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
@@ -106,12 +108,12 @@ public class ForNodeTest {
 
       @Override
       public boolean hasMoreElements() {
-        return value < 10;
+        return this.value < 10;
       }
 
       @Override
       public String nextElement() {
-        return String.valueOf(value++);
+        return String.valueOf(this.value++);
       }
     });
 

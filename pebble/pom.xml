@@ -1,43 +1,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>io.pebbletemplates</groupId>
     <artifactId>pebble-project</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>pebble</artifactId>
-  <packaging>jar</packaging>
 
+  <packaging>jar</packaging>
   <name>Pebble</name>
+
   <description>Templating engine for Java.</description>
   <url>http://pebbletemplates.io</url>
+
+  <properties>
+    <unbescape.version>1.1.6.RELEASE</unbescape.version>
+    <slf4j.version>1.7.25</slf4j.version>
+    <caffeine.version>2.6.2</caffeine.version>
+    <servlet-api.version>2.5</servlet-api.version>
+
+    <assertj.version>3.13.2</assertj.version>
+    <commons-io.version>2.6</commons-io.version>
+    <logback-classic.version>1.2.3</logback-classic.version>
+    <junit-jupiter.version>5.5.2</junit-jupiter.version>
+  </properties>
 
   <dependencies>
     <!-- required dependencies -->
     <dependency>
       <groupId>org.unbescape</groupId>
       <artifactId>unbescape</artifactId>
-      <version>1.1.6.RELEASE</version>
+      <version>${unbescape.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
+      <version>${slf4j.version}</version>
     </dependency>
 
     <!-- optional dependencies -->
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
-      <version>2.6.2</version>
+      <version>${caffeine.version}</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <version>${servlet-api.version}</version>
       <optional>true</optional>
     </dependency>
 
@@ -45,30 +57,27 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.3</version>
+      <version>${logback-classic.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
-	<dependency>
-	    <groupId>org.assertj</groupId>
-	    <artifactId>assertj-core</artifactId>
-	    <version>3.13.2</version>
-	    <scope>test</scope>
-	</dependency>
-    <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-    <!-- Used for loading template files and expected result files for template tests -->
-	<dependency>
-	    <groupId>commons-io</groupId>
-	    <artifactId>commons-io</artifactId>
-	    <version>2.6</version>
-	    <scope>test</scope>
-	</dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

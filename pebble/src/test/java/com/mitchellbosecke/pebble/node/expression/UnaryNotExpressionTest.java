@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -13,19 +13,20 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class UnaryNotExpressionTest {
+class UnaryNotExpressionTest {
 
   private static final String templateSource = "{% if not value %}yes{% else %}no{% endif %}";
 
   private String render(Object foobar) throws IOException {
-    return render(false, foobar);
+    return this.render(false, foobar);
   }
 
   private String render(boolean strict, Object value) throws IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
-            .loader(new StringLoader())
+        .loader(new StringLoader())
             .strictVariables(strict)
             .build();
 
@@ -39,62 +40,53 @@ public class UnaryNotExpressionTest {
   }
 
   @Test
-  public void testIfNotNull() throws IOException {
-    assertEquals("Not Null should be interpreted as TRUE",
-            "yes", render(null));
-  }
-
-  @Test(expected = PebbleException.class)
-  public void testIfNullInStrictMode() throws IOException {
-    render(true, null);
+  void testIfNotNull() throws IOException {
+    assertEquals("yes", this.render(null), "Not Null should be interpreted as TRUE");
   }
 
   @Test
-  public void testIfNotTrue() throws IOException {
-    assertEquals("Not true should be interpreted as FALSE",
-            "no", render(true));
+  void testIfNullInStrictMode() throws IOException {
+    assertThrows(PebbleException.class, () -> this.render(true, null));
   }
 
   @Test
-  public void testIfNotFalse() throws IOException {
-    assertEquals("Not false should be interpreted as TRUE",
-            "yes", render(false));
+  void testIfNotTrue() throws IOException {
+    assertEquals("no", this.render(true), "Not true should be interpreted as FALSE");
   }
 
   @Test
-  public void testIfNotIntegerDifferentThanZero() throws IOException {
-    assertEquals("Not Integer one should be interpreted as FALSE",
-            "no", render(1));
+  void testIfNotFalse() throws IOException {
+    assertEquals("yes", this.render(false), "Not false should be interpreted as TRUE");
   }
 
   @Test
-  public void testIfNotIntegerZero() throws IOException {
-    assertEquals("Not Integer Zero should be interpreted as TRUE",
-            "yes", render(0));
+  void testIfNotIntegerDifferentThanZero() throws IOException {
+    assertEquals("no", this.render(1), "Not Integer one should be interpreted as FALSE");
   }
 
   @Test
-  public void testIfNotFloatDifferentThanZero() throws IOException {
-    assertEquals("Not float different than zero should be interpreted as FALSE",
-            "no", render(1.1));
+  void testIfNotIntegerZero() throws IOException {
+    assertEquals("yes", this.render(0), "Not Integer Zero should be interpreted as TRUE");
   }
 
   @Test
-  public void testIfNotFloatZero() throws IOException {
-    assertEquals("Not float zero should be interpreted as TRUE",
-            "yes", render(0.0));
+  void testIfNotFloatDifferentThanZero() throws IOException {
+    assertEquals("no", this.render(1.1), "Not float different than zero should be interpreted as FALSE");
   }
 
   @Test
-  public void testIfNotString() throws IOException {
-    assertEquals("Not string should be interpreted as FALSE",
-            "no", render("not empty string"));
+  void testIfNotFloatZero() throws IOException {
+    assertEquals("yes", this.render(0.0), "Not float zero should be interpreted as TRUE");
   }
 
   @Test
-  public void testIfNotEmptyString() throws IOException {
-    assertEquals("Not Empty string should be interpreted as TRUE",
-            "yes", render(""));
+  void testIfNotString() throws IOException {
+    assertEquals("no", this.render("not empty string"), "Not string should be interpreted as FALSE");
+  }
+
+  @Test
+  void testIfNotEmptyString() throws IOException {
+    assertEquals("yes", this.render(""), "Not Empty string should be interpreted as TRUE");
   }
 
 }
