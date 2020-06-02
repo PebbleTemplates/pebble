@@ -78,7 +78,7 @@ public class FileLoader implements Loader<String> {
 
     templateName = templateName + (this.getSuffix() == null ? "" : this.getSuffix());
 
-    logger.debug("Looking for template in {}{}.", path.toString(), templateName);
+    logger.trace("Looking for template in {}{}.", path.toString(), templateName);
 
     /*
      * if template name contains path segments, move those segments into the
