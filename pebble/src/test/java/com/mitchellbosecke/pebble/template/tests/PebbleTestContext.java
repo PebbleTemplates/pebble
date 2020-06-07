@@ -131,7 +131,7 @@ public class PebbleTestContext {
 		Writer writer = new StringWriter();
 		template.evaluate(writer, this.templateContext);
 		String templateOutput = writer.toString();
-		logger.debug("Template Output: {}", templateOutput);
+		logger.debug("Template Output:\n{}", templateOutput);
 		return templateOutput;
 	}
 	
