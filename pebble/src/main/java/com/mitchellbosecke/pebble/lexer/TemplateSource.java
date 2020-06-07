@@ -115,7 +115,7 @@ public class TemplateSource implements CharSequence {
    * @param amount Amount of characters to advance by
    */
   public void advance(int amount) {
-	logger.debug("Advancing amoun: {}", amount);
+	logger.trace("Advancing amount: {}", amount);
     int index = 0;
     while (index < amount) {
       int sizeOfNewline = advanceThroughNewline(index);
@@ -141,7 +141,7 @@ public class TemplateSource implements CharSequence {
         index++;
       }
     }
-    logger.debug("Advanced through {} characters of whitespace.", index);
+    logger.trace("Advanced through {} characters of whitespace.", index);
     this.size -= index;
     this.offset += index;
   }

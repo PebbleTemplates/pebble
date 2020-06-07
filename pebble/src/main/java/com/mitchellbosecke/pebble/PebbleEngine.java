@@ -156,7 +156,7 @@ public class PebbleEngine {
     Reader templateReader = loader.getReader(cacheKey);
     
     try {
-      this.logger.debug("Tokenizing template named {}", templateName);
+      this.logger.trace("Tokenizing template named {}", templateName);
       LexerImpl lexer = new LexerImpl(this.syntax,
           this.extensionRegistry.getUnaryOperators().values(),
           this.extensionRegistry.getBinaryOperators().values());
