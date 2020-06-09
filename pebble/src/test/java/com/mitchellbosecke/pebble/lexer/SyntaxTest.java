@@ -2,7 +2,6 @@ package com.mitchellbosecke.pebble.lexer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,50 +13,122 @@ class SyntaxTest {
   private final Logger logger = LoggerFactory.getLogger(SyntaxTest.class);
 
   private Syntax syntax;
-
-  private String delimiterCommentOpen = "{#";
-
-  private String delimiterCommentClose = "#}";
-
-  private String delimiterExecuteOpen = "{%";
-
-  private String delimiterExecuteClose = "%}";
-
-  private String delimiterPrintOpen = "{{";
-
-  private String delimiterPrintClose = "}}";
-
-  private String delimiterInterpolationOpen = "#{";
-
-  private String delimiterInterpolationClose = "}";
-
-  private String whitespaceTrim = "-";
   
   @BeforeEach
   void setup() {
     this.syntax = new Syntax.Builder().build();
   }
-  
+
   @Test
-  void testRegexTrailingWhiltespaceTrim() {
-
-    StringBuilder templateText = new StringBuilder().append("-%}");
+  void tesDelimiter() {
+    assertThat(this.syntax.getCommentOpenDelimiter()).isEqualTo("{#");
     
-    Matcher whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
-
-    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true);
-
+    assertThat(this.syntax.getCommentCloseDelimiter()).isEqualTo("#}");
+    
+    assertThat(this.syntax.getExecuteOpenDelimiter()).isEqualTo("{%");
+    
+    assertThat(this.syntax.getExecuteCloseDelimiter()).isEqualTo("%}");
+    
+    assertThat(this.syntax.getPrintOpenDelimiter()).isEqualTo("{{");
+    
+    assertThat(this.syntax.getPrintCloseDelimiter()).isEqualTo("}}");    
+    
+    assertThat(this.syntax.getInterpolationCloseDelimiter()).isEqualTo("}");
+    
+    assertThat(this.syntax.getInterpolationOpenDelimiter()).isEqualTo("#{");
+    
+    assertThat(this.syntax.getWhitespaceTrim()).isEqualTo("-");
+  }
+ 
+  @Test
+  void tesCommentCloseDelimiter() {
+    assertThat(this.syntax.getCommentCloseDelimiter()).isEqualTo("#}");
   }
   
   @Test
-  void testTrailingWhiltespaceTrimPatternString() {
+  void tesCommentOpenDelimiter() {
+    assertThat(this.syntax.getCommentOpenDelimiter()).isEqualTo("{#");
+  }
+ 
+  @Test
+  void testExecuteOpenDelimiter() {    
+    assertThat(this.syntax.getExecuteOpenDelimiter()).isEqualTo("{%");
+  }
+  
+  @Test
+  void testExecuteCloseDelimiter() {    
+    assertThat(this.syntax.getExecuteCloseDelimiter()).isEqualTo("%}");
+  }
+  
+  @Test
+  void testPrintOpenDelimiter() {    
+    assertThat(this.syntax.getPrintCloseDelimiter()).isEqualTo("}}");    
+  }
+ 
+  @Test
+  void testPrintCloseDelimiter() {    
+    assertThat(this.syntax.getPrintCloseDelimiter()).isEqualTo("}}");    
+  }
+
+  @Test
+  void testInterpolationCloseDelimiter() {    
+    assertThat(this.syntax.getInterpolationCloseDelimiter()).isEqualTo("}");
+  }
+
+  @Test
+  void testInterpolationOpenDelimiter() {    
+    assertThat(this.syntax.getInterpolationOpenDelimiter()).isEqualTo("#{");
+  }
+
+  @Test
+  void testWhitespaceTrim() {    
+    assertThat(this.syntax.getWhitespaceTrim()).isEqualTo("-");
+  }
+  
+  @Test
+  void testTrailingWhiltespaceTrimRegex() {
+
+    // Use regex101.com to test regular expressions through a web site
     
+    /*
+     ^ match only from start of the string or line
+     \\ matches the character \ literally (case sensitive)
+     \s* zero or more space characters
+     \Q start quote
+     \E end quote
+    */
     String patternString = "^\\s*\\Q-\\E(\\Q}}\\E|\\Q%}\\E|\\Q#}\\E)";
-       
-    System.out.println(patternString);
       
     assertThat(this.syntax.getRegexTrailingWhitespaceTrim().toString()).isEqualTo(patternString);
+    
+    StringBuilder templateText = null;
+    Matcher whitespaceTrimMatcher = null;
+    
+    // Whitespace Trim character with Execution Close Delimiter should match
+    templateText = new StringBuilder().append("-%}");
+    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true);
+    
+    // Whitespace Trim character with Print Close Delimiter should match
+    templateText = new StringBuilder().append("-}}");
+    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true);
+    
+    // leading space characters with Whitespace Trim character with Execution Close Delimiter should match
+    templateText = new StringBuilder().append("     -%}");
+    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true);
+    
+    // End of expression without Whitespace Trim character should not match
+    templateText = new StringBuilder().append("%}");
+    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(false);
+    
+    // Leading non space characters should not match
+    templateText = new StringBuilder().append("abcd   -%}");
+    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(false);
   }
-  
+
   
 }
