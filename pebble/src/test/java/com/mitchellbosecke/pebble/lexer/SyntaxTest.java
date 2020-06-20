@@ -2,13 +2,18 @@ package com.mitchellbosecke.pebble.lexer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// NOTE: Use regex101.com to test regular expressions through a web site
+
 class SyntaxTest {
 
+  private static final String POSSIBLE_NEW_LINE = "(\r\n|\n\r|\r|\n|\u0085|\u2028|\u2029)?";
   @SuppressWarnings("unused")
   private final Logger logger = LoggerFactory.getLogger(SyntaxTest.class);
 
@@ -20,7 +25,7 @@ class SyntaxTest {
   }
 
   @Test
-  void tesDelimiter() {
+  void testDelimiters() {
     assertThat(this.syntax.getCommentOpenDelimiter()).isEqualTo("{#");
     
     assertThat(this.syntax.getCommentCloseDelimiter()).isEqualTo("#}");
@@ -86,49 +91,130 @@ class SyntaxTest {
   }
   
   @Test
-  void testTrailingWhiltespaceTrimRegex() {
+  void testTrailingWhitespaceTrimRegex() {
 
-    // Use regex101.com to test regular expressions through a web site
+	Pattern pattern = syntax.getRegexTrailingWhitespaceTrim();
     
-    /*
-     ^ match only from start of the string or line
-     \\ matches the character \ literally (case sensitive)
-     \s* zero or more space characters
-     \Q start quote
-     \E end quote
-    */
-    String patternString = "^\\s*\\Q-\\E(\\Q}}\\E|\\Q%}\\E|\\Q#}\\E)";
-      
-    assertThat(this.syntax.getRegexTrailingWhitespaceTrim().toString()).isEqualTo(patternString);
+	/*
+	  matching from start of string, zero of more space characters, followed by a dash,
+	  followed by one of the following: "}}", "%}", or "#}"
+	 */
+    String expectedPatternString = "^\\s*\\Q-\\E(\\Q}}\\E|\\Q%}\\E|\\Q#}\\E)";
+    // verify that the TrailingWhitepaceTrim regex in the Syntax class is the expected pattern string
+    assertThat(pattern.toString()).isEqualTo(expectedPatternString);
     
     StringBuilder templateText = null;
     Matcher whitespaceTrimMatcher = null;
     
     // Whitespace Trim character with Execution Close Delimiter should match
     templateText = new StringBuilder().append("-%}");
-    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    whitespaceTrimMatcher = pattern.matcher(templateText);
     assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true);
     
     // Whitespace Trim character with Print Close Delimiter should match
     templateText = new StringBuilder().append("-}}");
-    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    whitespaceTrimMatcher = pattern.matcher(templateText);
     assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true);
     
     // leading space characters with Whitespace Trim character with Execution Close Delimiter should match
     templateText = new StringBuilder().append("     -%}");
-    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    whitespaceTrimMatcher = pattern.matcher(templateText);
     assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true);
+    
+    // Whitespace Trim character with Comment Close Delimiter should match
+    templateText = new StringBuilder().append("-#}");
+    whitespaceTrimMatcher = pattern.matcher(templateText);
+    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(true); 
     
     // End of expression without Whitespace Trim character should not match
     templateText = new StringBuilder().append("%}");
-    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
+    whitespaceTrimMatcher = pattern.matcher(templateText);
     assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(false);
     
     // Leading non space characters should not match
     templateText = new StringBuilder().append("abcd   -%}");
-    whitespaceTrimMatcher = syntax.getRegexTrailingWhitespaceTrim().matcher(templateText);
-    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(false);
+    whitespaceTrimMatcher = pattern.matcher(templateText);
+    assertThat(whitespaceTrimMatcher.lookingAt()).isEqualTo(false); 
   }
+ 
+  @Test
+  void testLeadingWhitespaceTrimRegex() {
+	    
+	Pattern pattern = syntax.getRegexLeadingWhitespaceTrim();
 
+	/*
+	 "-" followed by one more whitespace characters
+	 */
+    String expectedPatternString = "\\Q-\\E\\s+";
+    // verify that the regex in the Syntax class is the expected pattern string
+    assertThat(pattern.toString()).isEqualTo(expectedPatternString);
+    
+    StringBuilder templateText = null;
+    Matcher matcher = null;
+    
+    // Dash followed by spaces should match
+    templateText = new StringBuilder().append("- 	");
+    matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(true);
+    
+    // Dash character followed by whitespace characters should match
+    templateText = new StringBuilder().append("- \n\r\t");
+    matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(true);
+    
+    // Trailing non-whitespace after whitespace characters should match
+    templateText = new StringBuilder().append("- abcd");
+    matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(true);
+    
+    // No leading dash character should not match
+    templateText = new StringBuilder().append("     ");
+    matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(false);
+    
+    // No trailing space character should not match
+    templateText = new StringBuilder().append("-");
+    matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(false);
+    
+    // Leading characters should not match
+    templateText = new StringBuilder().append(" abcd - 	}");
+    matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(false);
+  }
+  
+  @Test
+  void testRegexVerbatimEnd() {
+	    
+	Pattern pattern = this.syntax.getRegexVerbatimEnd();
+
+	/*  
+	  "{%" followed by an optional "-" and/or zero or more whitespace characters, followed by "endverbatim",
+	  followed by zero or more whitespace characters and/or an optional "-" followed by "%}" 
+	  followed by an optional possible new line character
+	 */ 
+	String expectedPatternString = "\\Q{%\\E(\\Q-\\E)?\\s*endverbatim\\s*(\\Q-\\E)?\\Q%}\\E" + POSSIBLE_NEW_LINE;
+    // verify that the regex in the Syntax class is the expected pattern string
+    assertThat(pattern.toString()).isEqualTo(expectedPatternString);	  
+    
+    StringBuilder templateText = null;
+    Matcher matcher = null;
+    
+    // Space and whitespacetrim characters should match
+    templateText = new StringBuilder().append("{%- endverbatim -%}abcd\r\n");
+	matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(true);
+    
+    // No spaces or whitespacetrim characters should match
+    templateText = new StringBuilder().append("{%endverbatim%}");
+	matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(true);
+    
+    // Missing delimiters should not match
+    templateText = new StringBuilder().append("endverbatim");
+	matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(false);
+  }
   
 }
+
