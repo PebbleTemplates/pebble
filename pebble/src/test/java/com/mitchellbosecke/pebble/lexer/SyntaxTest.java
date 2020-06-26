@@ -215,6 +215,51 @@ class SyntaxTest {
 	matcher = pattern.matcher(templateText);
     assertThat(matcher.lookingAt()).isEqualTo(false);
   }
+
+  @Test
+  void testRegexStartDelimiters() {
+	  
+	Pattern pattern = this.syntax.getRegexStartDelimiters();
+	  
+	/*
+	 Start delimiters must match "{{" or "{%" or "{#"
+	 */
+	String expectedPatternString = "\\Q{{\\E|\\Q{%\\E|\\Q{#\\E"; 
+	
+    // verify that the regex in the Syntax class is the expected pattern string
+    assertThat(pattern.toString()).isEqualTo(expectedPatternString);	  
+    
+    StringBuilder templateText = null;
+    Matcher matcher = null;
+    
+    // "{{", "{%", and "{#" should match
+    templateText = new StringBuilder().append("{{");
+	matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(true);  
+    
+    templateText = new StringBuilder().append("{%");
+  	matcher = pattern.matcher(templateText);
+      assertThat(matcher.lookingAt()).isEqualTo(true);
+      
+    templateText = new StringBuilder().append("{#");
+  	matcher = pattern.matcher(templateText);
+      assertThat(matcher.lookingAt()).isEqualTo(true);
+      
+    // Text after a start delimiter should match
+    templateText = new StringBuilder().append("{{  abcd");
+	matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(true);
+    
+    // Text before the start delimiter should not match
+    templateText = new StringBuilder().append("abcd  {{");
+	matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(false);
+    
+    // No start delimiter should not match
+    templateText = new StringBuilder().append("abcd");
+	matcher = pattern.matcher(templateText);
+    assertThat(matcher.lookingAt()).isEqualTo(false);
+  }
   
 }
 
