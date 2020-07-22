@@ -9,4 +9,4 @@ scenes to perform null safe value comparisons.
 {% if user.name equals "Mitchell" %}
 	...
 {% endif %}
-```.
+```
