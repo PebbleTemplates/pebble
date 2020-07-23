@@ -32,15 +32,15 @@ A macro does not have access to the same variables that the rest of the template
 A macro can only work with the variables provided as arguments.
 
 ### Access to the global context
-You can pass the whole context as an argument by using the special '_context' variable if you need to access
-variables outside of the macro scope 
+You can pass the whole context as an argument by using the special `_context` variable if you need to access
+variables outside of the macro scope:
 ```twig
 {% verbatim %}
 {% set foo = 'bar' %}
 
 {{ test(_context) }}
 {% macro test(_context) %}
-	{{ foo }}
+	{{ _context.foo }}
 {% endmacro %}
 
 {# will output: bar #}
