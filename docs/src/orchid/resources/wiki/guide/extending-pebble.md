@@ -191,7 +191,7 @@ The precedence values for existing core operators are as followed:
 
 The following is an	example of how the addition operator (`+`) might have been implemented:
 ```java
-public AdditionOperator implements BinaryOperator {
+public class AdditionOperator implements BinaryOperator {
 
 	public int getPrecedence(){
 		return 30;
@@ -201,9 +201,13 @@ public AdditionOperator implements BinaryOperator {
 		return "+";
 	}
 
-	public Class<? extends BinaryExpression<?>> getNodeClass(){
-		return AdditionExpression.class;
-	}
+    public BinaryExpression<?> getInstance() {
+        return new AddExpression();
+    }
+
+    public BinaryOperatorType getType() {
+        return BinaryOperatorType.NORMAL;
+    }
 
 	public Associativity getAssociativity(){
 		return Associativity.LEFT;
@@ -308,7 +312,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
                                    String filename,
                                    int lineNumber) {
     if (instance instanceof CustomObject) {
-      return "customValue"
+      return "customValue";
     }
     return null;
   }
