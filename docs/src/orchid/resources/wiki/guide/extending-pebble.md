@@ -33,7 +33,7 @@ The `apply` method is the actual filter implementation. Here's the parameters de
 Because Pebble is dynamically typed, you will have to downcast the arguments to the expected type.
 Here is an example of how the {{ anchor('upper') }} filter might be implemented:
 ```java
-public UpperFilter implements Filter {
+public class UpperFilter implements Filter {
 
 	@Override
 	public List<String> getArgumentNames() {
@@ -63,7 +63,7 @@ interface except the apply method returns a boolean instead of an arbitrary obje
 
 Here is an example of how the {{ anchor('even') }} test might be implemented:
 ```java
-public EvenTest implements Test {
+public class EvenTest implements Test {
 
 	@Override
 	public List<String> getArgumentNames() {
@@ -98,7 +98,7 @@ The	`Function` interface is very similar to the `Filter` and `Test` interfaces.
 
 Here is an example of how a fictional `fibonacciString` function might be implemented:
 ```java
-public FibonnaciStringFunction implements Function {
+public class FibonnaciStringFunction implements Function {
 
 	@Override
 	public List<String> getArgumentNames() {
@@ -219,7 +219,7 @@ Alongside each operator class you will also need to implement a corresponding `B
 which actually implements the operator. The above example references a fictional `AdditionExpression` class
 which might look like the following:
 ```java
-public AdditionExpression extends BinaryExpression<Object> {
+public class AdditionExpression extends BinaryExpression<Object> {
 
 	@Override
 	public Object evaluate(PebbleTemplateImpl self, EvaluationContext context){
@@ -246,7 +246,7 @@ and a `RenderableNode` is a Pebble class that is responsible for generating outp
 
 Let us look at an example of a `TokenParser`:
 ```java
-public SetTokenParser extends AbstractTokenParser {
+public class SetTokenParser extends AbstractTokenParser {
 
 	public String getTag(){
 		return "set";
