@@ -8,24 +8,23 @@
  */
 package com.mitchellbosecke.pebble.extension.core;
 
-import static java.lang.String.format;
-
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.time.temporal.TemporalQueries;
+import java.util.*;
+
+import static java.lang.String.format;
 
 public class DateFilter implements Filter {
 
@@ -34,6 +33,7 @@ public class DateFilter implements Filter {
   public DateFilter() {
     this.argumentNames.add("format");
     this.argumentNames.add("existingFormat");
+    this.argumentNames.add("timeZone");
   }
 
   @Override
@@ -49,16 +49,18 @@ public class DateFilter implements Filter {
     }
     final Locale locale = context.getLocale();
     final String format = (String) args.get("format");
+    final String timeZone = (String) args.get("timeZone");
 
     if (TemporalAccessor.class.isAssignableFrom(input.getClass())) {
-      return this.applyTemporal((TemporalAccessor) input, self, locale, lineNumber, format);
+      return this.applyTemporal((TemporalAccessor) input, self, locale, lineNumber, format, timeZone);
     }
-    return this
-        .applyDate(input, self, locale, lineNumber, format, (String) args.get("existingFormat"));
+    return this.applyDate(
+            input, self, locale, lineNumber,
+            format, (String) args.get("existingFormat"), timeZone);
   }
 
   private Object applyDate(Object dateOrString, final PebbleTemplate self, final Locale locale,
-      int lineNumber, final String format, final String existingFormatString)
+      int lineNumber, final String format, final String existingFormatString, final String timeZone)
       throws PebbleException {
     Date date;
     DateFormat existingFormat;
@@ -82,22 +84,46 @@ public class DateFilter implements Filter {
                 dateOrString));
       }
     }
-    intendedFormat = new SimpleDateFormat(format, locale);
+    intendedFormat = new SimpleDateFormat(format == null ? "yyyy-MM-dd'T'HH:mm:ssZ" : format, locale);
+    if (timeZone != null) {
+      intendedFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
+    }
     return new SafeString(intendedFormat.format(date));
   }
 
   private Object applyTemporal(final TemporalAccessor input, PebbleTemplate self,
       final Locale locale,
-      int lineNumber, final String format) throws PebbleException {
-    final DateTimeFormatter formatter = format != null
+      int lineNumber, final String format, final String timeZone) throws PebbleException {
+    DateTimeFormatter formatter = format != null
         ? DateTimeFormatter.ofPattern(format, locale)
         : DateTimeFormatter.ISO_DATE_TIME;
+
+    ZoneId zoneId = getZoneId(input, timeZone);
+    formatter = formatter.withZone(zoneId);
+
     try {
       return new SafeString(formatter.format(input));
     } catch (DateTimeException dte) {
-      throw new PebbleException(dte, String.format("Could not parse the string '%s' into a date.",
-          input.toString()), lineNumber, self.getName());
+      throw new PebbleException(
+              dte,
+              String.format("Could not format instance '%s' of type %s into a date.", input.toString(), input.getClass()),
+              lineNumber,
+              self.getName());
     }
+  }
+
+  private ZoneId getZoneId(TemporalAccessor input, String timeZone) {
+    // First try the time zone of the input.
+    ZoneId zoneId = input.query(TemporalQueries.zone());
+    if (zoneId == null && timeZone != null) {
+      // Fallback to time zone provided as filter argument.
+      zoneId = ZoneId.of(timeZone);
+    }
+    if (zoneId == null) {
+      // Fallback to system time zone.
+      zoneId = ZoneId.systemDefault();
+    }
+    return zoneId;
   }
 
 }
