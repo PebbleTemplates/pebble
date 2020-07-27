@@ -14,6 +14,8 @@ import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.Macro;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.template.ScopeChain;
+import com.mitchellbosecke.pebble.utils.LimitedSizeWriter;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -65,7 +67,7 @@ public class MacroNode extends AbstractRenderableNode {
       @Override
       public String call(PebbleTemplateImpl self, EvaluationContextImpl context,
           Map<String, Object> macroArgs) {
-        Writer writer = new StringWriter();
+        Writer writer = LimitedSizeWriter.from(new StringWriter(), context);
         ScopeChain scopeChain = context.getScopeChain();
 
         // scope for default arguments

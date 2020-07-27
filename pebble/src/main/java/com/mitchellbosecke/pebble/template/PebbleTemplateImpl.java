@@ -17,6 +17,7 @@ import com.mitchellbosecke.pebble.node.BodyNode;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.node.RootNode;
 import com.mitchellbosecke.pebble.utils.FutureWriter;
+import com.mitchellbosecke.pebble.utils.LimitedSizeWriter;
 import com.mitchellbosecke.pebble.utils.Pair;
 
 import java.io.IOException;
@@ -152,6 +153,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     if (context.getExecutorService() != null) {
       writer = new FutureWriter(writer);
     }
+    writer = LimitedSizeWriter.from(writer, context);
     this.rootNode.render(this, writer, context);
 
     /*
@@ -189,7 +191,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     // global vars provided from extensions
     scopeChain.pushScope(this.engine.getExtensionRegistry().getGlobalVariables());
 
-    return new EvaluationContextImpl(this, this.engine.isStrictVariables(), locale,
+    return new EvaluationContextImpl(this, this.engine.isStrictVariables(), locale, this.engine.getMaxRenderedSize(),
         this.engine.getExtensionRegistry(), this.engine.getTagCache(),
         this.engine.getExecutorService(),
         new ArrayList<>(), new HashMap<>(), scopeChain, null, this.engine.getEvaluationOptions());

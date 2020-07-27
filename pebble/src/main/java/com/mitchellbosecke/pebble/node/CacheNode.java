@@ -15,6 +15,8 @@ import com.mitchellbosecke.pebble.extension.NodeVisitor;
 import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.utils.LimitedSizeWriter;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -65,7 +67,7 @@ public class CacheNode extends AbstractRenderableNode {
 
   private String render(final PebbleTemplateImpl self, final EvaluationContextImpl context)
       throws IOException {
-    StringWriter tempWriter = new StringWriter();
+    Writer tempWriter = LimitedSizeWriter.from(new StringWriter(), context);
     CacheNode.this.body.render(self, tempWriter, context);
 
     return tempWriter.toString();

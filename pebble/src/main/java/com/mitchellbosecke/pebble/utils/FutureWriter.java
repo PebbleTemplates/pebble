@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * ExecutorService to the main PebbleEngine. A FutureWriter is capable of handling Futures that will
  * return a string.
  *
- * It is not thread safe but that is okay. Each thread will have it's own writer, provided by the
+ * It is not thread safe but that is okay. Each thread will have its own writer, provided by the
  * "parallel" node; i.e. they will never share writers.
  *
  * @author Mitchell
