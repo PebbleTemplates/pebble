@@ -12,6 +12,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.node.RenderableNode;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
+import com.mitchellbosecke.pebble.utils.LimitedSizeWriter;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -35,7 +37,7 @@ public class RenderableNodeExpression extends UnaryExpression {
 
   @Override
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context) {
-    Writer writer = new StringWriter();
+    Writer writer = LimitedSizeWriter.from(new StringWriter(), context);
     try {
       this.node.render(self, writer, context);
     } catch (IOException e) {

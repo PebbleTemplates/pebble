@@ -69,6 +69,8 @@ public class PebbleEngine {
 
   private final Locale defaultLocale;
 
+  private final int maxRenderedSize;
+
   private final PebbleCache<CacheKey, Object> tagCache;
 
   private final ExecutorService executorService;
@@ -92,6 +94,7 @@ public class PebbleEngine {
       Syntax syntax,
       boolean strictVariables,
       Locale defaultLocale,
+      int maxRenderedSize,
       PebbleCache<CacheKey, Object> tagCache,
       PebbleCache<Object, PebbleTemplate> templateCache,
       ExecutorService executorService,
@@ -103,6 +106,7 @@ public class PebbleEngine {
     this.syntax = syntax;
     this.strictVariables = strictVariables;
     this.defaultLocale = defaultLocale;
+    this.maxRenderedSize = maxRenderedSize;
     this.tagCache = tagCache;
     this.executorService = executorService;
     this.templateCache = templateCache;
@@ -222,6 +226,15 @@ public class PebbleEngine {
   }
 
   /**
+   * Returns the max rendered size.
+   *
+   *  @return The max rendered size.
+   */
+  public int getMaxRenderedSize() {
+    return this.maxRenderedSize;
+  }
+
+  /**
    * Returns the executor service
    *
    * @return The executor service
@@ -273,6 +286,8 @@ public class PebbleEngine {
     private boolean enableNewLineTrimming = true;
 
     private Locale defaultLocale;
+
+    private int maxRenderedSize = -1;
 
     private ExecutorService executorService;
 
@@ -383,6 +398,19 @@ public class PebbleEngine {
      */
     public Builder defaultLocale(Locale defaultLocale) {
       this.defaultLocale = defaultLocale;
+      return this;
+    }
+
+    /**
+     * Sets the maximum size of the rendered template to protect against macro bombs.
+     * See for example https://github.com/PebbleTemplates/pebble/issues/526.
+     * If the rendered template exceeds this limit, then a PebbleException is thrown.
+     * The default value is -1 and it means unlimited.
+     * @param maxRenderedSize The maximum allowed size of the rendered template.
+     * @return This builder object.
+     */
+    public Builder maxRenderedSize(int maxRenderedSize) {
+      this.maxRenderedSize = maxRenderedSize;
       return this;
     }
 
@@ -585,7 +613,7 @@ public class PebbleEngine {
 
       EvaluationOptions evaluationOptions = new EvaluationOptions(this.greedyMatchMethod,
           this.methodAccessValidator);
-      return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale,
+      return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale, this.maxRenderedSize,
           this.tagCache, this.templateCache,
           this.executorService, extensionRegistry, parserOptions, evaluationOptions);
     }

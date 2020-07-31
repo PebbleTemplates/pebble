@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An evaluation context will store all stateful data that is necessary for the evaluation of a
@@ -28,7 +29,7 @@ import java.util.concurrent.ExecutorService;
  *
  * @author Mitchell
  */
-public class EvaluationContextImpl implements EvaluationContext {
+public class EvaluationContextImpl implements EvaluationContext, RenderedSizeContext {
 
   private final boolean strictVariables;
 
@@ -53,6 +54,11 @@ public class EvaluationContextImpl implements EvaluationContext {
    * The locale of this template.
    */
   private final Locale locale;
+
+  /**
+   * The maximum size of the rendered template, in chars.
+   */
+  private final int maxRenderedSize;
 
   /**
    * All the available filters/tests/functions for this template.
@@ -85,6 +91,11 @@ public class EvaluationContextImpl implements EvaluationContext {
   private final EvaluationOptions evaluationOptions;
 
   /**
+   * Total number of chars written by all writers sharing this context.
+   */
+  private final AtomicInteger charsRendered = new AtomicInteger();
+
+  /**
    * Constructor used to provide all final variables.
    *
    * @param self The template implementation
@@ -96,7 +107,7 @@ public class EvaluationContextImpl implements EvaluationContext {
    * @param hierarchy The inheritance chain
    * @param tagCache The cache used by the "cache" tag
    */
-  public EvaluationContextImpl(PebbleTemplateImpl self, boolean strictVariables, Locale locale,
+  public EvaluationContextImpl(PebbleTemplateImpl self, boolean strictVariables, Locale locale, int maxRenderedSize,
       ExtensionRegistry extensionRegistry, PebbleCache<CacheKey, Object> tagCache,
       ExecutorService executorService, List<PebbleTemplateImpl> importedTemplates,
       Map<String, PebbleTemplateImpl> namedImportedTemplates, ScopeChain scopeChain,
@@ -108,6 +119,7 @@ public class EvaluationContextImpl implements EvaluationContext {
 
     this.strictVariables = strictVariables;
     this.locale = locale;
+    this.maxRenderedSize = maxRenderedSize;
     this.extensionRegistry = extensionRegistry;
     this.tagCache = tagCache;
     this.executorService = executorService;
@@ -127,7 +139,7 @@ public class EvaluationContextImpl implements EvaluationContext {
    */
   public EvaluationContextImpl shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
     EvaluationContextImpl result = new EvaluationContextImpl(self, this.strictVariables,
-        this.locale, this.extensionRegistry, this.tagCache,
+        this.locale, this.maxRenderedSize, this.extensionRegistry, this.tagCache,
         this.executorService, this.importedTemplates, this.namedImportedTemplates, this.scopeChain,
         null, this.evaluationOptions);
     return result;
@@ -142,7 +154,7 @@ public class EvaluationContextImpl implements EvaluationContext {
    */
   public EvaluationContextImpl threadSafeCopy(PebbleTemplateImpl self) {
     EvaluationContextImpl result = new EvaluationContextImpl(self, this.strictVariables,
-        this.locale, this.extensionRegistry, this.tagCache,
+        this.locale, this.maxRenderedSize, this.extensionRegistry, this.tagCache,
         this.executorService, new ArrayList<>(this.importedTemplates),
         new HashMap<>(this.namedImportedTemplates), this.scopeChain.deepCopy(), this.hierarchy,
         this.evaluationOptions);
@@ -169,7 +181,7 @@ public class EvaluationContextImpl implements EvaluationContext {
   /**
    * Returns whether or not this template is being evaluated in "strict templates" mode
    *
-   * @return Whether or not this template is being evaluated in "strict tempaltes" mode.
+   * @return Whether or not this template is being evaluated in "strict templates" mode.
    */
   @Override
   public boolean isStrictVariables() {
@@ -184,6 +196,15 @@ public class EvaluationContextImpl implements EvaluationContext {
   @Override
   public Locale getLocale() {
     return this.locale;
+  }
+
+  /**
+   * Returns the max rendered size.
+   * @return The max rendered size.
+   */
+  @Override
+  public int getMaxRenderedSize() {
+    return this.maxRenderedSize;
   }
 
   /**
@@ -289,5 +310,10 @@ public class EvaluationContextImpl implements EvaluationContext {
             additionalVariables,
             scopedFunction
     );
+  }
+
+  @Override
+  public int addAndGet(int delta) {
+    return charsRendered.addAndGet(delta);
   }
 }

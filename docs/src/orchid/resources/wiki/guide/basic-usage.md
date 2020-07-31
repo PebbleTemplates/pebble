@@ -396,7 +396,7 @@ Tests can be negated by using the is not operator:
 ```
 
 ### Conditional (Ternary) Operator
-The conditional operator is similar to it's Java counterpart:
+The conditional operator is similar to its Java counterpart:
 ```twig
 {% verbatim %}{{ foo ? "yes" : "no" }}{% endverbatim %}
 ```
@@ -411,6 +411,21 @@ In order from highest to lowest precedence:
 - `is`, `is not`
 - `and`
 - `or`
+
+### Limiting the size of the rendered output
+
+In case you’re running Pebble with templates provided by someone else, there’s an attack similar to
+[zip bombs](https://en.wikipedia.org/wiki/Zip_bomb) or [XML bombs](https://en.wikipedia.org/wiki/Billion_laughs_attack)
+that might cause your process to run out of memory. To protect against it, you can limit the size of the output when
+evaluating a template:
+```java
+PebbleEngine pebble = new PebbleEngine.Builder()
+                // Output should not exceed 10 MB.
+                .maxRenderedSize(10 * 1024 * 1024)
+                .build();
+```
+
+This will throw a `PebbleException` when a template evaluation tries to write more characters than the limit you set.
 
 ### IDE's plugin
 If you want to add IDE's syntax highlighting, you can install this [plugin](https://plugins.jetbrains.com/idea/plugin/9407-pebble) for IntelliJ. Thank you to Bastien Jansen for his contribution.
