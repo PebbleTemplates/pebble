@@ -246,26 +246,27 @@ and a `RenderableNode` is a Pebble class that is responsible for generating outp
 
 Let us look at an example of a `TokenParser`:
 ```java
-public class SetTokenParser extends AbstractTokenParser {
+public class SetTokenParser implements TokenParser {
 
 	public String getTag(){
 		return "set";
 	}
 
-	public RenderableNode parse(Token token) throws SyntaxException {
-		TokenStream stream = this.parser.getStream();
+	@Override
+	public RenderableNode parse(Token token, Parser parser) {
+		TokenStream stream = parser.getStream();
 		int lineNumber = token.getLineNumber();
 
 		// skip the "set" token
 		stream.next();
 
 		// use the built in expression parser to parse the variable name
-		NodeExpressionNewVariableName name = this.parser.getExpressionParser().parseNewVariableName();
+		String name = parser.getExpressionParser().parseNewVariableName();
 
 		stream.expect(Token.Type.PUNCTUATION, "=");
 
 		// use the built in expression parser to parse the variable value
-		Expression<?> value = this.parser.getExpressionParser().parseExpression();
+		Expression<?> value = parser.getExpressionParser().parseExpression();
 
 		// expect to see "%}"
 		stream.expect(Token.Type.EXECUTE_END);
