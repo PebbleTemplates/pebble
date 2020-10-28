@@ -89,7 +89,7 @@ public final class LexerImpl implements Lexer {
   /**
    * Static regular expressions for names, numbers, and punctuation.
    */
-  private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
+  private static final Pattern REGEX_NAME = Pattern.compile("^\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
 
   private static final Pattern REGEX_LONG = Pattern.compile("^[0-9]+L");
 
