@@ -83,6 +83,36 @@ class LexerImplTest {
   }
 
   /**
+   * Test tokenizing an expression, e.g. {{ expression }}
+   */
+  @Test
+  void testVariableNameStartingWithOperator() {
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader("{{ is_active + contains0 }}");
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    int i = 0;
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.PRINT_START);
+    assertThat(tokenStream.peek(i++).getValue()).isNull();
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("is_active");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.OPERATOR);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("+");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.NAME);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("contains0");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.PRINT_END);
+    assertThat(tokenStream.peek(i++).getValue()).isEqualTo("}}");
+
+    assertThat(tokenStream.peek(i).getType()).isEqualTo(Type.EOF);
+    assertThat(tokenStream.peek(i++).getValue()).isNull();
+  }
+
+  /**
    * Test tokenizing Punctuation, such as the dot in item.itemType
    */
   @Test

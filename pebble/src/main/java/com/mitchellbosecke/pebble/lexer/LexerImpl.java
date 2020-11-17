@@ -662,7 +662,7 @@ public final class LexerImpl implements Lexer {
        */
       char nextChar = operator.charAt(operator.length() - 1);
       if (Character.isLetter(nextChar) || Character.getType(nextChar) == Character.LETTER_NUMBER) {
-        regex.append("(?![a-zA-Z])");
+        regex.append("(?![a-zA-Z0-9_])");
       }
     }
 
