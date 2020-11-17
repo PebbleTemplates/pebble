@@ -52,6 +52,12 @@
       <version>${servlet-api.version}</version>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <version>5.0.0</version>
+      <optional>true</optional>
+    </dependency>
 
     <!-- testing dependencies -->
     <dependency>
