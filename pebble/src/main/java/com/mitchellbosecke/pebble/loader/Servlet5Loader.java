@@ -1,21 +1,21 @@
 package com.mitchellbosecke.pebble.loader;
 
+import jakarta.servlet.ServletContext;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.servlet.ServletContext;
 
 /**
- * Loader that uses a servlet context to find templates.
+ * Loader that uses a servlet context to find templates. Requires Jakarta Servlet 5.0 or newer.
  *
  * @author mbosecke
  * @author chkal
  */
-public class ServletLoader extends AbstractServletLoader {
+public class Servlet5Loader extends AbstractServletLoader {
 
   private final ServletContext context;
 
-  public ServletLoader(ServletContext context) {
+  public Servlet5Loader(ServletContext context) {
     this.context = context;
   }
 
