@@ -9,20 +9,22 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExtensionFactoryTest {
+class ExtensionCustomizerTest {
 
   PebbleEngine pebble;
 
   @BeforeEach
   void setUp() {
     pebble = new PebbleEngine.Builder()
-            .addExtensionCustomizer(CoreExtension.class, RemoveUpper::new)
+            .registerExtensionCustomizer(RemoveUpperCustomizer::new)
             .build();
   }
 
@@ -37,15 +39,16 @@ class ExtensionFactoryTest {
             () -> "Expect upper-Filter to not exist, actual Problem: " + exception.getMessage());
   }
 
-  private static class RemoveUpper extends ExtensionCustomizer {
+  private static class RemoveUpperCustomizer extends ExtensionCustomizer {
 
-    public RemoveUpper(Extension core) {
+    public RemoveUpperCustomizer(Extension core) {
       super(core);
     }
 
     @Override
     public Map<String, Filter> getFilters() {
-      Map<String, Filter> filters = new HashMap<>(super.getFilters());
+      Map<String, Filter> filters = Optional.ofNullable(super.getFilters()).map(HashMap::new)
+              .orElseGet(HashMap::new);
       filters.remove("upper");
       return filters;
     }

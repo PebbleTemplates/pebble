@@ -558,18 +558,15 @@ public class PebbleEngine {
     }
 
     /**
-     * Registeres customizers per extension class which are called before the extension is registered
+     * Registeres a customizer which is called before the core functionality provided by default is registered
      * into the {@link PebbleEngine}.
      *
-     * Note that per extension class only the last customizer will be taken into account.
-     *
-     * @param clazz The Extension class the customizer should target
      * @param customizer The customizer which is called before registering the target extension
      * @param <T>
      * @return This build object
      */
-    public <T extends Extension> Builder addExtensionCustomizer(Class<T> clazz, Function<Extension, ExtensionCustomizer> customizer) {
-      this.factory.addExtensionCustomizer(clazz, customizer::apply);
+    public <T extends Extension> Builder registerExtensionCustomizer(Function<Extension, ExtensionCustomizer> customizer) {
+      this.factory.registerExtensionCustomizer(customizer);
       return this;
     }
 

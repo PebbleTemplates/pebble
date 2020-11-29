@@ -18,13 +18,13 @@ public class ExtensionRegistryFactory {
 
   private boolean allowOverrideCoreOperators = false;
 
-  private Map<Class<? extends Extension>, Function<Extension, Extension>> customizers = new HashMap<>();
+  private Function<Extension, Extension> customizer = Function.identity();
 
   public ExtensionRegistry buildExtensionRegistry() {
     ExtensionRegistry extensionRegistry = new ExtensionRegistry();
 
     Stream.of(new CoreExtension(), this.escaperExtension, new I18nExtension())
-            .map(this::applyCustomizer)
+            .map(customizer::apply)
             .forEach(extensionRegistry::addExtension);
 
     for (Extension userProvidedExtension : this.userProvidedExtensions) {
@@ -35,14 +35,9 @@ public class ExtensionRegistryFactory {
       }
     }
 
-    extensionRegistry.addExtension(new AttributeResolverExtension());
+    extensionRegistry.addExtension(customizer.apply(new AttributeResolverExtension()));
 
     return extensionRegistry;
-  }
-
-  private Extension applyCustomizer(Extension coreExtension) {
-    return customizers.getOrDefault(coreExtension.getClass(), Function.identity())
-            .apply(coreExtension);
   }
 
   public void autoEscaping(boolean autoEscaping) {
@@ -65,8 +60,8 @@ public class ExtensionRegistryFactory {
     this.escaperExtension.setDefaultStrategy(strategy);
   }
 
-  public <T extends Extension> void addExtensionCustomizer(Class<T> clazz, Function<Extension, Extension> customizer) {
-    this.customizers.put(clazz, customizer);
+  public void registerExtensionCustomizer(Function<Extension, ExtensionCustomizer> customizer) {
+    this.customizer = customizer::apply;
   }
 
 }
