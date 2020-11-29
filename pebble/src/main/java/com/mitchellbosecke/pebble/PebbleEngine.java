@@ -18,14 +18,8 @@ import com.mitchellbosecke.pebble.cache.tag.NoOpTagCache;
 import com.mitchellbosecke.pebble.cache.template.ConcurrentMapTemplateCache;
 import com.mitchellbosecke.pebble.cache.template.NoOpTemplateCache;
 import com.mitchellbosecke.pebble.error.LoaderException;
-import com.mitchellbosecke.pebble.extension.Extension;
-import com.mitchellbosecke.pebble.extension.ExtensionRegistry;
-import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
-import com.mitchellbosecke.pebble.extension.core.AttributeResolverExtension;
-import com.mitchellbosecke.pebble.extension.core.CoreExtension;
-import com.mitchellbosecke.pebble.extension.escaper.EscaperExtension;
+import com.mitchellbosecke.pebble.extension.*;
 import com.mitchellbosecke.pebble.extension.escaper.EscapingStrategy;
-import com.mitchellbosecke.pebble.extension.i18n.I18nExtension;
 import com.mitchellbosecke.pebble.lexer.LexerImpl;
 import com.mitchellbosecke.pebble.lexer.Syntax;
 import com.mitchellbosecke.pebble.lexer.TokenStream;
@@ -44,10 +38,11 @@ import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -277,8 +272,6 @@ public class PebbleEngine {
 
     private Loader<?> loader;
 
-    private final List<Extension> userProvidedExtensions = new ArrayList<>();
-
     private Syntax syntax;
 
     private boolean strictVariables = false;
@@ -297,17 +290,15 @@ public class PebbleEngine {
 
     private PebbleCache<CacheKey, Object> tagCache;
 
-    private final EscaperExtension escaperExtension = new EscaperExtension();
-
     private boolean literalDecimalTreatedAsInteger = false;
 
     private boolean greedyMatchMethod = false;
 
-    private boolean allowOverrideCoreOperators = false;
-
     private boolean literalNumbersAsBigDecimals = false;
 
     private MethodAccessValidator methodAccessValidator = new BlacklistMethodAccessValidator();
+
+    private ExtensionRegistryFactory factory = new ExtensionRegistryFactory();
 
     /**
      * Creates the builder.
@@ -334,7 +325,7 @@ public class PebbleEngine {
      * @return This builder object
      */
     public Builder extension(Extension... extensions) {
-      Collections.addAll(this.userProvidedExtensions, extensions);
+      this.factory.extension(extensions);
       return this;
     }
 
@@ -455,7 +446,7 @@ public class PebbleEngine {
      * @return This builder object
      */
     public Builder autoEscaping(boolean autoEscaping) {
-      this.escaperExtension.setAutoEscaping(autoEscaping);
+      this.factory.autoEscaping(autoEscaping);
       return this;
     }
 
@@ -466,7 +457,7 @@ public class PebbleEngine {
      * @return This builder object
      */
     public Builder allowOverrideCoreOperators(boolean allowOverrideCoreOperators) {
-      this.allowOverrideCoreOperators = allowOverrideCoreOperators;
+      this.factory.allowOverrideCoreOperators(allowOverrideCoreOperators);
       return this;
     }
 
@@ -477,7 +468,7 @@ public class PebbleEngine {
      * @return This builder object
      */
     public Builder defaultEscapingStrategy(String strategy) {
-      this.escaperExtension.setDefaultStrategy(strategy);
+      this.factory.defaultEscapingStrategy(strategy);
       return this;
     }
 
@@ -489,7 +480,7 @@ public class PebbleEngine {
      * @return This builder object
      */
     public Builder addEscapingStrategy(String name, EscapingStrategy strategy) {
-      this.escaperExtension.addEscapingStrategy(name, strategy);
+      this.factory.addEscapingStrategy(name, strategy);
       return this;
     }
 
@@ -567,13 +558,29 @@ public class PebbleEngine {
     }
 
     /**
+     * Registeres customizers per extension class which are called before the extension is registered
+     * into the {@link PebbleEngine}.
+     *
+     * Note that per extension class only the last customizer will be taken into account.
+     *
+     * @param clazz The Extension class the customizer should target
+     * @param customizer The customizer which is called before registering the target extension
+     * @param <T>
+     * @return This build object
+     */
+    public <T extends Extension> Builder addExtensionCustomizer(Class<T> clazz, Function<Extension, ExtensionCustomizer> customizer) {
+      this.factory.addExtensionCustomizer(clazz, customizer::apply);
+      return this;
+    }
+
+    /**
      * Creates the PebbleEngine instance.
      *
      * @return A PebbleEngine object that can be used to create PebbleTemplate objects.
      */
     public PebbleEngine build() {
 
-      ExtensionRegistry extensionRegistry = this.buildExtensionRegistry();
+      ExtensionRegistry extensionRegistry = this.factory.buildExtensionRegistry();
 
       // default loader
       if (this.loader == null) {
@@ -616,26 +623,6 @@ public class PebbleEngine {
       return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale, this.maxRenderedSize,
           this.tagCache, this.templateCache,
           this.executorService, extensionRegistry, parserOptions, evaluationOptions);
-    }
-
-    private ExtensionRegistry buildExtensionRegistry() {
-      ExtensionRegistry extensionRegistry = new ExtensionRegistry();
-
-      extensionRegistry.addExtension(new CoreExtension());
-      extensionRegistry.addExtension(this.escaperExtension);
-      extensionRegistry.addExtension(new I18nExtension());
-
-      for (Extension userProvidedExtension : this.userProvidedExtensions) {
-        if (this.allowOverrideCoreOperators) {
-          extensionRegistry.addOperatorOverridingExtension(userProvidedExtension);
-        } else {
-          extensionRegistry.addExtension(userProvidedExtension);
-        }
-      }
-
-      extensionRegistry.addExtension(new AttributeResolverExtension());
-
-      return extensionRegistry;
     }
   }
 
