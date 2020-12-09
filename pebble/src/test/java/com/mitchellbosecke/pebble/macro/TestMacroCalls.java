@@ -161,4 +161,22 @@ class TestMacroCalls {
           .startsWith("More than one named template can not share the same name"));
     }
   }
+
+  @Test
+  void testInvalidAliasReferencingUnknownMacro() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().build();
+
+    try {
+      PebbleTemplate template = pebble
+          .getTemplate("templates/macros/invalid.from.unknownMacro.peb");
+      Writer writer = new StringWriter();
+      template.evaluate(writer);
+      fail("expected PebbleException");
+    } catch (PebbleException e) {
+      assertEquals(
+              "Function or Macro [iDontExist] referenced by alias [macro_test] does not exist.",
+              e.getPebbleMessage()
+      );
+    }
+  }
 }

@@ -244,6 +244,12 @@ public class PebbleTemplateImpl implements PebbleTemplate {
         .getTemplate(this.resolveRelativePath(name));
     for (Pair<String, String> pair : namedMacros) {
       Macro m = templateImpl.macros.get(pair.getRight());
+
+      if (m == null) {
+        throw new PebbleException(null, "Function or Macro [" + pair.getRight() + "] referenced by alias ["
+                + pair.getLeft() + "] does not exist.");
+      }
+
       this.registerMacro(pair.getLeft(), m);
     }
   }
