@@ -68,12 +68,14 @@ characters, you can use the subscript notation ([]) instead.
 ```
 Behind the scenes `foo.bar` will attempt the following techniques to to access the `bar` attribute of the `foo`
 variable:
-- If `foo` is a map, `foo.get("bar")`
+- If `foo` is a Map, `foo.get("bar")`
 - `foo.getBar()`
 - `foo.isBar()`
 - `foo.hasBar()`
 - `foo.bar()`
 - `foo.bar`
+
+Additionally, if `foo` is a List, then `foo[0]` can be used instead of `foo.get(0)`.
 
 If the value of variable (or attribute) is null it will output an empty string.
 
