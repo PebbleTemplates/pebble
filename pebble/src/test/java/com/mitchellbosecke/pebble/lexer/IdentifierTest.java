@@ -8,6 +8,7 @@
  */
 package com.mitchellbosecke.pebble.lexer;
 
+import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import org.junit.jupiter.api.Test;
