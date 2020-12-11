@@ -49,6 +49,18 @@ public class ForNode extends AbstractRenderableNode {
     this.elseBody = elseBody;
   }
 
+  private static class LoopVariables {
+    public boolean first, last;
+    public LazyLength length;
+    public int index;
+    public LazyRevIndex revindex;
+
+    @Override
+    public String toString() {
+      return "{last=" + last + ", length=" + length + ", index=" + index + ", revindex=" + revindex + ", first=" + first + "}";
+    }
+  }
+
   @Override
   public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context)
       throws IOException {
@@ -78,7 +90,7 @@ public class ForNode extends AbstractRenderableNode {
 
       int index = 0;
 
-      Map<String, Object> loop = null;
+      LoopVariables loop = null;
 
       boolean usingExecutorService = context.getExecutorService() != null;
 
@@ -91,23 +103,23 @@ public class ForNode extends AbstractRenderableNode {
          * would get it's own distinct copy of the context.
          */
         if (index == 0 || usingExecutorService) {
-          loop = new HashMap<>();
-          loop.put("first", index == 0);
-          loop.put("last", !iterator.hasNext());
-          loop.put("length", length);
+          loop = new LoopVariables();
+          loop.first = index == 0;
+          loop.last = !iterator.hasNext();
+          loop.length = length;
         } else if (index == 1) {
           // second iteration
-          loop.put("first", false);
+          loop.first = false;
         }
 
-        loop.put("revindex", new LazyRevIndex(index, length));
-        loop.put("index", index++);
+        loop.revindex = new LazyRevIndex(index, length);
+        loop.index = index++;
         scopeChain.put("loop", loop);
         scopeChain.put(this.variableName, iterator.next());
 
         // last iteration
         if (!iterator.hasNext()) {
-          loop.put("last", true);
+          loop.last = true;
         }
 
         this.body.render(self, writer, context);
