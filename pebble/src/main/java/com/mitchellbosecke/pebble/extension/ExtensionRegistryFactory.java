@@ -10,6 +10,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+/**
+ * Provides configuration methods and builds the {@link ExtensionRegistry}. Used only internally by
+ * the {@link com.mitchellbosecke.pebble.PebbleEngine.Builder}.
+ *
+ */
 public class ExtensionRegistryFactory {
 
   private final List<Extension> userProvidedExtensions = new ArrayList<>();

@@ -298,7 +298,7 @@ public class PebbleEngine {
 
     private MethodAccessValidator methodAccessValidator = new BlacklistMethodAccessValidator();
 
-    private ExtensionRegistryFactory factory = new ExtensionRegistryFactory();
+    private final ExtensionRegistryFactory factory = new ExtensionRegistryFactory();
 
     /**
      * Creates the builder.
@@ -558,14 +558,13 @@ public class PebbleEngine {
     }
 
     /**
-     * Registeres a customizer which is called before the core functionality provided by default is registered
-     * into the {@link PebbleEngine}.
+     * Registers an implementation of {@link ExtensionCustomizer} to change runtime-behaviour of standard
+     * functionality.
      *
-     * @param customizer The customizer which is called before registering the target extension
-     * @param <T>
+     * @param customizer The customizer which wraps any non-user-provided extension
      * @return This build object
      */
-    public <T extends Extension> Builder registerExtensionCustomizer(Function<Extension, ExtensionCustomizer> customizer) {
+    public Builder registerExtensionCustomizer(Function<Extension, ExtensionCustomizer> customizer) {
       this.factory.registerExtensionCustomizer(customizer);
       return this;
     }

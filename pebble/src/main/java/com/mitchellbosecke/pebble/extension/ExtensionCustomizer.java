@@ -8,6 +8,19 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *  Base class that allows implementing a customizer to modify Pebbles build-in extensions.
+ *  It is meant to provide a way to remove or replace functions, filters, tags, etc. to change
+ *  the standard behaviour. Use-cases can be down-stripping available functionality for security
+ *  reasons.
+ *
+ *  Implementations of this class are meant to overwrite methods and access registered functionality
+ *  before it is loaded into the PebbleEngine by calling super.
+ *
+ *  The ExentsionCustomizer can be registred via {@link com.mitchellbosecke.pebble.PebbleEngine.Builder#registerExtensionCustomizer}
+ *  and is applied for every non-user-provided extension.
+ *
+ */
 public abstract class ExtensionCustomizer implements Extension {
 
   private final Extension delegate;
