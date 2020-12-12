@@ -12,4 +12,6 @@ public interface EvaluationContext {
   Locale getLocale();
 
   Object getVariable(String key);
+
+  boolean containsVariable(String key);
 }
