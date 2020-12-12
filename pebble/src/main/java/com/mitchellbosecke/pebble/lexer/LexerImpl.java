@@ -87,9 +87,9 @@ public final class LexerImpl implements Lexer {
   private boolean trimLeadingWhitespaceFromNextData = false;
 
   /**
-   * Static regular expressions for names, numbers, and punctuation.
+   * Static regular expressions for identifiers.
    */
-  private static final Pattern REGEX_NAME = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
+  private static final Pattern REGEX_IDENTIFIER = Pattern.compile("^[\\p{IsLetter}_][\\p{IsLetter}\\p{IsDigit}_]*");
 
   private static final Pattern REGEX_LONG = Pattern.compile("^[0-9]+L");
 
@@ -414,7 +414,7 @@ public final class LexerImpl implements Lexer {
     }
 
     // names
-    matcher = REGEX_NAME.matcher(this.source);
+    matcher = REGEX_IDENTIFIER.matcher(this.source);
     if (matcher.lookingAt()) {
       token = this.source.substring(matcher.end());
       this.pushToken(Token.Type.NAME, token);
