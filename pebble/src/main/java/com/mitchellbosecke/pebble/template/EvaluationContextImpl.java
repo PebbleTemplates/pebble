@@ -277,6 +277,11 @@ public class EvaluationContextImpl implements EvaluationContext, RenderedSizeCon
     return this.scopeChain.get(key);
   }
 
+  @Override
+  public boolean containsVariable(String key) {
+    return this.scopeChain.containsKey(key);
+  }
+
   private void pushScope(
           EvaluationContextImpl newContext,
           Map<?, ?> additionalVariables,
