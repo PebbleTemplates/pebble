@@ -4,6 +4,7 @@
 - [Spring petclinic](https://github.com/PebbleTemplates/spring-petclinic)
 - [Pebble Spring Example](https://github.com/PebbleTemplates/pebble-example-spring)
 - [Basic Usage](guide/basic-usage.md)
+- [Customize Defaults](guide/customize-defaults.md)
 - [Escaping](guide/escaping.md)
 - [Extending Pebble](guide/extending-pebble.md)
 - [High Performance Techniques](guide/high-performance.md)
