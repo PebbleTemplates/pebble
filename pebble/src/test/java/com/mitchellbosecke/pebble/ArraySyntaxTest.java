@@ -8,22 +8,20 @@
  */
 package com.mitchellbosecke.pebble;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.mitchellbosecke.pebble.error.ParserException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 class ArraySyntaxTest {
 
@@ -146,7 +144,7 @@ class ArraySyntaxTest {
     Map<String, Object> context = new HashMap<>();
     context.put("three", new Object() {
 
-      public Integer number = 3;
+      public final Integer number = 3;
     });
     context.put("numbers", new HashMap<String, Object>() {
 
@@ -154,7 +152,7 @@ class ArraySyntaxTest {
         this.put("four", new String[]{"4"});
         this.put("five", new Object() {
 
-          private String value = "five";
+          private final String value = "five";
 
           public String getValue() {
             return this.value;
@@ -332,6 +330,20 @@ class ArraySyntaxTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, new HashMap<>());
     assertEquals("[0, 1, 2, 3]", writer.toString());
+  }
+
+  @Test
+  void testSortFilterFromArray() throws PebbleException, IOException {
+
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    String source = "{{ 'q,g,s,c,w' | split(',') | sort }}";
+    PebbleTemplate template = pebble.getTemplate(source);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, new HashMap<>());
+    assertEquals("[c, g, q, s, w]", writer.toString());
   }
 
   @Test
@@ -804,7 +816,7 @@ class ArraySyntaxTest {
       {
         this.put("first-name", new Object() {
 
-          private String name = "Bob";
+          private final String name = "Bob";
 
           public String getName() {
             return this.name;
