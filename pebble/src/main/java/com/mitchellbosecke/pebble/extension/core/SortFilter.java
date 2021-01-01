@@ -8,9 +8,11 @@
  */
 package com.mitchellbosecke.pebble.extension.core;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +31,16 @@ public class SortFilter implements Filter {
     if (input == null) {
       return null;
     }
-    List<Comparable> collection = (List<Comparable>) input;
+
+    List<Comparable> collection;
+    if (input instanceof List) {
+      collection = (List<Comparable>) input;
+    } else if (input instanceof Comparable[]) {
+      collection = Arrays.asList((Comparable[]) input);
+    } else {
+      throw new PebbleException(null, "Unsupported input type for sort filter", lineNumber,
+          self.getName());
+    }
     Collections.sort(collection);
     return collection;
   }
