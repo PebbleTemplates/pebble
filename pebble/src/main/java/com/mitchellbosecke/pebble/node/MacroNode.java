@@ -72,6 +72,10 @@ public class MacroNode extends AbstractRenderableNode {
 
         // scope for default arguments
         scopeChain.pushLocalScope();
+        
+        // global vars provided by extensions
+        context.getExtensionRegistry().getGlobalVariables().forEach(scopeChain::put);
+        
         for (NamedArgumentNode arg: MacroNode.this.getArgs().getNamedArgs()) {
           Expression<?> valueExpression = arg.getValueExpression();
           if (valueExpression == null) {
