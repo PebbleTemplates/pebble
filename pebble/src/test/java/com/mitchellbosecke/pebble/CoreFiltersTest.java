@@ -12,7 +12,6 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
-import com.mitchellbosecke.pebble.extension.core.Base64EncoderFilter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -1331,7 +1330,7 @@ class CoreFiltersTest {
   }
 
   /**
-   * Tests {@link Base64EncoderFilter} if the base64 encoding filter is working for a string value, a string constant, null.
+   * Tests {@link com.mitchellbosecke.pebble.extension.core.Base64EncoderFilter} if the base64 encoding filter is working for a string value, a string constant, null.
    */
   @Test
   void testBase64EncoderFilterInTemplate() throws PebbleException, IOException {
@@ -1346,6 +1345,39 @@ class CoreFiltersTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("var=\"dGVzdA==\" const=\"dGVzdA==\" null=\"\"", writer.toString());
+  }
+
+  @Test
+  void testSha256FilterNoStringFail() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+              .strictVariables(false).build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ {'one':1} | sha256 }}");
+
+      Map<String, Object> context = new HashMap<>();
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  /**
+   * Tests {@link com.mitchellbosecke.pebble.extension.core.Sha256Filter} if the SHA256 hashing filter is working for a string value, a string constant, null.
+   */
+  @Test
+  void testSha256FilterInTemplate() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("var=\"{{ var | sha256 }}\" const=\"{{ \"test\" | sha256}}\" null=\"{{ null | sha256 }}\"");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("var", "test");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("var=\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\" const=\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\" null=\"\"", writer.toString());
   }
 
   @Test
