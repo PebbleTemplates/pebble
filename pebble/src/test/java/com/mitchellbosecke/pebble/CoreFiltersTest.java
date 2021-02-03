@@ -12,6 +12,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
+import com.mitchellbosecke.pebble.extension.core.Base64EncoderFilter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -1327,6 +1328,24 @@ class CoreFiltersTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("I like foo and bar.", writer.toString());
+  }
+
+  /**
+   * Tests {@link Base64EncoderFilter} if the base64 encoding filter is working for a string value, a string constant, null.
+   */
+  @Test
+  void testBase64EncoderFilterInTemplate() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("var=\"{{ var | base64encode }}\" const=\"{{ \"test\" | base64encode}}\" null=\"{{ null | base64encode }}\"");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("var", "test");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("var=\"dGVzdA==\" const=\"dGVzdA==\" null=\"\"", writer.toString());
   }
 
   @Test
