@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Base64EncoderFilter implements Filter {
 
-  public static final String FILTER_NAME = "base64encode";
+  public static final String FILTER_NAME = "base64";
 
   @Override
   public List<String> getArgumentNames() {

@@ -1337,7 +1337,7 @@ class CoreFiltersTest {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-    PebbleTemplate template = pebble.getTemplate("var=\"{{ var | base64encode }}\" const=\"{{ \"test\" | base64encode}}\" null=\"{{ null | base64encode }}\"");
+    PebbleTemplate template = pebble.getTemplate("var=\"{{ var | base64 }}\" const=\"{{ \"test\" | base64 }}\" null=\"{{ null | base64 }}\"");
 
     Map<String, Object> context = new HashMap<>();
     context.put("var", "test");
