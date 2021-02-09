@@ -6,6 +6,7 @@ import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,9 @@ import java.util.Map;
  *
  * @author Silviu Vergoti
  */
-public class Base64EncoderFilter implements Filter {
+public class Base64DecoderFilter implements Filter {
 
-  public static final String FILTER_NAME = "base64encode";
+  public static final String FILTER_NAME = "base64decode";
 
   @Override
   public List<String> getArgumentNames() {
@@ -31,7 +32,18 @@ public class Base64EncoderFilter implements Filter {
       return null;
     }
 
-    return Base64.getEncoder().encodeToString(input.toString().getBytes(StandardCharsets.UTF_8));
+    String decoded = null;
+    if (input instanceof String) {
+      try {
+        byte [] bytes = Base64.getDecoder().decode(((String) input).getBytes(StandardCharsets.UTF_8));
+        decoded = new String(bytes, StandardCharsets.UTF_8);
+      } catch (Exception e) {
+        throw new PebbleException(e, "Please provide a correctly Base64 encoded string containing an UTF-8 string\n", lineNumber, self.getName());
+      }
+    } else {
+      throw new PebbleException(null, "This filter applies to String\n", lineNumber, self.getName());
+    }
+    return decoded;
   }
 
 }
