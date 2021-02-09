@@ -30,6 +30,8 @@
 ## Filters
 - [abbreviate](filter/abbreviate.md)
 - [abs](filter/abs.md)
+- [base64decode](filter/base64decode.md)
+- [base64encode](filter/base64encode.md)
 - [capitalize](filter/capitalize.md)
 - [date](filter/date.md)
 - [default](filter/default.md)
@@ -44,6 +46,7 @@
 - [replace](filter/replace.md)
 - [reverse](filter/reverse.md)
 - [rsort](filter/rsort.md)
+- [sha256](filter/sha256.md)
 - [slice](filter/slice.md)
 - [sort](filter/sort.md)
 - [split](filter/split.md)
