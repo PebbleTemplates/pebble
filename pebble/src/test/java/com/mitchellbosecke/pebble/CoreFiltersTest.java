@@ -1329,6 +1329,105 @@ class CoreFiltersTest {
     assertEquals("I like foo and bar.", writer.toString());
   }
 
+  /**
+   * Tests {@link com.mitchellbosecke.pebble.extension.core.Base64EncoderFilter} if the base64 encoding filter is working for a string value, a string constant, null.
+   */
+  @Test
+  void testBase64EncoderFilterInTemplate() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("var=\"{{ var | base64encode }}\" const=\"{{ \"test\" | base64encode }}\" null=\"{{ null | base64encode }}\"");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("var", "test");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("var=\"dGVzdA==\" const=\"dGVzdA==\" null=\"\"", writer.toString());
+  }
+
+  /**
+   * Tests {@link com.mitchellbosecke.pebble.extension.core.Base64DecoderFilter} if the base64 decoder filter is working for a string value, a string constant, null.
+   */
+  @Test
+  void testBase64DecoderFilterInTemplate() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("var=\"{{ var | base64decode }}\" const=\"{{ \"dGVzdA==\" | base64decode }}\" null=\"{{ null | base64decode }}\"");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("var", "dGVzdA==");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("var=\"test\" const=\"test\" null=\"\"", writer.toString());
+  }
+
+  @Test
+  void testBase64DecodeFilterBadEncodedStringFail() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+              .strictVariables(false).build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ \"this is not a base64 encoded string\" | base64decode }}");
+
+      Map<String, Object> context = new HashMap<>();
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
+  void testBase64DecodeFilterNoStringFail() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+              .strictVariables(false).build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ {'foo':1} | base64decode }}");
+
+      Map<String, Object> context = new HashMap<>();
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
+  void testSha256FilterNoStringFail() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+              .strictVariables(false).build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ {'foo':1} | sha256 }}");
+
+      Map<String, Object> context = new HashMap<>();
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  /**
+   * Tests {@link com.mitchellbosecke.pebble.extension.core.Sha256Filter} if the SHA256 hashing filter is working for a string value, a string constant, null.
+   */
+  @Test
+  void testSha256FilterInTemplate() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("var=\"{{ var | sha256 }}\" const=\"{{ \"test\" | sha256}}\" null=\"{{ null | sha256 }}\"");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("var", "test");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("var=\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\" const=\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\" null=\"\"", writer.toString());
+  }
+
   @Test
   void testMergeOk() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())

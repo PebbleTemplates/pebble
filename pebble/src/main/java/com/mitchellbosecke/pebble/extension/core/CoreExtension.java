@@ -149,6 +149,9 @@ public class CoreExtension extends AbstractExtension {
     filters.put(ReplaceFilter.FILTER_NAME, new ReplaceFilter());
     filters.put(MergeFilter.FILTER_NAME, new MergeFilter());
     filters.put(SplitFilter.FILTER_NAME, new SplitFilter());
+    filters.put(Base64EncoderFilter.FILTER_NAME, new Base64EncoderFilter());
+    filters.put(Base64DecoderFilter.FILTER_NAME, new Base64DecoderFilter());
+    filters.put(Sha256Filter.FILTER_NAME, new Sha256Filter());
     return filters;
   }
 
