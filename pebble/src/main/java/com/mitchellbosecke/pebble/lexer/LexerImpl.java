@@ -5,6 +5,13 @@
  */
 package com.mitchellbosecke.pebble.lexer;
 
+import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.lexer.Token.Type;
+import com.mitchellbosecke.pebble.operator.BinaryOperator;
+import com.mitchellbosecke.pebble.operator.UnaryOperator;
+import com.mitchellbosecke.pebble.utils.Pair;
+import com.mitchellbosecke.pebble.utils.StringLengthComparator;
+import com.mitchellbosecke.pebble.utils.StringUtils;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayDeque;
@@ -18,13 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.lexer.Token.Type;
-import com.mitchellbosecke.pebble.operator.BinaryOperator;
-import com.mitchellbosecke.pebble.operator.UnaryOperator;
-import com.mitchellbosecke.pebble.utils.Pair;
-import com.mitchellbosecke.pebble.utils.StringLengthComparator;
-import com.mitchellbosecke.pebble.utils.StringUtils;
 
 /**
  * This class reads the template input and builds single items out of it.
@@ -89,7 +89,8 @@ public final class LexerImpl implements Lexer {
   /**
    * Static regular expressions for identifiers.
    */
-  private static final Pattern REGEX_IDENTIFIER = Pattern.compile("^[\\p{IsLetter}_][\\p{IsLetter}\\p{IsDigit}_]*");
+  private static final Pattern REGEX_IDENTIFIER = Pattern
+      .compile("^[\\p{IsAlphabetic}_][\\p{IsAlphabetic}\\p{Digit}_]*");
 
   private static final Pattern REGEX_LONG = Pattern.compile("^[0-9]+L");
 
@@ -210,7 +211,7 @@ public final class LexerImpl implements Lexer {
   }
 
   private void tokenizeStringInterpolation() {
-    logger.trace("Tokenizing String Interpolation");
+    this.logger.trace("Tokenizing String Interpolation");
     String lastBracket = this.brackets.peek().getLeft();
     Matcher matcher = this.syntax.getRegexInterpolationClose().matcher(this.source);
     if (this.syntax.getInterpolationOpenDelimiter().equals(lastBracket) && matcher.lookingAt()) {
@@ -224,7 +225,7 @@ public final class LexerImpl implements Lexer {
   }
 
   private void tokenizeString() {
-    logger.trace("Tokenizing String");
+    this.logger.trace("Tokenizing String");
     // interpolation
     Matcher matcher = this.syntax.getRegexInterpolationOpen().matcher(this.source);
     if (matcher.lookingAt()) {
@@ -266,7 +267,7 @@ public final class LexerImpl implements Lexer {
    * delimiter, or the opening variable delimiter.
    */
   private void tokenizeData() {
-    logger.trace("Tokenizing Data");
+    this.logger.trace("Tokenizing Data");
     // find the next start delimiter
     Matcher matcher = this.syntax.getRegexStartDelimiters().matcher(this.source);
     boolean match = matcher.find();
@@ -277,13 +278,14 @@ public final class LexerImpl implements Lexer {
     // if we didn't find another start delimiter, the text
     // token goes all the way to the end of the template.
     if (!match) {
-      logger.trace("Advancing to the end of the template because no start delimiter was found");
+      this.logger
+          .trace("Advancing to the end of the template because no start delimiter was found");
       text = this.source.toString();
       this.source.advance(this.source.length());
     } else {
       text = this.source.substring(matcher.start());
       startDelimiter = this.source.substring(matcher.start(), matcher.end());
-      logger.trace("Start Deliminter Token string: {}", startDelimiter);
+      this.logger.trace("Start Deliminter Token string: {}", startDelimiter);
       // advance to after the start delimiter
       this.source.advance(matcher.end());
     }
@@ -291,7 +293,7 @@ public final class LexerImpl implements Lexer {
     // trim leading whitespace from this text if we previously
     // encountered the appropriate whitespace trim character
     if (this.trimLeadingWhitespaceFromNextData) {
-      logger.trace("Left Trimming text");
+      this.logger.trace("Left Trimming text");
       text = StringUtils.ltrim(text);
       this.trimLeadingWhitespaceFromNextData = false;
     }
@@ -323,7 +325,7 @@ public final class LexerImpl implements Lexer {
    * Tokenizes between execute delimiters.
    */
   private void tokenizeBetweenExecuteDelimiters() {
-    logger.trace("Tokenize between execute delimiters");
+    this.logger.trace("Tokenize between execute delimiters");
     // check for the trailing whitespace trim character
     this.checkForTrailingWhitespaceTrim();
 
@@ -396,7 +398,7 @@ public final class LexerImpl implements Lexer {
    * Tokenizing an expression which can be found within both execute and print regions.
    */
   private void tokenizeExpression() {
-    logger.trace("Tokenizing Expression");
+    this.logger.trace("Tokenizing Expression");
     String token;
     this.source.advanceThroughWhitespace();
     /*
@@ -523,9 +525,9 @@ public final class LexerImpl implements Lexer {
         this.syntax.getRegexLeadingWhitespaceTrim().matcher(this.source);
 
     if (whitespaceTrimMatcher.lookingAt()) {
-      logger.trace("Found Leading Whitespace Trim Character");
+      this.logger.trace("Found Leading Whitespace Trim Character");
       if (leadingToken != null) {
-        logger.trace("Right trimming leading token: {}", leadingToken);
+        this.logger.trace("Right trimming leading token: {}", leadingToken);
         leadingToken.setValue(StringUtils.rtrim(leadingToken.getValue()));
       }
       this.source.advance(whitespaceTrimMatcher.end());
@@ -603,13 +605,13 @@ public final class LexerImpl implements Lexer {
   private Token pushToken(Token.Type type, String value) {
     // ignore empty text tokens
     if (type.equals(Token.Type.TEXT) && (value == null || "".equals(value))) {
-      logger.trace("Skipping empty text token");
+      this.logger.trace("Skipping empty text token");
       return null;
     }
 
     Token token = new Token(type, value, this.source.getLineNumber());
     this.tokens.add(token);
-    logger.trace("Pushing Token: {}", token);
+    this.logger.trace("Pushing Token: {}", token);
 
     return token;
   }
