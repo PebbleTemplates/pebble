@@ -92,7 +92,7 @@ public final class LexerImpl implements Lexer {
   private static final Pattern REGEX_IDENTIFIER;
   
   static {
-    if ("The Android Project".equals(System.getProperty("java.vendor")) {
+    if ("The Android Project".equals(System.getProperty("java.vendor"))) {
       REGEX_IDENTIFIER = Pattern.compile("^[\\p{Letter}_][\\p{Letter}\\p{Digit}_]*");
     } else {
       // Standard
