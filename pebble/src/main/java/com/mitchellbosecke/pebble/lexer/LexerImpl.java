@@ -89,8 +89,16 @@ public final class LexerImpl implements Lexer {
   /**
    * Static regular expressions for identifiers.
    */
-  private static final Pattern REGEX_IDENTIFIER = Pattern
-      .compile("^[\\p{IsAlphabetic}_][\\p{IsAlphabetic}\\p{Digit}_]*");
+  private static final Pattern REGEX_IDENTIFIER;
+  
+  static {
+    if ("The Android Project".equals(System.getProperty("java.vendor"))) {
+      REGEX_IDENTIFIER = Pattern.compile("^[\\p{Letter}_][\\p{Letter}\\p{Digit}_]*");
+    } else {
+      // Standard
+      REGEX_IDENTIFIER = Pattern.compile("^[\\p{IsLetter}_][\\p{IsLetter}\\p{IsDigit}_]*");
+    }
+  }
 
   private static final Pattern REGEX_LONG = Pattern.compile("^[0-9]+L");
 
