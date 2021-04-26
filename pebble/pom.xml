@@ -21,7 +21,7 @@
     <servlet-api.version>2.5</servlet-api.version>
 
     <assertj.version>3.13.2</assertj.version>
-    <commons-io.version>2.6</commons-io.version>
+    <commons-io.version>2.7</commons-io.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
   </properties>
