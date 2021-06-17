@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class acts as a sort of wrapper around Java's built in operators. This is necessary because
@@ -74,7 +75,7 @@ public class OperatorUtils {
     } else if (op2 instanceof Enum<?> && op1 instanceof String) {
       return compareEnum((Enum<?>) op2, (String) op1);
     } else {
-      return ((op1 == op2) || ((op1 != null) && op1.equals(op2)));
+      return Objects.equals(op1, op2);
     }
   }
 
