@@ -184,51 +184,63 @@ public class OperatorUtils {
       num1 = (Number) op1;
       num2 = (Number) op2;
     } catch (ClassCastException ex) {
-      throw new RuntimeException(
-          String
-              .format("invalid operands for mathematical comparison [%s]", comparison.toString()));
+      throw new RuntimeException(String.format("invalid operands for mathematical comparison [%s]", comparison.toString()));
     }
 
-    // If both operands are comparable and of the same numeric type.
-    if (op1.getClass().equals(op2.getClass())) {
-    	boolean useComparableResult = false;
-    	int result = 0;
+    /*
+     * If the two operands are the same class, we will run the appropriate compare with casts.
+     * If not, we will work from the highest range downward to check types and convert the numbers
+     * for comparison in a way that will not lose values.
+     */
+    int result = 0;
 
-    	if (op1 instanceof Integer) {
-    		result = ((Integer) op1).compareTo((Integer) op2);
-		} else if (op1 instanceof Double) {
-			result = ((Double) op1).compareTo((Double) op2);
-			useComparableResult = true;
-		} else if (op1 instanceof Long) {
-			result = ((Long) op1).compareTo((Long) op2);
-			useComparableResult = true;
-		} else if (op1 instanceof BigDecimal) {
-			result = ((BigDecimal) op1).compareTo((BigDecimal) op2);
-			useComparableResult = true;
-		} else if (op1 instanceof BigInteger) {
-			result = ((BigInteger) op1).compareTo((BigInteger) op2);
-			useComparableResult = true;
-		}
+    if (num1.getClass().equals(num2.getClass())) {
+      if (num1 instanceof Integer) {
+        result = ((Integer) num1).compareTo((Integer) num2);
+      } else if (num1 instanceof Double) {
+        result = ((Double) num1).compareTo((Double) num2);
+      } else if (num1 instanceof Long) {
+        result = ((Long) num1).compareTo((Long) num2);
+      } else if (num1 instanceof BigDecimal) {
+        result = ((BigDecimal) num1).compareTo((BigDecimal) num2);
+      } else if (num1 instanceof BigInteger) {
+        result = ((BigInteger) num1).compareTo((BigInteger) num2);
+      }
+    } else {
+      if (num1 instanceof BigDecimal) {
+        result = ((BigDecimal) num1).compareTo(new BigDecimal(num2.toString()));
+      } else if (num2 instanceof BigDecimal) {
+        result = (new BigDecimal(num1.toString())).compareTo((BigDecimal) num2);
+      // Handle remaining decimal numbers by converting to BigDecimal since we know the classes differ
+      } else if (num1 instanceof Double || num2 instanceof Double || num1 instanceof Float || num2 instanceof Float) {
+        result = (new BigDecimal(num1.toString())).compareTo(new BigDecimal(num2.toString()));
+      // From here we only have whole number types to check
+      } else if (num1 instanceof BigInteger) {
+        result = ((BigInteger) num1).compareTo(new BigInteger(num2.toString()));
+      } else if (num2 instanceof BigInteger) {
+        result = (new BigInteger(num1.toString())).compareTo((BigInteger) num2);
+      } else if (num1 instanceof Long || num2 instanceof Long) {
+        result = Long.compare(num1.longValue(), num2.longValue());
+      // Compare remaining integer types using intValue()
+      } else {
+        result = Integer.compare(num1.intValue(), num2.intValue());
+      }
+    }
 
-    	if (useComparableResult) {
-			switch (comparison) {
-				case GREATER_THAN:
-					return result == 1;
-				case GREATER_THAN_EQUALS:
-					return result >= 0;
-				case LESS_THAN:
-					return result < 0;
-				case LESS_THAN_EQUALS:
-					return result <= 0;
-				case EQUALS:
-					return result == 0;
-				default:
-					throw new RuntimeException("Bug in OperatorUtils in pebble library");
-			}
-		}
-	}
-
-    return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
+    switch (comparison) {
+      case GREATER_THAN:
+        return result == 1;
+      case GREATER_THAN_EQUALS:
+        return result >= 0;
+      case LESS_THAN:
+        return result < 0;
+      case LESS_THAN_EQUALS:
+        return result <= 0;
+      case EQUALS:
+        return result == 0;
+      default:
+        throw new RuntimeException("Bug in OperatorUtils in pebble library");
+    }
   }
 
   private static double doubleOperation(double op1, double op2, Operation operation) {
@@ -248,25 +260,7 @@ public class OperatorUtils {
     }
   }
 
-  private static boolean doubleComparison(double op1, double op2, Comparison comparison) {
-    switch (comparison) {
-      case GREATER_THAN:
-        return op1 > op2;
-      case GREATER_THAN_EQUALS:
-        return op1 >= op2;
-      case LESS_THAN:
-        return op1 < op2;
-      case LESS_THAN_EQUALS:
-        return op1 <= op2;
-      case EQUALS:
-        return op1 == op2;
-      default:
-        throw new RuntimeException("Bug in OperatorUtils in pebble library");
-    }
-  }
-
-  private static BigDecimal bigDecimalOperation(BigDecimal op1, BigDecimal op2,
-      Operation operation) {
+  private static BigDecimal bigDecimalOperation(BigDecimal op1, BigDecimal op2, Operation operation) {
     switch (operation) {
       case ADD:
         return op1.add(op2);
