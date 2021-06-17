@@ -319,7 +319,7 @@ public class OperatorUtils {
       case SUBTRACT:
         return op1 - op2;
       case MULTIPLICATION:
-        return op1 * op2;
+        return (long) op1 * op2;
       case DIVISION:
         return op1 / op2;
       case MODULUS:
