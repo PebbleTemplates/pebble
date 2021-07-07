@@ -33,5 +33,5 @@ class ExampleOptOuts extends ExtensionCustomizer {
 The `ExtensionCustomizer` will be used to wrap any Pebble-extension which is provided by default. It can be registered in your setup code to create `PebbleEngine`:
 
 ```java
-PebbleEngine engine = new PebbleEngine.Builder().registerCustomizer(ExampleOptOuts::new).build();
+PebbleEngine engine = new PebbleEngine.Builder().registerExtensionCustomizer(ExampleOptOuts::new).build();
 ```
