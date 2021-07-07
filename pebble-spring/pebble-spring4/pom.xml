@@ -14,7 +14,7 @@
 
   <properties>
     <servlet-api.version>3.0.1</servlet-api.version>
-    <spring-framework.version>4.3.25.RELEASE</spring-framework.version>
+    <spring-framework.version>4.3.29.RELEASE</spring-framework.version>
     <junit.version>4.12</junit.version>
     <mockito.version>2.3.5</mockito.version>
   </properties>
