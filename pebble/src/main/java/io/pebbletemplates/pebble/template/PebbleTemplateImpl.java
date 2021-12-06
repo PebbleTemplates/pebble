@@ -180,7 +180,7 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     locale = locale == null ? this.engine.getDefaultLocale() : locale;
 
     // globals
-    ScopeChain scopeChain = new ScopeChain();
+    ScopeChain scopeChain = new ScopeChain(this.engine.isGlobalScoping());
     Map<String, Object> globals = new HashMap<>();
     globals.put("locale", locale);
     globals.put("template", this);
