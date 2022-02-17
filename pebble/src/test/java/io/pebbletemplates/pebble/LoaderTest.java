@@ -17,17 +17,14 @@ import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +103,22 @@ class LoaderTest {
     template.evaluate(writer);
 
     assertEquals("LOADER ONE", writer.toString());
+  }
+
+  @Test
+  void testMemoryLoader() throws PebbleException, IOException, URISyntaxException {
+    MemoryLoader loader = new MemoryLoader();
+    loader.setSuffix(".suffix");
+    PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
+    URL url = this.getClass().getResource("/templates/template.loaderTest.peb");
+    String content = FileUtils.readFileToString(new File(url.toURI()), StandardCharsets.UTF_8);
+
+    loader.addFile("main", content);
+    PebbleTemplate template1 = engine.getTemplate("main");
+    Writer writer1 = new StringWriter();
+    template1.evaluate(writer1);
+    assertEquals("SUCCESS", writer1.toString());
+
   }
 
   @Test
