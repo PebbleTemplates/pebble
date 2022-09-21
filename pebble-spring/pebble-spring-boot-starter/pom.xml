@@ -14,7 +14,7 @@
   <url>http://pebbletemplates.io</url>
 
   <properties>
-    <boot.version>2.4.2</boot.version>
+    <boot.version>2.7.3</boot.version>
   </properties>
 
   <dependencies>
