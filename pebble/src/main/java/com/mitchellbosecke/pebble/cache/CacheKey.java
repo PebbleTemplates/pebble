@@ -8,7 +8,7 @@ import java.util.Locale;
  *
  * @author Eric Bussieres
  */
-public final class CacheKey {
+public class CacheKey {
 
   private final CacheNode node;
   private final String name;
