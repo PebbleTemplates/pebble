@@ -10,7 +10,6 @@ language: java
 jdk:
     - openjdk8
     - openjdk11
-    - openjdk14
 
 after_success:
   - export VERSION=$(echo "cat //*[local-name()='project']/*[local-name()='version']/text()" | xmllint --nocdata --shell pom.xml | sed '1d;$d')
