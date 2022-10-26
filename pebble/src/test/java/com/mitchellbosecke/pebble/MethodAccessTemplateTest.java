@@ -98,39 +98,6 @@ class MethodAccessTemplateTest {
   }
 
   @Nested
-  class SystemTest {
-
-    @Test
-    void testIfAccessIsForbiddenWhenAllowUnsafeMethodsIsFalse() {
-      PebbleEngine pebble = MethodAccessTemplateTest.this.pebbleEngine();
-      assertThrows(ClassAccessException.class, this.templateEvaluation(pebble));
-    }
-
-    @Test
-    void testIfAccessIsAllowedWhenAllowUnsafeMethodsIsTrue() throws Throwable {
-      PebbleEngine pebble = MethodAccessTemplateTest.this.unsafePebbleEngine();
-      this.templateEvaluation(pebble).execute();
-    }
-
-    private Executable templateEvaluation(PebbleEngine pebble) {
-      return () -> {
-        Class<?> systemClass = Class.forName("java.lang.System");
-        systemClass.getMethod("gc").setAccessible(true);
-
-        Constructor<?> constructor = systemClass.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        System system = (System) constructor.newInstance();
-
-        String source = "{{system.gc()}}";
-        PebbleTemplate template = pebble.getTemplate(source);
-        Map<String, Object> context = new HashMap<>();
-        context.put("system", system);
-        MethodAccessTemplateTest.this.evaluateTemplate(template, context);
-      };
-    }
-  }
-
-  @Nested
   class MethodTest {
 
     @Test
