@@ -3,7 +3,7 @@
   <parent>
     <groupId>io.pebbletemplates</groupId>
     <artifactId>pebble-project</artifactId>
-    <version>3.1.7-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pebble</artifactId>

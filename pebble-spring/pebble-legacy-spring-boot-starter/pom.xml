@@ -7,14 +7,14 @@
     <version>4.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>pebble-spring-boot-starter</artifactId>
+  <artifactId>pebble-legacy-spring-boot-starter</artifactId>
 
-  <name>Pebble Spring Boot 3 Starter</name>
-  <description>Spring Boot 3 starter for Pebble Template Engine</description>
+  <name>Pebble Spring Boot 2 Starter</name>
+  <description>Spring Boot 2 starter for Pebble Template Engine</description>
   <url>http://pebbletemplates.io</url>
 
   <properties>
-    <boot.version>3.0.0-RC1</boot.version>
+    <boot.version>2.7.5</boot.version>
   </properties>
 
   <dependencies>
@@ -23,12 +23,6 @@
       <artifactId>spring-boot-starter-web</artifactId>
       <version>${boot.version}</version>
       <optional>true</optional>
-      <exclusions>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -38,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>io.pebbletemplates</groupId>
-      <artifactId>pebble-spring6</artifactId>
+      <artifactId>pebble-spring5</artifactId>
       <version>${project.version}</version>
     </dependency>
 
