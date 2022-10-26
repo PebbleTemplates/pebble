@@ -12,6 +12,8 @@
 
   <modules>
     <module>pebble-spring5</module>
+    <module>pebble-legacy-spring-boot-starter</module>
+    <module>pebble-spring6</module>
     <module>pebble-spring-boot-starter</module>
   </modules>
 
