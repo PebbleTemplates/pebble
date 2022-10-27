@@ -201,7 +201,7 @@ public class AdditionOperator implements BinaryOperator {
 		return "+";
 	}
 
-    public BinaryExpression<?> getInstance() {
+    public BinaryExpression<?> createInstance() {
         return new AddExpression();
     }
 

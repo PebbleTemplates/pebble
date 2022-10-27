@@ -16,7 +16,7 @@ public interface BinaryOperator {
 
   String getSymbol();
 
-  BinaryExpression<?> getInstance();
+  BinaryExpression<?> createInstance();
 
   BinaryOperatorType getType();
 
