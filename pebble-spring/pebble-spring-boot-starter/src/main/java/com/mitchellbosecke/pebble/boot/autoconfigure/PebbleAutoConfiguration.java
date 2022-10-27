@@ -7,6 +7,8 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.spring.extension.SpringExtension;
 import java.util.List;
+
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.lang.Nullable;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(PebbleEngine.class)
 @EnableConfigurationProperties(PebbleProperties.class)
 @Import({PebbleServletWebConfiguration.class, PebbleReactiveWebConfiguration.class})
