@@ -5,22 +5,19 @@ Pebble is a java templating engine inspired by [Twig](http://twig.sensiolabs.org
 For more information please visit the [website](https://pebbletemplates.io).
 
 # Artifact id renaming for pebble-spring-boot-starter 
-As of version 3.1.0 and in order to follow this naming [recommendation](https://github.com/spring-projects/spring-boot/wiki/Building-On-Spring-Boot#naming), the artifactId of pebble-spring-boot-starter has been renamed as is:
+As of version 3.1.0 and in order to follow this naming [recommendation](https://github.com/spring-projects/spring-boot/wiki/Building-On-Spring-Boot#naming), the artifactId of pebble-spring-boot-starter has been renamed. Please
+use one of the following  artifactId according to the spring boot version that you are using 
 
-| Old artifactId | New artifactId                                                     | spring-boot version |
-| --- |--------------------------------------------------------------------|---------------------|
-| pebble-spring-boot-starter | pebble-legacy-spring-boot-starter  | 2.7.x               |
-| pebble-spring-boot-2-starter | pebble-spring-boot-starter                                         | 3.x.x               |
+| ArtifactId                        | spring-boot version |
+|-----------------------------------|---------------------|
+| pebble-legacy-spring-boot-starter | 2.x.x               |
+| pebble-spring-boot-starter        | 3.x.x               |
 
-# New group id
-Please note that the pebble's groupId has been updated as of version 2.5.0
-```
-<dependency>
-	<groupId>io.pebbletemplates</groupId>
-	<artifactId>pebble</artifactId>
-	<version>3.1.6</version>
-</dependency>
-```
+# Breaking changes in version 3.2.x
+- Rename package from `com.mitchellbosecke` to `io.pebbletemplates`
+- Change default suffix to `.peb` instead of `.pebble` in spring boot autoconfiguration
+- Rename method `getInstance` to `createInstance` in `BinaryOperator` interface (#521)
+
 
 ## License
 

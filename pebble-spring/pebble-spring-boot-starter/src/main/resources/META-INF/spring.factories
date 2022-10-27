@@ -1,3 +1,3 @@
 # Template availability providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
-com.mitchellbosecke.pebble.boot.autoconfigure.PebbleTemplateAvailabilityProvider
+io.pebbletemplates.boot.autoconfigure.PebbleTemplateAvailabilityProvider
