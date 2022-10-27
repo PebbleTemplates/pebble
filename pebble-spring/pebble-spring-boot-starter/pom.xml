@@ -48,6 +48,12 @@
       <version>${boot.version}</version>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure-processor</artifactId>
+      <version>${boot.version}</version>
+      <optional>true</optional>
+    </dependency>
 
     <!-- TEST -->
     <dependency>
