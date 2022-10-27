@@ -1,0 +1,99 @@
+{
+  "groups": [
+    {
+      "name": "pebble",
+      "type": "io.pebbletemplates.boot.autoconfigure.PebbleProperties",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "pebble.allow-request-override",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.allow-session-override",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.cache",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.charset",
+      "type": "java.nio.charset.Charset",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.check-template-location",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.content-type",
+      "type": "org.springframework.util.MimeType",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.default-locale",
+      "type": "java.util.Locale",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.expose-request-attributes",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.expose-session-attributes",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.expose-spring-macro-helpers",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.greedy-match-method",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "pebble.prefix",
+      "type": "java.lang.String",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.request-context-attribute",
+      "type": "java.lang.String",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.strict-variables",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "pebble.suffix",
+      "type": "java.lang.String",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    },
+    {
+      "name": "pebble.view-names",
+      "type": "java.lang.String[]",
+      "sourceType": "io.pebbletemplates.boot.autoconfigure.PebbleProperties"
+    }
+  ],
+  "hints": []
+}

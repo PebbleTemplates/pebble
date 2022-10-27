@@ -35,6 +35,12 @@
       <artifactId>pebble-spring5</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <version>${boot.version}</version>
+      <optional>true</optional>
+    </dependency>
 
     <!-- TEST -->
     <dependency>
