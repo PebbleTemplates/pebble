@@ -43,7 +43,7 @@ This is enough for autoconfiguration to kick in. This includes:
 PLEASE NOTE: the starter depends on ``spring-boot-starter-web`` but is marked as optional, you'll need to add the dependency yourself or configure Spring MVC appropriately.
 
 ## Boot externalized configuration
-A number of properties can be defined in Spring Boot externalized configuration, eg. ``application.properties``, starting with the prefix ``pebble``. See the corresponding [PebbleProperties.java](https://github.com/PebbleTemplates/pebble/blob/master/pebble-spring/pebble-spring-boot-starter/src/main/java/com/mitchellbosecke/pebble/boot/autoconfigure/PebbleProperties.java) for your starter version. Notable properties are:
+A number of properties can be defined in Spring Boot externalized configuration, eg. ``application.properties``, starting with the prefix ``pebble``. See the corresponding [PebbleProperties.java](https://github.com/PebbleTemplates/pebble/blob/master/pebble-spring/pebble-spring-boot-starter/src/main/java/io/pebbletemplates/boot/autoconfigure/PebbleProperties.java) for your starter version. Notable properties are:
 
 * ``pebble.prefix``: defines the prefix that will be prepended to the mvc view name. Defaults to ``/templates/``
 * ``pebble.suffix``: defines the suffix that will be appended to the mvc view name. Defaults to ``.pebble``

@@ -32,7 +32,7 @@ theme:
       title: 'API Docs'
     - type: 'page'
       title: 'Javadocs'
-      itemId: 'com.mitchellbosecke.pebble'
+      itemId: 'io.pebbletemplates'
   extraCss:
     - 'assets/css/pygments.scss'
     - 'assets/css/orchidJavadoc.scss'
