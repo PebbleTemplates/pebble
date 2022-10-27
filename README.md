@@ -10,11 +10,11 @@ use one of the following  artifactId according to the spring boot version that y
 
 | ArtifactId                        | spring-boot version |
 |-----------------------------------|---------------------|
-| pebble-legacy-spring-boot-starter | 2.7.x               |
+| pebble-legacy-spring-boot-starter | 2.x.x               |
 | pebble-spring-boot-starter        | 3.x.x               |
 
 # Breaking changes in version 3.2.x
-- Rename package from `com.mitchellbosecke.pebble` to `io.pebbletemplates`
+- Rename package from `com.mitchellbosecke` to `io.pebbletemplates`
 - Change default suffix to `.peb` instead of `.pebble` in spring boot autoconfiguration
 - Rename method `getInstance` to `createInstance` in `BinaryOperator` interface (#521)
 
