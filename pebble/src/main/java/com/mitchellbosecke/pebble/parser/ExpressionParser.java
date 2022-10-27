@@ -203,7 +203,7 @@ public class ExpressionParser {
       BinaryExpression<?> finalExpression;
 
       try {
-        finalExpression = operator.getInstance();
+        finalExpression = operator.createInstance();
       } catch (RuntimeException e) {
         throw new ParserException(e,
             "Error instantiating operator node",

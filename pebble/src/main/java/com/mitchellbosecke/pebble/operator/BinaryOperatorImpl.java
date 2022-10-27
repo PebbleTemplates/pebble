@@ -67,7 +67,7 @@ public class BinaryOperatorImpl implements BinaryOperator {
   }
 
   @Override
-  public BinaryExpression<?> getInstance() {
+  public BinaryExpression<?> createInstance() {
     return this.nodeSupplier.get();
   }
 
