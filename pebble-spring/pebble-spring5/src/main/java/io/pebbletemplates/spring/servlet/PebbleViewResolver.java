@@ -6,8 +6,8 @@
  */
 package io.pebbletemplates.spring.servlet;
 
-import io.pebbletemplates.loader.Loader;
-import io.pebbletemplates.PebbleEngine;
+import io.pebbletemplates.pebble.loader.Loader;
+import io.pebbletemplates.pebble.PebbleEngine;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;

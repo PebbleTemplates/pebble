@@ -6,10 +6,10 @@
  */
 package io.pebbletemplates.spring.servlet;
 
-import io.pebbletemplates.PebbleEngine;
-import io.pebbletemplates.error.PebbleException;
+import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.spring.context.Beans;
-import io.pebbletemplates.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,7 +2,7 @@ package io.pebbletemplates.boot.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.pebbletemplates.PebbleEngine;
+import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.boot.Application;
 import java.io.StringWriter;
 import org.junit.jupiter.api.Test;

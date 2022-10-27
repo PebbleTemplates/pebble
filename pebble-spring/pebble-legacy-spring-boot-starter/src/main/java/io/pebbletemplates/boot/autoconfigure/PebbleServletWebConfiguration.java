@@ -1,7 +1,7 @@
 package io.pebbletemplates.boot.autoconfigure;
 
-import io.pebbletemplates.PebbleEngine;
-import io.pebbletemplates.loader.ClasspathLoader;
+import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.loader.ClasspathLoader;
 import io.pebbletemplates.spring.servlet.PebbleViewResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;

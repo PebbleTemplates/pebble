@@ -1,10 +1,10 @@
 package io.pebbletemplates.boot.autoconfigure;
 
-import io.pebbletemplates.PebbleEngine;
-import io.pebbletemplates.attributes.methodaccess.MethodAccessValidator;
-import io.pebbletemplates.extension.Extension;
-import io.pebbletemplates.loader.ClasspathLoader;
-import io.pebbletemplates.loader.Loader;
+import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
+import io.pebbletemplates.pebble.extension.Extension;
+import io.pebbletemplates.pebble.loader.ClasspathLoader;
+import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import java.util.List;
 

@@ -2,10 +2,10 @@ package io.pebbletemplates.spring.reactive;
 
 import static java.util.Optional.ofNullable;
 
-import io.pebbletemplates.PebbleEngine;
-import io.pebbletemplates.error.PebbleException;
+import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.spring.context.Beans;
-import io.pebbletemplates.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;

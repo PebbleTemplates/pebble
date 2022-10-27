@@ -6,9 +6,9 @@
  */
 package io.pebbletemplates.spring.extension.function;
 
-import io.pebbletemplates.extension.Function;
-import io.pebbletemplates.template.EvaluationContext;
-import io.pebbletemplates.template.PebbleTemplate;
+import io.pebbletemplates.pebble.extension.Function;
+import io.pebbletemplates.pebble.template.EvaluationContext;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

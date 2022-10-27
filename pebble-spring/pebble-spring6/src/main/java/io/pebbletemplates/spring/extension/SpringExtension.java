@@ -6,8 +6,8 @@
  */
 package io.pebbletemplates.spring.extension;
 
-import io.pebbletemplates.extension.AbstractExtension;
-import io.pebbletemplates.extension.Function;
+import io.pebbletemplates.pebble.extension.AbstractExtension;
+import io.pebbletemplates.pebble.extension.Function;
 import io.pebbletemplates.spring.extension.function.HrefFunction;
 import io.pebbletemplates.spring.extension.function.MessageSourceFunction;
 import io.pebbletemplates.spring.extension.function.bindingresult.GetAllErrorsFunction;

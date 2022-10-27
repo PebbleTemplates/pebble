@@ -6,9 +6,9 @@
  */
 package io.pebbletemplates.spring.extension.function.bindingresult;
 
-import io.pebbletemplates.extension.Function;
-import io.pebbletemplates.template.EvaluationContext;
-import io.pebbletemplates.template.GlobalContext;
+import io.pebbletemplates.pebble.extension.Function;
+import io.pebbletemplates.pebble.template.EvaluationContext;
+import io.pebbletemplates.pebble.template.GlobalContext;
 
 import org.springframework.validation.BindingResult;
 

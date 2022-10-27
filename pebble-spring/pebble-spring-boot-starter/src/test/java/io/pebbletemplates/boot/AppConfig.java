@@ -1,10 +1,10 @@
 package io.pebbletemplates.boot;
 
-import io.pebbletemplates.extension.AbstractExtension;
-import io.pebbletemplates.extension.Extension;
-import io.pebbletemplates.extension.Function;
-import io.pebbletemplates.template.EvaluationContext;
-import io.pebbletemplates.template.PebbleTemplate;
+import io.pebbletemplates.pebble.extension.AbstractExtension;
+import io.pebbletemplates.pebble.extension.Extension;
+import io.pebbletemplates.pebble.extension.Function;
+import io.pebbletemplates.pebble.template.EvaluationContext;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

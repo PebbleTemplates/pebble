@@ -4,12 +4,12 @@ import static java.util.Locale.CHINESE;
 import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.pebbletemplates.PebbleEngine;
-import io.pebbletemplates.attributes.methodaccess.BlacklistMethodAccessValidator;
-import io.pebbletemplates.attributes.methodaccess.MethodAccessValidator;
-import io.pebbletemplates.attributes.methodaccess.NoOpMethodAccessValidator;
+import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
+import io.pebbletemplates.pebble.attributes.methodaccess.NoOpMethodAccessValidator;
 import io.pebbletemplates.boot.autoconfigure.PebbleAutoConfiguration;
-import io.pebbletemplates.loader.Loader;
+import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import io.pebbletemplates.spring.reactive.PebbleReactiveViewResolver;
 import io.pebbletemplates.spring.servlet.PebbleViewResolver;

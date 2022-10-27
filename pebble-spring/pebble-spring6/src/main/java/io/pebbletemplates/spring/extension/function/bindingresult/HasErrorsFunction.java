@@ -6,8 +6,8 @@
  */
 package io.pebbletemplates.spring.extension.function.bindingresult;
 
-import io.pebbletemplates.template.EvaluationContext;
-import io.pebbletemplates.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.EvaluationContext;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 import java.util.Map;
 import org.springframework.validation.BindingResult;
 

@@ -1,6 +1,6 @@
 package io.pebbletemplates.spring.reactive;
 
-import io.pebbletemplates.PebbleEngine;
+import io.pebbletemplates.pebble.PebbleEngine;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
 

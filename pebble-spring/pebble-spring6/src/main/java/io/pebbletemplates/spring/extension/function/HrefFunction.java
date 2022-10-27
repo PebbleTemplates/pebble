@@ -1,9 +1,9 @@
 package io.pebbletemplates.spring.extension.function;
 
-import io.pebbletemplates.extension.Function;
-import io.pebbletemplates.template.EvaluationContext;
-import io.pebbletemplates.template.PebbleTemplate;
-import io.pebbletemplates.extension.NamedArguments;
+import io.pebbletemplates.pebble.extension.Function;
+import io.pebbletemplates.pebble.template.EvaluationContext;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
+import io.pebbletemplates.pebble.extension.NamedArguments;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
