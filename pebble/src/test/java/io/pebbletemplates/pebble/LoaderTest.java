@@ -10,21 +10,14 @@ package io.pebbletemplates.pebble;
 
 import io.pebbletemplates.pebble.error.LoaderException;
 import io.pebbletemplates.pebble.error.PebbleException;
-import io.pebbletemplates.pebble.loader.ClasspathLoader;
-import io.pebbletemplates.pebble.loader.DelegatingLoader;
-import io.pebbletemplates.pebble.loader.FileLoader;
-import io.pebbletemplates.pebble.loader.Loader;
-import io.pebbletemplates.pebble.loader.StringLoader;
+import io.pebbletemplates.pebble.loader.*;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,19 +99,33 @@ class LoaderTest {
   }
 
   @Test
-  void testMemoryLoader() throws PebbleException, IOException, URISyntaxException {
+  void testMemoryLoader() throws PebbleException, IOException {
     MemoryLoader loader = new MemoryLoader();
-    loader.setSuffix(".suffix");
-    PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
-    URL url = this.getClass().getResource("/templates/template.loaderTest.peb");
-    String content = FileUtils.readFileToString(new File(url.toURI()), StandardCharsets.UTF_8);
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
 
-    loader.addFile("main", content);
-    PebbleTemplate template1 = engine.getTemplate("main");
-    Writer writer1 = new StringWriter();
-    template1.evaluate(writer1);
-    assertEquals("SUCCESS", writer1.toString());
+    loader.addTemplate("home.html", "{% extends \"layout.html\" %}{% block title %} Home {% endblock %}"
+            + "{% block content %}"
+            + "<h1> Home </h1>"
+            + "<p> Welcome to my home page. My name is {{ name }}.</p>"
+            + "{% endblock %}");
+    loader.addTemplate("layout.html", "<html>"
+            + "<head>"
+            + "<title>Hello Pebble</title>"
+            + "</head>"
+            + "<body>"
+            + "{% block content %}{% endblock %}"
+            + "</body>"
+            + "</html>");
 
+    PebbleTemplate template = pebble.getTemplate("home.html");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("name", "Bob");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("<html><head><title>Hello Pebble</title></head><body><h1> Home </h1><p> Welcome to my home page. My name is Bob.</p></body></html>", writer.toString());
   }
 
   @Test
