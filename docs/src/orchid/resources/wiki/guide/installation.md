@@ -68,6 +68,8 @@ application server but is not enabled by default.
 - `Servlet5Loader`:  Same as `ServletLoader`, but for Jakarta Servlet 5.0 or newer.
 - `StringLoader`: Considers the name of the template to be the contents of the template.
 - `DelegatingLoader`: Delegates responsibility to a collection of children loaders.
+- `MemoryLoader`: Loader that supports inheritance and doesn't require a filesystem. This is useful for applications
+  that retrieve templates from a database for example.
 
 If you do not provide a custom Loader, Pebble will use an instance of the `DelegatingLoader` by default.
 This delegating loader will use a `ClasspathLoader` and a `FileLoader` behind the scenes to find your templates.
