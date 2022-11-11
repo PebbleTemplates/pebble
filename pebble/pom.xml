@@ -18,6 +18,7 @@
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
     <slf4j.version>1.7.25</slf4j.version>
     <caffeine.version>2.6.2</caffeine.version>
+    <jakarata.servlet-api.version>5.0.0</jakarata.servlet-api.version>
     <servlet-api.version>2.5</servlet-api.version>
 
     <assertj.version>3.13.2</assertj.version>
@@ -55,7 +56,7 @@
     <dependency>
       <artifactId>jakarta.servlet-api</artifactId>
       <groupId>jakarta.servlet</groupId>
-      <version>5.0.0</version>
+      <version>${jakarata.servlet-api.version}</version>
       <optional>true</optional>
     </dependency>
 
