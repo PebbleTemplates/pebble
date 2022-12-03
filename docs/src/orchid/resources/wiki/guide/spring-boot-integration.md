@@ -35,7 +35,7 @@ compile "io.pebbletemplates:pebble-legacy-spring-boot-starter:{{ site.version }}
 
 This is enough for autoconfiguration to kick in. This includes:
 
-* a Loader that will pick template files ending in ``.pebble`` from ``/templates/`` dir on the classpath
+* a Loader that will pick template files ending in ``.peb`` from ``/templates/`` dir on the classpath
 * a PebbleEngine with default settings, configured with the previous loader
 * a Spring extension which offers some functionality described below
 * a ViewResolver that will output ``text/html`` in ``UTF-8``
@@ -46,7 +46,7 @@ PLEASE NOTE: the starter depends on ``spring-boot-starter-web`` but is marked as
 A number of properties can be defined in Spring Boot externalized configuration, eg. ``application.properties``, starting with the prefix ``pebble``. See the corresponding [PebbleProperties.java](https://github.com/PebbleTemplates/pebble/blob/master/pebble-spring/pebble-spring-boot-starter/src/main/java/io/pebbletemplates/boot/autoconfigure/PebbleProperties.java) for your starter version. Notable properties are:
 
 * ``pebble.prefix``: defines the prefix that will be prepended to the mvc view name. Defaults to ``/templates/``
-* ``pebble.suffix``: defines the suffix that will be appended to the mvc view name. Defaults to ``.pebble``
+* ``pebble.suffix``: defines the suffix that will be appended to the mvc view name. Defaults to ``.peb``
 * ``pebble.cache``: enables or disables PebbleEngine caches. Defaults to ``true``
 * ``pebble.contentType``: defines the content type that will be used to configure the ViewResolver. Defaults to ``text/html``
 * ``pebble.encoding``: defines the text encoding that will be used to configure the ViewResolver. Defaults to ``UTF-8``
