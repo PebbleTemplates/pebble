@@ -20,7 +20,8 @@ public class I18nExtension extends AbstractExtension {
   public Map<String, Function> getFunctions() {
     Map<String, Function> functions = new HashMap<>();
     functions.put("i18n", new i18nFunction());
+    functions.put("t", new i18nAliasFunction());
+
     return functions;
   }
-
 }
