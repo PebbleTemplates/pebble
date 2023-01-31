@@ -7,7 +7,7 @@ The `if` tag allows you to designate a chunk of content as conditional depending
 {% verbatim %}
 {% if users is empty %}
 	There are no users.
-{% elseif users.length == 1 %}
+{% elseif users|length == 1 %}
 	There is only one user.
 {% else %}
 	There are many users.
