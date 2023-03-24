@@ -12,7 +12,6 @@ import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.TestingExtension;
 import io.pebbletemplates.pebble.extension.core.*;
 import io.pebbletemplates.pebble.loader.StringLoader;
-import io.pebbletemplates.pebble.extension.core.*;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import org.junit.jupiter.api.Test;
@@ -30,6 +29,7 @@ import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class CoreFiltersTest {
 
@@ -1307,6 +1307,22 @@ class CoreFiltersTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("4", writer.toString());
+  }
+
+  /**
+   * Tests {@link ReplaceFilter} if it can handle a null input.
+   */
+  @Test
+  void testReplaceFilterNullInput() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false).build();
+
+    PebbleTemplate template = pebble
+            .getTemplate(
+                    "{{ null |replace({'%this%': foo, '%that%': \"bar\"}) }}");
+
+    Writer writer = new StringWriter();
+    assertDoesNotThrow(() -> template.evaluate(writer, new HashMap<>()));
   }
 
   /**
