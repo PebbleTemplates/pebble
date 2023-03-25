@@ -32,14 +32,16 @@ public class ReplaceFilter implements Filter {
   @Override
   public Object apply(Object input, Map<String, Object> args, PebbleTemplate self,
                       EvaluationContext context, int lineNumber) throws PebbleException {
-    String data = input.toString();
+    if (input == null) {
+      return null;
+    }
     if (args.get(ARGUMENT_NAME) == null) {
       throw new PebbleException(null,
           MessageFormat.format("The argument ''{0}'' is required.", ARGUMENT_NAME), lineNumber,
           self.getName());
     }
     Map<?, ?> replacePair = (Map<?, ?>) args.get(ARGUMENT_NAME);
-
+    String data = input.toString();
     for (Entry<?, ?> entry : replacePair.entrySet()) {
       data = data.replace(entry.getKey().toString(), entry.getValue().toString());
     }
