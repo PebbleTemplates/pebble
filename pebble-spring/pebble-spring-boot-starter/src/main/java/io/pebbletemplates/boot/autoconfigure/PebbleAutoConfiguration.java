@@ -197,6 +197,10 @@ class PebbleTemplatesHints implements RuntimeHintsRegistrar {
         .registerType(TypeReference.of(ForNode.class),
             hint -> hint.withMembers(MemberCategory.DECLARED_FIELDS,
                 MemberCategory.DECLARED_CLASSES, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+                MemberCategory.INVOKE_DECLARED_METHODS))
+        .registerType(TypeReference.of(ForNode.LoopVariables.class),
+            hint -> hint.withMembers(MemberCategory.DECLARED_FIELDS,
+                MemberCategory.DECLARED_CLASSES, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                 MemberCategory.INVOKE_DECLARED_METHODS));
   }
 }
