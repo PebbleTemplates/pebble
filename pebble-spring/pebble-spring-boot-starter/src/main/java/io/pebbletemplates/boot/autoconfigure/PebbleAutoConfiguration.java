@@ -118,86 +118,8 @@ class PebbleTemplatesHints implements RuntimeHintsRegistrar {
   @Override
   public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
     hints.reflection()
-        .registerType(TypeReference.of(UnaryPlusExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(UnaryNotExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
         .registerType(TypeReference.of(UnaryMinusExpression.class),
             hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(SubtractExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(RenderableNodeExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(RangeExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(PositiveTestExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(ParentFunctionExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(OrExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(NotEqualsExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(NegativeTestExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(MultiplyExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(ModulusExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(MapExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LiteralStringExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LiteralNullExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LiteralLongExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LiteralIntegerExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LiteralDoubleExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LiteralBooleanExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LessThanExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(LessThanEqualsExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(GreaterThanExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(GreaterThanEqualsExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(GetAttributeExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(FunctionOrMacroInvocationExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(FilterInvocationExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(FilterExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(EqualsExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(DivideExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(ContextVariableExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(ContainsExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(ConcatenateExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(BlockFunctionExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(BinaryExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(ArrayExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(AndExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(AddExpression.class),
-            hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-        .registerType(TypeReference.of(ForNode.class),
-            hint -> hint.withMembers(MemberCategory.DECLARED_FIELDS,
-                MemberCategory.DECLARED_CLASSES, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-                MemberCategory.INVOKE_DECLARED_METHODS))
         .registerType(TypeReference.of(ForNode.LoopVariables.class),
             hint -> hint.withMembers(MemberCategory.DECLARED_FIELDS,
                 MemberCategory.DECLARED_CLASSES, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,

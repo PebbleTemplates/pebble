@@ -1,0 +1,56 @@
+{{ request.contextPath }}
+
+{{ response.contentType }}
+
+{{ session.maxInactiveInterval }}
+
+{{ foo.bar }}
+
+{{ foo["bar"] }}
+
+{{ bar[0] }}
+
+{{ "If life gives you lemons, eat lemons." | upper | abbreviate(13) }}
+
+{{ max(user.score, highscore) }}
+
+{% for article in articles %}
+    <h3>{{ article.title }}</h3>
+    <p>{{ article.content }}</p>
+{% else %}
+    <p> There are no articles. </p>
+{% endfor %}
+
+{% if category == "news" %}
+{{ news }}
+    {% elseif category == "sports" %}
+{{ sports }}
+    {% else %}
+    <p>Please select a category</p>
+{% endif %}
+
+{{ stringDate | date(existingFormat="yyyy-MMMM-d", format="yyyy/MMMM/d") }}
+
+{{ stringDate | date("yyyy/MMMM/d", existingFormat="yyyy-MMMM-d") }}
+
+{% set danger = "<br>" %}
+{{ danger }}
+
+{% set danger = "<br>" %}
+{{ danger | escape }}
+
+{# THIS IS A COMMENT #}
+{% for article in articles %}
+	<h3>{{ article.title }}</h3>
+	<p>{{ article.content }}</p>
+{% endfor %}
+
+{% if 3 is odd %}
+	...
+{% endif %}
+
+{% if name is not null %}
+	...
+{% endif %}
+
+{{ foo ? "yes" : "no" }}
