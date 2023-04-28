@@ -49,15 +49,35 @@ public class ForNode extends AbstractRenderableNode {
     this.elseBody = elseBody;
   }
 
-  private static class LoopVariables {
-    public boolean first, last;
-    public LazyLength length;
-    public int index;
-    public LazyRevIndex revindex;
+  public static class LoopVariables {
+    private boolean first, last;
+    private LazyLength length;
+    private int index;
+    private LazyRevIndex revindex;
 
     @Override
     public String toString() {
       return "{last=" + last + ", length=" + length + ", index=" + index + ", revindex=" + revindex + ", first=" + first + "}";
+    }
+
+    public boolean isFirst() {
+      return first;
+    }
+
+    public boolean isLast() {
+      return last;
+    }
+
+    public LazyLength getLength() {
+      return length;
+    }
+
+    public int getIndex() {
+      return index;
+    }
+
+    public LazyRevIndex getRevindex() {
+      return revindex;
     }
   }
 

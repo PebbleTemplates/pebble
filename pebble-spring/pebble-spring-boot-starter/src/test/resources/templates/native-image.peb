@@ -1,0 +1,232 @@
+{{ foo.bar }}
+
+{{ foo["bar"] }}
+
+{{ bar[0] }}
+
+{{ "If life gives you lemons, eat lemons." | upper | abbreviate(13) }}
+
+{{ max(13, highscore) }}
+
+{% for article in articles %}
+    <p>{{ article }}</p>
+{% else %}
+    <p> There are no articles. </p>
+{% endfor %}
+
+{% if category == "news" %}
+{{ news }}
+    {% elseif category == "sports" %}
+{{ sports }}
+    {% else %}
+    <p>Please select a category</p>
+{% endif %}
+
+{{ stringDate | date(existingFormat="yyyy-MMMM-d", format="yyyy/MMMM/d") }}
+
+{{ stringDate | date("yyyy/MMMM/d", existingFormat="yyyy-MMMM-d") }}
+
+{% set danger = "<br>" %}
+{{ danger }}
+
+{% set danger = "<br>" %}
+{{ danger | escape }}
+
+{# THIS IS A COMMENT #}
+{% if 3 is odd %}
+	...
+{% endif %}
+
+{% for article in articles %}
+    <p>number: ; content: {{ article }}</p>
+{% else %}
+    <p> There are no articles. </p>
+{% endfor %}
+
+{% if name is not null %}
+	...
+{% endif %}
+
+{{ folk ? "yes" : "no" }}
+
+{{ user.name | capitalize }}
+
+{% if user.name equals "Mitchell" %}
+	David
+{% endif %}
+
+    {% if bar contains 2 %}
+        Two
+    {% endif %}
+
+{% if (3 is not even) and (2 is odd or 3 is even) %}
+	...
+{% endif %}
+
+{% if user.telephone is empty %}
+	...
+{% endif %}
+
+{% if user is not map %}
+	...
+{% endif %}
+
+{% if user.email is null %}
+	user.email is null
+{% endif %}
+
+{% if users is iterable %}
+    {% for user in users %}
+		User: {{ user }}
+	{% endfor %}
+{% endif %}
+
+{{ i18n("messages","greetings") }}
+
+{% for i in range(0, 36, 2) %}
+{{ i }},
+{% endfor %}
+
+{{ "this is a long sentence." | abbreviate(7) }}
+
+{{ -7 | abs }}
+
+{{ "dGVzdA==" | base64decode }}
+
+{{ "test" | base64encode }}
+
+{{ "article title" | capitalize }}
+
+{{ "July 24, 2001" | date("yyyy-MM-dd", existingFormat="MMMM dd, yyyy") }}
+
+{{ user.telephone | default("No phone number") }}
+
+{{ "<div>" | escape }}
+
+{{ users | first }}
+{# will output the first item in the collection named 'users' #}
+
+{{ 'Mitch' | first }}
+{# will output 'M' #}
+
+{{ names | join(',') }}
+{# will output: Alex,Joe,Bob #}
+
+{{ users | last }}
+{# will output the last item in the collection named 'users' #}
+
+{{ 'Mitch' | last }}
+{# will output 'h' #}
+
+{% if users|length > 10 %}
+    ...
+{% endif %}
+
+{{ "THIS IS A LOUD SENTENCE" | lower }}
+
+{{ 3.141592653 | numberformat("#.##") }}
+
+{% set danger = "<div>" %}
+{{ danger | upper | raw }}
+{# ouptut: <DIV> #}
+
+ {% set danger = "<div>" %}
+{{ danger | raw | upper }}
+{# output: &lt;DIV&gt; #}
+
+{{ "I like %this% and %that%." | replace({'%this%': foo, '%that%': "bar"}) }}
+
+{% for user in users | reverse %} {{ user }} {% endfor %}
+
+{% for user in users | rsort %}
+    {{ user }}
+{% endfor %}
+
+{{ "test" | sha256 }}
+
+{{ ['apple', 'peach', 'pear', 'banana'] | slice(1,3) }}
+{# results in: [peach, pear] #}
+
+{{ 'Mitchell' | slice(1,3) }}
+{# results in: 'it' #}
+
+{% for user in users | sort %}
+    {{ user }}
+{% endfor %}
+
+{% set foo = "one,two,three" | split(',') %}
+{# foo contains ['one', 'two', 'three'] #}
+
+{% set foo = "one,two,three,four,five" | split(',', 3) %}
+{# foo contains ['one', 'two', 'three,four,five'] #}
+
+{{ "article title" | title }}
+
+{{ "    This text has too much whitespace.    " | trim }}
+
+{{ "this is a quiet sentence." | upper }}
+
+{{ "The string ü@foo-bar" | urlencode }}
+
+{% block "post" %} content {% endblock %}
+
+{{ block("post") }}
+
+{{ block("post") }}
+
+
+{{ "this is a long sentence." | abbreviate(7) }}
+
+{{ danger }} {# will be escaped by default #}
+{% autoescape false %}
+{{ danger }} {# will not be escaped #}
+{% endautoescape %}
+
+{{ danger }} {# will use the "html" escaping strategy #}
+{% autoescape "js" %}
+{{ danger }} {# will use the "js" escaping strategy #}
+{% endautoescape %}
+
+{% cache 'menu' %}
+    {% for item in items %}
+    {{ item.text }}
+        ....
+    {% endfor %}
+{% endcache %}
+
+{% filter upper %}
+	hello
+{% endfilter %}
+
+{% filter upper | escape %}
+	hello<br>
+{% endfilter %}
+
+{# output: 'HELLO&lt;br&gt;' #}
+
+{{ headerText }}
+    {% flush %}
+{{ content }}
+
+{% for user in users %}
+    {{ loop.index }}
+    {{ loop.length }}
+    {{ loop.first }}
+    {{ loop.last }}
+    {{ loop.revindex }}
+{% endfor %}
+
+{% include "advertisement.peb" with {"foo": "bar"} %}
+
+{% macro input(type="text", name, value) %}
+	<input type="{{ type }}" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
+
+{{ input(name="country") }}
+{# will output: <input type="text" name="country" value="" /> #}
+
+{% verbatim %}
+	{% for user in users %}
+		{{ user.name }}
+	{% endfor %}
+{% endverbatim %}
