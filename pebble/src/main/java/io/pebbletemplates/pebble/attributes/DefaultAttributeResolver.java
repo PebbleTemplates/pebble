@@ -1,5 +1,6 @@
 package io.pebbletemplates.pebble.attributes;
 
+import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.node.ArgumentsNode;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;
 import io.pebbletemplates.pebble.template.MacroAttributeProvider;
@@ -65,7 +66,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
       }
 
       if (member != null) {
-        return new ResolvedAttribute(this.invokeMember(instance, member, argumentValues));
+        return new ResolvedAttribute(this.invokeMember(instance, member, argumentValues, filename, lineNumber));
       }
     }
     return null;
@@ -92,7 +93,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
   /**
    * Invoke the "Member" that was found via reflection.
    */
-  private Object invokeMember(Object object, Member member, Object[] argumentValues) {
+  private Object invokeMember(Object object, Member member, Object[] argumentValues, String filename, int lineNumber) {
     Object result = null;
     try {
       if (member instanceof Method) {
@@ -104,7 +105,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
       }
 
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      throw new RuntimeException(e);
+      throw new PebbleException(e, "Could not call " + member.getName(), lineNumber, filename);
     }
     return result;
   }
