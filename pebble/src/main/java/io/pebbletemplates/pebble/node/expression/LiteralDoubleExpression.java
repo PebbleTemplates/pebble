@@ -38,6 +38,10 @@ public class LiteralDoubleExpression implements Expression<Double> {
     return this.lineNumber;
   }
 
+  public Double getValue() {
+    return this.value;
+  }
+
   @Override
   public String toString() {
     return this.value.toString();

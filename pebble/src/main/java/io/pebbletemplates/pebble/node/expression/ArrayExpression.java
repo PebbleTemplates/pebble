@@ -51,6 +51,10 @@ public class ArrayExpression implements Expression<List<?>> {
     return returnValues;
   }
 
+  public List<Expression<?>> getValues() {
+    return this.values;
+  }
+  
   @Override
   public int getLineNumber() {
     return this.lineNumber;

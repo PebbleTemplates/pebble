@@ -47,6 +47,10 @@ public class BlockFunctionExpression implements Expression<String> {
     visitor.visit(this);
   }
 
+  public Expression<?> getBlockNameExpression() {
+    return this.blockNameExpression;
+  }
+
   @Override
   public int getLineNumber() {
     return this.lineNumber;
