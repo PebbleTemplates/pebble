@@ -37,6 +37,10 @@ public class MemoryLoader implements Loader<String> {
         this.templateDefinitions.add(new TemplateDefinition(templateName, content));
     }
 
+    public List<TemplateDefinition> getTemplates() {
+        return this.templateDefinitions;
+    }
+
     @Override
     public void setSuffix(String suffix) {
     }
