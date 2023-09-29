@@ -73,7 +73,7 @@ public class MemoryLoader implements Loader<String> {
         return false;
     }
 
-    private static class TemplateDefinition {
+    public static class TemplateDefinition {
         public final String templateName;
         public final String content;
 
