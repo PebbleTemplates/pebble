@@ -90,12 +90,36 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <version>7.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-osgi-manifest</id>
+            <goals>
+              <goal>bnd-process</goal>
+            </goals>
+            <configuration>
+              <bnd><![CDATA[
+                Bundle-SymbolicName: io.pebbletemplates.pebble
+                Automatic-Module-Name: io.pebbletemplates
+                Import-Package: \
+                  com.github.benmanes.caffeine.*;version="[2.6,4)";resolution:=optional, \
+                  javax.servlet;version="[2.5,5)";resolution:=optional, \
+                  jakarta.servlet;version="[5.0,7)";resolution:=optional, \
+                  *
+                -exportcontents: *;-noimport:=true
+                -noextraheaders: true
+              ]]></bnd>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <manifestEntries>
-              <Automatic-Module-Name>io.pebbletemplates</Automatic-Module-Name>
-            </manifestEntries>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
       </plugin>
