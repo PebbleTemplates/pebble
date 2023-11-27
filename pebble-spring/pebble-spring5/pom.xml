@@ -4,7 +4,7 @@
   <parent>
     <artifactId>pebble-spring</artifactId>
     <groupId>io.pebbletemplates</groupId>
-    <version>3.2.2-SNAPSHOT</version>
+    <version>3.2.2</version>
   </parent>
 
   <artifactId>pebble-spring5</artifactId>
