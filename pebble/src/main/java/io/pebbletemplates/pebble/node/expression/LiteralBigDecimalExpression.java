@@ -39,6 +39,10 @@ public class LiteralBigDecimalExpression implements Expression<BigDecimal> {
     return this.lineNumber;
   }
 
+  public BigDecimal getValue() {
+    return this.value;
+  }
+
   @Override
   public String toString() {
     return this.value.toString();

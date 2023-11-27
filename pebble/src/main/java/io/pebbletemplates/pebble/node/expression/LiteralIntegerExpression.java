@@ -37,4 +37,13 @@ public class LiteralIntegerExpression implements Expression<Integer> {
     return this.lineNumber;
   }
 
+  public Integer getValue() {
+    return this.value;
+  }
+
+  @Override
+  public String toString() {
+    return this.value.toString();
+  }
+
 }

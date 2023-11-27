@@ -47,6 +47,10 @@ public class RenderableNodeExpression extends UnaryExpression {
     return writer.toString();
   }
 
+  public RenderableNode getNode() {
+    return this.node;
+  }
+
   @Override
   public int getLineNumber() {
     return this.lineNumber;

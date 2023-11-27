@@ -57,6 +57,10 @@ public class MapExpression implements Expression<Map<?, ?>> {
     return returnEntries;
   }
 
+  public Map<Expression<?>, Expression<?>> getEntries() {
+    return this.entries;
+  }
+
   @Override
   public int getLineNumber() {
     return this.lineNumber;

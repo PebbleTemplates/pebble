@@ -58,6 +58,10 @@ public class ParentFunctionExpression implements Expression<String> {
     visitor.visit(this);
   }
 
+  public String getBlockName() {
+    return this.blockName;
+  }
+
   @Override
   public int getLineNumber() {
     return this.lineNumber;
