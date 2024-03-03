@@ -35,3 +35,22 @@ The `ExtensionCustomizer` will be used to wrap any Pebble-extension which is pro
 ```java
 PebbleEngine engine = new PebbleEngine.Builder().registerExtensionCustomizer(ExampleOptOuts::new).build();
 ```
+
+### Default implementation of ExtensionCustomizer
+
+The `DisallowExtensionCustomizerBuilder` class can be used to disallow some default functionality, make pebble more controllable.
+
+For example of use, see below:
+
+```java
+PebbleEngine engine = new PebbleEngine.Builder()
+        .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
+                .disallowedTokenParserTags(singletonList("flush"))
+                .disallowedFunctionKeys(singletonList("max"))
+                .disallowedFilterKeys(singletonList("upper"))
+                .disallowedTestKeys(singletonList("null"))
+                .disallowedBinaryOperatorSymbols(singletonList(">"))
+                .disallowedUnaryOperatorSymbols(singletonList("-"))
+                .build())
+        .build();
+```
