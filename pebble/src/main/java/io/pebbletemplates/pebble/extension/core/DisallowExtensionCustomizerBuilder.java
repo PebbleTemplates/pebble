@@ -8,13 +8,7 @@ import io.pebbletemplates.pebble.operator.BinaryOperator;
 import io.pebbletemplates.pebble.operator.UnaryOperator;
 import io.pebbletemplates.pebble.tokenParser.TokenParser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -35,11 +29,6 @@ public class DisallowExtensionCustomizerBuilder {
   private Collection<String> disallowedUnaryOperatorSymbols;
 
   private Collection<String> disallowedTestKeys;
-
-
-  public static DisallowExtensionCustomizerBuilder builder() {
-    return new DisallowExtensionCustomizerBuilder();
-  }
 
   public DisallowExtensionCustomizerBuilder disallowedFunctionKeys(Collection<String> disallowedFunctionKeys) {
     this.disallowedFunctionKeys = disallowedFunctionKeys;
@@ -77,32 +66,32 @@ public class DisallowExtensionCustomizerBuilder {
 
       @Override
       public Map<String, Test> getTests() {
-        return disallow(super::getTests, disallowedTestKeys);
+        return this.disallow(super::getTests, DisallowExtensionCustomizerBuilder.this.disallowedTestKeys);
       }
 
       @Override
       public List<UnaryOperator> getUnaryOperators() {
-        return disallow(super::getUnaryOperators, disallowedUnaryOperatorSymbols, UnaryOperator::getSymbol);
+        return this.disallow(super::getUnaryOperators, DisallowExtensionCustomizerBuilder.this.disallowedUnaryOperatorSymbols, UnaryOperator::getSymbol);
       }
 
       @Override
       public List<BinaryOperator> getBinaryOperators() {
-        return disallow(super::getBinaryOperators, disallowedBinaryOperatorSymbols, BinaryOperator::getSymbol);
+        return this.disallow(super::getBinaryOperators, DisallowExtensionCustomizerBuilder.this.disallowedBinaryOperatorSymbols, BinaryOperator::getSymbol);
       }
 
       @Override
       public Map<String, io.pebbletemplates.pebble.extension.Function> getFunctions() {
-        return disallow(super::getFunctions, disallowedFunctionKeys);
+        return this.disallow(super::getFunctions, DisallowExtensionCustomizerBuilder.this.disallowedFunctionKeys);
       }
 
       @Override
       public Map<String, Filter> getFilters() {
-        return disallow(super::getFilters, disallowedFilterKeys);
+        return this.disallow(super::getFilters, DisallowExtensionCustomizerBuilder.this.disallowedFilterKeys);
       }
 
       @Override
       public List<TokenParser> getTokenParsers() {
-        return disallow(super::getTokenParsers, disallowedTokenParserTags, TokenParser::getTag);
+        return this.disallow(super::getTokenParsers, DisallowExtensionCustomizerBuilder.this.disallowedTokenParserTags, TokenParser::getTag);
       }
 
       private <T> List<T> disallow(Supplier<List<T>> superGetter,

@@ -36,7 +36,7 @@ class ExtensionCustomizerTest {
   @Test
   void setDisallowedTokenParserTags() {
     PebbleEngine pebbleEngine = new PebbleEngine.Builder()
-            .registerExtensionCustomizer(DisallowExtensionCustomizerBuilder.builder()
+            .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
                     .disallowedTokenParserTags(Collections.singletonList("flush"))
                     .build())
             .build();
@@ -51,7 +51,7 @@ class ExtensionCustomizerTest {
   @Test
   void setDisallowedFilters() {
     PebbleEngine pebbleEngine = new PebbleEngine.Builder()
-            .registerExtensionCustomizer(DisallowExtensionCustomizerBuilder.builder()
+            .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
                     .disallowedFilterKeys(Collections.singletonList("upper"))
                     .build())
             .build();
@@ -68,7 +68,7 @@ class ExtensionCustomizerTest {
   @Test
   void setDisallowedFunctions() {
     PebbleEngine pebbleEngine = new PebbleEngine.Builder()
-            .registerExtensionCustomizer(DisallowExtensionCustomizerBuilder.builder()
+            .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
                     .disallowedFunctionKeys(Collections.singletonList("max"))
                     .build())
             .build();
@@ -82,9 +82,9 @@ class ExtensionCustomizerTest {
   }
 
   @Test
-  void setDisallowedBinaryOperatorSymbols() throws IOException {
+  void setDisallowedBinaryOperatorSymbols() {
     PebbleEngine pebbleEngine = new PebbleEngine.Builder()
-            .registerExtensionCustomizer(DisallowExtensionCustomizerBuilder.builder()
+            .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
                     .disallowedBinaryOperatorSymbols(Collections.singletonList(">"))
                     .build())
             .build();
@@ -98,7 +98,7 @@ class ExtensionCustomizerTest {
   @Test
   void setDisallowedUnaryOperatorSymbols() throws IOException {
     PebbleEngine pebbleEngine = new PebbleEngine.Builder()
-            .registerExtensionCustomizer(DisallowExtensionCustomizerBuilder.builder()
+            .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
                     .disallowedUnaryOperatorSymbols(Collections.singletonList("-"))
                     .build())
             .build();
@@ -110,7 +110,7 @@ class ExtensionCustomizerTest {
   @Test
   void setDisallowedTestKeys() throws IOException {
     PebbleEngine pebbleEngine = new PebbleEngine.Builder()
-            .registerExtensionCustomizer(DisallowExtensionCustomizerBuilder.builder()
+            .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
                     .disallowedTestKeys(Collections.singletonList("null"))
                     .build())
             .build();

@@ -44,7 +44,7 @@ For example of use, see below:
 
 ```java
 PebbleEngine engine = new PebbleEngine.Builder()
-        .registerExtensionCustomizer(DisallowExtensionCustomizerBuilder.builder()
+        .registerExtensionCustomizer(new DisallowExtensionCustomizerBuilder()
                 .disallowedTokenParserTags(singletonList("flush"))
                 .disallowedFunctionKeys(singletonList("max"))
                 .disallowedFilterKeys(singletonList("upper"))
