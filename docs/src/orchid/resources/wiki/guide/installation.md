@@ -92,3 +92,4 @@ All the settings are set during the construction of the `PebbleEngine` object.
 | `literalNumbersAsBigDecimals` | option for toggling to enable/disable literal numbers treated as BigDecimals | `false` |
 | `greedyMatchMethod` | option for toggling to enable/disable greedy matching mode for finding java method. Reduce the limit of the parameter type, try to find other method which has compatible parameter types. | `false` |
 | `maxRenderedSize` | option for limiting the size of the rendered output | `-1 (disabled)` |
+| `maxLoopIterationNumber` | option for limiting the number of iterations of each loop statement | `-1 (disabled)` |

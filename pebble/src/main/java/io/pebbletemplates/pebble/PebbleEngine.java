@@ -296,6 +296,8 @@ public class PebbleEngine {
 
     private boolean greedyMatchMethod = false;
 
+    private int maxLoopIterationNumber = -1;
+
     private boolean literalNumbersAsBigDecimals = false;
 
     private MethodAccessValidator methodAccessValidator = new BlacklistMethodAccessValidator();
@@ -560,6 +562,16 @@ public class PebbleEngine {
     }
 
     /**
+     * Used to limit the number of iterations of each for statement loop
+     * @param maxLoopIterationNumber int
+     * @return This builder object
+     */
+    public Builder maxLoopIterationNumber(int maxLoopIterationNumber) {
+      this.maxLoopIterationNumber = maxLoopIterationNumber;
+      return this;
+    }
+
+    /**
      * Registers an implementation of {@link ExtensionCustomizer} to change runtime-behaviour of standard
      * functionality.
      *
@@ -617,7 +629,7 @@ public class PebbleEngine {
       parserOptions.setLiteralNumbersAsBigDecimals(this.literalNumbersAsBigDecimals);
 
       EvaluationOptions evaluationOptions = new EvaluationOptions(this.greedyMatchMethod,
-          this.methodAccessValidator);
+          this.methodAccessValidator, this.maxLoopIterationNumber);
       return new PebbleEngine(this.loader, this.syntax, this.strictVariables, this.defaultLocale, this.maxRenderedSize,
           this.tagCache, this.templateCache,
           this.executorService, extensionRegistry, parserOptions, evaluationOptions);

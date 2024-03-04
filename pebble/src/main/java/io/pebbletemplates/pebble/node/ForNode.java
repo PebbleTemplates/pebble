@@ -108,6 +108,14 @@ public class ForNode extends AbstractRenderableNode {
 
       LazyLength length = new LazyLength(iterableEvaluation);
 
+      int maxLoopIterationNumber = context.getEvaluationOptions().getMaxLoopIterationNumber();
+      if (maxLoopIterationNumber != -1 && length.intValue() > maxLoopIterationNumber) {
+        throw new PebbleException(null,
+                String.format("ForNode loop iteration number [%s] > limit number [%s]",
+                        length.longValue(), maxLoopIterationNumber),
+                this.getLineNumber(), self.getName());
+      }
+
       int index = 0;
 
       LoopVariables loop = null;

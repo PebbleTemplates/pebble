@@ -1,5 +1,6 @@
 package io.pebbletemplates.pebble.node;
 
+import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
@@ -13,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ForNodeTest {
 
@@ -120,6 +123,28 @@ class ForNodeTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("0123456789", writer.toString());
+  }
+
+  @Test
+  void testLoopNumberLimit() throws Exception {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .maxLoopIterationNumber(3).build();
+
+    StringBuilder source = new StringBuilder("{% for i in 0..99 %}");
+    source.append("{{ i }}");
+    source.append("{% endfor %}");
+
+    PebbleTemplate template = pebble.getTemplate(source.toString());
+
+    Map<String, Object> context = new HashMap<>();
+
+    Writer writer = new StringWriter();
+
+    PebbleException exception = assertThrows(PebbleException.class, () ->
+      template.evaluate(writer, context)
+    );
+
+    assertTrue(exception.getMessage().contains("ForNode loop iteration number [100] > limit number [3]"));
   }
 
 }

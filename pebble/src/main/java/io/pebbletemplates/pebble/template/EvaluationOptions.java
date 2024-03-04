@@ -19,10 +19,14 @@ public class EvaluationOptions {
    */
   private final MethodAccessValidator methodAccessValidator;
 
+  private final int maxLoopIterationNumber;
+
   public EvaluationOptions(boolean greedyMatchMethod,
-      MethodAccessValidator methodAccessValidator) {
+                           MethodAccessValidator methodAccessValidator,
+                           int maxLoopIterationNumber) {
     this.greedyMatchMethod = greedyMatchMethod;
     this.methodAccessValidator = methodAccessValidator;
+    this.maxLoopIterationNumber = maxLoopIterationNumber;
   }
 
   public boolean isGreedyMatchMethod() {
@@ -32,4 +36,9 @@ public class EvaluationOptions {
   public MethodAccessValidator getMethodAccessValidator() {
     return this.methodAccessValidator;
   }
+
+  public int getMaxLoopIterationNumber() {
+    return maxLoopIterationNumber;
+  }
+
 }
