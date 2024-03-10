@@ -4,6 +4,7 @@ import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.InvocationCountingFunction;
 import io.pebbletemplates.pebble.extension.TestingExtension;
 import io.pebbletemplates.pebble.loader.StringLoader;
+import io.pebbletemplates.pebble.template.GlobalContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import org.junit.jupiter.api.Test;
@@ -197,5 +198,22 @@ class MacroTest {
     Writer writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("barfoo", writer.toString());
+  }
+
+  @Test
+  void testMacroWithGlobalScopingEnabled() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine
+            .Builder()
+            .loader(new StringLoader())
+            .globalScoping(true)
+            .build();
+
+    String templateText = "{% macro testContextAccess() %} {{ template.name }} {% endmacro %} {{ testContextAccess() }}";
+    PebbleTemplate template = pebble.getTemplate(templateText);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer);
+    // Should return the contents of the template
+    assertEquals(templateText, writer.toString().trim());
   }
 }
