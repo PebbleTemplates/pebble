@@ -52,13 +52,14 @@ public class DateFilter implements Filter {
     final Locale locale = context.getLocale();
     final String format = (String) args.get("format");
     final String timeZone = (String) args.get("timeZone");
+    final String existingFormat = (String) args.get("existingFormat");
 
     if (TemporalAccessor.class.isAssignableFrom(input.getClass())) {
       return this.applyTemporal((TemporalAccessor) input, self, locale, lineNumber, format, timeZone);
     }
     return this.applyDate(
             input, self, locale, lineNumber,
-            format, (String) args.get("existingFormat"), timeZone);
+            format, existingFormat, timeZone);
   }
 
   private Object applyDate(Object dateOrString, final PebbleTemplate self, final Locale locale,
@@ -73,16 +74,17 @@ public class DateFilter implements Filter {
       date = new Date(((Number) dateOrString).longValue());
     } else if (dateOrString instanceof String) {
       try {
-        DateTimeFormatter formatter = existingFormatString != null
-                ? DateTimeFormatter.ofPattern(existingFormatString, locale)
-                : DateTimeFormatter.ISO_DATE_TIME;
-
-        TemporalAccessor ta = formatter.parse(dateOrString.toString());
-        Instant instant = Instant.from(ta);
-        Date.from(instant);
+        SimpleDateFormat formatter;
+          if (existingFormatString != null){
+            formatter = new SimpleDateFormat(existingFormatString);
+          } else {
+            formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+          }
+        date = formatter.parse(dateOrString.toString());
       } catch (Exception e) {
-        throw new PebbleException(e, String.format("Could not parse the string '%s' into a date.",
-                dateOrString.toString()), lineNumber, self.getName());
+        String formatTried = existingFormatString != null ? existingFormatString :  "yyyy-MM-dd'T'HH:mm:ssZ";
+        throw new PebbleException(e, String.format("Could not parse the string '%s' into a date, with formatting: %s",
+                dateOrString.toString(), formatTried), lineNumber, self.getName());
       }
     } else {
       throw new IllegalArgumentException(
