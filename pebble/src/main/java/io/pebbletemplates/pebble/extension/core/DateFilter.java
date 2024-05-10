@@ -18,6 +18,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -62,28 +64,32 @@ public class DateFilter implements Filter {
   private Object applyDate(Object dateOrString, final PebbleTemplate self, final Locale locale,
       int lineNumber, final String format, final String existingFormatString, final String timeZone)
       throws PebbleException {
-    Date date;
-    DateFormat existingFormat;
+    Date date = null;
     DateFormat intendedFormat;
-    if (existingFormatString != null) {
-      existingFormat = new SimpleDateFormat(existingFormatString, locale);
+
+    if (dateOrString instanceof Date) {
+      date = (Date) dateOrString;
+    } else if (dateOrString instanceof Number) {
+      date = new Date(((Number) dateOrString).longValue());
+    } else if (dateOrString instanceof String) {
       try {
-        date = existingFormat.parse(dateOrString.toString());
-      } catch (ParseException e) {
+        DateTimeFormatter formatter = existingFormatString != null
+                ? DateTimeFormatter.ofPattern(existingFormatString, locale)
+                : DateTimeFormatter.ISO_DATE_TIME;
+
+        TemporalAccessor ta = formatter.parse(dateOrString.toString());
+        Instant instant = Instant.from(ta);
+        Date.from(instant);
+      } catch (Exception e) {
         throw new PebbleException(e, String.format("Could not parse the string '%s' into a date.",
-            dateOrString.toString()), lineNumber, self.getName());
+                dateOrString.toString()), lineNumber, self.getName());
       }
     } else {
-      if (dateOrString instanceof Date) {
-        date = (Date) dateOrString;
-      } else if (dateOrString instanceof Number) {
-        date = new Date(((Number) dateOrString).longValue());
-      } else {
-        throw new IllegalArgumentException(
-            format("Unsupported argument type: %s (value: %s)", dateOrString.getClass().getName(),
-                dateOrString));
-      }
+      throw new IllegalArgumentException(
+              format("Unsupported argument type: %s (value: %s)", dateOrString.getClass().getName(),
+                      dateOrString));
     }
+
     intendedFormat = new SimpleDateFormat(format == null ? "yyyy-MM-dd'T'HH:mm:ssZ" : format, locale);
     if (timeZone != null) {
       intendedFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
