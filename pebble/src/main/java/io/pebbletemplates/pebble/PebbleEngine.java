@@ -442,9 +442,10 @@ public class PebbleEngine {
     }
 
     /**
-     * Sets whether or not escaping should be performed automatically.
+     * Sets whether or not escaping should be performed automatically. The default value of this
+     * setting is "true".
      *
-     * @param autoEscaping The auto escaping setting
+     * @param autoEscaping The auto escaping setting.
      * @return This builder object
      */
     public Builder autoEscaping(boolean autoEscaping) {
@@ -453,7 +454,8 @@ public class PebbleEngine {
     }
 
     /**
-     * Sets whether or not core operators overrides should be allowed.
+     * Sets whether or not core operators overrides should be allowed. The default value of this
+     * setting is "false".
      *
      * @param allowOverrideCoreOperators Whether or not core operators overrides should be allowed.
      * @return This builder object
@@ -488,7 +490,7 @@ public class PebbleEngine {
 
     /**
      * Enable/disable all caches, i.e. cache used by the engine to store compiled PebbleTemplate
-     * instances and tags cache
+     * instances and tags cache. The default value of this setting is "true".
      *
      * @param cacheActive toggle to enable/disable all caches
      * @return This builder object
