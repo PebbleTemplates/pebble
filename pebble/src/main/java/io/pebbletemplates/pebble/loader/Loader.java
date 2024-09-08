@@ -25,7 +25,7 @@ public interface Loader<T> {
    * The reader which will be used by Pebble to read the contents of the template.
    *
    * @param cacheKey the cache key to use to load create the reader.
-   * @return A reader object
+   * @return A reader object, or {@code null} if the template does not exist
    */
   Reader getReader(T cacheKey);
 
