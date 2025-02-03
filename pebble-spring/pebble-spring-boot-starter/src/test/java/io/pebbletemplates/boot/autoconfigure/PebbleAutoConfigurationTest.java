@@ -8,10 +8,11 @@ import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
 import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.attributes.methodaccess.NoOpMethodAccessValidator;
-import io.pebbletemplates.boot.autoconfigure.PebbleAutoConfiguration;
 import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.spring.extension.SpringExtension;
+import io.pebbletemplates.spring.reactive.PebbleReactiveView;
 import io.pebbletemplates.spring.reactive.PebbleReactiveViewResolver;
+import io.pebbletemplates.spring.servlet.PebbleView;
 import io.pebbletemplates.spring.servlet.PebbleViewResolver;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 class PebbleAutoConfigurationTest {
 
@@ -47,6 +50,14 @@ class PebbleAutoConfigurationTest {
         .getMethodAccessValidator()).isInstanceOf(
         BlacklistMethodAccessValidator.class);
     assertThat(this.webContext.getBeansOfType(PebbleViewResolver.class)).hasSize(1);
+  }
+
+  @Test
+  void registerCustomBeansForServletApp() {
+    this.loadWithServlet(CustomPebbleViewResolverConfiguration.class);
+    assertThat(this.webContext.getBeansOfType(PebbleViewResolver.class)).hasSize(0);
+    assertThat(this.webContext.getBeansOfType(AbstractTemplateViewResolver.class)).hasSize(1);
+    assertThat(this.webContext.getBeansOfType(CustomPebbleViewResolver.class)).hasSize(1);
   }
 
   @Test
@@ -104,6 +115,14 @@ class PebbleAutoConfigurationTest {
     assertThat(this.reactiveWebContext.getBeansOfType(PebbleViewResolver.class)).isEmpty();
     assertThat(this.reactiveWebContext.getBeansOfType(PebbleReactiveViewResolver.class)).hasSize(1);
     assertThat(this.reactiveWebContext.getBeansOfType(PebbleViewResolver.class)).isEmpty();
+  }
+
+  @Test
+  void registerCustomBeansForReactiveApp() {
+    this.loadWithReactive(CustomPebbleReactiveViewResolverConfiguration.class);
+    assertThat(this.reactiveWebContext.getBeansOfType(PebbleReactiveViewResolver.class)).hasSize(0);
+    assertThat(this.reactiveWebContext.getBeansOfType(UrlBasedViewResolver.class)).hasSize(1);
+    assertThat(this.reactiveWebContext.getBeansOfType(CustomPebbleReactiveViewResolver.class)).hasSize(1);
   }
 
   @Test
@@ -187,7 +206,44 @@ class PebbleAutoConfigurationTest {
     public SpringExtension customSpringExtension(MessageSource messageSource) {
       return new SpringExtension(messageSource);
     }
+
   }
+
+  @Configuration(proxyBeanMethods = false)
+  protected static class CustomPebbleViewResolverConfiguration {
+
+    @Bean
+    public CustomPebbleViewResolver pebbleViewResolver() {
+      return new CustomPebbleViewResolver();
+    }
+
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  protected static class CustomPebbleReactiveViewResolverConfiguration {
+
+    @Bean
+    public CustomPebbleReactiveViewResolver pebbleReactiveViewResolver() {
+      return new CustomPebbleReactiveViewResolver();
+    }
+
+  }
+
+  protected static class CustomPebbleViewResolver extends AbstractTemplateViewResolver {
+
+    public CustomPebbleViewResolver() {
+        this.setViewClass(PebbleView.class);
+    }
+
+  }
+
+  protected static class CustomPebbleReactiveViewResolver extends UrlBasedViewResolver {
+
+      public CustomPebbleReactiveViewResolver() {
+          this.setViewClass(PebbleReactiveView.class);
+      }
+
+    }
 
   @Configuration(proxyBeanMethods = false)
   protected static class CustomMethodAccessValidatorConfiguration {
