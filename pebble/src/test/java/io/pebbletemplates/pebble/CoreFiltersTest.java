@@ -136,6 +136,23 @@ class CoreFiltersTest {
   }
 
   @Test
+  void testDefaultDateFormat() throws PebbleException, IOException{
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false)
+            .defaultLocale(Locale.ENGLISH).build();
+
+    String source = "{{ stringDate | date('MM/dd/yyyy') }}";
+
+    PebbleTemplate template = pebble.getTemplate(source);
+    Map<String, Object> context = new HashMap<>();
+    context.put("stringDate", "2004-02-12T15:19:21+04:00");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("02/12/2004", writer.toString());
+  }
+
+  @Test
   void testDateJava8() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine
         .Builder()
