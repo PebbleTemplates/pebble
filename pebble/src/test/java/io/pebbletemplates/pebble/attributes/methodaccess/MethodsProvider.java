@@ -36,7 +36,12 @@ class MethodsProvider {
       Set<Method> set = new HashSet<>(props.size() * 4 / 3, 1f);
       Map<String, Class> primClasses = createPrimitiveClassesMap();
       for (Object key : props.keySet()) {
-        set.add(parseMethodSpec((String) key, primClasses));
+        try {
+          set.add(parseMethodSpec((String) key, primClasses));
+        } catch (NoSuchMethodException | ClassNotFoundException ignored) {
+          // Ignore when the method is not found or the class is not found
+          // Continue to add other methods
+        }
       }
       return set;
     } catch (Exception e) {
