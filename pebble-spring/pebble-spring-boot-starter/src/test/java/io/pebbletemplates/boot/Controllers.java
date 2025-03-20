@@ -2,6 +2,7 @@ package io.pebbletemplates.boot;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.WebSession;
 
 @Controller
 public class Controllers {
@@ -29,6 +30,12 @@ public class Controllers {
   @RequestMapping("/beans.action")
   public String beans() {
     return "beans";
+  }
+
+  @RequestMapping("/session.action")
+  public String session(WebSession session) {
+    session.getAttributes().put("foo", "bar");
+    return "session";
   }
 
   @RequestMapping("/response.action")

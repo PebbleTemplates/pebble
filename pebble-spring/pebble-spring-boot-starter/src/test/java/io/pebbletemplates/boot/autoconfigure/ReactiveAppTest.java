@@ -96,5 +96,16 @@ class ReactiveAppTest {
 
     assertThat(result).isEqualTo("response:200 OK");
   }
+
+  @Test
+  void testSessionAccess() {
+    String result = this.client.get().uri("/session.action").exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
+
+    assertThat(result).isEqualTo("session:bar");
+  }
 }
 
