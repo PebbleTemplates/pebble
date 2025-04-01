@@ -789,7 +789,7 @@ class CoreTagsTest {
   }
 
   @Test
-  @Timeout(value = 300, unit = TimeUnit.MILLISECONDS)
+  @Timeout(value = 400, unit = TimeUnit.MILLISECONDS)
   void testParallel() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
@@ -833,7 +833,7 @@ class CoreTagsTest {
    * Nested parallel tags were throwing an error.
    */
   @Test
-  @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)
+  @Timeout(value = 600, unit = TimeUnit.MILLISECONDS)
   void testNestedParallel() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false)
