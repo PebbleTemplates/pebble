@@ -10,8 +10,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -51,7 +54,6 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
     try {
       Charset charset = this.getCharset(contentType);
       Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
-      this.addVariablesToModel(renderAttributes, exchange);
       this.evaluateTemplate(renderAttributes, locale, writer);
     } catch (Exception ex) {
       DataBufferUtils.release(dataBuffer);
@@ -60,11 +62,18 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
     return exchange.getResponse().writeWith(Flux.just(dataBuffer));
   }
 
-  private void addVariablesToModel(Map<String, Object> model, ServerWebExchange exchange) {
-    model.put(BEANS_VARIABLE_NAME, new Beans(this.getApplicationContext()));
-    model.put(REQUEST_VARIABLE_NAME, exchange.getRequest());
-    model.put(RESPONSE_VARIABLE_NAME, exchange.getResponse());
-    model.put(SESSION_VARIABLE_NAME, exchange.getSession());
+  @Override
+  protected Mono<Map<String, Object>> getModelAttributes(Map<String, ?> model, ServerWebExchange exchange) {
+    return super.getModelAttributes(addVariablesToModel(model, exchange), exchange);
+  }
+
+  private Map<String, ?> addVariablesToModel(Map<String, ?> model, ServerWebExchange exchange) {
+    Map<String, Object> attributes = new HashMap<>(Objects.requireNonNullElseGet(model, Map::of));
+    attributes.put(BEANS_VARIABLE_NAME, new Beans(this.getApplicationContext()));
+    attributes.put(REQUEST_VARIABLE_NAME, exchange.getRequest());
+    attributes.put(RESPONSE_VARIABLE_NAME, exchange.getResponse());
+    attributes.put(SESSION_VARIABLE_NAME, exchange.getSession());
+    return attributes;
   }
 
   private Charset getCharset(@Nullable MediaType mediaType) {
