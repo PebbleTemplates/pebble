@@ -1,4 +1,4 @@
-# Pebble ![Continuous Integration](https://api.travis-ci.com/PebbleTemplates/pebble.svg?branch=master)
+# Pebble [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/erbussierel) ![Continuous Integration](https://api.travis-ci.com/PebbleTemplates/pebble.svg?branch=master)
 
 Pebble is a java templating engine inspired by [Twig](https://twig.symfony.com/). It separates itself from the crowd with its inheritance feature and its easy-to-read syntax. It ships with built-in autoescaping for security, and it includes integrated support for internationalization.
 
