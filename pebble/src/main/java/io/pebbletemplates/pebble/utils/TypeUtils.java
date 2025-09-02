@@ -59,7 +59,8 @@ public class TypeUtils {
         return (T) new Date(number.longValue());
       }
       if (type == Boolean.class) {
-        return (T) (Boolean) (number.doubleValue() != 0.0);
+        double d = number.doubleValue();
+        return (T) (Boolean) (!Double.isNaN(d) && d != 0.0);
       }
     }
     if (value instanceof String) {
