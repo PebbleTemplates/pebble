@@ -56,6 +56,9 @@ public class Beans implements Map<String, Object> {
   @Override
   public Object get(Object key) {
     Assert.notNull(key, "Key cannot be null");
+    if (key instanceof Class<?> keyAsClass) {
+      return this.ctx.getBean(keyAsClass);
+    }
     return this.ctx.getBean(key.toString());
   }
 
