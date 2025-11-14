@@ -1,13 +1,13 @@
 package io.pebbletemplates.boot.autoconfigure;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.pebbletemplates.boot.Application;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = Application.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -96,5 +96,16 @@ class ReactiveAppTest {
 
     assertThat(result).isEqualTo("response:200 OK");
   }
+
+    @Test
+    void testSessionAccess() {
+        String result = this.client.get().uri("/session.action").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+                .expectBody(String.class)
+                .returnResult().getResponseBody();
+
+        assertThat(result).isEqualTo("session:bar");
+    }
 }
 

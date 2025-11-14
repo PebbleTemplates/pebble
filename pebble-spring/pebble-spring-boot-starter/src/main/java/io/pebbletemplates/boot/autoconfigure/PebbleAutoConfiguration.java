@@ -8,7 +8,6 @@ import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.pebble.node.ForNode;
 import io.pebbletemplates.pebble.node.expression.UnaryMinusExpression;
 import io.pebbletemplates.spring.extension.SpringExtension;
-import java.util.List;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -21,6 +20,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.lang.Nullable;
+
+import java.util.List;
 
 @AutoConfiguration
 @ConditionalOnClass(PebbleEngine.class)
@@ -58,9 +59,7 @@ public class PebbleAutoConfiguration extends AbstractPebbleConfiguration {
     if (extensions != null && !extensions.isEmpty()) {
       builder.extension(extensions.toArray(new Extension[extensions.size()]));
     }
-    if (!properties.isCache()) {
-      builder.cacheActive(false);
-    }
+    builder.cacheActive(properties.getServlet().isCache());
     if (properties.getDefaultLocale() != null) {
       builder.defaultLocale(properties.getDefaultLocale());
     }

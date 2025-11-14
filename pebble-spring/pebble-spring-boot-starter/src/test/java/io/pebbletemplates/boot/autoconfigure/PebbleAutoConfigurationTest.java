@@ -1,9 +1,5 @@
 package io.pebbletemplates.boot.autoconfigure;
 
-import static java.util.Locale.CHINESE;
-import static java.util.Locale.FRENCH;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
 import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
@@ -14,17 +10,22 @@ import io.pebbletemplates.spring.reactive.PebbleReactiveView;
 import io.pebbletemplates.spring.reactive.PebbleReactiveViewResolver;
 import io.pebbletemplates.spring.servlet.PebbleView;
 import io.pebbletemplates.spring.servlet.PebbleViewResolver;
-import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
+import org.springframework.boot.web.context.reactive.AnnotationConfigReactiveWebApplicationContext;
+import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
+
+import java.util.Locale;
+
+import static java.util.Locale.CHINESE;
+import static java.util.Locale.FRENCH;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PebbleAutoConfigurationTest {
 
@@ -164,10 +165,10 @@ class PebbleAutoConfigurationTest {
 
   private void loadWithServlet(Class<?> config) {
     this.webContext = new AnnotationConfigServletWebApplicationContext();
-    TestPropertyValues.of("pebble.prefix=classpath:/templates/").applyTo(this.webContext);
-    TestPropertyValues.of("pebble.defaultLocale=zh").applyTo(this.webContext);
-    TestPropertyValues.of("pebble.strictVariables=true").applyTo(this.webContext);
-    TestPropertyValues.of("pebble.greedyMatchMethod=true").applyTo(this.webContext);
+      TestPropertyValues.of("spring.pebble.prefix=classpath:/templates/").applyTo(this.webContext);
+      TestPropertyValues.of("spring.pebble.defaultLocale=zh").applyTo(this.webContext);
+      TestPropertyValues.of("spring.pebble.strictVariables=true").applyTo(this.webContext);
+      TestPropertyValues.of("spring.pebble.greedyMatchMethod=true").applyTo(this.webContext);
     if (config != null) {
       this.webContext.register(config);
     }
@@ -177,10 +178,10 @@ class PebbleAutoConfigurationTest {
 
   private void loadWithReactive(Class<?> config) {
     this.reactiveWebContext = new AnnotationConfigReactiveWebApplicationContext();
-    TestPropertyValues.of("pebble.prefix=classpath:/templates/").applyTo(this.reactiveWebContext);
-    TestPropertyValues.of("pebble.defaultLocale=zh").applyTo(this.reactiveWebContext);
-    TestPropertyValues.of("pebble.strictVariables=true").applyTo(this.reactiveWebContext);
-    TestPropertyValues.of("pebble.greedyMatchMethod=true").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("spring.pebble.prefix=classpath:/templates/").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("spring.pebble.defaultLocale=zh").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("spring.pebble.strictVariables=true").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("spring.pebble.greedyMatchMethod=true").applyTo(this.reactiveWebContext);
     if (config != null) {
       this.reactiveWebContext.register(config);
     }

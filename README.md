@@ -1,23 +1,41 @@
 # Pebble [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/erbussierel) ![Continuous Integration](https://api.travis-ci.com/PebbleTemplates/pebble.svg?branch=master)
 
-Pebble is a java templating engine inspired by [Twig](https://twig.symfony.com/). It separates itself from the crowd with its inheritance feature and its easy-to-read syntax. It ships with built-in autoescaping for security, and it includes integrated support for internationalization.
+Pebble is a java templating engine inspired by [Twig](https://twig.symfony.com/). It separates itself from the crowd
+with its inheritance feature and its easy-to-read syntax. It ships with built-in autoescaping for security, and it
+includes integrated support for internationalization.
 
 For more information please visit the [website](https://pebbletemplates.io).
 
-# Artifact id renaming for pebble-spring-boot-starter 
-As of version 3.1.0 and in order to follow this naming [recommendation](https://github.com/spring-projects/spring-boot/wiki/Building-On-Spring-Boot#naming), the artifactId of pebble-spring-boot-starter has been renamed. Please
-use one of the following  artifactId according to the spring boot version that you are using 
+# Breaking changes in version 4.0.x
+
+- Use one of the following artifactId according to the spring boot version that you are using
 
 | ArtifactId                        | spring-boot version |
 |-----------------------------------|---------------------|
-| pebble-legacy-spring-boot-starter | 2.x.x               |
-| pebble-spring-boot-starter        | 3.x.x               |
+| pebble-legacy-spring-boot-starter | 3.x.x               |
+| pebble-spring-boot-starter        | 4.x.x               |
+
+- Change spring boot properties prefix from `pebble.*` to `spring.pebble.*` to follow spring boot conventions
+- The following spring boot properties has been moved to `.servlet`
+
+| Old property                    | New Property                                   |
+|---------------------------------|------------------------------------------------|
+| pebble.allowRequestOverride     | spring.pebble.servlet.allowRequestOverride     |
+| pebble.allowSessionOverride     | spring.pebble.servlet.allowSessionOverride     |
+| pebble.cache                    | spring.pebble.servlet.cache                    |
+| pebble.contentType              | spring.pebble.servlet.contentType              |
+| pebble.exposeRequestAttributes  | spring.pebble.servlet.exposeRequestAttributes  |
+| pebble.exposeSessionAttributes  | spring.pebble.servlet.exposeSessionAttributes  |
+| pebble.exposeSpringMacroHelpers | spring.pebble.servlet.exposeSpringMacroHelpers |
+
+For more information, please consult the spring-boot integration documentation in
+the [Boot externalized configuration section](https://pebbletemplates.io/wiki/guide/spring-boot-integration/)
 
 # Breaking changes in version 3.2.x
+
 - Rename package from `com.mitchellbosecke` to `io.pebbletemplates`
 - Change default suffix to `.peb` instead of `.pebble` in spring boot autoconfiguration
 - Rename method `getInstance` to `createInstance` in `BinaryOperator` interface (#521)
-
 
 ## License
 

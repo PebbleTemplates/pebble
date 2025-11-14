@@ -7,7 +7,7 @@ Spring Boot starter for autoconfiguring Pebble.
 ## Basic Usage
 Add the starter dependency to your pom.xml:
 
-### spring-boot v2
+### spring-boot v4
 ```XML
 <dependency>
 	<groupId>io.pebbletemplates</groupId>
@@ -20,7 +20,7 @@ Or build.gradle:
 compile "io.pebbletemplates:pebble-spring-boot-starter:{{ site.version }}"
 ```
 
-### spring-boot v1
+### spring-boot v3
 ```XML
 <dependency>
 	<groupId>io.pebbletemplates</groupId>
@@ -40,21 +40,34 @@ This is enough for autoconfiguration to kick in. This includes:
 * a Spring extension which offers some functionality described below
 * a ViewResolver that will output ``text/html`` in ``UTF-8``
 
-PLEASE NOTE: the starter depends on ``spring-boot-starter-web`` but is marked as optional, you'll need to add the dependency yourself or configure Spring MVC appropriately.
+PLEASE NOTE: the starter depends on ``spring-boot-starter-webmvc`` or ``spring-boot-starter-webmvcflux`` but is marked
+as optional, you'll need to add the dependency yourself or configure Spring MVC appropriately.
 
 ## Boot externalized configuration
-A number of properties can be defined in Spring Boot externalized configuration, eg. ``application.properties``, starting with the prefix ``pebble``. See the corresponding [PebbleProperties.java](https://github.com/PebbleTemplates/pebble/blob/master/pebble-spring/pebble-spring-boot-starter/src/main/java/io/pebbletemplates/boot/autoconfigure/PebbleProperties.java) for your starter version. Notable properties are:
 
-* ``pebble.prefix``: defines the prefix that will be prepended to the mvc view name. Defaults to ``/templates/``
-* ``pebble.suffix``: defines the suffix that will be appended to the mvc view name. Defaults to ``.peb``
-* ``pebble.cache``: enables or disables PebbleEngine caches. Defaults to ``true``
-* ``pebble.contentType``: defines the content type that will be used to configure the ViewResolver. Defaults to ``text/html``
-* ``pebble.encoding``: defines the text encoding that will be used to configure the ViewResolver. Defaults to ``UTF-8``
-* ``pebble.exposeRequestAttributes``: defines whether all request attributes should be added to the model prior to merging with the template for the ViewResolver. Defaults to ``false``
-* ``pebble.exposeSessionAttributes``: defines whether all session attributes should be added to the model prior to merging with the template for the ViewResolver. Defaults to ``false``
-* ``pebble.defaultLocale``: defines the default locale that will be used to configure the PebbleEngine. Defaults to ``null``
-* ``pebble.strictVariables``: enable or disable the strict variable checking in the PebbleEngine. Defaults to ``false``
-* ``pebble.greedyMatchMethod``: enable or disable the greedy matching mode for finding java method in the PebbleEngine. Defaults to ``false``
+A number of properties can be defined in Spring Boot externalized configuration, eg. ``application.properties``,
+starting with the prefix ``spring.pebble``. See the
+corresponding [PebbleProperties.java](https://github.com/PebbleTemplates/pebble/blob/master/pebble-spring/pebble-spring-boot-starter/src/main/java/io/pebbletemplates/boot/autoconfigure/PebbleProperties.java)
+for your starter version. Notable properties are:
+
+* ``spring.pebble.prefix``: defines the prefix that will be prepended to the mvc view name. Defaults to ``/templates/``
+* ``spring.pebble.suffix``: defines the suffix that will be appended to the mvc view name. Defaults to ``.peb``
+* ``spring.pebble.charset``: defines the text encoding that will be used to configure the ViewResolver. Defaults to
+  ``UTF-8``
+* ``spring.pebble.defaultLocale``: defines the default locale that will be used to configure the PebbleEngine. Defaults
+  to ``null``
+* ``spring.pebble.strictVariables``: enable or disable the strict variable checking in the PebbleEngine. Defaults to
+  ``false``
+* ``spring.pebble.greedyMatchMethod``: enable or disable the greedy matching mode for finding java method in the
+  PebbleEngine. Defaults to ``false``
+* ``spring.pebble.servlet.cache``: enables or disables PebbleEngine caches. Defaults to ``true``
+* ``spring.pebble.servlet.contentType``: defines the content type that will be used to configure the ViewResolver. Defaults to
+  ``text/html``
+* ``spring.pebble.servlet.exposeRequestAttributes``: defines whether all request attributes should be added to the model prior
+  to merging with the template for the ViewResolver. Defaults to ``false``
+* ``spring.pebble.servlet.exposeSessionAttributes``: defines whether all session attributes should be added to the model prior
+  to merging with the template for the ViewResolver. Defaults to ``false``
+* ``spring.pebble.reactive.mediaTypes``: Configure the supported media types for Pebble views when used in a reactive Spring WebFlux application. This property allows you to specify a list of MediaType objects that the Pebble view resolver should consider when rendering templates. Defaults to ``null``
 
 ## Examples
 There is the spring petclinic example which has been migrated to [pebble](https://github.com/PebbleTemplates/spring-petclinic) 
@@ -120,7 +133,7 @@ For reactive app
 ```java
 @Bean
 public PebbleReactiveViewResolver pebbleReactiveViewResolver() {
-   return new PebbleReactiveViewResolver(...);
+   return new PebbleReactiveViewResolver(...)
 }
 ```
 
