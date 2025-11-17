@@ -33,7 +33,7 @@ class PebbleReactiveWebConfiguration extends AbstractPebbleConfiguration {
         map.from(properties::getViewNames).to(resolver::setViewNames);
         map.from(properties::getRequestContextAttribute).to(resolver::setRequestContextAttribute);
         map.from(properties.getReactive()::getMediaTypes).to(resolver::setSupportedMediaTypes);
-        resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 20);
+        resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 
         return resolver;
     }

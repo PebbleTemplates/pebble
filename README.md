@@ -15,18 +15,18 @@ For more information please visit the [website](https://pebbletemplates.io).
 | pebble-legacy-spring-boot-starter | 3.x.x               |
 | pebble-spring-boot-starter        | 4.x.x               |
 
-- Change spring boot properties prefix from `pebble.*` to `spring.pebble.*` to follow spring boot conventions
-- The following spring boot properties has been moved to `.servlet`
+- The following spring boot properties has been moved to `.servlet` or `.reactive`
 
-| Old property                    | New Property                                   |
-|---------------------------------|------------------------------------------------|
-| pebble.allowRequestOverride     | spring.pebble.servlet.allowRequestOverride     |
-| pebble.allowSessionOverride     | spring.pebble.servlet.allowSessionOverride     |
-| pebble.cache                    | spring.pebble.servlet.cache                    |
-| pebble.contentType              | spring.pebble.servlet.contentType              |
-| pebble.exposeRequestAttributes  | spring.pebble.servlet.exposeRequestAttributes  |
-| pebble.exposeSessionAttributes  | spring.pebble.servlet.exposeSessionAttributes  |
-| pebble.exposeSpringMacroHelpers | spring.pebble.servlet.exposeSpringMacroHelpers |
+| Old property                    | New Property                            |
+|---------------------------------|-----------------------------------------|
+| pebble.allowRequestOverride     | pebble.servlet.allowRequestOverride     |
+| pebble.allowSessionOverride     | pebble.servlet.allowSessionOverride     |
+| pebble.cache                    | pebble.servlet.cache                    |
+| pebble.contentType              | pebble.servlet.contentType              |
+| pebble.exposeRequestAttributes  | pebble.servlet.exposeRequestAttributes  |
+| pebble.exposeSessionAttributes  | pebble.servlet.exposeSessionAttributes  |
+| pebble.exposeSpringMacroHelpers | pebble.servlet.exposeSpringMacroHelpers |
+|                                 | pebble.reactive.mediaTypes              |
 
 For more information, please consult the spring-boot integration documentation in
 the [Boot externalized configuration section](https://pebbletemplates.io/wiki/guide/spring-boot-integration/)

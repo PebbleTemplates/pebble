@@ -4,6 +4,8 @@ import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
 import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.attributes.methodaccess.NoOpMethodAccessValidator;
+import io.pebbletemplates.pebble.cache.tag.NoOpTagCache;
+import io.pebbletemplates.pebble.cache.template.NoOpTemplateCache;
 import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import io.pebbletemplates.spring.reactive.PebbleReactiveView;
@@ -32,7 +34,6 @@ class PebbleAutoConfigurationTest {
   private static final Locale DEFAULT_LOCALE = CHINESE;
   private static final Locale CUSTOM_LOCALE = FRENCH;
   private AnnotationConfigServletWebApplicationContext webContext;
-
   private AnnotationConfigReactiveWebApplicationContext reactiveWebContext;
 
   @Test
@@ -41,15 +42,12 @@ class PebbleAutoConfigurationTest {
     assertThat(this.webContext.getBeansOfType(Loader.class)).hasSize(1);
     assertThat(this.webContext.getBeansOfType(SpringExtension.class)).hasSize(1);
     assertThat(this.webContext.getBeansOfType(PebbleEngine.class)).hasSize(1);
-    assertThat(this.webContext.getBean(PebbleEngine.class).getDefaultLocale())
-        .isEqualTo(DEFAULT_LOCALE);
+    assertThat(this.webContext.getBean(PebbleEngine.class).getDefaultLocale()).isEqualTo(DEFAULT_LOCALE);
     assertThat(this.webContext.getBean(PebbleEngine.class).isStrictVariables()).isTrue();
-    assertThat(
-        this.webContext.getBean(PebbleEngine.class).getEvaluationOptions().isGreedyMatchMethod())
-        .isTrue();
-    assertThat(this.webContext.getBean(PebbleEngine.class).getEvaluationOptions()
-        .getMethodAccessValidator()).isInstanceOf(
-        BlacklistMethodAccessValidator.class);
+    assertThat(this.webContext.getBean(PebbleEngine.class).getEvaluationOptions().isGreedyMatchMethod()).isTrue();
+    assertThat(this.webContext.getBean(PebbleEngine.class).getEvaluationOptions().getMethodAccessValidator()).isInstanceOf(BlacklistMethodAccessValidator.class);
+    assertThat(this.webContext.getBean(PebbleEngine.class).getTagCache()).isInstanceOf(NoOpTagCache.class);
+    assertThat(this.webContext.getBean(PebbleEngine.class).getTemplateCache()).isInstanceOf(NoOpTemplateCache.class);
     assertThat(this.webContext.getBeansOfType(PebbleViewResolver.class)).hasSize(1);
   }
 
@@ -165,10 +163,11 @@ class PebbleAutoConfigurationTest {
 
   private void loadWithServlet(Class<?> config) {
     this.webContext = new AnnotationConfigServletWebApplicationContext();
-      TestPropertyValues.of("spring.pebble.prefix=classpath:/templates/").applyTo(this.webContext);
-      TestPropertyValues.of("spring.pebble.defaultLocale=zh").applyTo(this.webContext);
-      TestPropertyValues.of("spring.pebble.strictVariables=true").applyTo(this.webContext);
-      TestPropertyValues.of("spring.pebble.greedyMatchMethod=true").applyTo(this.webContext);
+      TestPropertyValues.of("pebble.prefix=classpath:/templates/").applyTo(this.webContext);
+      TestPropertyValues.of("pebble.defaultLocale=zh").applyTo(this.webContext);
+      TestPropertyValues.of("pebble.strictVariables=true").applyTo(this.webContext);
+      TestPropertyValues.of("pebble.greedyMatchMethod=true").applyTo(this.webContext);
+      TestPropertyValues.of("pebble.servlet.cache=false").applyTo(this.webContext);
     if (config != null) {
       this.webContext.register(config);
     }
@@ -178,10 +177,10 @@ class PebbleAutoConfigurationTest {
 
   private void loadWithReactive(Class<?> config) {
     this.reactiveWebContext = new AnnotationConfigReactiveWebApplicationContext();
-      TestPropertyValues.of("spring.pebble.prefix=classpath:/templates/").applyTo(this.reactiveWebContext);
-      TestPropertyValues.of("spring.pebble.defaultLocale=zh").applyTo(this.reactiveWebContext);
-      TestPropertyValues.of("spring.pebble.strictVariables=true").applyTo(this.reactiveWebContext);
-      TestPropertyValues.of("spring.pebble.greedyMatchMethod=true").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("pebble.prefix=classpath:/templates/").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("pebble.defaultLocale=zh").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("pebble.strictVariables=true").applyTo(this.reactiveWebContext);
+      TestPropertyValues.of("pebble.greedyMatchMethod=true").applyTo(this.reactiveWebContext);
     if (config != null) {
       this.reactiveWebContext.register(config);
     }

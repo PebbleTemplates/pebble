@@ -1,5 +1,10 @@
 package io.pebbletemplates.boot.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
+import org.springframework.util.MimeType;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -8,13 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.jspecify.annotations.Nullable;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.MediaType;
-import org.springframework.util.MimeType;
-
-@ConfigurationProperties("spring.pebble")
+@ConfigurationProperties("pebble")
 public class PebbleProperties {
 
     private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");

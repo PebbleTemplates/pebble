@@ -39,7 +39,7 @@ class PebbleServletWebConfiguration extends AbstractPebbleConfiguration {
         pvr.setExposeSpringMacroHelpers(properties.getServlet().isExposeSpringMacroHelpers());
         pvr.setRequestContextAttribute(properties.getRequestContextAttribute());
         pvr.setCharacterEncoding(properties.getCharsetName());
-        pvr.setOrder(Ordered.LOWEST_PRECEDENCE - 20);
+        pvr.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 
         return pvr;
     }

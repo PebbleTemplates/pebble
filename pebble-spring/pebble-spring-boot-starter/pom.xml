@@ -43,18 +43,6 @@
       <artifactId>pebble-spring7</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-      <version>${boot.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure-processor</artifactId>
-      <version>${boot.version}</version>
-      <optional>true</optional>
-    </dependency>
 
     <!-- TEST -->
     <dependency>
@@ -73,6 +61,10 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
