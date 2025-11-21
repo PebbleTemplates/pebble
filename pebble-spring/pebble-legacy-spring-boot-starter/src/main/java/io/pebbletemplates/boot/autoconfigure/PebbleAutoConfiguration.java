@@ -1,23 +1,29 @@
 package io.pebbletemplates.boot.autoconfigure;
 
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.extension.Extension;
 import io.pebbletemplates.pebble.loader.ClasspathLoader;
 import io.pebbletemplates.pebble.loader.Loader;
-import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
+import io.pebbletemplates.pebble.node.ForNode;
+import io.pebbletemplates.pebble.node.expression.UnaryMinusExpression;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import java.util.List;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.lang.Nullable;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(PebbleEngine.class)
 @EnableConfigurationProperties(PebbleProperties.class)
 @Import({PebbleServletWebConfiguration.class, PebbleReactiveWebConfiguration.class})
@@ -66,4 +72,18 @@ public class PebbleAutoConfiguration extends AbstractPebbleConfiguration {
     }
     return builder.build();
   }
+}
+
+class PebbleTemplatesHints implements RuntimeHintsRegistrar {
+
+    @Override
+    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+        hints.reflection()
+                .registerType(TypeReference.of(UnaryMinusExpression.class),
+                        hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
+                .registerType(TypeReference.of(ForNode.LoopVariables.class),
+                        hint -> hint.withMembers(MemberCategory.DECLARED_FIELDS,
+                                MemberCategory.DECLARED_CLASSES, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+                                MemberCategory.INVOKE_DECLARED_METHODS));
+    }
 }
