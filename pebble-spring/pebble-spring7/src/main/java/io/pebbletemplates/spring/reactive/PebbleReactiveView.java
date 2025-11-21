@@ -1,20 +1,9 @@
 package io.pebbletemplates.spring.reactive;
 
-import static java.util.Optional.ofNullable;
-
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.error.PebbleException;
-import io.pebbletemplates.spring.context.Beans;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
+import io.pebbletemplates.spring.context.Beans;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -25,6 +14,17 @@ import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
+import static java.util.Optional.ofNullable;
 
 public class PebbleReactiveView extends AbstractUrlBasedView {
 
@@ -62,28 +62,28 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
     return exchange.getResponse().writeWith(Flux.just(dataBuffer));
   }
 
-    @Override
-    protected Mono<Map<String, Object>> getModelAttributes(Map<String, ?> model, ServerWebExchange exchange) {
-        return super.getModelAttributes(this.addVariablesToModel(model, exchange), exchange);
-    }
+  @Override
+  protected Mono<Map<String, Object>> getModelAttributes(Map<String, ?> model, ServerWebExchange exchange) {
+    return super.getModelAttributes(this.addVariablesToModel(model, exchange), exchange);
+  }
 
-    private Map<String, ?> addVariablesToModel(Map<String, ?> model, ServerWebExchange exchange) {
-        Map<String, Object> attributes = new HashMap<>(Objects.requireNonNullElseGet(model, Map::of));
-        attributes.put(BEANS_VARIABLE_NAME, new Beans(this.getApplicationContext()));
-        attributes.put(REQUEST_VARIABLE_NAME, exchange.getRequest());
-        attributes.put(RESPONSE_VARIABLE_NAME, exchange.getResponse());
-        attributes.put(SESSION_VARIABLE_NAME, exchange.getSession());
-        return attributes;
+  private Map<String, ?> addVariablesToModel(Map<String, ?> model, ServerWebExchange exchange) {
+    Map<String, Object> attributes = new HashMap<>(Objects.requireNonNullElseGet(model, Map::of));
+    attributes.put(BEANS_VARIABLE_NAME, new Beans(this.getApplicationContext()));
+    attributes.put(REQUEST_VARIABLE_NAME, exchange.getRequest());
+    attributes.put(RESPONSE_VARIABLE_NAME, exchange.getResponse());
+    attributes.put(SESSION_VARIABLE_NAME, exchange.getSession());
+    return attributes;
   }
 
   private Charset getCharset(@Nullable MediaType mediaType) {
     return ofNullable(mediaType)
-        .map(MimeType::getCharset)
-        .orElse(this.getDefaultCharset());
+            .map(MimeType::getCharset)
+            .orElse(this.getDefaultCharset());
   }
 
   private void evaluateTemplate(Map<String, Object> model, Locale locale, Writer writer)
-      throws IOException, PebbleException {
+          throws IOException, PebbleException {
     try {
       PebbleTemplate template = this.pebbleEngine.getTemplate(this.templateName);
       template.evaluate(writer, model, locale);

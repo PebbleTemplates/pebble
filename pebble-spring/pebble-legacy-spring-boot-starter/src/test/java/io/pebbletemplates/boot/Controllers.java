@@ -32,11 +32,11 @@ public class Controllers {
     return "beans";
   }
 
-    @RequestMapping("/session.action")
-    public String session(WebSession session) {
-        session.getAttributes().put("foo", "bar");
-        return "session";
-    }
+  @RequestMapping("/session.action")
+  public String session(WebSession session) {
+    session.getAttributes().put("foo", "bar");
+    return "session";
+  }
 
   @RequestMapping("/response.action")
   public String response() {

@@ -11,8 +11,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = Application.class,
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = "spring.main.web-application-type=reactive")
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = "spring.main.web-application-type=reactive")
 @AutoConfigureWebTestClient
 class ReactiveAppTest {
 
@@ -22,10 +22,10 @@ class ReactiveAppTest {
   @Test
   void testOk() throws Exception {
     String result = this.client.get().uri("/index.action").exchange()
-        .expectStatus().isOk()
-        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-        .expectBody(String.class)
-        .returnResult().getResponseBody();
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("Hello Pebbleworld!");
   }
@@ -33,10 +33,10 @@ class ReactiveAppTest {
   @Test
   void testRequestAccess() throws Exception {
     String result = this.client.get().uri("/contextPath.action").exchange()
-        .expectStatus().isOk()
-        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-        .expectBody(String.class)
-        .returnResult().getResponseBody();
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("ctx path:/contextPath.action");
   }
@@ -44,11 +44,11 @@ class ReactiveAppTest {
   @Test
   void testEnglishHello() throws Exception {
     String result = this.client.get().uri("/hello.action")
-        .header("Accept-Language", "en").exchange()
-        .expectStatus().isOk()
-        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-        .expectBody(String.class)
-        .returnResult().getResponseBody();
+            .header("Accept-Language", "en").exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("Hello Boot!");
   }
@@ -56,11 +56,11 @@ class ReactiveAppTest {
   @Test
   void testSpanishHello() throws Exception {
     String result = this.client.get().uri("/hello.action")
-        .header("Accept-Language", "es").exchange()
-        .expectStatus().isOk()
-        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-        .expectBody(String.class)
-        .returnResult().getResponseBody();
+            .header("Accept-Language", "es").exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("Hola Boot!");
   }
@@ -68,11 +68,11 @@ class ReactiveAppTest {
   @Test
   void testAdditionalExtensions() throws Exception {
     String result = this.client.get().uri("/extensions.action")
-        .header("Accept-Language", "es").exchange()
-        .expectStatus().isOk()
-        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-        .expectBody(String.class)
-        .returnResult().getResponseBody();
+            .header("Accept-Language", "es").exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("Hola Boot! Tested!");
   }
@@ -80,10 +80,10 @@ class ReactiveAppTest {
   @Test
   void testBeansAccess() throws Exception {
     String result = this.client.get().uri("/beans.action").exchange()
-        .expectStatus().isOk()
-        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-        .expectBody(String.class)
-        .returnResult().getResponseBody();
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("beans:bar");
   }
@@ -91,10 +91,10 @@ class ReactiveAppTest {
   @Test
   void testResponseAccess() throws Exception {
     String result = this.client.get().uri("/response.action").exchange()
-        .expectStatus().isOk()
-        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-        .expectBody(String.class)
-        .returnResult().getResponseBody();
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(String.class)
+            .returnResult().getResponseBody();
 
     assertThat(result).isEqualTo("response:200 OK");
   }
