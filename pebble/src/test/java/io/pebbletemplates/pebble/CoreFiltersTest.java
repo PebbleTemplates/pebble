@@ -13,7 +13,6 @@ import io.pebbletemplates.pebble.extension.TestingExtension;
 import io.pebbletemplates.pebble.extension.core.*;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -27,9 +26,7 @@ import java.util.*;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CoreFiltersTest {
 
@@ -133,6 +130,57 @@ class CoreFiltersTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("07/01/20122012-July-12012/July/1", writer.toString());
+  }
+
+  @Test
+  void testStringDateWithOnlyFormat() throws PebbleException, IOException{
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false)
+            .defaultLocale(Locale.ENGLISH).build();
+
+    String source = "{{ stringDate | date('MM/dd/yyyy') }}";
+
+    PebbleTemplate template = pebble.getTemplate(source);
+    Map<String, Object> context = new HashMap<>();
+    context.put("stringDate", "2004-02-12T15:19:21+0400");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("02/12/2004", writer.toString());
+  }
+
+  @Test
+  void testStringDateWithoutFormat() throws PebbleException, IOException{
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false)
+            .defaultLocale(Locale.ENGLISH).build();
+
+    String source = "{{ stringDate | date }}";
+
+    PebbleTemplate template = pebble.getTemplate(source);
+    Map<String, Object> context = new HashMap<>();
+    context.put("stringDate", "2004-02-12T15:19:21+0400");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertTrue(writer.toString().startsWith("2004-02-12T"));
+  }
+
+  @Test
+  void testStringDateWithoutFormatAndNotISO_DATE() throws PebbleException, IOException{
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false)
+            .defaultLocale(Locale.ENGLISH).build();
+
+    String source = "{{ stringDate | date }}";
+
+    PebbleTemplate template = pebble.getTemplate(source);
+    Map<String, Object> context = new HashMap<>();
+    context.put("stringDate", "2004-02-12");
+
+    Writer writer = new StringWriter();
+    PebbleException exception = assertThrows(PebbleException.class, () -> template.evaluate(writer, context));
+    assertEquals(exception.getMessage(), "Could not parse the string '2004-02-12' into a date, with formatting: yyyy-MM-dd'T'HH:mm:ssZ ({{ stringDate | date }}:1)");
   }
 
   @Test
