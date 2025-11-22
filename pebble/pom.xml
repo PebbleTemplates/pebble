@@ -16,15 +16,15 @@
 
   <properties>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
-    <slf4j.version>1.7.25</slf4j.version>
-    <caffeine.version>2.6.2</caffeine.version>
-    <jakarata.servlet-api.version>5.0.0</jakarata.servlet-api.version>
+    <slf4j.version>2.0.17</slf4j.version>
+    <caffeine.version>3.2.3</caffeine.version>
+    <jakarata.servlet-api.version>6.1.0</jakarata.servlet-api.version>
     <servlet-api.version>2.5</servlet-api.version>
 
-    <assertj.version>3.13.2</assertj.version>
-    <commons-io.version>2.14.0</commons-io.version>
-    <logback-classic.version>1.2.13</logback-classic.version>
-    <junit-jupiter.version>5.5.2</junit-jupiter.version>
+    <assertj.version>3.27.6</assertj.version>
+    <commons-io.version>2.21.0</commons-io.version>
+    <logback-classic.version>1.5.21</logback-classic.version>
+    <junit-jupiter.version>6.0.1</junit-jupiter.version>
   </properties>
 
   <dependencies>
