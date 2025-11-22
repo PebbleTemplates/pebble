@@ -73,9 +73,9 @@ public class DateFilter implements Filter {
       try {
         SimpleDateFormat formatter;
           if (existingFormatString != null){
-            formatter = new SimpleDateFormat(existingFormatString);
+            formatter = new SimpleDateFormat(existingFormatString, locale);
           } else {
-            formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", locale);
           }
         date = formatter.parse(dateOrString.toString());
       } catch (Exception e) {
