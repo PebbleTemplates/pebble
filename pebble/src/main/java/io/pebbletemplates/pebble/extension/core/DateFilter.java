@@ -62,7 +62,7 @@ public class DateFilter implements Filter {
   private Object applyDate(Object dateOrString, final PebbleTemplate self, final Locale locale,
       int lineNumber, final String format, final String existingFormatString, final String timeZone)
       throws PebbleException {
-    Date date = null;
+    Date date;
     DateFormat intendedFormat;
 
     if (dateOrString instanceof Date) {
@@ -75,13 +75,13 @@ public class DateFilter implements Filter {
           if (existingFormatString != null){
             formatter = new SimpleDateFormat(existingFormatString, locale);
           } else {
-            formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", locale);
+            formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", locale);
           }
         date = formatter.parse(dateOrString.toString());
       } catch (Exception e) {
         String formatTried = existingFormatString != null ? existingFormatString :  "yyyy-MM-dd'T'HH:mm:ssZ";
         throw new PebbleException(e, String.format("Could not parse the string '%s' into a date, with formatting: %s",
-                dateOrString.toString(), formatTried), lineNumber, self.getName());
+                dateOrString, formatTried), lineNumber, self.getName());
       }
     } else {
       throw new IllegalArgumentException(

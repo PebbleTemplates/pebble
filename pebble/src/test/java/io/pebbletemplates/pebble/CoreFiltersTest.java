@@ -13,7 +13,6 @@ import io.pebbletemplates.pebble.extension.TestingExtension;
 import io.pebbletemplates.pebble.extension.core.*;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -27,9 +26,7 @@ import java.util.*;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CoreFiltersTest {
 
@@ -145,7 +142,7 @@ class CoreFiltersTest {
 
     PebbleTemplate template = pebble.getTemplate(source);
     Map<String, Object> context = new HashMap<>();
-    context.put("stringDate", "2004-02-12T15:19:21+04:00");
+    context.put("stringDate", "2004-02-12T15:19:21+0400");
 
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
