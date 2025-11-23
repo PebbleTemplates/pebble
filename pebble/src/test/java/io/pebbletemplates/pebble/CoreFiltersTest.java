@@ -271,9 +271,11 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithDateAndExplicitTimeZone() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
-    PebbleTemplate template = pebble.getLiteralTemplate("{{ date | date(timeZone=\"Asia/Almaty\") }}");
+    PebbleTemplate template = pebble.getTemplate("{{ date | date(timeZone=\"Asia/Almaty\") }}");
     Map<String, Object> context = new HashMap<>();
     context.put("date", Date.from(Instant.ofEpochSecond(1595853935)));
 
@@ -285,9 +287,11 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithDateAndFormatAndExplicitTimeZone() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
-    PebbleTemplate template = pebble.getLiteralTemplate("{{ date | date(\"yyyy-MM-dd'T'HH:mm:ssX\", timeZone=\"Asia/Almaty\") }}");
+    PebbleTemplate template = pebble.getTemplate("{{ date | date(\"yyyy-MM-dd'T'HH:mm:ssX\", timeZone=\"Asia/Almaty\") }}");
     Map<String, Object> context = new HashMap<>();
     context.put("date", Date.from(Instant.ofEpochSecond(1595853935)));
 
@@ -299,9 +303,11 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithTimestampAndExplicitTimeZone() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
-    PebbleTemplate template = pebble.getLiteralTemplate("{{ timestamp | date(timeZone=\"Asia/Almaty\") }}");
+    PebbleTemplate template = pebble.getTemplate("{{ timestamp | date(timeZone=\"Asia/Almaty\") }}");
     Map<String, Object> context = new HashMap<>();
     context.put("timestamp", 1595853935000L);
 
@@ -313,9 +319,11 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithOffsetDateTimeAndExplicitTimeZoneUsesTimeZoneOfInput() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
-    PebbleTemplate template = pebble.getLiteralTemplate("{{ offsetDateTime | date(timeZone=\"Asia/Almaty\") }}");
+    PebbleTemplate template = pebble.getTemplate("{{ offsetDateTime | date(timeZone=\"Asia/Almaty\") }}");
     Map<String, Object> context = new HashMap<>();
     context.put("offsetDateTime", OffsetDateTime.of(2020, 7, 27, 16, 12, 13, 0, ZoneOffset.ofHours(3)));
 
@@ -327,9 +335,11 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithOffsetDateTimeAndFormatAndExplicitTimeZoneUsesTimeZoneOfInput() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
-    PebbleTemplate template = pebble.getLiteralTemplate("{{ offsetDateTime | date(\"yyyy-MM-dd'T'HH:mm:ssX\", timeZone=\"Asia/Almaty\") }}");
+    PebbleTemplate template = pebble.getTemplate("{{ offsetDateTime | date(\"yyyy-MM-dd'T'HH:mm:ssX\", timeZone=\"Asia/Almaty\") }}");
     Map<String, Object> context = new HashMap<>();
     context.put("offsetDateTime", OffsetDateTime.of(2020, 7, 27, 16, 12, 13, 0, ZoneOffset.ofHours(3)));
 
@@ -341,9 +351,11 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithOffsetDateTimeAndFormatAndNoExplicitTimeZoneUsesTimeZoneOfInput() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
-    PebbleTemplate template = pebble.getLiteralTemplate("{{ offsetDateTime | date(\"yyyy-MM-dd'T'HH:mm:ssX\") }}");
+    PebbleTemplate template = pebble.getTemplate("{{ offsetDateTime | date(\"yyyy-MM-dd'T'HH:mm:ssX\") }}");
     Map<String, Object> context = new HashMap<>();
     context.put("offsetDateTime", OffsetDateTime.of(2020, 7, 27, 16, 12, 13, 0, ZoneOffset.ofHours(5)));
 
@@ -355,9 +367,11 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithInstantAndExplicitTimeZone() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
-    PebbleTemplate template = pebble.getLiteralTemplate("{{ instant | date(timeZone=\"Asia/Almaty\") }}");
+    PebbleTemplate template = pebble.getTemplate("{{ instant | date(timeZone=\"Asia/Almaty\") }}");
     Map<String, Object> context = new HashMap<>();
     context.put("instant", Instant.ofEpochSecond(1595853935));
 
@@ -369,13 +383,15 @@ class CoreFiltersTest {
 
   @Test
   void testDateWithInstantAndNoExplicitTimeZoneUsesSystemTimeZone() throws IOException {
-    PebbleEngine pebble = new PebbleEngine.Builder().build();
+    PebbleEngine pebble = new PebbleEngine.Builder()
+            .loader(new StringLoader())
+            .build();
 
     TimeZone defaultTimeZone = TimeZone.getDefault();
     try {
       TimeZone.setDefault(TimeZone.getTimeZone("Pacific/Funafuti"));
 
-      PebbleTemplate template = pebble.getLiteralTemplate("{{ instant | date() }}");
+      PebbleTemplate template = pebble.getTemplate("{{ instant | date() }}");
       Map<String, Object> context = new HashMap<>();
       context.put("instant", Instant.ofEpochSecond(1595853935));
 
