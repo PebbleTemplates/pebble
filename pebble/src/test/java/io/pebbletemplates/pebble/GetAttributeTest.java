@@ -8,28 +8,21 @@
  */
 package io.pebbletemplates.pebble;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-
+import io.pebbletemplates.pebble.attributes.methodaccess.NoOpMethodAccessValidator;
 import io.pebbletemplates.pebble.error.AttributeNotFoundException;
 import io.pebbletemplates.pebble.error.ClassAccessException;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.error.RootAttributeNotFoundException;
 import io.pebbletemplates.pebble.loader.StringLoader;
-import io.pebbletemplates.pebble.attributes.methodaccess.NoOpMethodAccessValidator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GetAttributeTest {
 
@@ -58,6 +51,7 @@ class GetAttributeTest {
 
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
+    assertEquals("hello SteveSteve", writer.toString());
   }
 
   @Test
@@ -205,6 +199,20 @@ class GetAttributeTest {
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
     Map<String, Object> context = new HashMap<>();
     context.put("object", new SimpleObject4());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello Steve", writer.toString());
+  }
+
+  @Test
+  void testTwoMethodsAlmostSameName() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(true).build();
+
+    PebbleTemplate template = pebble.getTemplate("hello {{ object.something() }}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new ObjectMethodSameName());
 
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
@@ -944,6 +952,17 @@ class GetAttributeTest {
 
     public String hasName() {
       return "Steve";
+    }
+  }
+
+  public class ObjectMethodSameName {
+
+    public String something() {
+      return "Steve";
+    }
+
+    public boolean hasSomething() {
+      return true;
     }
   }
 
