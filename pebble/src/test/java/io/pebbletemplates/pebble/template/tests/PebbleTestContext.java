@@ -1,20 +1,20 @@
 package io.pebbletemplates.pebble.template.tests;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-
+import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.pebbletemplates.pebble.PebbleEngine;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Used by Pebble Template Tests to simply the test code and therefore 
@@ -33,7 +33,7 @@ public class PebbleTestContext {
 	 * The path relative to the project root directory where template files and 
 	 * expected output files are stored for test purposes.
 	 */
-	private String testFileBasePath = "src/test/resources/template-tests";
+	private String testFileBasePath = "template-tests";
 	
 	/**
 	 * The Pebble template context to be used as input for a Pebble Template. 
@@ -95,9 +95,8 @@ public class PebbleTestContext {
 	 * @throws IOException
 	 */
 	public String executeTemplateFromFile(String templateFilename, PebbleEngine pebbleEngine) throws IOException {
-		Path path = Paths.get(this.testFileBasePath, templateFilename);
-		logger.debug("Executing template file: {}", path.toString());
-		return this.executeTemplate(path.toAbsolutePath().toString(), pebbleEngine);
+		logger.debug("Executing template file: {}", templateFilename);
+		return this.executeTemplate(testFileBasePath + "/" + templateFilename, pebbleEngine);
 	}
 		
 	/**
@@ -145,10 +144,11 @@ public class PebbleTestContext {
 	 * @throws IOException Thrown if the file by the given name is not found.
 	 */
 	public String getExpectedOutput(String filename) throws IOException {
-		Path path = Paths.get(this.testFileBasePath, filename);
-	    logger.debug("Expected template output file: {}", path.toAbsolutePath());
-	    String expectedOutput = FileUtils.readFileToString(path.toFile(), "UTF-8");
-	    return expectedOutput;
-	}
-	
+    URL resource = this.getClass().getClassLoader().getResource(testFileBasePath + "/" + filename);
+    try {
+      return new String(Files.readAllBytes(Paths.get(resource.toURI())));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
