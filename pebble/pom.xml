@@ -97,9 +97,9 @@
                 Bundle-SymbolicName: io.pebbletemplates.pebble
                 Automatic-Module-Name: io.pebbletemplates
                 Import-Package: \
-                  com.github.benmanes.caffeine.*;version="[2.6,4)";resolution:=optional, \
+                  com.github.benmanes.caffeine.*;version="[3.2,4)";resolution:=optional, \
                   javax.servlet;version="[2.5,5)";resolution:=optional, \
-                  jakarta.servlet;version="[5.0,7)";resolution:=optional, \
+                  jakarta.servlet;version="[6.1,7)";resolution:=optional, \
                   *
                 -exportcontents: *;-noimport:=true
                 -noextraheaders: true
