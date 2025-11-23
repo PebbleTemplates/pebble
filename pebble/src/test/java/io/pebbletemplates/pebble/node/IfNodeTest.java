@@ -1,10 +1,9 @@
 package io.pebbletemplates.pebble.node;
 
+import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.loader.StringLoader;
-import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -78,6 +77,16 @@ class IfNodeTest {
   @Test
   void testIfZeroFloat() throws IOException {
     assertEquals("no", this.render(0), "Zero float should be interpreted as FALSE");
+  }
+
+  @Test
+  void testIfZeroDoubleNaN() throws IOException {
+    assertEquals("no", this.render(Double.NaN), "NaN should be interpreted as FALSE");
+  }
+
+  @Test
+  void testIfZeroFloatNaN() throws IOException {
+    assertEquals("no", this.render(Float.NaN), "NaN should be interpreted as FALSE");
   }
 
   @Test
