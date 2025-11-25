@@ -1,0 +1,44 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directories:
+      - "/pebble"
+      - "/pebble-spring/pebble-spring7"
+      - "/pebble-spring/pebble-spring-boot-starter"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    ignore:
+      - dependency-name: "javax.servlet:servlet-api"
+        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "jakarta.servlet:jakarta.servlet-api"
+        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "maven"
+    directories:
+      - "/pebble-spring/pebble-spring6"
+      - "/pebble-spring/pebble-legacy-spring-boot-starter"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    ignore:
+      - dependency-name: "jakarta.servlet:jakarta.servlet-api"
+        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
