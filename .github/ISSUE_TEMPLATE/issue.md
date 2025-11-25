@@ -14,6 +14,8 @@ categories as some of them do not apply here.
 - Question
 STOP!! Please ask questions about how to use something, or to understand why something isn't
 working as you expect it. Please use [Discussion](https://github.com/PebbleTemplates/pebble/discussions)
+- Security Vulnerability
+STOP!! Please don't raise security vulnerabilities here. Head over to https://github.com/PebbleTemplates/pebble/security to learn how to disclose them responsibly.
 
 🐞 Bug report
 Please provide details of the problem, including the version of Pebble that you
