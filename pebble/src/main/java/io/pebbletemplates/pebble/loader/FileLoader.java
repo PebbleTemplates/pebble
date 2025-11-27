@@ -1,4 +1,4 @@
-null*
+/*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
