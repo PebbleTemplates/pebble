@@ -1,4 +1,4 @@
-/*
+null*
  * This file is part of Pebble.
  *
  * Copyright (c) 2014 by Mitchell Bösecke
@@ -42,7 +42,7 @@ public class FileLoader implements Loader<String> {
       InputStream is = new FileInputStream(file);
       return new BufferedReader(new InputStreamReader(is, this.charset));
     } catch (FileNotFoundException e) {
-      throw new LoaderException(null, String.format("Could not find template [prefix='%s', templateName='%s']", this.prefix, templateName));
+      throw new LoaderException(e, String.format("Could not find template [prefix='%s', templateName='%s']", this.prefix, templateName));
     } catch (UnsupportedEncodingException e) {
       throw new LoaderException(e, String.format("Invalid charset '%s'", this.charset));
     }
