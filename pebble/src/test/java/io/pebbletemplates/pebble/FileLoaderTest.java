@@ -95,6 +95,15 @@ public class FileLoaderTest {
     assertThrows(LoaderException.class, () -> engine.getTemplate(relativePath + "template-tests/DoubleNestedIfStatement"));
   }
 
+  @Test
+  void testFileLoaderUnsupportedCharset() throws PebbleException, URISyntaxException {
+    String prefix = Paths.get(this.getClass().getClassLoader().getResource("templates").toURI()).toString();
+    Loader<?> loader = new FileLoader(prefix);
+    loader.setCharset("foobar");
+    PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
+    assertThrows(LoaderException.class, () -> engine.getTemplate("template.loaderTest.peb"));
+  }
+
   /**
    * Tests if relative includes work. Issue #162.
    */
