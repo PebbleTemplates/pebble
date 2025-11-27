@@ -10,18 +10,10 @@ package io.pebbletemplates.pebble.loader;
 
 import io.pebbletemplates.pebble.error.LoaderException;
 import io.pebbletemplates.pebble.utils.PathUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 /**
  * This loader searches for a file located anywhere on the filesystem. It uses java.io.File to
@@ -34,10 +26,12 @@ public class FileLoader implements Loader<String> {
   private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
   private String prefix;
-
   private String suffix;
-
   private String charset = "UTF-8";
+
+  public FileLoader(String prefix) {
+    this.setPrefix(prefix);
+  }
 
   @Override
   public Reader getReader(String templateName) {
@@ -114,6 +108,9 @@ public class FileLoader implements Loader<String> {
 
   @Override
   public void setPrefix(String prefix) {
+    if (prefix == null || prefix.trim().equals("") || prefix.trim().equals("/")) {
+      throw new IllegalArgumentException("Prefix cannot be null, empty or equal to '/'");
+    }
     this.prefix = prefix;
   }
 

@@ -15,7 +15,6 @@ import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -23,8 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class LoaderTest {
 
@@ -70,16 +68,29 @@ class LoaderTest {
   }
 
   @Test
-  void testFileLoader() throws PebbleException, IOException, URISyntaxException {
-    Loader<?> loader = new FileLoader();
+  void testFileLoaderPrefixNull() {
+    assertThrows(IllegalArgumentException.class, () -> new FileLoader(null));
+  }
+
+  @Test
+  void testFileLoaderPrefixEmpty() {
+    assertThrows(IllegalArgumentException.class, () -> new FileLoader(" "));
+  }
+
+  @Test
+  void testFileLoaderPrefixSlash() {
+    assertThrows(IllegalArgumentException.class, () -> new FileLoader(" / "));
+  }
+
+  @Test
+  void testFileLoader() throws PebbleException, IOException {
+    Loader<?> loader = new FileLoader(this.getClass().getClassLoader().getResource("templates").getPath());
     loader.setSuffix(".suffix");
     PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
-    URL url = this.getClass().getResource("/templates/template.loaderTest.peb");
-    PebbleTemplate template1 = engine.getTemplate(new File(url.toURI()).getPath());
+    PebbleTemplate template1 = engine.getTemplate("template.loaderTest.peb");
     Writer writer1 = new StringWriter();
     template1.evaluate(writer1);
     assertEquals("SUCCESS", writer1.toString());
-
   }
 
   @Test
