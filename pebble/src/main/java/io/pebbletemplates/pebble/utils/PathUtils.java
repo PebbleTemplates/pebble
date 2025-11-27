@@ -44,7 +44,7 @@ public final class PathUtils {
     return null;
   }
 
-  private static String sanitize(String path, char expectedSeparator) {
+  public static String sanitize(String path, char expectedSeparator) {
     return PATH_SEPARATOR_REGEX.matcher(path)
         .replaceAll(Matcher.quoteReplacement(String.valueOf(expectedSeparator)));
   }
