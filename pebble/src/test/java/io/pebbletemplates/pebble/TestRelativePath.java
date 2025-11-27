@@ -3,15 +3,11 @@ package io.pebbletemplates.pebble;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.loader.FileLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -70,14 +66,10 @@ class TestRelativePath {
    * Tests if relative includes work. Issue #162.
    */
   @Test
-  void testPathWithBackslashesWithRelativePathWithForwardSlashes()
-      throws PebbleException, IOException, URISyntaxException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
-    URL url = this.getClass()
-        .getResource("/templates/relativepath/subdirectory1/template.forwardslashes.peb");
-    PebbleTemplate template = pebble
-        .getTemplate(new File(url.toURI()).getPath()
-            .replace("/", "\\")); // ensure backslashes in all environments
+  void testPathWithBackslashesWithRelativePathWithForwardSlashes() throws IOException {
+    String path = this.getClass().getClassLoader().getResource("templates").getPath();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader(path)).build();
+    PebbleTemplate template = pebble.getTemplate("/relativepath/subdirectory1/template.forwardslashes.peb".replace("/", "\\")); // ensure backslashes in all environments
     Writer writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("included", writer.toString());
@@ -87,14 +79,10 @@ class TestRelativePath {
    * Issue #162.
    */
   @Test
-  void testPathWithForwardSlashesWithRelativePathWithBackwardSlashes()
-      throws PebbleException, IOException, URISyntaxException {
-    PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader()).build();
-    URL url = this.getClass()
-        .getResource("/templates/relativepath/subdirectory1/template.backwardslashes.peb");
-    PebbleTemplate template = pebble
-        .getTemplate(new File(url.toURI()).getPath()
-            .replace("\\", "/")); // ensure forward slashes in all environments
+  void testPathWithForwardSlashesWithRelativePathWithBackwardSlashes() throws IOException {
+    String path = this.getClass().getClassLoader().getResource("templates").getPath();
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new FileLoader(path)).build();
+    PebbleTemplate template = pebble.getTemplate("/relativepath/subdirectory1/template.backwardslashes.peb");
     Writer writer = new StringWriter();
     template.evaluate(writer);
     assertEquals("included", writer.toString());
