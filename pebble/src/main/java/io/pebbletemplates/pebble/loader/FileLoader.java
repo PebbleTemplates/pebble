@@ -49,18 +49,14 @@ public class FileLoader implements Loader<String> {
   }
 
   private File getFile(String templateName) {
-    StringBuilder path = new StringBuilder();
-    path.append(this.getPrefix());
-    if (!this.getPrefix().endsWith(String.valueOf(File.separatorChar))) {
-      path.append(File.separatorChar);
-    }
-
     templateName = templateName + (this.getSuffix() == null ? "" : this.getSuffix());
     templateName = PathUtils.sanitize(templateName, File.separatorChar);
-    logger.trace("Looking for template in {}{}.", path, templateName);
+
+    Path path = Paths.get(this.getPrefix(), templateName);
+    logger.trace("Looking for template in {}.", path);
 
     this.checkIfDirectoryTraversal(templateName);
-    return new File(path.toString(), templateName);
+    return path.toFile();
   }
 
   public String getSuffix() {
@@ -130,7 +126,7 @@ public class FileLoader implements Loader<String> {
     // Make sure the resulting path is still within the required directory.
     // (In the example above, "/foo/bar/attack" is not.)
     if (!resolvedPath.startsWith(baseDirPath)) {
-      throw new LoaderException(null, String.format("User path escapes the base path [prefix='%s', templateName='%s']", this.prefix, templateName));
+      throw new LoaderException(null, String.format("template is not in the base directory path [baseDir='%s', templateName='%s']", this.prefix, templateName));
     }
   }
 }

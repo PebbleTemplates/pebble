@@ -63,7 +63,7 @@ Pebble ships with the following loader implementations:
 
 - `DelegatingLoader`: Delegates responsibility to a collection of children loaders.
 - `ClasspathLoader`: Uses a classloader to search the current classpath.
-- `FileLoader`:  Finds templates using a filesystem path. Must provide a mandatory base directory which is not `/`
+- `FileLoader`:  Finds templates using a filesystem path. Must provide a mandatory absolute base path.
 - `ServletLoader`:  Uses a servlet context to find the template. This is the recommended loader for use within an
 application server but is not enabled by default.
 - `Servlet5Loader`:  Same as `ServletLoader`, but for Jakarta Servlet 5.0 or newer.
