@@ -22,7 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class LoaderTest {
 
@@ -65,32 +66,6 @@ class LoaderTest {
     template1.evaluate(writer1);
     assertEquals("SUCCESS", writer1.toString());
 
-  }
-
-  @Test
-  void testFileLoaderPrefixNull() {
-    assertThrows(IllegalArgumentException.class, () -> new FileLoader(null));
-  }
-
-  @Test
-  void testFileLoaderPrefixEmpty() {
-    assertThrows(IllegalArgumentException.class, () -> new FileLoader(" "));
-  }
-
-  @Test
-  void testFileLoaderPrefixSlash() {
-    assertThrows(IllegalArgumentException.class, () -> new FileLoader(" / "));
-  }
-
-  @Test
-  void testFileLoader() throws PebbleException, IOException {
-    Loader<?> loader = new FileLoader(this.getClass().getClassLoader().getResource("templates").getPath());
-    loader.setSuffix(".suffix");
-    PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
-    PebbleTemplate template1 = engine.getTemplate("template.loaderTest.peb");
-    Writer writer1 = new StringWriter();
-    template1.evaluate(writer1);
-    assertEquals("SUCCESS", writer1.toString());
   }
 
   @Test

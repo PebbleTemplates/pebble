@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * This loader searches for a file located anywhere on the filesystem. It uses java.io.File to
@@ -35,61 +37,29 @@ public class FileLoader implements Loader<String> {
 
   @Override
   public Reader getReader(String templateName) {
-    // try to load File
-    InputStream is = null;
     File file = this.getFile(templateName);
-    if (file.exists() && file.isFile()) {
-      try {
-        is = new FileInputStream(file);
-      } catch (FileNotFoundException e) {
-      }
-    }
-
-    if (is == null) {
-      throw new LoaderException(null,
-          "Could not find template \"" + templateName + "\"");
-    }
-
     try {
+      InputStream is = new FileInputStream(file);
       return new BufferedReader(new InputStreamReader(is, this.charset));
+    } catch (FileNotFoundException e) {
+      throw new LoaderException(null, String.format("Could not find template [prefix='%s', templateName='%s']", this.prefix, templateName));
     } catch (UnsupportedEncodingException e) {
+      throw new LoaderException(e, String.format("Invalid charset '%s'", this.charset));
     }
-
-    return null;
   }
 
   private File getFile(String templateName) {
-    // add the prefix and ensure the prefix ends with a separator character
     StringBuilder path = new StringBuilder();
-    if (this.getPrefix() != null) {
-
-      path.append(this.getPrefix());
-
-      if (!this.getPrefix().endsWith(String.valueOf(File.separatorChar))) {
-        path.append(File.separatorChar);
-      }
+    path.append(this.getPrefix());
+    if (!this.getPrefix().endsWith(String.valueOf(File.separatorChar))) {
+      path.append(File.separatorChar);
     }
 
     templateName = templateName + (this.getSuffix() == null ? "" : this.getSuffix());
+    templateName = PathUtils.sanitize(templateName, File.separatorChar);
+    logger.trace("Looking for template in {}{}.", path, templateName);
 
-    logger.trace("Looking for template in {}{}.", path.toString(), templateName);
-
-    /*
-     * if template name contains path segments, move those segments into the
-     * path variable. The below technique needs to know the difference
-     * between the path and file name.
-     */
-    String[] pathSegments = PathUtils.PATH_SEPARATOR_REGEX.split(templateName);
-
-    if (pathSegments.length > 1) {
-      // file name is the last segment
-      templateName = pathSegments[pathSegments.length - 1];
-    }
-    for (int i = 0; i < (pathSegments.length - 1); i++) {
-      path.append(pathSegments[i]).append(File.separatorChar);
-    }
-
-    // try to load File
+    this.checkIfDirectoryTraversal(templateName);
     return new File(path.toString(), templateName);
   }
 
@@ -108,10 +78,17 @@ public class FileLoader implements Loader<String> {
 
   @Override
   public void setPrefix(String prefix) {
-    if (prefix == null || prefix.trim().equals("") || prefix.trim().equals("/")) {
-      throw new IllegalArgumentException("Prefix cannot be null, empty or equal to '/'");
+    if (prefix == null) {
+      throw new LoaderException(null, "Prefix cannot be null");
     }
-    this.prefix = prefix;
+    String trimmedPrefix = prefix.trim();
+    if (trimmedPrefix.isEmpty()) {
+      throw new LoaderException(null, "Prefix cannot be empty");
+    }
+    if (!Paths.get(trimmedPrefix).isAbsolute()) {
+      throw new LoaderException(null, "Prefix must be an absolute path");
+    }
+    this.prefix = trimmedPrefix;
   }
 
   public String getCharset() {
@@ -136,5 +113,24 @@ public class FileLoader implements Loader<String> {
   @Override
   public boolean resourceExists(String templateName) {
     return this.getFile(templateName).exists();
+  }
+
+  private void checkIfDirectoryTraversal(String templateName) {
+    Path baseDirPath = Paths.get(prefix);
+    Path userPath = Paths.get(templateName);
+    if (userPath.isAbsolute()) {
+      throw new LoaderException(null, String.format("templateName '%s' must be relative", templateName));
+    }
+
+    // Join the two paths together, then normalize so that any ".." elements
+    // in the userPath can remove parts of baseDirPath.
+    // (e.g. "/foo/bar/baz" + "../attack" -> "/foo/bar/attack")
+    Path resolvedPath = baseDirPath.resolve(userPath).normalize();
+
+    // Make sure the resulting path is still within the required directory.
+    // (In the example above, "/foo/bar/attack" is not.)
+    if (!resolvedPath.startsWith(baseDirPath)) {
+      throw new LoaderException(null, String.format("User path escapes the base path [prefix='%s', templateName='%s']", this.prefix, templateName));
+    }
   }
 }
