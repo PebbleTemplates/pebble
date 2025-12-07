@@ -92,7 +92,8 @@ public class ArgumentsNode implements Node {
       if (this.namedArgs != null) {
         for (NamedArgumentNode arg: this.namedArgs) {
           // check if user used an incorrect name
-          if (!argumentNames.contains(arg.getName())) {
+          // empty argument names == dynamic/unknown names
+          if (!argumentNames.isEmpty() && !argumentNames.contains(arg.getName())) {
             throw new PebbleException(null,
                 "The following named argument does not exist: " + arg.getName(),
                 this.lineNumber, self.getName());
