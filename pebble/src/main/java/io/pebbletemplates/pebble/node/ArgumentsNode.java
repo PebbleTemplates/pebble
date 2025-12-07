@@ -62,20 +62,24 @@ public class ArgumentsNode implements Node {
     Map<String, Object> result = new HashMap<>();
     List<String> argumentNames = invocableWithNamedArguments.getArgumentNames();
 
-    if (argumentNames == null) {
-
+    if (argumentNames == null || argumentNames.isEmpty()) {
       /* Some functions such as min and max use un-named varags */
       if (this.positionalArgs != null && !this.positionalArgs.isEmpty()) {
         for (int i = 0; i < this.positionalArgs.size(); i++) {
-          result.put(String.valueOf(i),
-              this.positionalArgs.get(i).getValueExpression().evaluate(self, context));
+          result.put(String.valueOf(i), this.positionalArgs.get(i).getValueExpression().evaluate(self, context));
+        }
+      }
+
+      // Support dynamic varargs (Issue #740)
+      if (this.namedArgs != null) {
+        for (NamedArgumentNode arg: this.namedArgs) {
+          Object value = arg.getValueExpression() == null ? null : arg.getValueExpression().evaluate(self, context);
+          result.put(arg.getName(), value);
         }
       }
     } else {
-
       if (this.positionalArgs != null) {
         int nameIndex = 0;
-
         for (PositionalArgumentNode arg: this.positionalArgs) {
           if (argumentNames.size() <= nameIndex) {
             throw new PebbleException(null, "The argument at position " + (nameIndex + 1)
@@ -83,8 +87,7 @@ public class ArgumentsNode implements Node {
                 this.lineNumber, self.getName());
           }
 
-          result
-              .put(argumentNames.get(nameIndex), arg.getValueExpression().evaluate(self, context));
+          result.put(argumentNames.get(nameIndex), arg.getValueExpression().evaluate(self, context));
           nameIndex++;
         }
       }
@@ -92,15 +95,12 @@ public class ArgumentsNode implements Node {
       if (this.namedArgs != null) {
         for (NamedArgumentNode arg: this.namedArgs) {
           // check if user used an incorrect name
-          // empty argument names == dynamic/unknown names
-          if (!argumentNames.isEmpty() && !argumentNames.contains(arg.getName())) {
+          if (!argumentNames.contains(arg.getName())) {
             throw new PebbleException(null,
                 "The following named argument does not exist: " + arg.getName(),
                 this.lineNumber, self.getName());
           }
-          Object value =
-              arg.getValueExpression() == null ? null : arg.getValueExpression().evaluate(self,
-                  context);
+          Object value = arg.getValueExpression() == null ? null : arg.getValueExpression().evaluate(self, context);
           result.put(arg.getName(), value);
         }
       }

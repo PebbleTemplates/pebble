@@ -12,7 +12,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,8 +57,7 @@ class DynamicNamedArgsTest {
 
     @Override
     public List<String> getArgumentNames() {
-      // Dynamic named arguments???
-      return Collections.emptyList();
+      return null;
     }
   }
 
