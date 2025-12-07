@@ -12,10 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +40,7 @@ class DynamicNamedArgsTest {
   /**
    * Query parameters are dynamic.
    */
-  static class QueryStringFilter implements Filter {
+  static class QueryStringArgsNullFilter implements Filter {
     @Override
     public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
       if (!(input instanceof Operation)) {
@@ -61,17 +58,36 @@ class DynamicNamedArgsTest {
     }
   }
 
+  static class QueryStringArgsEmptyFilter implements Filter {
+    @Override
+    public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
+      if (!(input instanceof Operation)) {
+        throw new IllegalArgumentException("Expected Operation but got " + input.getClass());
+      }
+      Operation operation = (Operation) input;
+      return new SafeString(operation.getPath() + operation.getQueryParameters().stream()
+              .map(it -> it + "=" + args.getOrDefault(it, "string"))
+              .collect(Collectors.joining("&", "?", "")));
+    }
+
+    @Override
+    public List<String> getArgumentNames() {
+      return new ArrayList<>();
+    }
+  }
+
   static class QueryStringExtension extends AbstractExtension {
     @Override
     public Map<String, Filter> getFilters() {
       Map<String, Filter> filters = new HashMap<>();
-      filters.put("queryString", new QueryStringFilter());
+      filters.put("queryStringArgsNull", new QueryStringArgsNullFilter());
+      filters.put("queryStringArgsEmpty", new QueryStringArgsEmptyFilter());
       return filters;
     }
   }
 
   @Test
-  void shouldSupportDynamicNamedArguments() throws PebbleException, IOException {
+  void shouldSupportDynamicNamedArgumentsWhenArgumentsIsNull() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .extension(new QueryStringExtension())
         .build();
@@ -79,7 +95,7 @@ class DynamicNamedArgsTest {
     // Query parameters are dynamic
     Operation operation = new Operation("/library", "title", "isbn");
 
-    String source = "{{operation | queryString(title=\"Dune\")}}";
+    String source = "{{operation | queryStringArgsNull(title=\"Dune\")}}";
     PebbleTemplate template = pebble.getTemplate(source);
 
     Writer writer = new StringWriter();
@@ -89,4 +105,22 @@ class DynamicNamedArgsTest {
     assertEquals("/library?title=Dune&isbn=string", writer.toString());
   }
 
+  @Test
+  void shouldSupportDynamicNamedArgumentsWhenArgumentsIsEmpty() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .extension(new QueryStringExtension())
+            .build();
+
+    // Query parameters are dynamic
+    Operation operation = new Operation("/library", "title", "isbn");
+
+    String source = "{{operation | queryStringArgsEmpty(isbn=\"1234\")}}";
+    PebbleTemplate template = pebble.getTemplate(source);
+
+    Writer writer = new StringWriter();
+    Map<String, Object> context = new HashMap<>();
+    context.put("operation", operation);
+    template.evaluate(writer, context);
+    assertEquals("/library?title=string&isbn=1234", writer.toString());
+  }
 }
