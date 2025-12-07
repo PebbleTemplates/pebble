@@ -18,7 +18,9 @@ PebbleEngine engine = new PebbleEngine.Builder().extension(new CustomExtension()
 To create custom filters, implement the `getFilters()` method of your extension which will return a map of filter
 names and their corresponding implementations. A filter implementation must implement the `Filter` interface.
 The	`Filter` interface requires two methods to be implemented, `getArgumentNames()` and `apply()`. The
-`getArgumentNames()` method returns a list of Strings that define both the order and names of expected arguments.
+`getArgumentNames()` method returns a list of Strings that define both the order and names of expected arguments. If 
+this method returns null or an empty list, the filter supports dynamic arguments. This means the user can pass any 
+number of arguments—either named (e.g., myFilter(param="value")) or positional (e.g., myFilter("value"))—and they will be available in the arguments map.
 
 The `apply` method is the actual filter implementation. Here's the parameters definition.
 
@@ -132,7 +134,11 @@ public class FibonnaciStringFunction implements Function {
 ## Positional and Named Arguments
 For filters, tests, and functions it is required that you implement the `getArgumentNames` method even if it
 returns null. Returning a list of strings will allow the end user to call your filter/test/function using
-named arguments. Using the above fictional fibonacci function as an example, a user can invoke it in two different ways:
+named arguments. If this method returns null or an empty list, the function supports dynamic arguments. This means 
+the user can pass any number of arguments—either named (e.g., myFunction(param="value")) or positional 
+(e.g., myFunction("value"))—and they will be available in the arguments map.
+
+Using the above fictional fibonacci function as an example, a user can invoke it in two different ways:
 ```twig
 {% verbatim %}
 {{ fibonacci(10) }}
