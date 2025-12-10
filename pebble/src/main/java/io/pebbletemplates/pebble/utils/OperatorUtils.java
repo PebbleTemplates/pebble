@@ -11,9 +11,11 @@ package io.pebbletemplates.pebble.utils;
 import io.pebbletemplates.pebble.extension.escaper.SafeString;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class acts as a sort of wrapper around Java's built in operators. This is necessary because
@@ -73,7 +75,7 @@ public class OperatorUtils {
     } else if (op2 instanceof Enum<?> && op1 instanceof String) {
       return compareEnum((Enum<?>) op2, (String) op1);
     } else {
-      return ((op1 == op2) || ((op1 != null) && op1.equals(op2)));
+      return Objects.equals(op1, op2);
     }
   }
 
@@ -140,8 +142,7 @@ public class OperatorUtils {
     return op1;
   }
 
-  private static Object wideningConversionBinaryOperation(Object op1, Object op2,
-      Operation operation) {
+  private static Object wideningConversionBinaryOperation(Object op1, Object op2, Operation operation) {
 
     if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
       throw new RuntimeException(
@@ -151,29 +152,56 @@ public class OperatorUtils {
     Number num1 = (Number) op1;
     Number num2 = (Number) op2;
 
-    if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
-      return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()),
-          BigDecimal.valueOf(num2.doubleValue()),
-          operation);
+    // Simplify checks if both operands are the same type
+    if (num1.getClass().equals(num2.getClass())) {
+      if (num1 instanceof Integer) {
+        return integerOperation((int) num1, (int) num2, operation);
+      }
+      if (num1 instanceof Double) {
+        return doubleOperation((double) num1, (double) num2, operation);
+      }
+      if (num1 instanceof Long) {
+        return longOperation((long) num1, (long) num2, operation);
+      }
+      if (num1 instanceof BigDecimal) {
+        return bigDecimalOperation((BigDecimal) num1, (BigDecimal) num2, operation);
+      }
+      if (num1 instanceof BigInteger) {
+        return bigIntegerOperation((BigInteger) num1, (BigInteger) num2, operation);
+      }
     }
 
-    if (num1 instanceof Double || num2 instanceof Double) {
-      return doubleOperation(num1.doubleValue(), num2.doubleValue(), operation);
+    /*
+     * Convert and compare operands based on the complexity / scale of the values.
+     */
+    if (num1 instanceof BigDecimal) {
+      return bigDecimalOperation((BigDecimal) num1, new BigDecimal(num2.toString()), operation);
+    }
+    if (num2 instanceof BigDecimal) {
+      return bigDecimalOperation(new BigDecimal(num1.toString()), (BigDecimal) num2, operation);
     }
 
-    if (num1 instanceof Float || num2 instanceof Float) {
-      return floatOperation(num1.floatValue(), num2.floatValue(), operation);
+    // Handle remaining decimal numbers by converting to BigDecimal since we know the classes differ
+    if (num1 instanceof Double || num2 instanceof Double || num1 instanceof Float || num2 instanceof Float) {
+      return bigDecimalOperation(new BigDecimal(num1.toString()), new BigDecimal(num2.toString()), operation);
     }
 
+    // From here we only have whole number types to check
+    if (num1 instanceof BigInteger) {
+      return bigIntegerOperation((BigInteger) num1, new BigInteger(num2.toString()), operation);
+    }
+    if (num2 instanceof BigInteger) {
+      return bigIntegerOperation(new BigInteger(num1.toString()), (BigInteger) num2, operation);
+    }
     if (num1 instanceof Long || num2 instanceof Long) {
       return longOperation(num1.longValue(), num2.longValue(), operation);
     }
 
+    // Compare remaining integer types using intValue()
     return integerOperation(num1.intValue(), num2.intValue(), operation);
   }
 
-  private static boolean wideningConversionBinaryComparison(Object op1, Object op2,
-      Comparison comparison) {
+  private static boolean wideningConversionBinaryComparison(Object op1, Object op2, Comparison comparison) {
     if (op1 == null || op2 == null) {
       return false;
     }
@@ -184,12 +212,63 @@ public class OperatorUtils {
       num1 = (Number) op1;
       num2 = (Number) op2;
     } catch (ClassCastException ex) {
-      throw new RuntimeException(
-          String
-              .format("invalid operands for mathematical comparison [%s]", comparison.toString()));
+      throw new RuntimeException(String.format("invalid operands for mathematical comparison [%s]", comparison.toString()));
     }
 
-    return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
+    /*
+     * If the two operands are the same class, we will run the appropriate compare with casts.
+     * If not, we will work from the highest range downward to check types and convert the numbers
+     * for comparison in a way that will not lose values.
+     */
+    int result = 0;
+
+    if (num1.getClass().equals(num2.getClass())) {
+      if (num1 instanceof Integer) {
+        result = ((Integer) num1).compareTo((Integer) num2);
+      } else if (num1 instanceof Double) {
+        result = ((Double) num1).compareTo((Double) num2);
+      } else if (num1 instanceof Long) {
+        result = ((Long) num1).compareTo((Long) num2);
+      } else if (num1 instanceof BigDecimal) {
+        result = ((BigDecimal) num1).compareTo((BigDecimal) num2);
+      } else if (num1 instanceof BigInteger) {
+        result = ((BigInteger) num1).compareTo((BigInteger) num2);
+      }
+    } else {
+      if (num1 instanceof BigDecimal) {
+        result = ((BigDecimal) num1).compareTo(new BigDecimal(num2.toString()));
+      } else if (num2 instanceof BigDecimal) {
+        result = (new BigDecimal(num1.toString())).compareTo((BigDecimal) num2);
+      // Handle remaining decimal numbers by converting to BigDecimal since we know the classes differ
+      } else if (num1 instanceof Double || num2 instanceof Double || num1 instanceof Float || num2 instanceof Float) {
+        result = (new BigDecimal(num1.toString())).compareTo(new BigDecimal(num2.toString()));
+      // From here we only have whole number types to check
+      } else if (num1 instanceof BigInteger) {
+        result = ((BigInteger) num1).compareTo(new BigInteger(num2.toString()));
+      } else if (num2 instanceof BigInteger) {
+        result = (new BigInteger(num1.toString())).compareTo((BigInteger) num2);
+      } else if (num1 instanceof Long || num2 instanceof Long) {
+        result = Long.compare(num1.longValue(), num2.longValue());
+      // Compare remaining integer types using intValue()
+      } else {
+        result = Integer.compare(num1.intValue(), num2.intValue());
+      }
+    }
+
+    switch (comparison) {
+      case GREATER_THAN:
+        return result == 1;
+      case GREATER_THAN_EQUALS:
+        return result >= 0;
+      case LESS_THAN:
+        return result < 0;
+      case LESS_THAN_EQUALS:
+        return result <= 0;
+      case EQUALS:
+        return result == 0;
+      default:
+        throw new RuntimeException("Bug in OperatorUtils in pebble library");
+    }
   }
 
   private static double doubleOperation(double op1, double op2, Operation operation) {
@@ -209,25 +288,7 @@ public class OperatorUtils {
     }
   }
 
-  private static boolean doubleComparison(double op1, double op2, Comparison comparison) {
-    switch (comparison) {
-      case GREATER_THAN:
-        return op1 > op2;
-      case GREATER_THAN_EQUALS:
-        return op1 >= op2;
-      case LESS_THAN:
-        return op1 < op2;
-      case LESS_THAN_EQUALS:
-        return op1 <= op2;
-      case EQUALS:
-        return op1 == op2;
-      default:
-        throw new RuntimeException("Bug in OperatorUtils in pebble library");
-    }
-  }
-
-  private static BigDecimal bigDecimalOperation(BigDecimal op1, BigDecimal op2,
-      Operation operation) {
+  private static BigDecimal bigDecimalOperation(BigDecimal op1, BigDecimal op2, Operation operation) {
     switch (operation) {
       case ADD:
         return op1.add(op2);
@@ -239,6 +300,23 @@ public class OperatorUtils {
         return op1.divide(op2, MathContext.DECIMAL128);
       case MODULUS:
         return op1.remainder(op2, MathContext.DECIMAL128);
+      default:
+        throw new RuntimeException("Bug in OperatorUtils in pebble library");
+    }
+  }
+
+  private static BigInteger bigIntegerOperation(BigInteger op1, BigInteger op2, Operation operation) {
+    switch (operation) {
+      case ADD:
+        return op1.add(op2);
+      case SUBTRACT:
+        return op1.subtract(op2);
+      case MULTIPLICATION:
+        return op1.multiply(op2);
+      case DIVISION:
+        return op1.divide(op2);
+      case MODULUS:
+        return op1.remainder(op2);
       default:
         throw new RuntimeException("Bug in OperatorUtils in pebble library");
     }
@@ -285,7 +363,7 @@ public class OperatorUtils {
       case SUBTRACT:
         return op1 - op2;
       case MULTIPLICATION:
-        return op1 * op2;
+        return (long) op1 * op2;
       case DIVISION:
         return op1 / op2;
       case MODULUS:
