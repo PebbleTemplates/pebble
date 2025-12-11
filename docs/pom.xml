@@ -38,11 +38,6 @@
               </dependency>
               <dependency>
                 <groupId>io.github.javaeden.orchid</groupId>
-                <artifactId>OrchidJavadoc</artifactId>
-                <version>${orchid.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>io.github.javaeden.orchid</groupId>
                 <artifactId>OrchidPluginDocs</artifactId>
                 <version>${orchid.version}</version>
               </dependency>
