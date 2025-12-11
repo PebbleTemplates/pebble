@@ -9,6 +9,8 @@
 package io.pebbletemplates.pebble;
 
 
+import io.pebbletemplates.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.cache.CacheKey;
 import io.pebbletemplates.pebble.cache.PebbleCache;
 import io.pebbletemplates.pebble.cache.tag.ConcurrentMapTagCache;
@@ -16,37 +18,30 @@ import io.pebbletemplates.pebble.cache.tag.NoOpTagCache;
 import io.pebbletemplates.pebble.cache.template.ConcurrentMapTemplateCache;
 import io.pebbletemplates.pebble.cache.template.NoOpTemplateCache;
 import io.pebbletemplates.pebble.error.LoaderException;
+import io.pebbletemplates.pebble.extension.*;
+import io.pebbletemplates.pebble.extension.escaper.EscapingStrategy;
 import io.pebbletemplates.pebble.lexer.LexerImpl;
 import io.pebbletemplates.pebble.lexer.Syntax;
 import io.pebbletemplates.pebble.lexer.TokenStream;
+import io.pebbletemplates.pebble.loader.ClasspathLoader;
+import io.pebbletemplates.pebble.loader.Loader;
+import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.node.RootNode;
 import io.pebbletemplates.pebble.parser.Parser;
 import io.pebbletemplates.pebble.parser.ParserImpl;
 import io.pebbletemplates.pebble.parser.ParserOptions;
-import io.pebbletemplates.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
-import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
-import io.pebbletemplates.pebble.extension.escaper.EscapingStrategy;
-import io.pebbletemplates.pebble.loader.ClasspathLoader;
-import io.pebbletemplates.pebble.loader.DelegatingLoader;
-import io.pebbletemplates.pebble.loader.FileLoader;
-import io.pebbletemplates.pebble.loader.Loader;
-import io.pebbletemplates.pebble.loader.StringLoader;
-import io.pebbletemplates.pebble.extension.*;
 import io.pebbletemplates.pebble.template.EvaluationOptions;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import io.pebbletemplates.pebble.template.PebbleTemplateImpl;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
-
 import io.pebbletemplates.pebble.utils.TypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 /**
  * The main class used for compiling templates. The PebbleEngine is responsible for delegating
@@ -584,10 +579,7 @@ public class PebbleEngine {
 
       // default loader
       if (this.loader == null) {
-        List<Loader<?>> defaultLoadingStrategies = new ArrayList<>();
-        defaultLoadingStrategies.add(new ClasspathLoader());
-        defaultLoadingStrategies.add(new FileLoader());
-        this.loader = new DelegatingLoader(defaultLoadingStrategies);
+        this.loader = new ClasspathLoader();
       }
 
       // default locale

@@ -15,7 +15,6 @@ import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -63,19 +62,6 @@ class LoaderTest {
     loader.setSuffix(".peb");
     PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
     PebbleTemplate template1 = engine.getTemplate("loader/template.loaderTest");
-    Writer writer1 = new StringWriter();
-    template1.evaluate(writer1);
-    assertEquals("SUCCESS", writer1.toString());
-
-  }
-
-  @Test
-  void testFileLoader() throws PebbleException, IOException, URISyntaxException {
-    Loader<?> loader = new FileLoader();
-    loader.setSuffix(".suffix");
-    PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
-    URL url = this.getClass().getResource("/templates/template.loaderTest.peb");
-    PebbleTemplate template1 = engine.getTemplate(new File(url.toURI()).getPath());
     Writer writer1 = new StringWriter();
     template1.evaluate(writer1);
     assertEquals("SUCCESS", writer1.toString());
