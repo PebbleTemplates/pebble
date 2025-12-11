@@ -10,7 +10,7 @@ For more information please visit the [website](https://pebbletemplates.io).
 
 - If you do not provide a custom Loader, Pebble will now use only a `ClasspathLoader` by default, same as the spring autoconfiguration.
   Before that, it would have used an instance of the `DelegatingLoader` which consists of a `ClasspathLoader` and a `FileLoader` behind the scenes to find your templates.
-- Modify the `FileLoader` to use a mandatory sandboxed base directory parameter.
+- Modify the `FileLoader` to use a mandatory base directory parameter.
 
 # Breaking changes in version 4.0.x
 
