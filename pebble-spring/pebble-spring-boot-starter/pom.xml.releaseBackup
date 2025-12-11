@@ -4,24 +4,24 @@
   <parent>
     <artifactId>pebble-spring</artifactId>
     <groupId>io.pebbletemplates</groupId>
-    <version>4.1.0</version>
+    <version>4.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>pebble-legacy-spring-boot-starter</artifactId>
+  <artifactId>pebble-spring-boot-starter</artifactId>
 
-  <name>Pebble Spring Boot 3 Starter</name>
-  <description>Spring Boot 3 starter for Pebble Template Engine</description>
+  <name>Pebble Spring Boot 4 Starter</name>
+  <description>Spring Boot 4 starter for Pebble Template Engine</description>
   <url>http://pebbletemplates.io</url>
 
   <properties>
     <java.version>17</java.version>
-    <boot.version>3.5.8</boot.version>
+    <boot.version>4.0.0</boot.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
       <version>${boot.version}</version>
       <optional>true</optional>
       <exclusions>
@@ -39,26 +39,20 @@
     </dependency>
     <dependency>
       <groupId>io.pebbletemplates</groupId>
-      <artifactId>pebble-spring6</artifactId>
+      <artifactId>pebble-spring7</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-      <version>${boot.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure-processor</artifactId>
-      <version>${boot.version}</version>
-      <optional>true</optional>
     </dependency>
 
     <!-- TEST -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
+      <artifactId>spring-boot-starter-webflux-test</artifactId>
+      <version>${boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
       <version>${boot.version}</version>
       <scope>test</scope>
     </dependency>
@@ -66,6 +60,10 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
