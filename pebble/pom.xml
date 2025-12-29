@@ -85,7 +85,7 @@
       <plugin>
         <groupId>biz.aQute.bnd</groupId>
         <artifactId>bnd-maven-plugin</artifactId>
-        <version>7.1.0</version>
+        <version>7.2.0</version>
         <executions>
           <execution>
             <id>generate-osgi-manifest</id>
