@@ -12,6 +12,9 @@ import io.pebbletemplates.pebble.attributes.AttributeResolver;
 import io.pebbletemplates.pebble.operator.BinaryOperator;
 import io.pebbletemplates.pebble.operator.UnaryOperator;
 import io.pebbletemplates.pebble.tokenParser.TokenParser;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,21 +25,24 @@ public interface Extension {
    *
    * @return A list of filters. It is okay to return null.
    */
-  Map<String, Filter> getFilters();
+  @Nullable
+  Map<@NonNull String, @NonNull Filter> getFilters();
 
   /**
    * Use this method to provide custom tests.
    *
    * @return A list of tests. It is okay to return null.
    */
-  Map<String, Test> getTests();
+  @Nullable
+  Map<@NonNull String, @NonNull Test> getTests();
 
   /**
    * Use this method to provide custom functions.
    *
    * @return A list of functions. It is okay to return null.
    */
-  Map<String, Function> getFunctions();
+  @Nullable
+  Map<@NonNull String, @NonNull Function> getFunctions();
 
   /**
    * Use this method to provide custom tags.
@@ -46,40 +52,46 @@ public interface Extension {
    *
    * @return A list of TokenParsers. It is okay to return null.
    */
-  List<TokenParser> getTokenParsers();
+  @Nullable
+  List<@NonNull TokenParser> getTokenParsers();
 
   /**
    * Use this method to provide custom binary operators.
    *
    * @return A list of Operators. It is okay to return null;
    */
-  List<BinaryOperator> getBinaryOperators();
+  @Nullable
+  List<@NonNull BinaryOperator> getBinaryOperators();
 
   /**
    * Use this method to provide custom unary operators.
    *
    * @return A list of Operators. It is okay to return null;
    */
-  List<UnaryOperator> getUnaryOperators();
+  @Nullable
+  List<@NonNull UnaryOperator> getUnaryOperators();
 
   /**
    * Use this method to provide variables available to all templates
    *
    * @return Map of global variables available to all templates
    */
-  Map<String, Object> getGlobalVariables();
+  @Nullable
+  Map<@NonNull String, @NonNull Object> getGlobalVariables();
 
   /**
    * Node visitors will travel the AST tree during the compilation phase.
    *
    * @return a list of node visitors
    */
-  List<NodeVisitorFactory> getNodeVisitors();
+  @Nullable
+  List<@NonNull NodeVisitorFactory> getNodeVisitors();
 
   /**
    * AttributeResolver will resolve instance attributes
    *
    * @return a list of attribute resolver
    */
-  List<AttributeResolver> getAttributeResolver();
+  @Nullable
+  List<@NonNull AttributeResolver> getAttributeResolver();
 }
