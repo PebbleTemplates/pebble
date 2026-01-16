@@ -22,8 +22,8 @@
     <servlet-api.version>2.5</servlet-api.version>
 
     <assertj.version>3.27.6</assertj.version>
-    <logback-classic.version>1.5.23</logback-classic.version>
-    <junit-jupiter.version>6.0.1</junit-jupiter.version>
+    <logback-classic.version>1.5.24</logback-classic.version>
+    <junit-jupiter.version>6.0.2</junit-jupiter.version>
   </properties>
 
   <dependencies>
@@ -85,7 +85,7 @@
       <plugin>
         <groupId>biz.aQute.bnd</groupId>
         <artifactId>bnd-maven-plugin</artifactId>
-        <version>7.1.0</version>
+        <version>7.2.1</version>
         <executions>
           <execution>
             <id>generate-osgi-manifest</id>
