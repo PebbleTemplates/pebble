@@ -21,8 +21,8 @@
     <jakarata.servlet-api.version>6.1.0</jakarata.servlet-api.version>
     <servlet-api.version>2.5</servlet-api.version>
 
-    <assertj.version>3.27.6</assertj.version>
-    <logback-classic.version>1.5.25</logback-classic.version>
+    <assertj.version>3.27.7</assertj.version>
+    <logback-classic.version>1.5.26</logback-classic.version>
     <junit-jupiter.version>6.0.2</junit-jupiter.version>
   </properties>
 
