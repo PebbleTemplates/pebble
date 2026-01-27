@@ -535,6 +535,13 @@ public class PebbleTemplateImpl implements PebbleTemplate {
     return this.name;
   }
 
+  /**
+   * Returns the root node of the template AST
+   *
+   * @return The root node of the template AST
+   */
+  public RenderableNode getRootNode() { return this.rootNode; }
+
   private static class NoopWriter extends Writer {
 
     public void write(char[] cbuf, int off, int len) {
