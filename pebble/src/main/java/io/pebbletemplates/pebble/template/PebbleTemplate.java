@@ -9,6 +9,7 @@
 package io.pebbletemplates.pebble.template;
 
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.node.RenderableNode;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -108,5 +109,11 @@ public interface PebbleTemplate {
    * @return The name of the template
    */
   String getName();
+
+  /**
+   * Returns the root node of the template
+   * @return The name of the template
+   */
+  RenderableNode getRootNode();
 
 }
