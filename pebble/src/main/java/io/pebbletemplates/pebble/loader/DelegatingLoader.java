@@ -61,7 +61,7 @@ public class DelegatingLoader implements Loader<DelegatingLoaderCacheKey> {
         if (reader != null) {
           break;
         }
-      } catch (LoaderException e) {
+      } catch (Exception e) {
         // do nothing
       }
     }

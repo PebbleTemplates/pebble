@@ -15,8 +15,10 @@ import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +84,32 @@ class LoaderTest {
     template.evaluate(writer);
 
     assertEquals("LOADER ONE", writer.toString());
+  }
+
+  @Test
+  void testDelegatingLoaderWithFileLoaderThatThrowsInvalidPathException() throws URISyntaxException, IOException {
+    String prefix = Paths.get(this.getClass().getClassLoader().getResource("templates").toURI()).toString();
+
+    List<Loader<?>> loaders = new ArrayList<>();
+    loaders.add(new FileLoader(prefix)); // Throws InvalidPathException for HTML content
+    loaders.add(new StringLoader()); // Should handle HTML content as inline template
+
+    DelegatingLoader loader = new DelegatingLoader(loaders);
+    PebbleEngine engine = new PebbleEngine.Builder().loader(loader).build();
+
+    // This simulates passing layout file content (HTML string) to Pebble
+    String layoutContent = "<main id=\"content\">Hello {{ name }}</main>";
+
+    // With the fix, DelegatingLoader catches InvalidPathException and delegates to
+    // StringLoader
+    PebbleTemplate template = engine.getTemplate(layoutContent);
+    Writer writer = new StringWriter();
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("name", "World");
+    template.evaluate(writer, context);
+
+    assertEquals("<main id=\"content\">Hello World</main>", writer.toString());
   }
 
   @Test
