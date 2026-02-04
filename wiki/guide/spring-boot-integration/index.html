@@ -1,0 +1,1040 @@
+<!DOCTYPE HTML>
+<!--
+    Editorial by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+
+
+
+
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<meta name="generator" content="Orchid 0.17.4"/>
+<link rel="icon" href="https://pebbletemplates.io/favicon.ico">
+
+
+<meta name="robots" content="index, follow">
+
+
+
+<title>Spring Boot Integration</title>
+
+
+<meta name="description" content="">
+
+
+
+<link rel="prev" href="https://pebbletemplates.io/wiki/guide/installation">
+
+
+<link rel="next" href="https://pebbletemplates.io/wiki/guide/basic-usage">
+
+
+<script>
+    window.site = {"orchidVersion":"0.17.4","baseUrl":"https://pebbletemplates.io","environment":"prod","version":"4.1.1"};
+</script>
+
+
+
+
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<!-- start:inject styles -->
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/614fa662/assets/css/editorial_main.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/614fa662/assets/css/editorial_orchidCustomizations.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/Editorial/614fa662/assets/css/orchidSearch.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/pygments.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/assets/css/github-fork-ribbon.css"/>
+<link rel="stylesheet" type="text/css" href="https://pebbletemplates.io/ajax/libs/prism/1.8.4/themes/prism.min.css"/>
+<!-- end:inject styles -->
+
+</head>
+<body class="is-loading">
+
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <a class="github-fork-ribbon" href="https://github.com/PebbleTemplates" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+        <div class="inner">
+
+            <!-- Header -->
+            
+                <header id="header">
+    <a href="https://pebbletemplates.io" class="logo">Pebble Templates</a>
+    <ul class="icons">
+    
+    
+    
+    </ul>
+</header>
+            
+            
+            
+            
+                <section id="pageContent">
+                    <header class="major"><h2>Spring Boot Integration</h2></header>
+                    <article>
+                        
+    <!-- start:inject components -->
+    
+        
+            
+                
+                    
+                        <h1 id="pebble-spring-boot-starter">Pebble Spring Boot Starter</h1>
+<p>Spring Boot starter for autoconfiguring Pebble.</p>
+<h2 id="basic-usage">Basic Usage</h2>
+<p>Add the starter dependency to your pom.xml:</p>
+<h3 id="spring-boot-v4">spring-boot v4</h3>
+<pre><code class="language-XML">&lt;dependency&gt;
+	&lt;groupId&gt;io.pebbletemplates&lt;/groupId&gt;
+	&lt;artifactId&gt;pebble-spring-boot-starter&lt;/artifactId&gt;
+	&lt;version&gt;4.1.1&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Or build.gradle:</p>
+<pre><code class="language-groovy">compile &quot;io.pebbletemplates:pebble-spring-boot-starter:4.1.1&quot;
+</code></pre>
+<h3 id="spring-boot-v3">spring-boot v3</h3>
+<pre><code class="language-XML">&lt;dependency&gt;
+	&lt;groupId&gt;io.pebbletemplates&lt;/groupId&gt;
+	&lt;artifactId&gt;pebble-legacy-spring-boot-starter&lt;/artifactId&gt;
+	&lt;version&gt;4.1.1&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Or build.gradle:</p>
+<pre><code class="language-groovy">compile &quot;io.pebbletemplates:pebble-legacy-spring-boot-starter:4.1.1&quot;
+</code></pre>
+<p>This is enough for autoconfiguration to kick in. This includes:</p>
+<ul>
+<li>a Loader that will pick template files ending in <code>.peb</code> from <code>/templates/</code> dir on the classpath</li>
+<li>a PebbleEngine with default settings, configured with the previous loader</li>
+<li>a Spring extension which offers some functionality described below</li>
+<li>a ViewResolver that will output <code>text/html</code> in <code>UTF-8</code></li>
+</ul>
+<p>PLEASE NOTE: the starter depends on <code>spring-boot-starter-webmvc</code> or <code>spring-boot-starter-webmvcflux</code> but is marked
+as optional, you'll need to add the dependency yourself or configure Spring MVC appropriately.</p>
+<h2 id="boot-externalized-configuration">Boot externalized configuration</h2>
+<p>A number of properties can be defined in Spring Boot externalized configuration, eg. <code>application.properties</code>,
+starting with the prefix <code>pebble</code>. See the
+corresponding <a href="https://github.com/PebbleTemplates/pebble/blob/master/pebble-spring/pebble-spring-boot-starter/src/main/java/io/pebbletemplates/boot/autoconfigure/PebbleProperties.java">PebbleProperties.java</a>
+for your starter version. Notable properties are:</p>
+<ul>
+<li><code>pebble.prefix</code>: defines the prefix that will be prepended to the mvc view name. Defaults to <code>/templates/</code></li>
+<li><code>pebble.suffix</code>: defines the suffix that will be appended to the mvc view name. Defaults to <code>.peb</code></li>
+<li><code>pebble.charset</code>: defines the text encoding that will be used to configure the ViewResolver. Defaults to
+<code>UTF-8</code></li>
+<li><code>pebble.defaultLocale</code>: defines the default locale that will be used to configure the PebbleEngine. Defaults
+to <code>null</code></li>
+<li><code>pebble.strictVariables</code>: enable or disable the strict variable checking in the PebbleEngine. Defaults to
+<code>false</code></li>
+<li><code>pebble.greedyMatchMethod</code>: enable or disable the greedy matching mode for finding java method in the
+PebbleEngine. Defaults to <code>false</code></li>
+<li><code>pebble.servlet.cache</code>: enables or disables PebbleEngine caches. Defaults to <code>true</code></li>
+<li><code>pebble.servlet.contentType</code>: defines the content type that will be used to configure the ViewResolver. Defaults to
+<code>text/html</code></li>
+<li><code>pebble.servlet.exposeRequestAttributes</code>: defines whether all request attributes should be added to the model prior
+to merging with the template for the ViewResolver. Defaults to <code>false</code></li>
+<li><code>pebble.servlet.exposeSessionAttributes</code>: defines whether all session attributes should be added to the model prior
+to merging with the template for the ViewResolver. Defaults to <code>false</code></li>
+<li><code>pebble.reactive.mediaTypes</code>: Configure the supported media types for Pebble views when used in a reactive Spring WebFlux application. This property allows you to specify a list of MediaType objects that the Pebble view resolver should consider when rendering templates. Defaults to <code>null</code></li>
+</ul>
+<h2 id="examples">Examples</h2>
+<p>There is the spring petclinic example which has been migrated to <a href="https://github.com/PebbleTemplates/spring-petclinic">pebble</a></p>
+<p>There is also a fully working example project located on <a href="https://github.com/PebbleTemplates/pebble-example-spring">github</a>
+which can be used as a reference. It is a very simple and bare-bones project designed to only portray the basics.
+To build the project, simply run <code>mvn install</code> and then deploy the resulting war file to a an application container.</p>
+<h2 id="customizing-pebble">Customizing Pebble</h2>
+<h3 id="pebble-extensions">Pebble extensions</h3>
+<p>Extensions defined as beans will be picked up and added to the PebbleEngine automatically:</p>
+<pre><code class="language-java">@Bean
+public Extension myPebbleExtension1() {
+   return new MyPebbleExtension1();
+}
+
+@Bean
+public Extension myPebbleExtension2() {
+   return new MyPebbleExtension2();
+}
+</code></pre>
+<p>CAVEAT: Spring will not gather all the beans if they're scattered across multiple @Configuration classes. If you use this mechanism, bundle all Extension @Beans in a single @Configuration class.</p>
+<h3 id="customizing-the-loader">Customizing the Loader</h3>
+<p>The autoconfigurer looks for a bean named <code>pebbleLoader</code> in the context. You can define a custom loader with that name and it will be used to configure the default PebbleEngine:</p>
+<pre><code class="language-java">@Bean
+public Loader&lt;?&gt; pebbleLoader() {
+   return new MyCustomLoader();
+}
+</code></pre>
+<p><strong>PLEASE NOTE</strong>: this loader's prefix and suffix will be both overwritten when the ViewResolver is configured. You should use the externalized configuration for changing these properties.</p>
+<h3 id="customizing-the-pebbleengine">Customizing the PebbleEngine</h3>
+<p>Likewise, you can build a custom engine and make it the default by using the bean name <code>pebbleEngine</code>:</p>
+<pre><code class="language-java">@Bean
+public PebbleEngine pebbleEngine() {
+   return new PebbleEngine.Builder().build();
+}
+</code></pre>
+<h3 id="customizing-the-methodaccessvalidator">Customizing the MethodAccessValidator</h3>
+<p>You can provide your own MethodAccessValidator or switch to NoOpMethodAccessValidator by providing a MethodAccessValidator Bean</p>
+<pre><code class="language-java">@Bean
+public MethodAccessValidator methodAccessValidator() {
+  return new NoOpMethodAccessValidator();
+}
+</code></pre>
+<h3 id="customizing-the-viewresolver">Customizing the ViewResolver</h3>
+<p>And the same goes for the ViewResolver</p>
+<pre><code class="language-java">@Bean
+public PebbleViewResolver pebbleViewResolver() {
+   return new PebbleViewResolver();
+}
+</code></pre>
+<p>For reactive app</p>
+<pre><code class="language-java">@Bean
+public PebbleReactiveViewResolver pebbleReactiveViewResolver() {
+   return new PebbleReactiveViewResolver(...)
+}
+</code></pre>
+<p>PLEASE NOTE: you need to change the Loader's prefix and suffix to match the custom ViewResolver's values.</p>
+<h2 id="features">Features</h2>
+<h3 id="access-to-spring-beans">Access to Spring beans</h3>
+<p>Spring beans are available to the template.</p>
+<pre><code class="language-twig">{{ beans.beanName }}
+</code></pre>
+<h3 id="access-to-http-request">Access to http request</h3>
+<p>HttpServletRequest object is available to the template.</p>
+<pre><code class="language-twig">{{ request.contextPath }}
+</code></pre>
+<h3 id="access-to-http-response">Access to http response</h3>
+<p>HttpServletResponse is available to the template.</p>
+<pre><code class="language-twig">{{ response.contentType }}
+</code></pre>
+<h3 id="access-to-http-session">Access to http session</h3>
+<p>HttpSession is available to the template.</p>
+<pre><code class="language-twig">{{ session.maxInactiveInterval }}
+</code></pre>
+<h2 id="spring-extension">Spring extension</h2>
+<p>This extension has many functions for spring validation and the use of message bundle.</p>
+<h3 id="href-function">Href function</h3>
+<p>Function to automatically add the context path to a given url</p>
+<pre><code class="language-twig">&lt;a href=&quot;{{ href('/foobar') }}&quot;&gt;Example&lt;/a&gt;
+</code></pre>
+<h3 id="message-function">Message function</h3>
+<p>It achieves the same thing as the i18n function, but instead, it uses the configured spring messageSource, typically the ResourceBundleMessageSource.</p>
+<pre><code class="language-twig">Label = {{ message('label.test') }}
+Label with params = {{ message('label.test.params', 'params1', 'params2') }}
+</code></pre>
+<h3 id="spring-validations-and-error-messages">Spring validations and error messages</h3>
+<p>6 validations methods and error messages are exposed using spring BindingResult. It needs as a parameter the form name and for a particular field, the field name.</p>
+<p>To check if there's any error:</p>
+<pre><code class="language-twig">{{ hasErrors('formName' }}
+
+{{ hasGlobalErrors('formName' }}
+
+{{ hasFieldErrors('formName', 'fieldName' }}
+</code></pre>
+<p>To output any error:</p>
+<pre><code class="language-twig">{% for err in getAllErrors('formName') %}
+    &lt;p&gt;{{ err }}&lt;/p&gt;
+{% endfor %}
+
+{% for err in getGlobalErrors('formName') %}
+    &lt;p&gt;{{ err }}&lt;/p&gt;
+{% endfor %}
+
+{% for err in getFieldErrors('formName', 'fieldName') %}
+    &lt;p&gt;{{ err }}&lt;/p&gt;
+{% endfor %}
+</code></pre>
+<h3 id="using-pebble-for-other-tasks">Using Pebble for other tasks</h3>
+<p>The main role of this starter is to configure Pebble for generating MVC View results (the typical HTML). You may define more PebbleEngine/Loader beans for other usage patterns (like generating email bodies). Bear in mind that you should not reuse the default Loader for other Engine instances.</p>
+
+                    
+                
+            
+        
+            
+        
+    
+    <!-- end:inject components -->
+
+
+                    </article>
+                </section>
+            
+        </div>
+        <hr>
+
+        <!-- Page Footer -->
+        <div class="inner">
+    <footer id="footer">
+        <div class="clearfix">
+            
+                <div class="float-left">
+                    <a href="https://pebbletemplates.io/wiki/guide/installation" class="button special small pill">
+                        <span>&larr;</span> Installation and Configuration
+                    </a>
+                </div>
+            
+            
+                <div class="float-right">
+                    <a href="https://pebbletemplates.io/wiki/guide/basic-usage" class="button special small pill">
+                        Basic Usage<span>&rarr;</span>
+                    </a>
+                </div>
+            
+        </div>
+    </footer>
+</div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+    <div class="inner">
+
+        <!-- Search -->
+        <section id="search" class="alt">
+            <form data-orchid-search="">
+                <input type="text" name="query" id="query" placeholder="Search"/>
+            </form>
+            <div class="box" id="search-results" data-orchid-search-results style="display: none;">
+                <b>Search Results</b>
+                <ul></ul>
+            </div>
+            <div class="box" id="search-progress" data-orchid-search-progress style="display: none;">
+                <div class="loader">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Menu -->
+        <nav id="siteNav" class="menu">
+            <header class="major">
+                <h2>Pebble Templates</h2>
+            </header>
+            <ul class="top-level">
+                
+                    
+    
+    <li>
+        <a class="subheader">About</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io">Home</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/spring-boot-integration">Spring Boot Integration</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://github.com/PebbleTemplates/spring-petclinic">Spring petclinic example</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/twig-compatibility">Twig Compatibility</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/contributing">Contributing</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/changelog">Changelog</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/book.pdf">Offline Documentation (PDF)</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a href="https://buymeacoffee.com/erbussierel">Buy me a coffee</a>
+    </li>
+    
+
+                
+                    
+    
+    <li>
+        <a class="subheader">Wiki</a>
+    </li>
+    
+
+                
+                    
+    <li>
+        <span class="opener">Guide</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/installation">Installation and Configuration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/spring-boot-integration">Spring Boot Integration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/basic-usage">Basic Usage</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/customize-defaults">Customize Defaults</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/escaping">Escaping</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/extending-pebble">Extending Pebble</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/guide/high-performance">High Performance Techniques</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Tag</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/autoescape">autoescape</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/block">block</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/cache">cache</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/embed">embed</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/extends">extends</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/filter">filter</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/flush">flush</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/for">for</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/from">from</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/if">if</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/import">import</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/include">include</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/macro">macro</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/parallel">parallel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/set">set</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/tag/verbatim">verbatim</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Filter</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/abbreviate">abbreviate</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/abs">abs</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/base64decode">base64decode</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/base64encode">base64encode</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/capitalize">capitalize</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/date">date</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/default">default</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/escape">escape</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/first">first</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/join">join</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/last">last</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/length">length</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/lower">lower</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/numberformat">numberformat</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/raw">raw</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/replace">replace</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/reverse">reverse</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/rsort">rsort</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/sha256">sha256</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/slice">slice</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/sort">sort</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/split">split</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/title">title</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/trim">trim</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/upper">upper</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/filter/urlencode">urlencode</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Function</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/blockFunction">block</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/i18n">i18n</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/max">max</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/min">min</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/parent">parent</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/function/range">range</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Test</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/empty">empty</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/even">even</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/map">map</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/null">null</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/odd">odd</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/test/iterable">iterable</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Operator</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/comparisons">comparisons</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/contains">contains</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/is">is</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/logic">logic</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/math">math</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://pebbletemplates.io/wiki/operator/others">others</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    
+    <li>
+        <a class="subheader">API Docs</a>
+    </li>
+    
+
+                
+            </ul>
+        </nav>
+        
+
+        <!-- Section -->
+        <section>
+            <p class="text-center">
+                Currently 4.1.1.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright text-center">
+                &copy; PebbleTemplates. All rights reserved.
+                <br>
+                Site created with <a href="https://orchid.netlify.com">Orchid </a>,
+                design by <a href="https://html5up.net">HTML5 UP</a>.
+            </p>
+        </footer>
+
+    </div>
+</div>
+</div>
+
+<!-- start:inject scripts -->
+<script src="https://pebbletemplates.io/Editorial/614fa662/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://pebbletemplates.io/Editorial/614fa662/ajax/libs/skel/3.0.1/skel.min.js"></script>
+<script src="https://pebbletemplates.io/Editorial/614fa662/assets/js/editorial_util.js"></script>
+<script src="https://pebbletemplates.io/Editorial/614fa662/assets/js/editorial_main.js"></script>
+<script src="https://pebbletemplates.io/Editorial/614fa662/assets/js/editorial_orchidCustomizations.js"></script>
+<script src="https://pebbletemplates.io/Editorial/614fa662/lunr/lunr.js"></script>
+<script src="https://pebbletemplates.io/Editorial/614fa662/assets/js/orchidSearch.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/prism.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-java.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-twig.min.js"></script>
+<script src="https://pebbletemplates.io/ajax/libs/prism/1.8.4/components/prism-markup.min.js"></script>
+<!-- end:inject scripts -->
+
+</body>
+</html>
