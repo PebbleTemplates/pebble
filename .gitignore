@@ -25,3 +25,6 @@ target/
 
 .gradle/
 build/
+
+*.releaseBackup
+release.properties
