@@ -60,22 +60,26 @@
 </div>
 
 <script>
-(function () {
-	const href = window.location.href.replace(/\/+$/, '');
+(function ($) {
+	$(function () {
+        const href = window.location.href.replace(/\/+$/, '');
 
-	if (!href.includes('/wiki/')) {
-		return;
-	}
+        if (!href.includes('/wiki/')) {
+            return;
+        }
 
-	const a = document.querySelector('#siteNav li li a[href="' + href + '"]');
-	const ul = a.closest('ul');
-	const li = ul.closest('li');
-	const span = li.querySelector(':scope > span');
+        const a = document.querySelector('#siteNav li li a[href="' + href + '"]');
+        const ul = a.closest('ul');
+        const li = ul.closest('li');
+        const span = li.querySelector(':scope > span');
 
-	a.classList.add('active');
-	span.click();
+        a.classList.add('active');
+        a.style.color = '#72A6D0';
+        span.style.color = '#72A6D0';
 
-	a.style.color = '#72A6D0';
-	span.style.color = '#72A6D0';
-}());
+        setTimeout(function () {
+            span.click();
+        }, 0);
+    });
+}(jQuery));
 </script>
