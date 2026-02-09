@@ -135,6 +135,7 @@ public class CoreExtension extends AbstractExtension {
     filters.put("lower", new LowerFilter());
     filters.put("numberformat", new NumberFormatFilter());
     filters.put("slice", new SliceFilter());
+    filters.put("format", new FormatFilter());
     filters.put("sort", new SortFilter());
     filters.put("rsort", new RsortFilter());
     filters.put("reverse", new ReverseFilter());
