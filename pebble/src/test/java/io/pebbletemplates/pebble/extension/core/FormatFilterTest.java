@@ -23,7 +23,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'I need %s and %s and %s'|format('one', 'two') }}";
+        String source = "{{ 'I need %s and %s and %s' | format('one', 'two') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -37,7 +37,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ null|format('test') }}";
+        String source = "{{ null | format('test') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -50,7 +50,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'Just a string with no placeholders'|format() }}";
+        String source = "{{ 'Just a string with no placeholders' | format() }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -63,7 +63,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'Hello %s!'|format('World') }}";
+        String source = "{{ 'Hello %s!' | format('World') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -78,7 +78,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{% set name = 'World' %}{{ 'Hello %s!'|format(name) }}";
+        String source = "{% set name = 'World' %}{{ 'Hello %s!' | format(name) }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -91,7 +91,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'Number: %d, Float: %.2f, String: %s'|format(42, 3.14159, 'test') }}";
+        String source = "{{ 'Number: %d, Float: %.2f, String: %s' | format(42, 3.14159, 'test') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -104,7 +104,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'I only need %s'|format('one', 'two', 'three') }}";
+        String source = "{{ 'I only need %s' | format('one', 'two', 'three') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -117,7 +117,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'Value is: %s'|format(null) }}";
+        String source = "{{ 'Value is: %s' | format(null) }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -130,7 +130,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ '100%% complete: %s'|format('done') }}";
+        String source = "{{ '100%% complete: %s' | format('done') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -143,7 +143,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'Enabled: %s, Disabled: %s'|format(true, false) }}";
+        String source = "{{ 'Enabled: %s, Disabled: %s' | format(true, false) }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -156,7 +156,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ ''|format('ignored') }}";
+        String source = "{{ '' | format('ignored') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
@@ -169,7 +169,7 @@ class FormatFilterTest {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'Count: %d items, Price: $%.2f, Name: %s'|format(5, 19.99, 'Widget') }}";
+        String source = "{{ 'Count: %d items, Price: $%.2f, Name: %s' | format(5, 19.99, 'Widget') }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
