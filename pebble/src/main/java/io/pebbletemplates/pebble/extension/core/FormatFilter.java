@@ -13,9 +13,7 @@ import io.pebbletemplates.pebble.extension.Filter;
 import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -44,10 +42,6 @@ public class FormatFilter implements Filter {
             .mapToObj(i -> args.get(String.valueOf(i)))
             .toArray();
 
-        String s = String.format(input.toString(), formatArgs);
-        return s;
+        return String.format(input.toString(), formatArgs);
     }
-
-
-
 }
