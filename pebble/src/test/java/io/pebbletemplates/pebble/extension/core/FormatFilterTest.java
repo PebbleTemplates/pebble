@@ -46,6 +46,19 @@ class FormatFilterTest {
     }
 
     @Test
+    void itShouldHandleNoArguments() throws PebbleException, IOException {
+        PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+            .strictVariables(false).build();
+
+        String source = "{{ 'Just a string with no placeholders'|format() }}";
+        PebbleTemplate template = pebble.getTemplate(source);
+
+        Writer writer = new StringWriter();
+        template.evaluate(writer, new HashMap<>());
+        assertThat(writer.toString()).isEqualTo("Just a string with no placeholders");
+    }
+
+    @Test
     void itShouldFormatStringWithSingleArgument() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
@@ -58,17 +71,19 @@ class FormatFilterTest {
         assertThat(writer.toString()).isEqualTo("Hello World!");
     }
 
+
+
     @Test
-    void itShouldHandleNoArguments() throws PebbleException, IOException {
+    void itShouldFormatStringWithVariable() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
             .strictVariables(false).build();
 
-        String source = "{{ 'Just a string with no placeholders'|format() }}";
+        String source = "{% set name = 'World' %}{{ 'Hello %s!'|format(name) }}";
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
         template.evaluate(writer, new HashMap<>());
-        assertThat(writer.toString()).isEqualTo("Just a string with no placeholders");
+        assertThat(writer.toString()).isEqualTo("Hello World!");
     }
 
     @Test
