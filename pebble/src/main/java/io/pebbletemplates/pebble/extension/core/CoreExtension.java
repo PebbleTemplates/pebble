@@ -130,6 +130,7 @@ public class CoreExtension extends AbstractExtension {
     filters.put("date", new DateFilter());
     filters.put("default", new DefaultFilter());
     filters.put("first", new FirstFilter());
+    filters.put("format", new FormatFilter());
     filters.put("join", new JoinFilter());
     filters.put("last", new LastFilter());
     filters.put("lower", new LowerFilter());
