@@ -320,7 +320,7 @@ class LogicTest {
 
   @ParameterizedTest
   @MethodSource("binaryOperatorTestData")
-  void testBinaryOperators2(Object left, Object right, String operator, String expected) throws PebbleException, IOException {
+  void testBinaryOperatorsWithStringOperands(Object left, Object right, String operator, String expected) throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
 
