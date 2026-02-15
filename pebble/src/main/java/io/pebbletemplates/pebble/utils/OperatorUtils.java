@@ -143,8 +143,10 @@ public class OperatorUtils {
   private static Object wideningConversionBinaryOperation(Object op1, Object op2,
       Operation operation) {
 
-    Number num1 = (op1 instanceof String) ? Integer.parseInt((String) op1) : (Number) op1;
-    Number num2 = (op2 instanceof String) ? Integer.parseInt((String) op2) : (Number) op2;
+//    Number num1 = (op1 instanceof String) ? Double.parseDouble((String) op1) : (Number) op1;
+//    Number num2 = (op2 instanceof String) ? Double.parseDouble((String) op2) : (Number) op2;
+    Number num1 = toNumber(op1);
+    Number num2 = toNumber(op2);
 
     if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
       return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()),
@@ -288,5 +290,25 @@ public class OperatorUtils {
       default:
         throw new RuntimeException("Bug in OperatorUtils in pebble library");
     }
+  }
+
+  private static Number toNumber(Object obj) {
+    if (obj instanceof Number) {
+      return (Number) obj;
+    }
+
+    if (obj instanceof String) {
+      String str = (String) obj;
+
+      // If it looks like a decimal, parse as double
+      if (str.contains(".") || str.contains("e") || str.contains("E")) {
+        return Double.parseDouble(str);
+      }
+
+      // Otherwise parse as long (can hold larger values than int)
+      return Long.parseLong(str);
+    }
+
+    throw new IllegalArgumentException("Cannot convert to Number: " + obj);
   }
 }

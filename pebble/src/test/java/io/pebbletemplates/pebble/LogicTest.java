@@ -339,6 +339,9 @@ class LogicTest {
     return Stream.of(
         // Addition (+)
         Arguments.of(10, 2, "+", "12"),           // int + int
+        Arguments.of(10L, 2L, "+", "12"),           // long + long
+        Arguments.of(8.5f, 1.4f, "+", "9.9"),           // float + float
+        Arguments.of(8.5d, 1.4d, "+", "9.9"),           // decimal + decimal
         Arguments.of(10, "2", "+", "102"),        // int + string = string concatenation
         Arguments.of("10", 2, "+", "102"),        // string + int = string concatenation
         Arguments.of("10", "2", "+", "102"),      // string + string = string concatenation
@@ -348,6 +351,7 @@ class LogicTest {
         Arguments.of(10, "2", "-", "8"),          // int - string
         Arguments.of("10", 2, "-", "8"),          // string - int
         Arguments.of("10", "2", "-", "8"),        // string - string
+        Arguments.of("9.5", "2", "-", "8"),        // string - string
 
         // Multiplication (*)
         Arguments.of(10, 2, "*", "20"),           // int * int
