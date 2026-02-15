@@ -143,8 +143,6 @@ public class OperatorUtils {
   private static Object wideningConversionBinaryOperation(Object op1, Object op2,
       Operation operation) {
 
-//    Number num1 = (op1 instanceof String) ? Double.parseDouble((String) op1) : (Number) op1;
-//    Number num2 = (op2 instanceof String) ? Double.parseDouble((String) op2) : (Number) op2;
     Number num1 = toNumber(op1);
     Number num2 = toNumber(op2);
 
