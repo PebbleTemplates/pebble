@@ -338,38 +338,162 @@ class LogicTest {
   private static Stream<Arguments> binaryOperatorTestData() {
     return Stream.of(
         // Addition (+)
-        Arguments.of(10, 2, "+", "12"),           // int + int
-        Arguments.of(10L, 2L, "+", "12"),           // long + long
-        Arguments.of(8.5f, 1.4f, "+", "9.9"),           // float + float
-        Arguments.of(8.5d, 1.4d, "+", "9.9"),           // decimal + decimal
-        Arguments.of(10, "2", "+", "102"),        // int + string = string concatenation
-        Arguments.of("10", 2, "+", "102"),        // string + int = string concatenation
-        Arguments.of("10", "2", "+", "102"),      // string + string = string concatenation
+        Arguments.of(10, 2, "+", "12"),            // int + int
+        Arguments.of(10, "2", "+", "102"),         // int + string = string concatenation
+        Arguments.of(10, 2.5f, "+", "12.5"),       // int + float
+        Arguments.of(10, 2.5d, "+", "12.5"),       // int + double
+        Arguments.of(10, 2L, "+", "12"),           // int + long
+
+        Arguments.of("10", 2, "+", "102"),         // string + int = string concatenation
+        Arguments.of("10", "2", "+", "102"),       // string + string = string concatenation
+        Arguments.of("10", 2.5f, "+", "102.5"),    // string + float = string concatenation
+        Arguments.of("10", 2.5d, "+", "102.5"),    // string + double = string concatenation
+        Arguments.of("10", 2L, "+", "102"),        // string + long = string concatenation
+
+        Arguments.of(10.5f, 2, "+", "12.5"),       // float + int
+        Arguments.of(10.5f, "2", "+", "10.52"),    // float + string = string concatenation
+        Arguments.of(10.5f, 2.5f, "+", "13.0"),    // float + float
+        Arguments.of(10.5f, 2.5d, "+", "13.0"),    // float + double
+        Arguments.of(10.5f, 2L, "+", "12.5"),      // float + long
+
+        Arguments.of(10.5d, 2, "+", "12.5"),       // double + int
+        Arguments.of(10.5d, "2", "+", "10.52"),    // double + string = string concatenation
+        Arguments.of(10.5d, 2.5f, "+", "13.0"),    // double + float
+        Arguments.of(10.5d, 2.5d, "+", "13.0"),    // double + double
+        Arguments.of(10.5d, 2L, "+", "12.5"),      // double + long
+
+        Arguments.of(10L, 2, "+", "12"),           // long + int
+        Arguments.of(10L, "2", "+", "102"),        // long + string = string concatenation
+        Arguments.of(10L, 2.5f, "+", "12.5"),      // long + float
+        Arguments.of(10L, 2.5d, "+", "12.5"),      // long + double
+        Arguments.of(10L, 2L, "+", "12"),          // long + long
+
 
         // Subtraction (-)
-        Arguments.of(10, 2, "-", "8"),            // int - int
-        Arguments.of(10, "2", "-", "8"),          // int - string
-        Arguments.of("10", 2, "-", "8"),          // string - int
-        Arguments.of("10", "2", "-", "8"),        // string - string
-        Arguments.of("9.5", "2", "-", "8"),        // string - string
+        Arguments.of(10, 2, "-", "8"),             // int - int
+        Arguments.of(10, "2", "-", "8"),           // int - string
+        Arguments.of(10, 2.5f, "-", "7.5"),        // int - float
+        Arguments.of(10, 2.5d, "-", "7.5"),        // int - double
+        Arguments.of(10, 2L, "-", "8"),            // int - long
+
+        Arguments.of("10", 2, "-", "8"),           // string - int
+        Arguments.of("10", "2", "-", "8"),         // string - string
+        Arguments.of("10", 2.5f, "-", "7.5"),      // string - float
+        Arguments.of("10", 2.5d, "-", "7.5"),      // string - double
+        Arguments.of("10", 2L, "-", "8"),          // string - long
+
+        Arguments.of(10.5f, 2, "-", "8.5"),        // float - int
+        Arguments.of(10.5f, "2", "-", "8.5"),      // float - string
+        Arguments.of(10.5f, 2.5f, "-", "8.0"),     // float - float
+        Arguments.of(10.5f, 2.5d, "-", "8.0"),     // float - double
+        Arguments.of(10.5f, 2L, "-", "8.5"),       // float - long
+
+        Arguments.of(10.5d, 2, "-", "8.5"),        // double - int
+        Arguments.of(10.5d, "2", "-", "8.5"),      // double - string
+        Arguments.of(10.5d, 2.5f, "-", "8.0"),     // double - float
+        Arguments.of(10.5d, 2.5d, "-", "8.0"),     // double - double
+        Arguments.of(10.5d, 2L, "-", "8.5"),       // double - long
+
+        Arguments.of(10L, 2, "-", "8"),            // long - int
+        Arguments.of(10L, "2", "-", "8"),          // long - string
+        Arguments.of(10L, 2.5f, "-", "7.5"),       // long - float
+        Arguments.of(10L, 2.5d, "-", "7.5"),       // long - double
+        Arguments.of(10L, 2L, "-", "8"),           // long - long
 
         // Multiplication (*)
-        Arguments.of(10, 2, "*", "20"),           // int * int
-        Arguments.of(10, "2", "*", "20"),         // int * string
-        Arguments.of("10", 2, "*", "20"),         // string * int
-        Arguments.of("10", "2", "*", "20"),       // string * string
+        Arguments.of(10, 2, "*", "20"),            // int * int
+        Arguments.of(10, "2", "*", "20"),          // int * string
+        Arguments.of(10, 2.5f, "*", "25.0"),       // int * float
+        Arguments.of(10, 2.5d, "*", "25.0"),       // int * double
+        Arguments.of(10, 2L, "*", "20"),           // int * long
+
+        Arguments.of("10", 2, "*", "20"),          // string * int
+        Arguments.of("10", "2", "*", "20"),        // string * string
+        Arguments.of("10", 2.5f, "*", "25.0"),     // string * float
+        Arguments.of("10", 2.5d, "*", "25.0"),     // string * double
+        Arguments.of("10", 2L, "*", "20"),         // string * long
+
+        Arguments.of(10.5f, 2, "*", "21.0"),       // float * int
+        Arguments.of(10.5f, "2", "*", "21.0"),     // float * string
+        Arguments.of(10.5f, 2.5f, "*", "26.25"),   // float * float
+        Arguments.of(10.5f, 2.5d, "*", "26.25"),   // float * double
+        Arguments.of(10.5f, 2L, "*", "21.0"),      // float * long
+
+        Arguments.of(10.5d, 2, "*", "21.0"),       // double * int
+        Arguments.of(10.5d, "2", "*", "21.0"),     // double * string
+        Arguments.of(10.5d, 2.5f, "*", "26.25"),   // double * float
+        Arguments.of(10.5d, 2.5d, "*", "26.25"),   // double * double
+        Arguments.of(10.5d, 2L, "*", "21.0"),      // double * long
+
+        Arguments.of(10L, 2, "*", "20"),           // long * int
+        Arguments.of(10L, "2", "*", "20"),         // long * string
+        Arguments.of(10L, 2.5f, "*", "25.0"),      // long * float
+        Arguments.of(10L, 2.5d, "*", "25.0"),      // long * double
+        Arguments.of(10L, 2L, "*", "20"),          // long * long
+
 
         // Division (/)
-        Arguments.of(10, 2, "/", "5"),            // int / int
-        Arguments.of(10, "2", "/", "5"),          // int / string
-        Arguments.of("10", 2, "/", "5"),          // string / int
-        Arguments.of("10", "2", "/", "5"),        // string / string
+        Arguments.of(10, 2, "/", "5"),             // int / int
+        Arguments.of(10, "2", "/", "5"),           // int / string
+        Arguments.of(10, 2.5f, "/", "4.0"),        // int / float
+        Arguments.of(10, 2.5d, "/", "4.0"),        // int / double
+        Arguments.of(10, 2L, "/", "5"),            // int / long
+
+        Arguments.of("10", 2, "/", "5"),           // string / int
+        Arguments.of("10", "2", "/", "5"),         // string / string
+        Arguments.of("10", 2.5f, "/", "4.0"),      // string / float
+        Arguments.of("10", 2.5d, "/", "4.0"),      // string / double
+        Arguments.of("10", 2L, "/", "5"),          // string / long
+
+        Arguments.of(10.5f, 2, "/", "5.25"),       // float / int
+        Arguments.of(10.5f, "2", "/", "5.25"),     // float / string
+        Arguments.of(10.5f, 2.5f, "/", "4.2"),     // float / float
+        Arguments.of(10.5f, 2.5d, "/", "4.2"),     // float / double
+        Arguments.of(10.5f, 2L, "/", "5.25"),      // float / long
+
+        Arguments.of(10.5d, 2, "/", "5.25"),       // double / int
+        Arguments.of(10.5d, "2", "/", "5.25"),     // double / string
+        Arguments.of(10.5d, 2.5f, "/", "4.2"),     // double / float
+        Arguments.of(10.5d, 2.5d, "/", "4.2"),     // double / double
+        Arguments.of(10.5d, 2L, "/", "5.25"),      // double / long
+
+        Arguments.of(10L, 2, "/", "5"),            // long / int
+        Arguments.of(10L, "2", "/", "5"),          // long / string
+        Arguments.of(10L, 2.5f, "/", "4.0"),       // long / float
+        Arguments.of(10L, 2.5d, "/", "4.0"),       // long / double
+        Arguments.of(10L, 2L, "/", "5"),           // long / long
+
 
         // Modulo (%)
-        Arguments.of(10, 2, "%", "0"),            // int % int
-        Arguments.of(10, "2", "%", "0"),          // int % string
-        Arguments.of("10", 2, "%", "0"),          // string % int
-        Arguments.of("10", "2", "%", "0")         // string % string
+        Arguments.of(10, 2, "%", "0"),             // int % int
+        Arguments.of(10, "2", "%", "0"),           // int % string
+        Arguments.of(10, 2.5f, "%", "0.0"),        // int % float
+        Arguments.of(10, 2.5d, "%", "0.0"),        // int % double
+        Arguments.of(10, 2L, "%", "0"),            // int % long
+
+        Arguments.of("10", 2, "%", "0"),           // string % int
+        Arguments.of("10", "2", "%", "0"),         // string % string
+        Arguments.of("10", 2.5f, "%", "0.0"),      // string % float
+        Arguments.of("10", 2.5d, "%", "0.0"),      // string % double
+        Arguments.of("10", 2L, "%", "0"),          // string % long
+
+        Arguments.of(10.5f, 2, "%", "0.5"),        // float % int
+        Arguments.of(10.5f, "2", "%", "0.5"),      // float % string
+        Arguments.of(10.5f, 2.5f, "%", "0.5"),     // float % float
+        Arguments.of(10.5f, 2.5d, "%", "0.5"),     // float % double
+        Arguments.of(10.5f, 2L, "%", "0.5"),       // float % long
+
+        Arguments.of(10.5d, 2, "%", "0.5"),        // double % int
+        Arguments.of(10.5d, "2", "%", "0.5"),      // double % string
+        Arguments.of(10.5d, 2.5f, "%", "0.5"),     // double % float
+        Arguments.of(10.5d, 2.5d, "%", "0.5"),     // double % double
+        Arguments.of(10.5d, 2L, "%", "0.5"),       // double % long
+
+        Arguments.of(10L, 2, "%", "0"),            // long % int
+        Arguments.of(10L, "2", "%", "0"),          // long % string
+        Arguments.of(10L, 2.5f, "%", "0.0"),       // long % float
+        Arguments.of(10L, 2.5d, "%", "0.0"),       // long % double
+        Arguments.of(10L, 2L, "%", "0")            // long % long
     );
   }
 
