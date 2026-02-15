@@ -14,6 +14,9 @@ import io.pebbletemplates.pebble.template.PebbleTemplate;
 import io.pebbletemplates.pebble.utils.Pair;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,6 +28,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -312,6 +316,57 @@ class LogicTest {
 
     template.evaluate(writer, context);
     assertEquals("200-10", writer.toString());
+  }
+
+  @ParameterizedTest
+  @MethodSource("binaryOperatorTestData")
+  void testBinaryOperators2(Object left, Object right, String operator, String expected) throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    String source = "{{ left " + operator + " right }}";
+    PebbleTemplate template = pebble.getTemplate(source);
+    Map<String, Object> context = new HashMap<>();
+    context.put("left", left);
+    context.put("right", right);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals(expected, writer.toString());
+  }
+
+  private static Stream<Arguments> binaryOperatorTestData() {
+    return Stream.of(
+        // Addition (+)
+        Arguments.of(10, 2, "+", "12"),           // int + int
+        Arguments.of(10, "2", "+", "102"),        // int + string = string concatenation
+        Arguments.of("10", 2, "+", "102"),        // string + int = string concatenation
+        Arguments.of("10", "2", "+", "102"),      // string + string = string concatenation
+
+        // Subtraction (-)
+        Arguments.of(10, 2, "-", "8"),            // int - int
+        Arguments.of(10, "2", "-", "8"),          // int - string
+        Arguments.of("10", 2, "-", "8"),          // string - int
+        Arguments.of("10", "2", "-", "8"),        // string - string
+
+        // Multiplication (*)
+        Arguments.of(10, 2, "*", "20"),           // int * int
+        Arguments.of(10, "2", "*", "20"),         // int * string
+        Arguments.of("10", 2, "*", "20"),         // string * int
+        Arguments.of("10", "2", "*", "20"),       // string * string
+
+        // Division (/)
+        Arguments.of(10, 2, "/", "5"),            // int / int
+        Arguments.of(10, "2", "/", "5"),          // int / string
+        Arguments.of("10", 2, "/", "5"),          // string / int
+        Arguments.of("10", "2", "/", "5"),        // string / string
+
+        // Modulo (%)
+        Arguments.of(10, 2, "%", "0"),            // int % int
+        Arguments.of(10, "2", "%", "0"),          // int % string
+        Arguments.of("10", 2, "%", "0"),          // string % int
+        Arguments.of("10", "2", "%", "0")         // string % string
+    );
   }
 
   /**

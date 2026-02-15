@@ -143,13 +143,8 @@ public class OperatorUtils {
   private static Object wideningConversionBinaryOperation(Object op1, Object op2,
       Operation operation) {
 
-    if (!(op1 instanceof Number) || !(op2 instanceof Number)) {
-      throw new RuntimeException(
-          String.format("invalid operands for mathematical operation [%s]", operation.toString()));
-    }
-
-    Number num1 = (Number) op1;
-    Number num2 = (Number) op2;
+    Number num1 = (op1 instanceof String) ? Integer.parseInt((String) op1) : (Number) op1;
+    Number num2 = (op2 instanceof String) ? Integer.parseInt((String) op2) : (Number) op2;
 
     if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
       return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()),
