@@ -290,7 +290,7 @@ public class OperatorUtils {
     }
   }
 
-  private static Number toNumber(Object obj) {
+  static Number toNumber(Object obj) {
     if (obj instanceof Number) {
       return (Number) obj;
     }
