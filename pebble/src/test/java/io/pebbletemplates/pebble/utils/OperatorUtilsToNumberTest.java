@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +22,7 @@ class OperatorUtilsToNumberTest {
     }
 
     static Stream<Number> numberInputs() {
-        return Stream.of(42, 3.14f, 100L, 2.718281828, 2.5d, (short) 7);
+        return Stream.of(42, 3.14f, 100L, 2.718281828, 2.5d, (short) 7, new BigDecimal(12345678900L));
     }
 
     @ParameterizedTest(name = "String {0} should parse to Double {1}")
