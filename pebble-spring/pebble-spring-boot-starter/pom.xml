@@ -15,7 +15,7 @@
 
   <properties>
     <java.version>17</java.version>
-    <boot.version>4.0.2</boot.version>
+    <boot.version>4.0.3</boot.version>
   </properties>
 
   <dependencies>
