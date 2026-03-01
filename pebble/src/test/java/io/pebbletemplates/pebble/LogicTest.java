@@ -14,6 +14,9 @@ import io.pebbletemplates.pebble.template.PebbleTemplate;
 import io.pebbletemplates.pebble.utils.Pair;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,9 +28,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class LogicTest {
 
@@ -312,6 +317,185 @@ class LogicTest {
 
     template.evaluate(writer, context);
     assertEquals("200-10", writer.toString());
+  }
+
+  @ParameterizedTest
+  @MethodSource("binaryOperatorTestData")
+  void testBinaryOperatorsWithStringOperands(Object left, Object right, String operator, String expected) throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    String source = "{{ left " + operator + " right }}";
+    PebbleTemplate template = pebble.getTemplate(source);
+    Map<String, Object> context = new HashMap<>();
+    context.put("left", left);
+    context.put("right", right);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals(expected, writer.toString());
+  }
+
+  private static Stream<Arguments> binaryOperatorTestData() {
+    return Stream.of(
+        // Addition (+)
+        arguments(10, 2, "+", "12"),            // int + int
+        arguments(10, "2", "+", "102"),         // int + string = string concatenation
+        arguments(10, 2.5f, "+", "12.5"),       // int + float
+        arguments(10, 2.5d, "+", "12.5"),       // int + double
+        arguments(10, 2L, "+", "12"),           // int + long
+
+        arguments("10", 2, "+", "102"),         // string + int = string concatenation
+        arguments("10", "2", "+", "102"),       // string + string = string concatenation
+        arguments("10", 2.5f, "+", "102.5"),    // string + float = string concatenation
+        arguments("10", 2.5d, "+", "102.5"),    // string + double = string concatenation
+        arguments("10", 2L, "+", "102"),        // string + long = string concatenation
+
+        arguments(10.5f, 2, "+", "12.5"),       // float + int
+        arguments(10.5f, "2", "+", "10.52"),    // float + string = string concatenation
+        arguments(10.5f, 2.5f, "+", "13.0"),    // float + float
+        arguments(10.5f, 2.5d, "+", "13.0"),    // float + double
+        arguments(10.5f, 2L, "+", "12.5"),      // float + long
+
+        arguments(10.5d, 2, "+", "12.5"),       // double + int
+        arguments(10.5d, "2", "+", "10.52"),    // double + string = string concatenation
+        arguments(10.5d, 2.5f, "+", "13.0"),    // double + float
+        arguments(10.5d, 2.5d, "+", "13.0"),    // double + double
+        arguments(10.5d, 2L, "+", "12.5"),      // double + long
+
+        arguments(10L, 2, "+", "12"),           // long + int
+        arguments(10L, "2", "+", "102"),        // long + string = string concatenation
+        arguments(10L, 2.5f, "+", "12.5"),      // long + float
+        arguments(10L, 2.5d, "+", "12.5"),      // long + double
+        arguments(10L, 2L, "+", "12"),          // long + long
+
+
+        // Subtraction (-)
+        arguments(10, 2, "-", "8"),             // int - int
+        arguments(10, "2", "-", "8"),           // int - string
+        arguments(10, 2.5f, "-", "7.5"),        // int - float
+        arguments(10, 2.5d, "-", "7.5"),        // int - double
+        arguments(10, 2L, "-", "8"),            // int - long
+
+        arguments("10", 2, "-", "8"),           // string - int
+        arguments("10", "2", "-", "8"),         // string - string
+        arguments("10", 2.5f, "-", "7.5"),      // string - float
+        arguments("10", 2.5d, "-", "7.5"),      // string - double
+        arguments("10", 2L, "-", "8"),          // string - long
+
+        arguments(10.5f, 2, "-", "8.5"),        // float - int
+        arguments(10.5f, "2", "-", "8.5"),      // float - string
+        arguments(10.5f, 2.5f, "-", "8.0"),     // float - float
+        arguments(10.5f, 2.5d, "-", "8.0"),     // float - double
+        arguments(10.5f, 2L, "-", "8.5"),       // float - long
+
+        arguments(10.5d, 2, "-", "8.5"),        // double - int
+        arguments(10.5d, "2", "-", "8.5"),      // double - string
+        arguments(10.5d, 2.5f, "-", "8.0"),     // double - float
+        arguments(10.5d, 2.5d, "-", "8.0"),     // double - double
+        arguments(10.5d, 2L, "-", "8.5"),       // double - long
+
+        arguments(10L, 2, "-", "8"),            // long - int
+        arguments(10L, "2", "-", "8"),          // long - string
+        arguments(10L, 2.5f, "-", "7.5"),       // long - float
+        arguments(10L, 2.5d, "-", "7.5"),       // long - double
+        arguments(10L, 2L, "-", "8"),           // long - long
+
+        // Multiplication (*)
+        arguments(10, 2, "*", "20"),            // int * int
+        arguments(10, "2", "*", "20"),          // int * string
+        arguments(10, 2.5f, "*", "25.0"),       // int * float
+        arguments(10, 2.5d, "*", "25.0"),       // int * double
+        arguments(10, 2L, "*", "20"),           // int * long
+
+        arguments("10", 2, "*", "20"),          // string * int
+        arguments("10", "2", "*", "20"),        // string * string
+        arguments("10", 2.5f, "*", "25.0"),     // string * float
+        arguments("10", 2.5d, "*", "25.0"),     // string * double
+        arguments("10", 2L, "*", "20"),         // string * long
+
+        arguments(10.5f, 2, "*", "21.0"),       // float * int
+        arguments(10.5f, "2", "*", "21.0"),     // float * string
+        arguments(10.5f, 2.5f, "*", "26.25"),   // float * float
+        arguments(10.5f, 2.5d, "*", "26.25"),   // float * double
+        arguments(10.5f, 2L, "*", "21.0"),      // float * long
+
+        arguments(10.5d, 2, "*", "21.0"),       // double * int
+        arguments(10.5d, "2", "*", "21.0"),     // double * string
+        arguments(10.5d, 2.5f, "*", "26.25"),   // double * float
+        arguments(10.5d, 2.5d, "*", "26.25"),   // double * double
+        arguments(10.5d, 2L, "*", "21.0"),      // double * long
+
+        arguments(10L, 2, "*", "20"),           // long * int
+        arguments(10L, "2", "*", "20"),         // long * string
+        arguments(10L, 2.5f, "*", "25.0"),      // long * float
+        arguments(10L, 2.5d, "*", "25.0"),      // long * double
+        arguments(10L, 2L, "*", "20"),          // long * long
+
+
+        // Division (/)
+        arguments(10, 2, "/", "5"),             // int / int
+        arguments(10, "2", "/", "5"),           // int / string
+        arguments(10, 2.5f, "/", "4.0"),        // int / float
+        arguments(10, 2.5d, "/", "4.0"),        // int / double
+        arguments(10, 2L, "/", "5"),            // int / long
+
+        arguments("10", 2, "/", "5"),           // string / int
+        arguments("10", "2", "/", "5"),         // string / string
+        arguments("10", 2.5f, "/", "4.0"),      // string / float
+        arguments("10", 2.5d, "/", "4.0"),      // string / double
+        arguments("10", 2L, "/", "5"),          // string / long
+
+        arguments(10.5f, 2, "/", "5.25"),       // float / int
+        arguments(10.5f, "2", "/", "5.25"),     // float / string
+        arguments(10.5f, 2.5f, "/", "4.2"),     // float / float
+        arguments(10.5f, 2.5d, "/", "4.2"),     // float / double
+        arguments(10.5f, 2L, "/", "5.25"),      // float / long
+
+        arguments(10.5d, 2, "/", "5.25"),       // double / int
+        arguments(10.5d, "2", "/", "5.25"),     // double / string
+        arguments(10.5d, 2.5f, "/", "4.2"),     // double / float
+        arguments(10.5d, 2.5d, "/", "4.2"),     // double / double
+        arguments(10.5d, 2L, "/", "5.25"),      // double / long
+
+        arguments(10L, 2, "/", "5"),            // long / int
+        arguments(10L, "2", "/", "5"),          // long / string
+        arguments(10L, 2.5f, "/", "4.0"),       // long / float
+        arguments(10L, 2.5d, "/", "4.0"),       // long / double
+        arguments(10L, 2L, "/", "5"),           // long / long
+
+
+        // Modulo (%)
+        arguments(10, 2, "%", "0"),             // int % int
+        arguments(10, "2", "%", "0"),           // int % string
+        arguments(10, 2.5f, "%", "0.0"),        // int % float
+        arguments(10, 2.5d, "%", "0.0"),        // int % double
+        arguments(10, 2L, "%", "0"),            // int % long
+
+        arguments("10", 2, "%", "0"),           // string % int
+        arguments("10", "2", "%", "0"),         // string % string
+        arguments("10", 2.5f, "%", "0.0"),      // string % float
+        arguments("10", 2.5d, "%", "0.0"),      // string % double
+        arguments("10", 2L, "%", "0"),          // string % long
+
+        arguments(10.5f, 2, "%", "0.5"),        // float % int
+        arguments(10.5f, "2", "%", "0.5"),      // float % string
+        arguments(10.5f, 2.5f, "%", "0.5"),     // float % float
+        arguments(10.5f, 2.5d, "%", "0.5"),     // float % double
+        arguments(10.5f, 2L, "%", "0.5"),       // float % long
+
+        arguments(10.5d, 2, "%", "0.5"),        // double % int
+        arguments(10.5d, "2", "%", "0.5"),      // double % string
+        arguments(10.5d, 2.5f, "%", "0.5"),     // double % float
+        arguments(10.5d, 2.5d, "%", "0.5"),     // double % double
+        arguments(10.5d, 2L, "%", "0.5"),       // double % long
+
+        arguments(10L, 2, "%", "0"),            // long % int
+        arguments(10L, "2", "%", "0"),          // long % string
+        arguments(10L, 2.5f, "%", "0.0"),       // long % float
+        arguments(10L, 2.5d, "%", "0.0"),       // long % double
+        arguments(10L, 2L, "%", "0")            // long % long
+    );
   }
 
   /**
