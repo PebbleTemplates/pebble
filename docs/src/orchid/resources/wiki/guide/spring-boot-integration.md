@@ -191,11 +191,11 @@ Label with params = {{ message('label.test.params', 'params1', 'params2') }}
 To check if there's any error:
 ```twig
 {% verbatim %}
-{{ hasErrors('formName' }}
+{{ hasErrors('formName') }}
 
-{{ hasGlobalErrors('formName' }}
+{{ hasGlobalErrors('formName') }}
 
-{{ hasFieldErrors('formName', 'fieldName' }}
+{{ hasFieldErrors('formName', 'fieldName') }}
 {%- endverbatim %}
 ```
 
