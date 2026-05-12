@@ -16,7 +16,7 @@
 
   <properties>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
-    <slf4j.version>2.0.17</slf4j.version>
+    <slf4j.version>2.0.18</slf4j.version>
     <caffeine.version>3.2.4</caffeine.version>
     <jakarata.servlet-api.version>6.1.0</jakarata.servlet-api.version>
     <servlet-api.version>2.5</servlet-api.version>
