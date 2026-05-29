@@ -12,6 +12,7 @@ import io.pebbletemplates.pebble.extension.escaper.SafeString;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -117,12 +118,13 @@ public class OperatorUtils {
   @Deprecated
   @SuppressWarnings({"unchecked", "rawtypes"})
   private static Object addToList(List<?> op1, Object op2) {
+    List<Object> result = new ArrayList<>(op1);
     if (op2 instanceof Collection) {
-      op1.addAll((Collection) op2);
+      result.addAll((Collection) op2);
     } else {
-      ((List<Object>) op1).add(op2);
+      result.add(op2);
     }
-    return op1;
+    return result;
   }
 
   /**
@@ -132,12 +134,13 @@ public class OperatorUtils {
   @Deprecated
   @SuppressWarnings({"unchecked", "rawtypes"})
   private static Object subtractFromList(List<?> op1, Object op2) {
+    List<Object> result = new ArrayList<>(op1);
     if (op2 instanceof Collection) {
-      op1.removeAll((Collection) op2);
+      result.removeAll((Collection) op2);
     } else {
-      op1.remove(op2);
+      result.remove(op2);
     }
-    return op1;
+    return result;
   }
 
   private static Object wideningConversionBinaryOperation(Object op1, Object op2,
