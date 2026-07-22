@@ -14,6 +14,11 @@ class MemberCacheUtils {
   private final ConcurrentHashMap<MemberCacheKey, Member> memberCache = new ConcurrentHashMap<>(100,
           0.9f, 1);
 
+  // REFACTOR (Duplicate Code): the get/is/has accessor attempts were three
+  // near-identical blocks. Extracting the prefixes into a constant lets us try
+  // them in a single loop and makes adding a new convention a one-line change.
+  private static final String[] ACCESSOR_PREFIXES = {"get", "is", "has"};
+
   Member getMember(Object instance, String attributeName, Class<?>[] argumentTypes) {
     return this.memberCache.get(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes));
   }
@@ -68,19 +73,16 @@ class MemberCacheUtils {
         }
       }
 
-      // check get method
+      // REFACTOR (Duplicate Code): replaced the three copy-pasted get/is/has
+      // blocks with a single loop over ACCESSOR_PREFIXES. Same order, same
+      // behaviour, no repetition.
       if (result == null) {
-        result = this.findMethod(object, type, "get" + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
-      }
-
-      // check is method
-      if (result == null) {
-        result = this.findMethod(object, type, "is" + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
-      }
-
-      // check has method
-      if (result == null) {
-        result = this.findMethod(object, type, "has" + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
+        for (String prefix : ACCESSOR_PREFIXES) {
+          result = this.findMethod(object, type, prefix + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
+          if (result != null) {
+            break;
+          }
+        }
       }
 
       if (result != null) {
@@ -94,12 +96,39 @@ class MemberCacheUtils {
   /**
    * Finds an appropriate method by comparing if parameter types are compatible. This is more
    * relaxed than class.getMethod.
+   *
+   * REFACTOR (Long Method): the original findMethod was ~55 lines and mixed two
+   * distinct matching strategies (perfect match and greedy match) in one body.
+   * The two inner loops were extracted into findPerfectMatch and findGreedyMatch,
+   * shrinking this method to its high-level control flow. verifyUnsafeMethod is
+   * still called at the exact same point as before, so behaviour is unchanged.
    */
   private Method findMethod(Object object, Class<?> clazz, String name, Class<?>[] requiredTypes,
                             String filename, int lineNumber, EvaluationOptions evaluationOptions) {
     List<Method> candidates = this.getCandidates(clazz, name, requiredTypes);
 
-    // perfect match
+    Method bestMatch = this.findPerfectMatch(candidates, requiredTypes);
+    if (bestMatch != null) {
+      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, bestMatch);
+      return bestMatch;
+    }
+
+    if (evaluationOptions.isGreedyMatchMethod()) {
+      Method greedyMatch = this.findGreedyMatch(candidates, requiredTypes);
+      if (greedyMatch != null) {
+        this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, greedyMatch);
+        return greedyMatch;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Finds the most specific candidate whose parameter types are assignable from
+   * the required argument types. Extracted from findMethod (Long Method fix).
+   */
+  private Method findPerfectMatch(List<Method> candidates, Class<?>[] requiredTypes) {
     Method bestMatch = null;
     for (Method candidate : candidates) {
       // check if method is even compatible
@@ -129,30 +158,29 @@ class MemberCacheUtils {
         }
       }
     }
-    if (bestMatch != null) {
-      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, bestMatch);
-      return bestMatch;
-    }
+    return bestMatch;
+  }
 
-    // greedy match
-    if (evaluationOptions.isGreedyMatchMethod()) {
-      for (Method candidate : candidates) {
-        boolean compatibleTypes = true;
-        Class<?>[] types = candidate.getParameterTypes();
-        for (int i = 0; i < types.length; i++) {
-          if (requiredTypes[i] != null && !this.isCompatibleType(types[i], requiredTypes[i])) {
-            compatibleTypes = false;
-            break;
-          }
-        }
-
-        if (compatibleTypes) {
-          this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, candidate);
-          return candidate;
+  /**
+   * Finds the first candidate compatible under relaxed numeric matching. Only
+   * used when greedy method matching is enabled. Extracted from findMethod
+   * (Long Method fix).
+   */
+  private Method findGreedyMatch(List<Method> candidates, Class<?>[] requiredTypes) {
+    for (Method candidate : candidates) {
+      boolean compatibleTypes = true;
+      Class<?>[] types = candidate.getParameterTypes();
+      for (int i = 0; i < types.length; i++) {
+        if (requiredTypes[i] != null && !this.isCompatibleType(types[i], requiredTypes[i])) {
+          compatibleTypes = false;
+          break;
         }
       }
-    }
 
+      if (compatibleTypes) {
+        return candidate;
+      }
+    }
     return null;
   }
 
@@ -216,7 +244,11 @@ class MemberCacheUtils {
     return Number.class.isAssignableFrom(widenType) && Number.class.isAssignableFrom(type2);
   }
 
-  private class MemberCacheKey {
+  // REFACTOR (Inappropriate Intimacy / hidden coupling): MemberCacheKey was a
+  // non-static inner class, so every cached key silently held a reference to the
+  // enclosing MemberCacheUtils instance even though it never uses it. Marking it
+  // static removes that hidden reference from every key stored in the cache.
+  private static class MemberCacheKey {
 
     private final Class<?> clazz;
     private final String attributeName;
