@@ -11,12 +11,15 @@ package io.pebbletemplates.pebble.extension;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
 public interface Filter extends NamedArguments {
 
-  Object apply(Object input, Map<String, Object> args, PebbleTemplate self,
-               EvaluationContext context, int
-      lineNumber) throws PebbleException;
+  @Nullable
+  Object apply(@Nullable Object input, @Nullable Map<@Nullable String, @Nullable Object> args, @NonNull PebbleTemplate self,
+               @NonNull EvaluationContext context, int
+                 lineNumber) throws PebbleException;
 }
