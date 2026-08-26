@@ -1161,8 +1161,8 @@ class CoreFiltersTest {
         .getTemplate("{{ 'abcdefghijklmnopqrstuvwxyz' | slice(from, to) }}");
 
     Map<String, Object> context = new HashMap<>();
-    context.put("from", new Integer(2));
-    context.put("to", new Integer(4));
+    context.put("from", 2);
+    context.put("to", 4);
 
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
