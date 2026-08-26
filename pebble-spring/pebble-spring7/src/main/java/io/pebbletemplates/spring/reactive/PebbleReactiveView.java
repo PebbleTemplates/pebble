@@ -8,7 +8,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.server.ServerWebExchange;
@@ -45,7 +45,7 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
   protected Mono<Void> renderInternal(Map<String, Object> renderAttributes,
                                       MediaType contentType,
                                       ServerWebExchange exchange) {
-    DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer();
+    DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer(1024);
     if (this.logger.isDebugEnabled()) {
       this.logger.debug(exchange.getLogPrefix() + "Rendering [" + this.getUrl() + "]");
     }
