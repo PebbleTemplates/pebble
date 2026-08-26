@@ -19,7 +19,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -80,8 +80,8 @@ class PebbleTemplatesHints implements RuntimeHintsRegistrar {
         .registerType(TypeReference.of(UnaryMinusExpression.class),
             hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
         .registerType(TypeReference.of(ForNode.LoopVariables.class),
-            hint -> hint.withMembers(MemberCategory.DECLARED_FIELDS,
-                MemberCategory.DECLARED_CLASSES, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+            hint -> hint.withMembers(MemberCategory.ACCESS_DECLARED_FIELDS,
+                MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                 MemberCategory.INVOKE_DECLARED_METHODS));
   }
 }
