@@ -519,12 +519,13 @@ public final class LexerImpl implements Lexer {
     // remove first and last quotation marks
     str = str.substring(1, str.length() - 1);
 
-    // remove backslashes used to escape inner quotation marks
+    // unescape quotation marks before backslashes so \\' stays backslash + quote
     if (quotationType == '\'') {
-      str = str.replaceAll("\\\\(')", "$1");
+      str = str.replace("\\'", "'");
     } else if (quotationType == '"') {
-      str = str.replaceAll("\\\\(\")", "$1");
+      str = str.replace("\\\"", "\"");
     }
+    str = str.replace("\\\\", "\\");
     return str;
   }
 
