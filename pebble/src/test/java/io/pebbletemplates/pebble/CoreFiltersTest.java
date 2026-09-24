@@ -1409,6 +1409,22 @@ class CoreFiltersTest {
     assertEquals("I like foo and bar.", writer.toString());
   }
 
+  @Test
+  void shouldReplaceSingleBackslashInString() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble
+        .getLiteralTemplate("{{ name | replace({ '\\\\':'' }) | raw }}");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("name", "a\\\\\\b\\\\c\\");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("abc", writer.toString());
+  }
+
   /**
    * Tests {@link Base64EncoderFilter} if the base64 encoding filter is working for a string value, a string constant, null.
    */

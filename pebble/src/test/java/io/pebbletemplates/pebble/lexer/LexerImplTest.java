@@ -460,5 +460,35 @@ class LexerImplTest {
 	assertThat(tokenStream.peek(i).getType()).isEqualTo(Token.Type.EOF);
 	assertThat(tokenStream.peek(i++).getValue()).isNull(); 
   }
-  
+
+  @Test
+  void testPlainStringUnescapesBackslash() {
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader("{{ '\\\\' }}");
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    assertThat(tokenStream.peek(1).getType()).isEqualTo(Token.Type.STRING);
+    assertThat(tokenStream.peek(1).getValue()).isEqualTo("\\");
+  }
+
+  @Test
+  void testPlainStringUnescapesQuoteAndBackslash() {
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader("{{ '\\'' }}");
+
+    TokenStream tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    assertThat(tokenStream.peek(1).getType()).isEqualTo(Token.Type.STRING);
+    assertThat(tokenStream.peek(1).getValue()).isEqualTo("'");
+
+    loader = new StringLoader();
+    templateReader = loader.getReader("{{ '\\\\\\'' }}");
+
+    tokenStream = this.lexer.tokenize(templateReader, this.TEMPLATE_NAME);
+
+    assertThat(tokenStream.peek(1).getType()).isEqualTo(Token.Type.STRING);
+    assertThat(tokenStream.peek(1).getValue()).isEqualTo("\\'");
+  }
+
 }
