@@ -8,9 +8,13 @@
  */
 package io.pebbletemplates.pebble.extension;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 
 public interface NamedArguments {
 
-  List<String> getArgumentNames();
+  @Nullable
+  List<@NonNull String> getArgumentNames();
 }
