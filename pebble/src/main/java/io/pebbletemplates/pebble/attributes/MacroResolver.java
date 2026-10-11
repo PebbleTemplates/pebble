@@ -1,8 +1,10 @@
 package io.pebbletemplates.pebble.attributes;
 
+import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.node.ArgumentsNode;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;
 import io.pebbletemplates.pebble.template.MacroAttributeProvider;
+import java.util.Objects;
 
 class MacroResolver implements AttributeResolver {
 
@@ -21,7 +23,16 @@ class MacroResolver implements AttributeResolver {
       int lineNumber) {
     MacroAttributeProvider macroAttributeProvider = (MacroAttributeProvider) instance;
     String attributeName = String.valueOf(attributeNameValue);
-    return new ResolvedAttribute(
-        macroAttributeProvider.macro(context, attributeName, args, false, lineNumber));
+    try {
+      return new ResolvedAttribute(
+          macroAttributeProvider.macro(context, attributeName, args, false, lineNumber));
+    } catch (PebbleException exception) {
+      if (Integer.valueOf(lineNumber).equals(exception.getLineNumber())
+          && Objects.equals(filename, exception.getFileName())) {
+        throw exception;
+      }
+      throw new PebbleException(exception, exception.getPebbleMessage(),
+          lineNumber, filename);
+    }
   }
 }

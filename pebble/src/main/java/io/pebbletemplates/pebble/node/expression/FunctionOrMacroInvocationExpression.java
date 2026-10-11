@@ -8,6 +8,7 @@
  */
 package io.pebbletemplates.pebble.node.expression;
 
+import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.Function;
 import io.pebbletemplates.pebble.extension.NodeVisitor;
 import io.pebbletemplates.pebble.node.ArgumentsNode;
@@ -15,6 +16,7 @@ import io.pebbletemplates.pebble.template.EvaluationContextImpl;
 import io.pebbletemplates.pebble.template.PebbleTemplateImpl;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class FunctionOrMacroInvocationExpression implements Expression<Object> {
 
@@ -37,7 +39,16 @@ public class FunctionOrMacroInvocationExpression implements Expression<Object> {
     if (function != null) {
       return this.applyFunction(self, context, function, this.args);
     }
-    return self.macro(context, this.functionName, this.args, false, this.lineNumber);
+    try {
+      return self.macro(context, this.functionName, this.args, false, this.lineNumber);
+    } catch (PebbleException exception) {
+      if (Integer.valueOf(this.lineNumber).equals(exception.getLineNumber())
+          && Objects.equals(self.getName(), exception.getFileName())) {
+        throw exception;
+      }
+      throw new PebbleException(exception, exception.getPebbleMessage(),
+          this.lineNumber, self.getName());
+    }
   }
 
   private Object applyFunction(PebbleTemplateImpl self, EvaluationContextImpl context,
