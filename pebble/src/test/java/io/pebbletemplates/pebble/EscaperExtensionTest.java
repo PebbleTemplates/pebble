@@ -8,6 +8,7 @@
  */
 package io.pebbletemplates.pebble;
 
+import io.pebbletemplates.pebble.error.ParserException;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.AbstractExtension;
 import io.pebbletemplates.pebble.extension.Function;
@@ -27,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -174,6 +177,25 @@ class EscaperExtensionTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("&lt;br /&gt;&lt;br /&gt;<br />", writer.toString());
+  }
+
+  /**
+   * An autoescape block without its closing tag should report a parser error instead of an index error.
+   */
+  @Test
+  void testAutoescapeTokenWithoutEndTag() {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    String source = "This is a test\n{% autoescape false %}\nthis is still a test\n";
+
+    ParserException exception = catchThrowableOfType(ParserException.class,
+        () -> pebble.getTemplate(source));
+
+    assertThat(exception).isNotNull();
+    assertThat(exception.getPebbleMessage()).isEqualTo(
+        "endautoescape tag should be present with autoescape tag starting line number ");
+    assertThat(exception.getLineNumber()).isEqualTo(2);
+    assertThat(exception.getFileName()).isEqualTo(source);
   }
 
   @Test
