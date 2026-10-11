@@ -8,6 +8,7 @@
  */
 package io.pebbletemplates.pebble.tokenParser;
 
+import io.pebbletemplates.pebble.error.ParserException;
 import io.pebbletemplates.pebble.lexer.Token;
 import io.pebbletemplates.pebble.lexer.TokenStream;
 import io.pebbletemplates.pebble.node.AutoEscapeNode;
@@ -44,6 +45,14 @@ public class AutoEscapeTokenParser implements TokenParser {
 
     // now we parse the block body
     BodyNode body = parser.subparse(tkn -> tkn.test(Token.Type.NAME, "endautoescape"));
+
+    // Check that the body ended with the expected closing tag before consuming it.
+    Token endautoescape = stream.current();
+    if (!endautoescape.test(Token.Type.NAME, "endautoescape")) {
+      throw new ParserException(null,
+          "endautoescape tag should be present with autoescape tag starting line number ",
+          token.getLineNumber(), stream.getFilename());
+    }
 
     // skip the 'endautoescape' token
     stream.next();
