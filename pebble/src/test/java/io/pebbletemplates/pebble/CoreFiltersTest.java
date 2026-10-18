@@ -552,6 +552,16 @@ class CoreFiltersTest {
   }
 
   @Test
+  void testAbbreviateWithLengthBeyondIntRange() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate("{{ 'hello' | abbreviate(4294967301) }}");
+    Writer writer = new StringWriter();
+    template.evaluate(writer);
+    assertEquals("hello", writer.toString());
+  }
+
+  @Test
   void testCapitalize() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -1143,6 +1153,22 @@ class CoreFiltersTest {
           .strictVariables(false).build();
 
       PebbleTemplate template = pebble.getTemplate("{{ name | slice(-1) }}");
+
+      Map<String, Object> context = new HashMap<>();
+      context.put("name", "Alex");
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
+  @Test
+  void testSliceWithIndexBeyondIntRange() throws PebbleException, IOException {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ name | slice(4294967297) }}");
 
       Map<String, Object> context = new HashMap<>();
       context.put("name", "Alex");

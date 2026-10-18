@@ -122,4 +122,23 @@ class SplitFilterTest {
 
     assertEquals("onetwothreefourfive", writer.toString());
   }
+
+  @Test
+  void whenSplit_givenLimitBeyondIntRange_thenSplitsFully() throws IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble
+        .getTemplate("{% set foo = \"one,two,three\" | split(',',4294967297) %}"
+            + "{% for var in foo %}"
+            + "{{ var }}"
+            + "{% endfor %}");
+
+    Map<String, Object> context = new HashMap<>();
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("onetwothree", writer.toString());
+  }
 }

@@ -37,7 +37,7 @@ public class AbbreviateFilter implements Filter {
       return null;
     }
     String value = (String) input;
-    int maxWidth = ((Long) args.get("length")).intValue();
+    long maxWidth = (Long) args.get("length");
 
     if (maxWidth < 0) {
       throw new PebbleException(null,
@@ -55,9 +55,9 @@ public class AbbreviateFilter implements Filter {
       return value;
     }
     if (maxWidth <= 3) {
-      return value.substring(0, maxWidth);
+      return value.substring(0, (int) maxWidth);
     }
-    return value.substring(0, Math.max(0, maxWidth - 3)) + ellipsis;
+    return value.substring(0, (int) Math.max(0, maxWidth - 3)) + ellipsis;
   }
 
 }
