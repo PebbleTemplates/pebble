@@ -11,6 +11,7 @@ package io.pebbletemplates.pebble.utils;
 import io.pebbletemplates.pebble.extension.escaper.SafeString;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -149,10 +150,9 @@ public class OperatorUtils {
     Number num1 = toNumber(op1);
     Number num2 = toNumber(op2);
 
-    if (num1 instanceof BigDecimal || num2 instanceof BigDecimal) {
-      return bigDecimalOperation(BigDecimal.valueOf(num1.doubleValue()),
-          BigDecimal.valueOf(num2.doubleValue()),
-          operation);
+    if (num1 instanceof BigDecimal || num2 instanceof BigDecimal
+        || num1 instanceof BigInteger || num2 instanceof BigInteger) {
+      return bigDecimalOperation(toBigDecimal(num1), toBigDecimal(num2), operation);
     }
 
     if (num1 instanceof Double || num2 instanceof Double) {
@@ -187,7 +187,30 @@ public class OperatorUtils {
               .format("invalid operands for mathematical comparison [%s]", comparison.toString()));
     }
 
-    return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
+    if (num1 instanceof BigDecimal || num1 instanceof BigInteger
+        || num2 instanceof BigDecimal || num2 instanceof BigInteger) {
+      return bigDecimalComparison(toBigDecimal(num1), toBigDecimal(num2), comparison);
+    }
+
+    if (num1 instanceof Double || num1 instanceof Float
+        || num2 instanceof Double || num2 instanceof Float) {
+      return doubleComparison(num1.doubleValue(), num2.doubleValue(), comparison);
+    }
+
+    return longComparison(num1.longValue(), num2.longValue(), comparison);
+  }
+
+  private static BigDecimal toBigDecimal(Number num) {
+    if (num instanceof BigDecimal) {
+      return (BigDecimal) num;
+    }
+    if (num instanceof BigInteger) {
+      return new BigDecimal((BigInteger) num);
+    }
+    if (num instanceof Double || num instanceof Float) {
+      return BigDecimal.valueOf(num.doubleValue());
+    }
+    return BigDecimal.valueOf(num.longValue());
   }
 
   private static double doubleOperation(double op1, double op2, Operation operation) {
@@ -219,6 +242,42 @@ public class OperatorUtils {
         return op1 <= op2;
       case EQUALS:
         return op1 == op2;
+      default:
+        throw new RuntimeException("Bug in OperatorUtils in pebble library");
+    }
+  }
+
+  private static boolean longComparison(long op1, long op2, Comparison comparison) {
+    switch (comparison) {
+      case GREATER_THAN:
+        return op1 > op2;
+      case GREATER_THAN_EQUALS:
+        return op1 >= op2;
+      case LESS_THAN:
+        return op1 < op2;
+      case LESS_THAN_EQUALS:
+        return op1 <= op2;
+      case EQUALS:
+        return op1 == op2;
+      default:
+        throw new RuntimeException("Bug in OperatorUtils in pebble library");
+    }
+  }
+
+  private static boolean bigDecimalComparison(BigDecimal op1, BigDecimal op2,
+      Comparison comparison) {
+    int result = op1.compareTo(op2);
+    switch (comparison) {
+      case GREATER_THAN:
+        return result > 0;
+      case GREATER_THAN_EQUALS:
+        return result >= 0;
+      case LESS_THAN:
+        return result < 0;
+      case LESS_THAN_EQUALS:
+        return result <= 0;
+      case EQUALS:
+        return result == 0;
       default:
         throw new RuntimeException("Bug in OperatorUtils in pebble library");
     }
