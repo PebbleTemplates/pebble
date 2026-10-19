@@ -39,7 +39,13 @@ public class SplitFilter implements Filter {
     if (limit == null) {
       return ((String) input).split(delimiter);
     }
-    return ((String) input).split(delimiter, limit.intValue());
+    long limitValue = limit.longValue();
+    if (limitValue > Integer.MAX_VALUE) {
+      limitValue = Integer.MAX_VALUE;
+    } else if (limitValue < Integer.MIN_VALUE) {
+      limitValue = Integer.MIN_VALUE;
+    }
+    return ((String) input).split(delimiter, (int) limitValue);
   }
 
   @Override

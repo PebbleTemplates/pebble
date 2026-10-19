@@ -51,7 +51,7 @@ public class SliceFilter implements Filter {
       throw new PebbleException(null, "Argument fromIndex must be a number. Actual type: "
           + argFrom.getClass().getName(), lineNumber, self.getName());
     }
-    int from = ((Number) argFrom).intValue();
+    long from = ((Number) argFrom).longValue();
     if (from < 0) {
       throw new IllegalArgumentException("fromIndex must be greater than 0");
     }
@@ -78,10 +78,10 @@ public class SliceFilter implements Filter {
           "Slice filter can only be applied to String, List and array inputs. Actual type was: "
               + input.getClass().getName(), lineNumber, self.getName());
     }
-    int to;
+    long to;
 
     if (argTo != null) {
-      to = ((Number) argTo).intValue();
+      to = ((Number) argTo).longValue();
       if (to > length) {
         throw new PebbleException(null, "toIndex must be smaller than input size: " + length,
             lineNumber, self.getName());
@@ -93,17 +93,22 @@ public class SliceFilter implements Filter {
       to = length;
     }
 
+    if (from > length) {
+      throw new PebbleException(null, "fromIndex must be smaller than input size: " + length,
+          lineNumber, self.getName());
+    }
+
     // slice input
     if (input instanceof List) {
       List<?> value = (List<?>) input;
       // FIXME maybe sublist() is not the best option due to its
       // implementation?
-      return value.subList(from, to);
+      return value.subList((int) from, (int) to);
     } else if (input.getClass().isArray()) {
-      return sliceArray(input, from, to);
+      return sliceArray(input, (int) from, (int) to);
     } else {
       String value = (String) input;
-      return value.substring(from, to);
+      return value.substring((int) from, (int) to);
     }
   }
 
