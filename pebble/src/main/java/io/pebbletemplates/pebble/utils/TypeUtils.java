@@ -32,7 +32,7 @@ public class TypeUtils {
     if (value instanceof Number) {
       Number number = (Number) value;
       if (type == int.class || type == Integer.class) {
-        return (T) (Integer) number.intValue();
+        return (T) (Integer) checkedNarrow(number, Integer.MIN_VALUE, Integer.MAX_VALUE);
       }
       if (type == long.class || type == Long.class) {
         return (T) (Long) number.longValue();
@@ -44,10 +44,10 @@ public class TypeUtils {
         return (T) (Float) number.floatValue();
       }
       if (type == byte.class || type == Byte.class) {
-        return (T) (Byte) number.byteValue();
+        return (T) (Byte) checkedNarrow(number, Byte.MIN_VALUE, Byte.MAX_VALUE).byteValue();
       }
       if (type == short.class || type == Short.class) {
-        return (T) (Short) number.shortValue();
+        return (T) (Short) checkedNarrow(number, Short.MIN_VALUE, Short.MAX_VALUE).shortValue();
       }
       if (type == BigInteger.class) {
         return (T) BigInteger.valueOf(number.longValue());
@@ -70,5 +70,26 @@ public class TypeUtils {
       }
     }
     return (T) value;
+  }
+
+  /**
+   * Narrows a Number to the inclusive range [min, max] of a smaller integral
+   * type, throwing instead of silently wrapping when the value does not fit.
+   */
+  private static Integer checkedNarrow(Number number, long min, long max) {
+    if (number instanceof BigInteger) {
+      long longValue;
+      try {
+        longValue = ((BigInteger) number).longValueExact();
+      } catch (ArithmeticException e) {
+        throw new IllegalArgumentException("number out of range: " + number);
+      }
+      return checkedNarrow(Long.valueOf(longValue), min, max);
+    }
+    long longValue = number.longValue();
+    if (longValue < min || longValue > max) {
+      throw new IllegalArgumentException("number out of range for narrow conversion: " + number);
+    }
+    return Integer.valueOf((int) longValue);
   }
 }
