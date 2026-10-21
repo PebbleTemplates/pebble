@@ -10,11 +10,12 @@ import io.pebbletemplates.pebble.utils.Pair;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -128,15 +129,11 @@ class EmbedTagTest {
 
   private String getResource(String filename) {
     try {
-      File file = new File(
-          this
-              .getClass()
-              .getClassLoader()
-              .getResource(filename)
-              .getFile()
-      );
-
-      return new String(Files.readAllBytes(file.toPath()));
+      URL url = this.getClass().getClassLoader().getResource(filename);
+      if (url == null) {
+        return null;
+      }
+      return new String(Files.readAllBytes(Paths.get(url.toURI())));
     } catch (Exception e) {
       return null;
     }
