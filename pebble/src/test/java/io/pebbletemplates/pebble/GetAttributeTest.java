@@ -1146,4 +1146,30 @@ class GetAttributeTest {
 
     assertEquals("hello Steve", result);
   }
+  @Test
+  void testMethodsNamedLikeOperators() throws PebbleException, IOException {
+    // a method name may reuse an operator word, e.g. `group.contains("x")` or
+    // `group.is()` - the infix `contains` operator must still work too.
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(true).build();
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("group", new BeanWithOperatorNamedMethods());
+
+    Writer writer = new StringWriter();
+    pebble.getTemplate("{{ group.contains(\"abc\") }} {{ group.is() }} {{ \"abc\" contains \"b\" }}")
+        .evaluate(writer, context);
+    assertEquals("true true true", writer.toString());
+  }
+
+  public class BeanWithOperatorNamedMethods {
+
+    public boolean contains(String value) {
+      return "abc".equals(value);
+    }
+
+    public boolean is() {
+      return true;
+    }
+  }
 }

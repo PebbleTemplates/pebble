@@ -499,7 +499,14 @@ public class ExpressionParser {
       // skip over the '.' token
       stream.next();
 
-      Token token = stream.expect(Token.Type.NAME);
+      // attribute and method names may reuse operator words, e.g.
+      // `group.contains("x")` or `group.is()`
+      Token token = stream.current();
+      if (token.test(Token.Type.OPERATOR)) {
+        stream.next();
+      } else {
+        token = stream.expect(Token.Type.NAME);
+      }
 
       ArgumentsNode args = null;
       if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
