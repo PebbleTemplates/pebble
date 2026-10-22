@@ -511,11 +511,6 @@ public class ExpressionParser {
       ArgumentsNode args = null;
       if (stream.current().test(Token.Type.PUNCTUATION, "(")) {
         args = this.parseArguments();
-        if (!args.getNamedArgs().isEmpty()) {
-          throw new ParserException(null, "Can not use named arguments when calling a bean method",
-              stream
-                  .current().getLineNumber(), stream.getFilename());
-        }
       }
 
       node = new GetAttributeExpression(node,
