@@ -17,6 +17,7 @@ import io.pebbletemplates.pebble.attributes.ResolvedAttribute;
 import io.pebbletemplates.pebble.node.ArgumentsNode;
 import io.pebbletemplates.pebble.node.PositionalArgumentNode;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;
+import io.pebbletemplates.pebble.template.MacroAttributeProvider;
 import io.pebbletemplates.pebble.template.PebbleTemplateImpl;
 
 import java.util.List;
@@ -60,6 +61,12 @@ public class GetAttributeExpression implements Expression<Object> {
   public Object evaluate(PebbleTemplateImpl self, EvaluationContextImpl context)
       throws PebbleException {
     final Object object = this.node.evaluate(self, context);
+    // The receiver is only known at evaluation time: imported macros accept named arguments.
+    if (this.args != null && this.args.getNamedArgs() != null && !this.args.getNamedArgs().isEmpty()
+        && !(object instanceof MacroAttributeProvider)) {
+      throw new PebbleException(null, "Can not use named arguments when calling a bean method",
+          this.lineNumber, this.filename);
+    }
     final Object attributeNameValue = this.attributeNameExpression.evaluate(self, context);
     final String attributeName = String.valueOf(attributeNameValue);
     final Object[] argumentValues = this.getArgumentValues(self, context);
