@@ -530,14 +530,9 @@ class GetAttributeTest {
     Map<String, Object> context = new HashMap<>();
     context.put("object", new BeanWithMethodsThatHaveArguments());
 
-    try {
-      Writer writer = new StringWriter();
-      template.evaluate(writer, context);
-      fail("expected PebbleException");
-    } catch (PebbleException e) {
-      assertEquals(e.getLineNumber(), (Integer) 1);
-      assertEquals(e.getClass(), AttributeNotFoundException.class);
-    }
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("hello 2", writer.toString());
   }
 
   @Test
@@ -850,6 +845,53 @@ class GetAttributeTest {
   /**
    * Tests retrieving a non-existing index from a list with strict mode off.
    */
+  @Test
+  void testListGetMethodWithLongLiteral() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("{{ arr.get(1) }}");
+    Map<String, Object> context = new HashMap<>();
+    List<String> data = new ArrayList<>();
+    data.add("Zero");
+    data.add("One");
+    data.add("Two");
+    context.put("arr", data);
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("One", writer.toString());
+  }
+
+  @Test
+  void testIntMethodWithLongLiteral() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("{{ str.charAt(1) }}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("str", "hello");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("e", writer.toString());
+  }
+
+  @Test
+  void testIntMethodWithOutOfRangeLongLiteral() {
+    assertThrows(PebbleException.class, () -> {
+      PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+          .strictVariables(false).build();
+
+      PebbleTemplate template = pebble.getTemplate("{{ str.charAt(3000000000) }}");
+      Map<String, Object> context = new HashMap<>();
+      context.put("str", "hello");
+
+      Writer writer = new StringWriter();
+      template.evaluate(writer, context);
+    });
+  }
+
   @Test
   void testListNonExistingIndexAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
