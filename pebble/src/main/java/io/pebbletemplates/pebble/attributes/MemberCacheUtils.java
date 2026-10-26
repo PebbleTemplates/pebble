@@ -121,6 +121,12 @@ class MemberCacheUtils {
       }
     }
 
+    Method numericMatch = this.findNumericMatch(candidates, requiredTypes);
+    if (numericMatch != null) {
+      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, numericMatch);
+      return numericMatch;
+    }
+
     return null;
   }
 
@@ -182,6 +188,96 @@ class MemberCacheUtils {
       }
     }
     return null;
+  }
+
+  /**
+   * Finds the best candidate under numeric conversion matching. Pebble's numeric
+   * literals are Long or BigDecimal, which never assignable-match the int, short
+   * or byte parameters common on Java APIs such as List.get(int) or
+   * String.charAt(int). This pass allows integral arguments to reach integral or
+   * floating parameters, preferring wider parameters to minimise narrowing, and
+   * floating arguments to reach floating parameters only. Actual conversion is
+   * performed by TypeUtils.compatibleCast, which rejects out-of-range values.
+   */
+  private Method findNumericMatch(List<Method> candidates, Class<?>[] requiredTypes) {
+    Method bestMatch = null;
+    int bestScore = -1;
+    for (Method candidate : candidates) {
+      Class<?>[] types = candidate.getParameterTypes();
+      boolean compatibleTypes = true;
+      int score = 0;
+      for (int i = 0; i < types.length; i++) {
+        int s = this.numericScore(types[i], requiredTypes[i]);
+        if (s < 0) {
+          compatibleTypes = false;
+          break;
+        }
+        score += s;
+      }
+      if (compatibleTypes && score > bestScore) {
+        bestMatch = candidate;
+        bestScore = score;
+      }
+    }
+    return bestMatch;
+  }
+
+  /**
+   * Scores a single parameter/argument-type pair for numeric matching: negative
+   * means incompatible, higher means less narrowing.
+   */
+  private int numericScore(Class<?> parameterType, Class<?> requiredType) {
+    if (requiredType == null) {
+      return 0;
+    }
+    Class<?> widened = this.widen(parameterType);
+    if (widened.isAssignableFrom(requiredType)) {
+      return 100;
+    }
+    if (!Number.class.isAssignableFrom(widened) || !Number.class.isAssignableFrom(requiredType)) {
+      return -1;
+    }
+    boolean requiredFloating = requiredType == Float.class || requiredType == Double.class
+        || requiredType == java.math.BigDecimal.class;
+    int paramWidth = this.numericWidth(widened);
+    if (requiredFloating) {
+      // an integral parameter would silently drop the fraction
+      return this.isFloating(widened) ? paramWidth : -1;
+    }
+    // integral argument: prefer integral parameters over floating ones
+    return this.isFloating(widened) ? paramWidth : paramWidth + 10;
+  }
+
+  private boolean isFloating(Class<?> type) {
+    return type == Float.class || type == Double.class || type == java.math.BigDecimal.class;
+  }
+
+  private int numericWidth(Class<?> type) {
+    if (type == Byte.class) {
+      return 1;
+    }
+    if (type == Short.class) {
+      return 2;
+    }
+    if (type == Integer.class) {
+      return 3;
+    }
+    if (type == Long.class) {
+      return 4;
+    }
+    if (type == java.math.BigInteger.class) {
+      return 5;
+    }
+    if (type == Float.class) {
+      return 6;
+    }
+    if (type == Double.class) {
+      return 7;
+    }
+    if (type == java.math.BigDecimal.class) {
+      return 8;
+    }
+    return 0;
   }
 
   private void verifyUnsafeMethod(String filename, int lineNumber,
