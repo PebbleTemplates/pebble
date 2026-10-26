@@ -30,6 +30,19 @@ The easiest and most flexible is importing the whole module into a variable. Tha
 {%- endverbatim %}
 ```
 
+Macros imported into a variable also accept named arguments, just like macros in the
+current namespace. For example, if `input` declares `name` and `type` arguments:
+
+```twig
+{% verbatim %}
+{% import 'forms.html' as forms %}
+{{ forms.input(type='password', name='password') }}
+{%- endverbatim %}
+```
+
+Named arguments are not supported for Java bean methods. These calls are rejected
+when the template is evaluated, once the receiver is known.
+
 Alternatively you can import names from the template into the current namespace:
 
 ```twig
