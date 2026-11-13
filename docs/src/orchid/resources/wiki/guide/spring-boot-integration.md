@@ -58,6 +58,8 @@ for your starter version. Notable properties are:
   to ``null``
 * ``pebble.strictVariables``: enable or disable the strict variable checking in the PebbleEngine. Defaults to
   ``false``
+* ``pebble.allowPackages``: List of allowed packages to configure for the AllowlistMethodAccessValidator in the PebbleEngine. Defaults to
+  ``null``
 * ``pebble.greedyMatchMethod``: enable or disable the greedy matching mode for finding java method in the
   PebbleEngine. Defaults to ``false``
 * ``pebble.servlet.cache``: enables or disables PebbleEngine caches. Defaults to ``true``
@@ -112,11 +114,49 @@ public PebbleEngine pebbleEngine() {
 ```
 
 ### Customizing the MethodAccessValidator
-You can provide your own MethodAccessValidator or switch to NoOpMethodAccessValidator by providing a MethodAccessValidator Bean
+By default, Spring Boot uses the allowlist described in the installation guide, plus these methods on the objects
+exposed to templates:
+
+- Servlet: `request.getContextPath()`, `response.getStatus()`, `response.getContentType()`,
+  `response.getCharacterEncoding()` and `session.getMaxInactiveInterval()`.
+- Reactive: `request.getPath()`, `response.getStatusCode()` and `session.getAttributes()`.
+
+Other methods on these Spring objects, and methods on application classes and Spring beans, remain denied unless
+explicitly allowed. Public field and map-key access do not go through the method validator.
+Supplying a `MethodAccessValidator` bean replaces the entire default, including these Spring-specific rules. For example,
+to allow model classes as well as the Spring methods:
 ```java
 @Bean
 public MethodAccessValidator methodAccessValidator() {
-  return new NoOpMethodAccessValidator();
+  return AllowlistMethodAccessValidator.builder()
+      .allowDefaults()
+      .allowPackages("com.example.model")
+      .allowMethod(HttpServletRequest.class, "getContextPath")
+      .allowMethod(HttpServletResponse.class, "getStatus", "getContentType", "getCharacterEncoding")
+      .allowMethod(HttpSession.class, "getMaxInactiveInterval")
+      .allowMethod(ServerHttpRequest.class, "getPath")
+      .allowMethod(ServerHttpResponse.class, "getStatusCode")
+      .allowMethod(WebSession.class, "getAttributes")
+      .build();
+}
+```
+
+Include only the servlet or reactive rules applicable to your application and ensure the corresponding APIs are on
+the classpath.
+
+You can also provide your own MethodAccessValidator, or switch back to the BlacklistMethodAccessValidator or to the
+NoOpMethodAccessValidator. BlacklistMethodAccessValidator is deprecated and planned for removal in version 4.3.x:
+```java
+@Bean
+public MethodAccessValidator methodAccessValidator() {
+  return BlacklistMethodAccessValidator.builder().build();
+}
+
+OR
+
+@Bean
+public MethodAccessValidator methodAccessValidator() {
+  return NoOpMethodAccessValidator.builder().build();
 }
 ```
 

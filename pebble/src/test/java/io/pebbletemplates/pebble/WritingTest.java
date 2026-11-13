@@ -8,6 +8,7 @@
  */
 package io.pebbletemplates.pebble;
 
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
@@ -24,6 +25,10 @@ import java.util.concurrent.Executors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WritingTest {
+
+  private static final AllowlistMethodAccessValidator TEST_METHOD_ACCESS_VALIDATOR =
+      AllowlistMethodAccessValidator.builder().allowDefaults()
+          .allowPackages("io.pebbletemplates.pebble").build();
 
   /**
    * There was an issue where the pebble engine was closing the provided writer. This is wrong.
@@ -57,6 +62,7 @@ class WritingTest {
   @Test
   void testParallelCharacterBuffersBeingOverriden() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .executorService(Executors.newCachedThreadPool()).build();
     String source = "beginning {% parallel %}{{ slowObject.first }}{% endparallel %} middle {% parallel %}{{ slowObject.second }}{% endparallel %} end {% parallel %}{{ slowObject.third }}{% endparallel %}";
     PebbleTemplate template = pebble.getTemplate(source);

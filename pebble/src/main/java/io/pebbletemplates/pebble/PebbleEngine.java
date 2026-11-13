@@ -9,7 +9,7 @@
 package io.pebbletemplates.pebble;
 
 
-import io.pebbletemplates.pebble.attributes.methodaccess.BlacklistMethodAccessValidator;
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.cache.CacheKey;
 import io.pebbletemplates.pebble.cache.PebbleCache;
@@ -293,7 +293,9 @@ public class PebbleEngine {
 
     private boolean literalNumbersAsBigDecimals = false;
 
-    private MethodAccessValidator methodAccessValidator = new BlacklistMethodAccessValidator();
+    private MethodAccessValidator methodAccessValidator = AllowlistMethodAccessValidator.builder()
+        .allowDefaults()
+        .build();
 
     private final ExtensionRegistryFactory factory = new ExtensionRegistryFactory();
 
@@ -496,7 +498,9 @@ public class PebbleEngine {
     }
 
     /**
-     * Validator that can be used to validate object/method access
+     * Validator that can be used to validate object/method access. Defaults to an
+     * {@link AllowlistMethodAccessValidator} that only allows the
+     * {@link AllowlistMethodAccessValidator.Builder#allowDefaults() default safe types}.
      *
      * @param methodAccessValidator Validator that can be used to validate object/method access
      * @return This builder object

@@ -8,6 +8,7 @@
  */
 package io.pebbletemplates.pebble;
 
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import io.pebbletemplates.pebble.error.ParserException;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.TestingExtension;
@@ -27,6 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MapSyntaxTest {
+
+  private static final AllowlistMethodAccessValidator TEST_METHOD_ACCESS_VALIDATOR =
+      AllowlistMethodAccessValidator.builder().allowDefaults()
+          .allowPackages("io.pebbletemplates.pebble").build();
 
   @Test
   void testMapSyntax() throws PebbleException, IOException {
@@ -185,6 +190,7 @@ class MapSyntaxTest {
   @Test
   void testMapWithComplexExpressions() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .extension(new TestingExtension())
         .strictVariables(false).build();
 

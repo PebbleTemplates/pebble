@@ -8,6 +8,7 @@
  */
 package io.pebbletemplates.pebble;
 
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import io.pebbletemplates.pebble.attributes.methodaccess.NoOpMethodAccessValidator;
 import io.pebbletemplates.pebble.error.AttributeNotFoundException;
 import io.pebbletemplates.pebble.error.ClassAccessException;
@@ -25,6 +26,10 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GetAttributeTest {
+
+  private static final AllowlistMethodAccessValidator TEST_METHOD_ACCESS_VALIDATOR =
+      AllowlistMethodAccessValidator.builder().allowDefaults()
+          .allowPackages("io.pebbletemplates.pebble").build();
 
   @Test
   void testOneLayerAttributeNesting() throws PebbleException, IOException {
@@ -194,6 +199,7 @@ class GetAttributeTest {
   @Test
   void testMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -208,6 +214,7 @@ class GetAttributeTest {
   @Test
   void testTwoMethodsAlmostSameName() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
             .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.something() }}");
@@ -238,7 +245,7 @@ class GetAttributeTest {
   void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .methodAccessValidator(new NoOpMethodAccessValidator())
+        .methodAccessValidator(NoOpMethodAccessValidator.builder().build())
         .strictVariables(false)
         .build();
 
@@ -255,7 +262,7 @@ class GetAttributeTest {
   void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOff_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .methodAccessValidator(new NoOpMethodAccessValidator())
+        .methodAccessValidator(NoOpMethodAccessValidator.builder().build())
         .strictVariables(false)
         .build();
 
@@ -272,7 +279,7 @@ class GetAttributeTest {
   void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Property()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .methodAccessValidator(new NoOpMethodAccessValidator())
+        .methodAccessValidator(NoOpMethodAccessValidator.builder().build())
         .strictVariables(true)
         .build();
 
@@ -289,7 +296,7 @@ class GetAttributeTest {
   void testAccessingClass_AllowUnsafeMethodsOn_StrictVariableOn_Method()
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
-        .methodAccessValidator(new NoOpMethodAccessValidator())
+        .methodAccessValidator(NoOpMethodAccessValidator.builder().build())
         .strictVariables(true)
         .build();
 
@@ -375,7 +382,7 @@ class GetAttributeTest {
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
-        .methodAccessValidator(new NoOpMethodAccessValidator())
+        .methodAccessValidator(NoOpMethodAccessValidator.builder().build())
         .build();
 
     PebbleTemplate template = pebble.getTemplate("hello [{{ object.ClAsS }}]");
@@ -409,7 +416,7 @@ class GetAttributeTest {
       throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder()
         .loader(new StringLoader())
-        .methodAccessValidator(new NoOpMethodAccessValidator())
+        .methodAccessValidator(NoOpMethodAccessValidator.builder().build())
         .build();
 
     PebbleTemplate template = pebble.getTemplate("hello [{{ object.GeTcLAsS() }}]");
@@ -462,6 +469,7 @@ class GetAttributeTest {
   @Test
   void testMethodAttributeWithDifferentObjects() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
@@ -481,6 +489,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name('Steve') }}");
@@ -495,6 +504,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithLongArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.number(2) }}");
@@ -509,6 +519,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithLongArgument2() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.number(2L) }}");
@@ -523,6 +534,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithTreatLiteralDecimalAsLong() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).literalDecimalTreatedAsInteger(false)
         .greedyMatchMethod(false).build();
 
@@ -538,6 +550,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithTreatNumberAsInteger() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).literalDecimalTreatedAsInteger(true)
         .build();
 
@@ -553,6 +566,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithGreedyMatchArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).greedyMatchMethod(true).build();
 
     PebbleTemplate template = pebble
@@ -597,6 +611,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithOverloadedArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.number(2.0) }}");
@@ -611,6 +626,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithTwoArguments() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.multiply(2, 3) }}");
@@ -625,6 +641,7 @@ class GetAttributeTest {
   @Test
   void testGetMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -639,6 +656,7 @@ class GetAttributeTest {
   @Test
   void testHasMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -653,6 +671,7 @@ class GetAttributeTest {
   @Test
   void testIsMethodAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(false).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -667,6 +686,7 @@ class GetAttributeTest {
   @Test
   void testComplexNestedAttributes() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(false).build();
 
     String source = "hello {{ object.map.SimpleObject2.simpleObject.name }}. My name is {{ object.map.SimpleObject6.name }}.";
@@ -910,6 +930,7 @@ class GetAttributeTest {
   @Test()
   void testInheritedAttribute() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
@@ -1072,6 +1093,7 @@ class GetAttributeTest {
   @Test()
   void testPrimitiveArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble
@@ -1090,6 +1112,7 @@ class GetAttributeTest {
   @Test
   void testBeanMethodWithNullArgument() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     PebbleTemplate template = pebble.getTemplate("hello {{ object.name(var) }}");
@@ -1193,6 +1216,7 @@ class GetAttributeTest {
     // a method name may reuse an operator word, e.g. `group.contains("x")` or
     // `group.is()` - the infix `contains` operator must still work too.
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(true).build();
 
     Map<String, Object> context = new HashMap<>();
