@@ -8,6 +8,7 @@
  ******************************************************************************/
 package io.pebbletemplates.pebble;
 
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
@@ -24,6 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // These tests verify correct behavior when resolving overloaded methods in a model class. See issue #367
 class OverloadedMethodTest {
+
+  private static final AllowlistMethodAccessValidator TEST_METHOD_ACCESS_VALIDATOR =
+      AllowlistMethodAccessValidator.builder().allowDefaults()
+          .allowPackages("io.pebbletemplates.pebble").build();
 
 // Verify that an overloaded method will select the correct version of the method to call based on the input type
 //----------------------------------------------------------------------------------------------------------------------
@@ -67,6 +72,7 @@ class OverloadedMethodTest {
     @Test
     void testWithLiteralString() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder()
+            .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
             .loader(new StringLoader())
             .strictVariables(false)
             .build();
@@ -159,6 +165,7 @@ class OverloadedMethodTest {
     @Test
     void testWithMultipleCalls() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder()
+            .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
             .loader(new StringLoader())
             .strictVariables(false)
             .build();
@@ -257,6 +264,7 @@ class OverloadedMethodTest {
 
     private void testWithModel(Object model, Object modelInput, String expected) throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder()
+                .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
                 .loader(new StringLoader())
                 .strictVariables(false)
                 .build();
@@ -276,6 +284,7 @@ class OverloadedMethodTest {
 
     private void testModelWith2Inputs(Object modelInput1, Object modelInput2, String expected) throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder()
+                .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
                 .loader(new StringLoader())
                 .strictVariables(false)
                 .build();

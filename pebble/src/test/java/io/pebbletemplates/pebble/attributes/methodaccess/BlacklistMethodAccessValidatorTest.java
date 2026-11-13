@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 class BlacklistMethodAccessValidatorTest {
 
   private final InstanceProvider instanceProvider = new InstanceProvider();
-  private final MethodAccessValidator underTest = new BlacklistMethodAccessValidator();
+  private final MethodAccessValidator underTest = BlacklistMethodAccessValidator.builder().build();
 
   @ParameterizedTest
   @MethodSource("provideUnsafeMethod")

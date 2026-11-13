@@ -8,6 +8,7 @@
  */
 package io.pebbletemplates.pebble;
 
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -26,6 +27,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class ArraySyntaxTest {
+
+  private static final AllowlistMethodAccessValidator TEST_METHOD_ACCESS_VALIDATOR =
+      AllowlistMethodAccessValidator.builder().allowDefaults()
+          .allowPackages("io.pebbletemplates.pebble").build();
 
   @Test
   void testArraySyntax() throws PebbleException, IOException {
@@ -138,6 +143,7 @@ class ArraySyntaxTest {
   @Test
   void testArrayWithComplexExpressions() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(false).build();
 
     String source = "{{ ['one' + 'plus', 2 - 1, three.number, numbers['four'][0], numbers ['five'] .value ] }}";
@@ -807,6 +813,7 @@ class ArraySyntaxTest {
   void testProblematicSubscriptSyntax3() throws PebbleException, IOException {
 
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
         .strictVariables(false).build();
 
     String source = "{{ person ['first-name'] .name }}";

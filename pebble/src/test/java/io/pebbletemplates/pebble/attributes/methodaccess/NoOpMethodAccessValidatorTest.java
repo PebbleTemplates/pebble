@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class NoOpMethodAccessValidatorTest {
 
-  private final MethodAccessValidator underTest = new NoOpMethodAccessValidator();
+  private final MethodAccessValidator underTest = NoOpMethodAccessValidator.builder().build();
 
   @Test
   void whenIsMethodAccessAllowed_thenReturnTrue() {

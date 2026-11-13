@@ -1,6 +1,8 @@
 package io.pebbletemplates.boot.autoconfigure;
 
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.loader.ClasspathLoader;
 import io.pebbletemplates.spring.reactive.PebbleReactiveViewResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -10,10 +12,26 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.server.WebSession;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 class PebbleReactiveWebConfiguration extends AbstractPebbleConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(MethodAccessValidator.class)
+    MethodAccessValidator pebbleReactiveMethodAccessValidator(PebbleProperties properties) {
+        AllowlistMethodAccessValidator.Builder builder = AllowlistMethodAccessValidator.builder().allowDefaults()
+                .allowMethod(ServerHttpRequest.class, "getPath")
+                .allowMethod(ServerHttpResponse.class, "getStatusCode")
+                .allowMethod(WebSession.class, "getAttributes");
+        if (properties.getAllowPackages() != null) {
+            builder.allowPackages(properties.getAllowPackages());
+        }
+        return builder.build();
+    }
 
     @Bean
     @ConditionalOnMissingBean(name = "pebbleReactiveViewResolver")

@@ -13,6 +13,7 @@ public class PebbleProperties extends AbstractTemplateViewResolverProperties {
   private Locale defaultLocale;
   private boolean strictVariables;
   private boolean greedyMatchMethod;
+  private String[] allowPackages;
 
   public PebbleProperties() {
     super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
@@ -41,5 +42,13 @@ public class PebbleProperties extends AbstractTemplateViewResolverProperties {
 
   public void setGreedyMatchMethod(boolean greedyMatchMethod) {
     this.greedyMatchMethod = greedyMatchMethod;
+  }
+
+  public String[] getAllowPackages() {
+    return this.allowPackages;
+  }
+
+  public void setAllowPackages(String[] allowPackages) {
+    this.allowPackages = allowPackages;
   }
 }

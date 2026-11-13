@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.loader.MemoryLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
@@ -89,7 +90,9 @@ class NamedMacroArgumentsTest {
   }
 
   private String renderBean(String expression, Bean bean) throws IOException {
-    PebbleTemplate template = new PebbleEngine.Builder().build()
+    PebbleTemplate template = new PebbleEngine.Builder()
+        .methodAccessValidator(AllowlistMethodAccessValidator.builder().allowTypes(Bean.class).build())
+        .build()
         .getLiteralTemplate("{{ " + expression + " }}");
     StringWriter writer = new StringWriter();
     template.evaluate(writer, Collections.singletonMap("bean", bean));

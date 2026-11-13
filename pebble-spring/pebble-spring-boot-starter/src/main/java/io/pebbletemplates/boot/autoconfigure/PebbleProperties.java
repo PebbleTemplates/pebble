@@ -25,6 +25,7 @@ public class PebbleProperties {
     private Locale defaultLocale;
     private boolean strictVariables;
     private boolean greedyMatchMethod;
+    private String[] allowPackages;
 
     private final Servlet servlet = new Servlet(this::getCharset);
     private final Reactive reactive = new Reactive();
@@ -277,5 +278,13 @@ public class PebbleProperties {
 
     public void setGreedyMatchMethod(boolean greedyMatchMethod) {
         this.greedyMatchMethod = greedyMatchMethod;
+    }
+
+    public String[] getAllowPackages() {
+        return this.allowPackages;
+    }
+
+    public void setAllowPackages(String[] allowPackages) {
+        this.allowPackages = allowPackages;
     }
 }

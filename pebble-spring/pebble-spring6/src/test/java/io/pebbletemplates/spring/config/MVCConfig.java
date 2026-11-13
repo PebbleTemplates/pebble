@@ -7,11 +7,15 @@
 package io.pebbletemplates.spring.config;
 
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
 import io.pebbletemplates.pebble.loader.ClasspathLoader;
 import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.spring.bean.SomeBean;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import io.pebbletemplates.spring.servlet.PebbleViewResolver;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +50,13 @@ public class MVCConfig {
         .loader(templateLoader)
         .strictVariables(false)
         .extension(springExtension)
+        .methodAccessValidator(AllowlistMethodAccessValidator.builder()
+            .allowDefaults()
+            .allowTypes(SomeBean.class)
+            .allowMethod(HttpServletRequest.class, "getContextPath")
+            .allowMethod(HttpServletResponse.class, "getContentType", "getCharacterEncoding")
+            .allowMethod(HttpSession.class, "getMaxInactiveInterval")
+            .build())
         .build();
   }
 

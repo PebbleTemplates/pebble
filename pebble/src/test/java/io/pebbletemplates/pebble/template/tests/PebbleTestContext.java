@@ -1,6 +1,8 @@
 package io.pebbletemplates.pebble.template.tests;
 
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.slf4j.Logger;
@@ -26,6 +28,12 @@ import java.util.Map;
  * @author nathanward
  */
 public class PebbleTestContext {
+
+	private static final MethodAccessValidator METHOD_ACCESS_VALIDATOR = AllowlistMethodAccessValidator
+			.builder()
+			.allowDefaults()
+			.allowPackages("io.pebbletemplates.pebble.template.tests.input")
+			.build();
 
 	private final Logger logger = LoggerFactory.getLogger(PebbleTestContext.class);
 	
@@ -82,6 +90,7 @@ public class PebbleTestContext {
 	 */
 	public String executeTemplateFromFile(String templateFilename) throws IOException {
 		PebbleEngine pebbleEngine = new PebbleEngine.Builder()
+				.methodAccessValidator(METHOD_ACCESS_VALIDATOR)
 				.newLineTrimming(this.newLineTrimming).strictVariables(true).build();
 		return this.executeTemplateFromFile(templateFilename, pebbleEngine);
 	}
@@ -111,6 +120,7 @@ public class PebbleTestContext {
 	 */
 	public String executeTemplateFromString(String templateString) throws IOException {
 		PebbleEngine pebbleEngine = new PebbleEngine.Builder().loader(new StringLoader())
+				.methodAccessValidator(METHOD_ACCESS_VALIDATOR)
 				.newLineTrimming(this.newLineTrimming).build();
 		return this.executeTemplate(templateString, pebbleEngine);
 	}
