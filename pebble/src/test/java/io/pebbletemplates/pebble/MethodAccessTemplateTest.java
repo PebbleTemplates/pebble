@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.pebbletemplates.pebble.attributes.methodaccess.AllowlistMethodAccessValidator;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.error.ClassAccessException;
 import io.pebbletemplates.pebble.loader.StringLoader;
 import io.pebbletemplates.pebble.attributes.methodaccess.NoOpMethodAccessValidator;
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -199,6 +201,53 @@ class MethodAccessTemplateTest {
       Writer writer = new StringWriter();
       this.pebble.getTemplate(source).evaluate(writer, context);
       return writer.toString();
+    }
+  }
+
+  @Test
+  void testCachedMethodIsValidatedForEachInstance() throws IOException {
+    InstanceMethodTarget trusted = new InstanceMethodTarget();
+    InstanceMethodTarget denied = new InstanceMethodTarget();
+    AtomicInteger validatorCalls = new AtomicInteger();
+    MethodAccessValidator validator = (object, method) -> {
+      validatorCalls.incrementAndGet();
+      return object == trusted;
+    };
+    PebbleEngine sharedEngine = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(validator)
+        .build();
+    PebbleTemplate template = sharedEngine.getTemplate("{{ target.execute() }}");
+
+    assertEquals("executed", this.render(template, trusted));
+    assertEquals(1, validatorCalls.get());
+    assertThrows(ClassAccessException.class, () -> this.render(template, denied));
+    assertEquals(2, validatorCalls.get());
+    assertEquals(0, denied.invocations);
+
+    PebbleEngine freshEngine = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(validator)
+        .build();
+    assertThrows(ClassAccessException.class,
+        () -> this.render(freshEngine.getTemplate("{{ target.execute() }}"), denied));
+    assertEquals(3, validatorCalls.get());
+    assertEquals(0, denied.invocations);
+  }
+
+  private String render(PebbleTemplate template, Object target) throws IOException {
+    Map<String, Object> context = new HashMap<>();
+    context.put("target", target);
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    return writer.toString();
+  }
+
+  public static class InstanceMethodTarget {
+
+    private int invocations;
+
+    public String execute() {
+      this.invocations++;
+      return "executed";
     }
   }
 

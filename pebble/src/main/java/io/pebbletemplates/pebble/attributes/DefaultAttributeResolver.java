@@ -1,5 +1,6 @@
 package io.pebbletemplates.pebble.attributes;
 
+import io.pebbletemplates.pebble.error.ClassAccessException;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.node.ArgumentsNode;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;
@@ -69,10 +70,15 @@ public class DefaultAttributeResolver implements AttributeResolver {
         }
 
         member = this.memberCacheUtils
-                .cacheMember(instance, attributeName, argumentTypes, context, filename, lineNumber);
+                .cacheMember(instance, attributeName, argumentTypes, context);
       }
 
       if (member != null) {
+        if (member instanceof Method
+            && !context.getEvaluationOptions().getMethodAccessValidator()
+                .isMethodAccessAllowed(instance, (Method) member)) {
+          throw new ClassAccessException((Method) member, filename, lineNumber);
+        }
         return new ResolvedAttribute(this.invokeMember(instance, member, argumentValues, filename, lineNumber));
       }
     }
