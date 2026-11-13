@@ -1,6 +1,5 @@
 package io.pebbletemplates.pebble.attributes;
 
-import io.pebbletemplates.pebble.error.ClassAccessException;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;
 import io.pebbletemplates.pebble.template.EvaluationOptions;
 
@@ -26,10 +25,8 @@ class MemberCacheUtils {
   Member cacheMember(Object instance,
                      String attributeName,
                      Class<?>[] argumentTypes,
-                     EvaluationContextImpl context,
-                     String filename,
-                     int lineNumber) {
-    Member member = this.reflect(instance, attributeName, argumentTypes, filename, lineNumber, context.getEvaluationOptions());
+                     EvaluationContextImpl context) {
+    Member member = this.reflect(instance, attributeName, argumentTypes, context.getEvaluationOptions());
     if (member != null) {
       this.memberCache.put(new MemberCacheKey(instance.getClass(), attributeName, argumentTypes), member);
     }
@@ -40,7 +37,7 @@ class MemberCacheUtils {
    * Performs the actual reflection to obtain a "Member" from a class.
    */
   private Member reflect(Object object, String attributeName, Class<?>[] parameterTypes,
-                         String filename, int lineNumber, EvaluationOptions evaluationOptions) {
+                         EvaluationOptions evaluationOptions) {
 
     Class<?> clazz = object.getClass();
 
@@ -63,7 +60,7 @@ class MemberCacheUtils {
       }
 
       // check if attribute is a public method
-      Member result = this.findMethod(object, type, attributeName, parameterTypes, filename, lineNumber, evaluationOptions);
+      Member result = this.findMethod(type, attributeName, parameterTypes, evaluationOptions);
 
       // public field
       if (result == null) {
@@ -78,7 +75,7 @@ class MemberCacheUtils {
       // behaviour, no repetition.
       if (result == null) {
         for (String prefix : ACCESSOR_PREFIXES) {
-          result = this.findMethod(object, type, prefix + attributeCapitalized, parameterTypes, filename, lineNumber, evaluationOptions);
+          result = this.findMethod(type, prefix + attributeCapitalized, parameterTypes, evaluationOptions);
           if (result != null) {
             break;
           }
@@ -100,30 +97,26 @@ class MemberCacheUtils {
    * REFACTOR (Long Method): the original findMethod was ~55 lines and mixed two
    * distinct matching strategies (perfect match and greedy match) in one body.
    * The two inner loops were extracted into findPerfectMatch and findGreedyMatch,
-   * shrinking this method to its high-level control flow. verifyUnsafeMethod is
-   * still called at the exact same point as before, so behaviour is unchanged.
+   * shrinking this method to its high-level control flow.
    */
-  private Method findMethod(Object object, Class<?> clazz, String name, Class<?>[] requiredTypes,
-                            String filename, int lineNumber, EvaluationOptions evaluationOptions) {
+  private Method findMethod(Class<?> clazz, String name, Class<?>[] requiredTypes,
+                            EvaluationOptions evaluationOptions) {
     List<Method> candidates = this.getCandidates(clazz, name, requiredTypes);
 
     Method bestMatch = this.findPerfectMatch(candidates, requiredTypes);
     if (bestMatch != null) {
-      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, bestMatch);
       return bestMatch;
     }
 
     if (evaluationOptions.isGreedyMatchMethod()) {
       Method greedyMatch = this.findGreedyMatch(candidates, requiredTypes);
       if (greedyMatch != null) {
-        this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, greedyMatch);
         return greedyMatch;
       }
     }
 
     Method numericMatch = this.findNumericMatch(candidates, requiredTypes);
     if (numericMatch != null) {
-      this.verifyUnsafeMethod(filename, lineNumber, evaluationOptions, object, numericMatch);
       return numericMatch;
     }
 
@@ -279,16 +272,6 @@ class MemberCacheUtils {
     }
     return 0;
   }
-
-  private void verifyUnsafeMethod(String filename, int lineNumber,
-                                  EvaluationOptions evaluationOptions, Object object, Method method) {
-    boolean methodAccessAllowed = evaluationOptions.getMethodAccessValidator()
-            .isMethodAccessAllowed(object, method);
-    if (!methodAccessAllowed) {
-      throw new ClassAccessException(method, filename, lineNumber);
-    }
-  }
-
 
   /**
    * Performs a widening conversion (primitive to boxed type)
