@@ -6,6 +6,7 @@ import io.pebbletemplates.pebble.template.EvaluationOptions;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,6 +53,7 @@ class MemberCacheUtils {
             Map.Entry.class,
             Collection.class,
             Iterable.class,
+            ZoneId.class,
             clazz);
 
     for (Class<?> type : agenda) {
