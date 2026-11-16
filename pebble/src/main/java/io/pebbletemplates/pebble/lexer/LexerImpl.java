@@ -258,16 +258,15 @@ public final class LexerImpl implements Lexer {
     // end of string (which may have contained interpolation)
     matcher = REGEX_DOUBLEQUOTE.matcher(this.source);
     if (matcher.lookingAt()) {
-      String expected = this.brackets.pop().getLeft();
-
-      if (this.source.charAt(0) != '"') {
-        throw new ParserException(null, String.format("Unclosed \"%s\"", expected),
-            this.source.getLineNumber(), this.source.getFilename());
-      }
-
+      this.brackets.pop();
       this.popState();
       this.source.advance(matcher.end());
+      return;
     }
+
+    throw new ParserException(null,
+        String.format("Unexpected character [%s]", this.source.charAt(0)),
+        this.source.getLineNumber(), this.source.getFilename());
   }
 
   /**
