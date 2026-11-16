@@ -1,5 +1,6 @@
 package io.pebbletemplates.pebble.lexer;
 
+import io.pebbletemplates.pebble.error.ParserException;
 import io.pebbletemplates.pebble.extension.ExtensionRegistry;
 import io.pebbletemplates.pebble.extension.core.CoreExtension;
 import io.pebbletemplates.pebble.loader.Loader;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LexerImplTest {
 
@@ -489,6 +491,18 @@ class LexerImplTest {
 
     assertThat(tokenStream.peek(1).getType()).isEqualTo(Token.Type.STRING);
     assertThat(tokenStream.peek(1).getValue()).isEqualTo("\\'");
+  }
+
+  @Test
+  void testDoubleQuotedStringWithTrailingBackslashThrowsParserException() {
+    Loader<String> loader = new StringLoader();
+    Reader templateReader = loader.getReader("{{ \"abc\\");
+
+    ParserException exception =
+        assertThrows(ParserException.class,
+            () -> this.lexer.tokenize(templateReader, this.TEMPLATE_NAME));
+
+    assertThat(exception.getMessage()).contains("Unexpected character [\\]");
   }
 
 }
