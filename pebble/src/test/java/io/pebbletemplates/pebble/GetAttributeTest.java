@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +44,19 @@ class GetAttributeTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("hello Steve", writer.toString());
+  }
+
+  @Test
+  void testZoneIdAttribute() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).build();
+    PebbleTemplate template = pebble.getTemplate("{{ zone.id }}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("zone", ZoneId.of("Europe/Paris"));
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("Europe/Paris", writer.toString());
   }
 
   @Test
