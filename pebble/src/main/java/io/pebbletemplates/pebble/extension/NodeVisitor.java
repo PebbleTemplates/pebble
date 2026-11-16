@@ -12,6 +12,8 @@ import io.pebbletemplates.pebble.node.ArgumentsNode;
 import io.pebbletemplates.pebble.node.AutoEscapeNode;
 import io.pebbletemplates.pebble.node.BlockNode;
 import io.pebbletemplates.pebble.node.BodyNode;
+import io.pebbletemplates.pebble.node.CacheNode;
+import io.pebbletemplates.pebble.node.EmbedNode;
 import io.pebbletemplates.pebble.node.ExtendsNode;
 import io.pebbletemplates.pebble.node.FlushNode;
 import io.pebbletemplates.pebble.node.ForNode;
@@ -58,6 +60,14 @@ public interface NodeVisitor {
   void visit(BlockNode node);
 
   void visit(BodyNode node);
+
+  default void visit(CacheNode node) {
+    visit((Node) node);
+  }
+
+  default void visit(EmbedNode node) {
+    visit((Node) node);
+  }
 
   void visit(ExtendsNode node);
 

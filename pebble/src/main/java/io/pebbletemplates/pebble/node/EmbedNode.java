@@ -60,4 +60,16 @@ public class EmbedNode extends AbstractRenderableNode {
     visitor.visit(this);
   }
 
+  public Expression<?> getIncludeExpression() {
+    return this.includeExpression;
+  }
+
+  public MapExpression getMapExpression() {
+    return this.mapExpression;
+  }
+
+  public List<BlockNode> getBlocks() {
+    return this.nodes;
+  }
+
 }

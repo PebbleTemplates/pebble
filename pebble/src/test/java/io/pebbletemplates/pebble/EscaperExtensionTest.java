@@ -115,6 +115,33 @@ class EscaperExtensionTest {
   }
 
   @Test
+  void testAutoescapeCacheTag() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate(
+        "{% cache 'test' %}{{ text }}{% endcache %}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("text", "<script>alert(1)</script>");
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("&lt;script&gt;alert(1)&lt;/script&gt;", writer.toString());
+  }
+
+  @Test
+  void testAutoescapeEmbedBlock() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate(
+        "{% embed base %}{% block body %}{{ text }}{% endblock %}{% endembed %}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("base", "<div>{% block body %}{% endblock %}</div>");
+    context.put("text", "<script>alert(1)</script>");
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("<div>&lt;script&gt;alert(1)&lt;/script&gt;</div>", writer.toString());
+  }
+
+  @Test
   void testAutoescapeNonString() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();

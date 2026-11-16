@@ -11,6 +11,7 @@ package io.pebbletemplates.pebble.extension.core;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.AbstractNodeVisitor;
 import io.pebbletemplates.pebble.node.BlockNode;
+import io.pebbletemplates.pebble.node.EmbedNode;
 import io.pebbletemplates.pebble.node.MacroNode;
 import io.pebbletemplates.pebble.template.PebbleTemplateImpl;
 
@@ -24,6 +25,11 @@ public class MacroAndBlockRegistrantNodeVisitor extends AbstractNodeVisitor {
   public void visit(BlockNode node) {
     this.getTemplate().registerBlock(node.getBlock());
     super.visit(node);
+  }
+
+  @Override
+  public void visit(EmbedNode node) {
+    // Embed blocks are registered on the embedded template during rendering.
   }
 
   @Override
