@@ -6,6 +6,7 @@ import io.pebbletemplates.pebble.loader.FileLoader;
 import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -13,6 +14,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,6 +87,23 @@ public class FileLoaderTest {
     loader.setSuffix(".peb");
     PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
     assertThrows(LoaderException.class, () -> engine.getTemplate("../template-tests/DoubleNestedIfStatement"));
+  }
+
+  @Test
+  void testFileLoaderRejectsSymlinkEscapeDuringInclude(@TempDir Path tempDir) throws IOException {
+    Path templateRoot = Files.createDirectory(tempDir.resolve("templates"));
+    Path outsideDirectory = Files.createDirectory(tempDir.resolve("outside"));
+    Files.write(outsideDirectory.resolve("secret.peb"), "BYPASS_SUCCESS".getBytes(StandardCharsets.UTF_8));
+    Files.write(templateRoot.resolve("root.peb"),
+        "{% include 'linked/secret.peb' %}".getBytes(StandardCharsets.UTF_8));
+    Files.createSymbolicLink(templateRoot.resolve("linked"), outsideDirectory);
+
+    FileLoader loader = new FileLoader(templateRoot.toString());
+    PebbleEngine engine = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
+
+    assertThrows(LoaderException.class, () -> loader.resourceExists("linked/secret.peb"));
+    assertThrows(LoaderException.class,
+        () -> engine.getTemplate("root.peb").evaluate(new StringWriter()));
   }
 
   @ParameterizedTest

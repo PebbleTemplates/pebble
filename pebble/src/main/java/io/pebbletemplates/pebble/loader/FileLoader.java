@@ -14,12 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * This loader searches for a file located anywhere on the filesystem. It uses java.io.File to
- * perform the lookup.
+ * This loader searches for templates under a configured filesystem directory. Symbolic links that
+ * resolve outside that directory are rejected.
  *
  * @author mbosecke
  */
@@ -37,26 +40,62 @@ public class FileLoader implements Loader<String> {
 
   @Override
   public Reader getReader(String templateName) {
-    File file = this.getFile(templateName);
+    InputStream is = null;
     try {
-      InputStream is = new FileInputStream(file);
+      Path file = this.getFile(templateName);
+      is = Files.newInputStream(file, LinkOption.NOFOLLOW_LINKS);
       return new BufferedReader(new InputStreamReader(is, this.charset));
-    } catch (FileNotFoundException e) {
-      throw new LoaderException(e, String.format("Could not find template [prefix='%s', templateName='%s']", this.prefix, templateName));
     } catch (UnsupportedEncodingException e) {
+      if (is != null) {
+        try {
+          is.close();
+        } catch (IOException closeException) {
+          e.addSuppressed(closeException);
+        }
+      }
       throw new LoaderException(e, String.format("Invalid charset '%s'", this.charset));
+    } catch (IOException e) {
+      throw new LoaderException(e, String.format("Could not find template [prefix='%s', templateName='%s']", this.prefix, templateName));
     }
   }
 
-  private File getFile(String templateName) {
-    templateName = templateName + (this.getSuffix() == null ? "" : this.getSuffix());
-    templateName = PathUtils.sanitize(templateName, File.separatorChar);
+  private Path getFile(String templateName) throws IOException {
+    Path baseDirPath = Paths.get(this.getPrefix()).normalize();
+    Path resolvedPath = resolveTemplatePath(templateName, baseDirPath);
+    Path realBaseDirPath = baseDirPath.toRealPath();
+    Path realResolvedPath = resolvedPath.toRealPath();
+    ensurePathIsWithinBase(realResolvedPath, realBaseDirPath, templateName);
+    ensureRegularFile(realResolvedPath);
 
-    Path path = Paths.get(this.getPrefix(), templateName);
-    logger.trace("Looking for template in {}.", path);
+    return realResolvedPath;
+  }
 
-    this.checkIfDirectoryTraversal(templateName);
-    return path.toFile();
+  private Path resolveTemplatePath(String templateName, Path baseDirPath) {
+    String fileName = templateName + (this.getSuffix() == null ? "" : this.getSuffix());
+    fileName = PathUtils.sanitize(fileName, File.separatorChar);
+    Path userPath = Paths.get(fileName);
+    if (userPath.isAbsolute()) {
+      throw new LoaderException(null, String.format("templateName '%s' must be relative", fileName));
+    }
+
+    Path resolvedPath = baseDirPath.resolve(userPath).normalize();
+    logger.trace("Looking for template in {}.", resolvedPath);
+    ensurePathIsWithinBase(resolvedPath, baseDirPath, fileName);
+    return resolvedPath;
+  }
+
+  private void ensurePathIsWithinBase(Path path, Path baseDirPath, String templateName) {
+    if (!path.startsWith(baseDirPath)) {
+      throw new LoaderException(null, String.format(
+          "template is not in the base directory path [baseDir='%s', templateName='%s']",
+          this.prefix, templateName));
+    }
+  }
+
+  private void ensureRegularFile(Path path) throws NoSuchFileException {
+    if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
+      throw new NoSuchFileException(path.toString());
+    }
   }
 
   public String getSuffix() {
@@ -108,25 +147,13 @@ public class FileLoader implements Loader<String> {
 
   @Override
   public boolean resourceExists(String templateName) {
-    return this.getFile(templateName).exists();
-  }
-
-  private void checkIfDirectoryTraversal(String templateName) {
-    Path baseDirPath = Paths.get(prefix);
-    Path userPath = Paths.get(templateName);
-    if (userPath.isAbsolute()) {
-      throw new LoaderException(null, String.format("templateName '%s' must be relative", templateName));
-    }
-
-    // Join the two paths together, then normalize so that any ".." elements
-    // in the userPath can remove parts of baseDirPath.
-    // (e.g. "/foo/bar/baz" + "../attack" -> "/foo/bar/attack")
-    Path resolvedPath = baseDirPath.resolve(userPath).normalize();
-
-    // Make sure the resulting path is still within the required directory.
-    // (In the example above, "/foo/bar/attack" is not.)
-    if (!resolvedPath.startsWith(baseDirPath)) {
-      throw new LoaderException(null, String.format("template is not in the base directory path [baseDir='%s', templateName='%s']", this.prefix, templateName));
+    try {
+      this.getFile(templateName);
+      return true;
+    } catch (NoSuchFileException e) {
+      return false;
+    } catch (IOException e) {
+      throw new LoaderException(e, String.format("Could not find template [prefix='%s', templateName='%s']", this.prefix, templateName));
     }
   }
 }
