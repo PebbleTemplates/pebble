@@ -12,6 +12,8 @@ import io.pebbletemplates.pebble.node.ArgumentsNode;
 import io.pebbletemplates.pebble.node.AutoEscapeNode;
 import io.pebbletemplates.pebble.node.BlockNode;
 import io.pebbletemplates.pebble.node.BodyNode;
+import io.pebbletemplates.pebble.node.CacheNode;
+import io.pebbletemplates.pebble.node.EmbedNode;
 import io.pebbletemplates.pebble.node.ExtendsNode;
 import io.pebbletemplates.pebble.node.FlushNode;
 import io.pebbletemplates.pebble.node.ForNode;
@@ -82,6 +84,22 @@ public class AbstractNodeVisitor implements NodeVisitor {
   public void visit(BodyNode node) {
     for (Node child : node.getChildren()) {
       child.accept(this);
+    }
+  }
+
+  @Override
+  public void visit(CacheNode node) {
+    node.getBody().accept(this);
+  }
+
+  @Override
+  public void visit(EmbedNode node) {
+    node.getIncludeExpression().accept(this);
+    if (node.getMapExpression() != null) {
+      node.getMapExpression().accept(this);
+    }
+    for (BlockNode block : node.getBlocks()) {
+      block.accept(this);
     }
   }
 

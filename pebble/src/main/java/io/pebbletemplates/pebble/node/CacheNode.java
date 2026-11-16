@@ -44,6 +44,10 @@ public class CacheNode extends AbstractRenderableNode {
     visitor.visit(this);
   }
 
+  public BodyNode getBody() {
+    return this.body;
+  }
+
   @Override
   public void render(PebbleTemplateImpl self, Writer writer,
                      EvaluationContextImpl context) throws IOException {
