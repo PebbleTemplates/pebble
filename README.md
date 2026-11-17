@@ -6,6 +6,17 @@ includes integrated support for internationalization.
 
 For more information please visit the [website](https://pebbletemplates.io).
 
+# Tests and coverage
+
+Run the Maven test suite and generate JaCoCo reports with:
+
+```shell
+mvn verify
+```
+
+The HTML reports are generated at `pebble/target/site/jacoco/index.html` and under each
+`pebble-spring/*/target/site/jacoco/index.html`.
+
 # Breaking changes in version 4.1.x
 
 - If you do not provide a custom Loader, Pebble will now use only a `ClasspathLoader` by default, same as the spring autoconfiguration.

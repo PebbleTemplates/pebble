@@ -143,6 +143,25 @@ class PebbleAutoConfigurationTest {
   }
 
   @Test
+  void configuredAllowedPackagesExtendServletAndReactiveValidators() throws Exception {
+    AllowedPackageModel model = new AllowedPackageModel();
+    java.lang.reflect.Method method = AllowedPackageModel.class.getMethod("getValue");
+    String allowPackage = "pebble.allowPackages[0]=io.pebbletemplates.boot.autoconfigure";
+
+    new WebApplicationContextRunner()
+        .withPropertyValues(allowPackage)
+        .withUserConfiguration(BaseConfiguration.class)
+        .run(context -> assertThat(context.getBean(PebbleEngine.class).getEvaluationOptions()
+            .getMethodAccessValidator().isMethodAccessAllowed(model, method)).isTrue());
+
+    new ReactiveWebApplicationContextRunner()
+        .withPropertyValues(allowPackage)
+        .withUserConfiguration(BaseConfiguration.class)
+        .run(context -> assertThat(context.getBean(PebbleEngine.class).getEvaluationOptions()
+            .getMethodAccessValidator().isMethodAccessAllowed(model, method)).isTrue());
+  }
+
+  @Test
   void registerBeansForServletApp() {
     this.loadWithServlet(null);
     assertThat(this.webContext.getBeansOfType(Loader.class)).hasSize(1);
@@ -349,6 +368,13 @@ class PebbleAutoConfigurationTest {
       this.setViewClass(PebbleReactiveView.class);
     }
 
+  }
+
+  public static class AllowedPackageModel {
+
+    public String getValue() {
+      return "allowed";
+    }
   }
 
   @Configuration(proxyBeanMethods = false)

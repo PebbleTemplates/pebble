@@ -698,6 +698,48 @@ class GetAttributeTest {
   }
 
   @Test
+  void attributeResolutionPrefersExactMethodThenGetterConventions() throws PebbleException,
+      IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
+        .strictVariables(true).build();
+    PebbleTemplate template =
+        pebble.getTemplate("{{ object.name }} {{ object.status }} {{ object.ready }}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("object", new AccessorPrecedenceObject());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("method get is", writer.toString());
+  }
+
+  @Test
+  void cachedMethodResolutionDistinguishesOverloadArgumentTypes() throws PebbleException,
+      IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
+        .strictVariables(true).build();
+    PebbleTemplate template = pebble.getTemplate("{{ object.describe(value) }}");
+    AccessorOverloads object = new AccessorOverloads();
+
+    Map<String, Object> stringContext = new HashMap<>();
+    stringContext.put("object", object);
+    stringContext.put("value", "sample");
+    Writer stringWriter = new StringWriter();
+    template.evaluate(stringWriter, stringContext);
+
+    Map<String, Object> integerContext = new HashMap<>();
+    integerContext.put("object", object);
+    integerContext.put("value", 7);
+    Writer integerWriter = new StringWriter();
+    template.evaluate(integerWriter, integerContext);
+
+    assertEquals("string:sample", stringWriter.toString());
+    assertEquals("integer:7", integerWriter.toString());
+  }
+
+  @Test
   void testComplexNestedAttributes() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .methodAccessValidator(TEST_METHOD_ACCESS_VALIDATOR)
@@ -1029,6 +1071,42 @@ class GetAttributeTest {
 
     public String hasName() {
       return "Steve";
+    }
+  }
+
+  public class AccessorPrecedenceObject {
+
+    public String name = "field";
+
+    public String name() {
+      return "method";
+    }
+
+    public String getStatus() {
+      return "get";
+    }
+
+    public boolean isStatus() {
+      return false;
+    }
+
+    public String isReady() {
+      return "is";
+    }
+
+    public boolean hasReady() {
+      return false;
+    }
+  }
+
+  public class AccessorOverloads {
+
+    public String describe(String value) {
+      return "string:" + value;
+    }
+
+    public String describe(Integer value) {
+      return "integer:" + value;
     }
   }
 

@@ -25,12 +25,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -1244,6 +1246,70 @@ class LogicTest {
     context.put("value", (short) 1);
     template.evaluate(writer, context);
     assertEquals("yes", writer.toString());
+  }
+
+  @Test
+  void containsSupportsCollectionsAndObjectArraysWithNullValues() throws PebbleException,
+      IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate("{{ values contains value }}");
+    Map<String, Object> context = new HashMap<>();
+
+    context.put("values", Arrays.asList("one", "two", "three"));
+    context.put("value", Arrays.asList("one", "three"));
+    assertEquals("true", this.evaluate(template, context));
+    context.put("value", Arrays.asList("one", "missing"));
+    assertEquals("false", this.evaluate(template, context));
+
+    context.put("values", new Object[]{null, "value"});
+    context.put("value", null);
+    assertEquals("true", this.evaluate(template, context));
+    context.put("value", "missing");
+    assertEquals("false", this.evaluate(template, context));
+  }
+
+  @Test
+  void containsReturnsFalseWhenPrimitiveArrayElementTypesDoNotMatch()
+      throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate("{{ values contains value }}");
+    Map<String, Object> context = new HashMap<>();
+
+    Object[][] cases = {
+        {new boolean[]{true}, "true"},
+        {new byte[]{1}, 1},
+        {new char[]{'a'}, "a"},
+        {new double[]{1.0}, 1},
+        {new float[]{1.0f}, 1.0d},
+        {new int[]{1}, 1L},
+        {new long[]{1L}, 1},
+        {new short[]{1}, 1}
+    };
+
+    for (Object[] testCase : cases) {
+      context.put("values", testCase[0]);
+      context.put("value", testCase[1]);
+      assertEquals("false", this.evaluate(template, context));
+    }
+  }
+
+  @Test
+  void containsRejectsUnsupportedLeftHandTypes() {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate("{{ value contains 'item' }}");
+
+    assertThrows(PebbleException.class,
+        () -> template.evaluate(new StringWriter(), Collections.singletonMap("value", 42)));
+  }
+
+  private String evaluate(PebbleTemplate template, Map<String, Object> context)
+      throws PebbleException, IOException {
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    return writer.toString();
   }
 
   /**

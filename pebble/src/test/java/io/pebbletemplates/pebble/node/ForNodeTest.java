@@ -91,6 +91,38 @@ class ForNodeTest {
   }
 
   @Test
+  void exposesLoopPositionAndLengthMetadata() throws Exception {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate(
+        "{% for item in items %}{{ loop.first }}:{{ loop.last }}:{{ loop.index }}:"
+            + "{{ loop.length }}:{{ loop.revindex }}={{ item }};{% endfor %}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("items", java.util.Arrays.asList("a", "b", "c"));
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("true:false:0:3:2=a;false:false:1:3:1=b;false:true:2:3:0=c;",
+        writer.toString());
+  }
+
+  @Test
+  void rendersForElseBodyWhenIterableIsEmpty() throws Exception {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+    PebbleTemplate template = pebble.getTemplate(
+        "{% for item in items %}{{ item }}{% else %}empty{% endfor %}");
+    Map<String, Object> context = new HashMap<>();
+    context.put("items", java.util.Collections.emptyList());
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+
+    assertEquals("empty", writer.toString());
+  }
+
+  @Test
   void loopOverEnumeration() throws Exception {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
