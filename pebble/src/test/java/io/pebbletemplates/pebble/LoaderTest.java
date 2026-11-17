@@ -20,12 +20,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoaderTest {
 
@@ -113,6 +117,37 @@ class LoaderTest {
   }
 
   @Test
+  void testDelegatingLoaderThrowsWhenNoLoaderFindsTemplate() {
+    DelegatingLoader loader =
+        new DelegatingLoader(Arrays.asList(new StringLoaderFailure(), new StringLoaderFailure()));
+
+    assertThrows(LoaderException.class, () -> loader.getReader(loader.createCacheKey("missing")));
+  }
+
+  @Test
+  void testDelegatingLoaderDelegatesConfigurationAndResourceQueries() {
+    ConfigurableStringLoader first = new ConfigurableStringLoader(false, null);
+    ConfigurableStringLoader second = new ConfigurableStringLoader(true, "resolved/path");
+    ConfigurableStringLoader third = new ConfigurableStringLoader(true, "ignored/path");
+    DelegatingLoader loader = new DelegatingLoader(Arrays.asList(first, second, third));
+
+    loader.setPrefix("templates");
+    loader.setSuffix(".peb");
+    loader.setCharset("UTF-16");
+
+    for (ConfigurableStringLoader child : Arrays.asList(first, second, third)) {
+      assertEquals("templates", child.prefix);
+      assertEquals(".peb", child.suffix);
+      assertEquals("UTF-16", child.charset);
+    }
+
+    assertTrue(loader.resourceExists("present"));
+    assertFalse(loader.resourceExists("missing"));
+    assertEquals("resolved/path", loader.resolveRelativePath("child", "parent"));
+    assertEquals(null, loader.resolveRelativePath(null, "parent"));
+  }
+
+  @Test
   void testMemoryLoader() throws PebbleException, IOException {
     MemoryLoader loader = new MemoryLoader();
     PebbleEngine pebble = new PebbleEngine.Builder().loader(loader).strictVariables(false).build();
@@ -181,6 +216,44 @@ class LoaderTest {
     public Reader getReader(String templateName) throws LoaderException {
       return new StringReader("LOADER TWO");
     }
+  }
 
+  private static class ConfigurableStringLoader extends StringLoader {
+
+    private final boolean exists;
+    private final String relativePath;
+    private String prefix;
+    private String suffix;
+    private String charset;
+
+    private ConfigurableStringLoader(boolean exists, String relativePath) {
+      this.exists = exists;
+      this.relativePath = relativePath;
+    }
+
+    @Override
+    public void setPrefix(String prefix) {
+      this.prefix = prefix;
+    }
+
+    @Override
+    public void setSuffix(String suffix) {
+      this.suffix = suffix;
+    }
+
+    @Override
+    public void setCharset(String charset) {
+      this.charset = charset;
+    }
+
+    @Override
+    public String resolveRelativePath(String relativePath, String anchorPath) {
+      return this.relativePath;
+    }
+
+    @Override
+    public boolean resourceExists(String templateName) {
+      return this.exists && "present".equals(templateName);
+    }
   }
 }

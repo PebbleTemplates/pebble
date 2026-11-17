@@ -171,14 +171,64 @@ class AllowlistMethodAccessValidatorTest {
   }
 
   @Test
+  void builtValidatorIsAnImmutableSnapshotOfItsBuilder() throws Exception {
+    AllowlistMethodAccessValidator.Builder builder = AllowlistMethodAccessValidator.builder()
+        .allowMethod(Foo.class, "getX");
+    AllowlistMethodAccessValidator validator = builder.build();
+    Object foo = this.instanceProvider.createObject(Foo.class);
+    Method getter = Foo.class.getMethod("getX");
+    Method setter = Foo.class.getMethod("setX", String.class);
+
+    builder.allowMethod(Foo.class, "setX");
+
+    assertThat(validator.isMethodAccessAllowed(foo, getter)).isTrue();
+    assertThat(validator.isMethodAccessAllowed(foo, setter)).isFalse();
+    assertThat(builder.build().isMethodAccessAllowed(foo, setter)).isTrue();
+  }
+
+  @Test
+  void explicitlyAllowedTypeMethodsIncludeObjectMethodsButStillDenyForbiddenMethods()
+      throws Exception {
+    AllowlistMethodAccessValidator validator = AllowlistMethodAccessValidator.builder()
+        .allowTypes(Foo.class)
+        .allowMethod(Object.class, "toString", "getClass")
+        .build();
+    Object foo = this.instanceProvider.createObject(Foo.class);
+
+    assertThat(validator.isMethodAccessAllowed(foo, Object.class.getMethod("toString"))).isTrue();
+    assertThat(validator.isMethodAccessAllowed(foo, Object.class.getMethod("getClass"))).isFalse();
+  }
+
+  @Test
+  void nullObjectAndMethodAreAlwaysDenied() {
+    AllowlistMethodAccessValidator validator = AllowlistMethodAccessValidator.builder()
+        .allowDefaults().allowTypes(Object.class).build();
+
+    assertThat(validator.isMethodAccessAllowed(null, Object.class.getMethods()[0])).isFalse();
+    assertThat(validator.isMethodAccessAllowed("value", null)).isFalse();
+  }
+
+  @Test
   void builderRejectsInvalidArguments() {
     AllowlistMethodAccessValidator.Builder builder = AllowlistMethodAccessValidator.builder();
 
     assertThatThrownBy(() -> builder.allowTypes((Class<?>) null))
         .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> builder.allowTypes((Class<?>[]) null))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> builder.allowPackages((String[]) null))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> builder.allowPackages((String) null))
+        .isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> builder.allowPackages(" "))
         .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> builder.allowPackages(""))
+        .isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> builder.allowMethod(null, "foo"))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> builder.allowMethod(Foo.class, (String[]) null))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> builder.allowMethod(Foo.class, (String) null))
         .isInstanceOf(IllegalArgumentException.class);
   }
 

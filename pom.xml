@@ -67,11 +67,30 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.6.1</version>
         <configuration>
-          <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
+          <argLine>@{argLine} -Dfile.encoding=${project.build.sourceEncoding}</argLine>
           <statelessTestsetReporter>
             <disable>true</disable>
           </statelessTestsetReporter>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.15</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.sonatype.central</groupId>
@@ -177,4 +196,3 @@
     <tag>HEAD</tag>
   </scm>
 </project>
-

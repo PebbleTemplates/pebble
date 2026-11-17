@@ -7,6 +7,7 @@
 package io.pebbletemplates.spring;
 
 import io.pebbletemplates.spring.config.MVCConfig;
+import io.pebbletemplates.spring.servlet.PebbleViewResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +27,12 @@ import org.springframework.web.servlet.ViewResolver;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -175,6 +179,30 @@ class PebbleViewResolverTest {
     String result = this.render("sessionTest", new HashMap<String, Object>());
 
     this.assertOutput(result, EXPECTED_RESPONSE_PATH + "/sessionTest.html");
+  }
+
+  @Test
+  void whenRenderingAPageWithoutExistingSession_thenSessionVariableIsNull() throws Exception {
+    this.mockRequest.setSession(null);
+
+    String result = this.render("sessionTest", new HashMap<String, Object>());
+
+    assertTrue(result.contains("Session maxInactiveInterval ="));
+    assertNull(this.mockRequest.getSession(false));
+  }
+
+  @Test
+  void whenConfiguredWithAlternateEncoding_thenResponseUsesThatEncoding() throws Exception {
+    PebbleViewResolver resolver = (PebbleViewResolver) this.viewResolver;
+    resolver.setCache(false);
+    resolver.setCharacterEncoding("UTF-16LE");
+
+    this.render("requestTest", new HashMap<String, Object>());
+
+    assertEquals("UTF-16LE", this.mockResponse.getCharacterEncoding());
+    String decoded = new String(this.mockResponse.getContentAsByteArray(),
+        Charset.forName("UTF-16LE"));
+    assertEquals(this.mockResponse.getContentAsString(), decoded);
   }
 
   private void assertOutput(String output, String expectedOutput) throws IOException {
