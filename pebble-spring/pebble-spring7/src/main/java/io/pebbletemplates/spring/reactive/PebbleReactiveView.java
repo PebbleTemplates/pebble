@@ -45,21 +45,22 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
   protected Mono<Void> renderInternal(Map<String, Object> renderAttributes,
                                       MediaType contentType,
                                       ServerWebExchange exchange) {
-    DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer(1024);
     if (this.logger.isDebugEnabled()) {
       this.logger.debug(exchange.getLogPrefix() + "Rendering [" + this.getUrl() + "]");
     }
 
     Locale locale = LocaleContextHolder.getLocale(exchange.getLocaleContext());
-    try {
+    return exchange.getResponse().writeWith(Flux.defer(() -> {
       Charset charset = this.getCharset(contentType);
-      Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
-      this.evaluateTemplate(renderAttributes, locale, writer);
-    } catch (Exception ex) {
-      DataBufferUtils.release(dataBuffer);
-      return Mono.error(ex);
-    }
-    return exchange.getResponse().writeWith(Flux.just(dataBuffer));
+      DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer(1024);
+      try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset)) {
+        this.evaluateTemplate(renderAttributes, locale, writer);
+        return Flux.just(dataBuffer);
+      } catch (Exception ex) {
+        DataBufferUtils.release(dataBuffer);
+        return Flux.error(ex);
+      }
+    }));
   }
 
   @Override
