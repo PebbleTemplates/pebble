@@ -131,8 +131,8 @@ public class EvaluationContextImpl implements EvaluationContext, RenderedSizeCon
   }
 
   /**
-   * Makes an exact copy of the evaluation context EXCEPT for the inheritance chain. This is
-   * necessary for the "include" tag.
+   * Makes a shallow copy with a new inheritance chain and a separate map of named imports.
+   * This lets "include" and "embed" add aliases without reserving them in the calling template.
    *
    * @param self The template implementation
    * @return A copy of the evaluation context
@@ -140,8 +140,8 @@ public class EvaluationContextImpl implements EvaluationContext, RenderedSizeCon
   public EvaluationContextImpl shallowCopyWithoutInheritanceChain(PebbleTemplateImpl self) {
     EvaluationContextImpl result = new EvaluationContextImpl(self, this.strictVariables,
         this.locale, this.maxRenderedSize, this.extensionRegistry, this.tagCache,
-        this.executorService, this.importedTemplates, this.namedImportedTemplates, this.scopeChain,
-        null, this.evaluationOptions);
+        this.executorService, this.importedTemplates,
+        new HashMap<>(this.namedImportedTemplates), this.scopeChain, null, this.evaluationOptions);
     return result;
   }
 
