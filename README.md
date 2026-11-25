@@ -22,6 +22,7 @@ The HTML reports are generated at `pebble/target/site/jacoco/index.html` and und
 - Method access now uses allowlist validation by default. Methods on application classes must be explicitly allowed.
 - For Spring Boot applications, use `pebble.allowPackages` with the packages containing application classes to allow.
 - Configure `BlacklistMethodAccessValidator` or `NoOpMethodAccessValidator` to restore the previous behavior.
+- A working example is available in the [Spring Petclinic repository](https://github.com/PebbleTemplates/spring-petclinic).
 - See the [allowlist mode documentation](https://pebbletemplates.io/wiki/guide/installation/#allowlist-mode) and [Spring Boot integration documentation](https://pebbletemplates.io/wiki/guide/spring-boot-integration/#customizing-the-methodAccessValidator) for configuration details.
 
 # Breaking changes in version 4.1.x
