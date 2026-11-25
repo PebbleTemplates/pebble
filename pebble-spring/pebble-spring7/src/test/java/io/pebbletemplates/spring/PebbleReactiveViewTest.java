@@ -6,6 +6,7 @@ import io.pebbletemplates.spring.reactive.PebbleReactiveView;
 import io.pebbletemplates.spring.reactive.PebbleReactiveViewResolver;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscription;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -21,6 +22,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebExchangeDecorator;
+import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Mono;
 
 import java.nio.ByteBuffer;
@@ -72,6 +74,35 @@ class PebbleReactiveViewTest {
       @Override
       public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
         // like a client that went away before the body is written: nobody ever subscribes to the body
+        return Mono.empty();
+      }
+    };
+    ServerWebExchange exchange = new ServerWebExchangeDecorator(exchange()) {
+      @Override
+      public ServerHttpResponse getResponse() {
+        return response;
+      }
+    };
+
+    view("Hello").render(null, MediaType.TEXT_PLAIN, exchange).block();
+
+    assertEquals(0, bufferFactory.unreleasedBufferCount(), "buffers that were allocated but never released");
+  }
+
+  @Test
+  void doesNotLeakBufferIfWriteIsCancelledWhileSubscribing() {
+    TrackingDataBufferFactory bufferFactory = new TrackingDataBufferFactory();
+    ServerHttpResponse response = new ServerHttpResponseDecorator(new MockServerHttpResponse(bufferFactory)) {
+      @Override
+      public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
+        // like a client that disconnects just as the write starts: the real write operator subscribes to the body, but the
+        // downstream cancels in onSubscribe, before the body is requested
+        super.writeWith(body).subscribe(new BaseSubscriber<>() {
+          @Override
+          protected void hookOnSubscribe(Subscription subscription) {
+            subscription.cancel();
+          }
+        });
         return Mono.empty();
       }
     };
