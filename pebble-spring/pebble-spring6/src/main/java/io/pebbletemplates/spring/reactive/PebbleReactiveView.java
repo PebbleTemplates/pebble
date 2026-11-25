@@ -23,7 +23,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class PebbleReactiveView extends AbstractUrlBasedView {
@@ -50,17 +49,19 @@ public class PebbleReactiveView extends AbstractUrlBasedView {
     }
 
     Locale locale = LocaleContextHolder.getLocale(exchange.getLocaleContext());
-    return exchange.getResponse().writeWith(Flux.defer(() -> {
+    // Allocate when the write requests the body, not when it subscribes: a cancel that arrives in between must not find an
+    // allocated buffer that no emission will ever hand over (neither Flux.defer nor Flux.just release it on cancel).
+    return exchange.getResponse().writeWith(Mono.fromCallable(() -> {
       Charset charset = this.getCharset(contentType);
       DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer();
       try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset)) {
         this.evaluateTemplate(renderAttributes, locale, writer);
-        return Flux.just(dataBuffer);
+        return dataBuffer;
       } catch (Exception ex) {
         DataBufferUtils.release(dataBuffer);
-        return Flux.error(ex);
+        throw ex;
       }
-    }));
+    }).flux());
   }
 
   @Override
