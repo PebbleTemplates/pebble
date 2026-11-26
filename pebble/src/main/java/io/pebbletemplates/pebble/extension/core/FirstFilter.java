@@ -39,7 +39,7 @@ public class FirstFilter implements Filter {
 
     if (input instanceof String) {
       String inputString = (String) input;
-      return inputString.charAt(0);
+      return inputString.isEmpty() ? null : inputString.charAt(0);
     }
 
     if (input.getClass().isArray()) {
