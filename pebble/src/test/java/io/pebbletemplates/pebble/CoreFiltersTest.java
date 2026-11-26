@@ -841,6 +841,21 @@ class CoreFiltersTest {
   }
 
   @Test
+  void testFirstWithEmptyStringInput() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("{{ name | first }}");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("name", "");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("", writer.toString());
+  }
+
+  @Test
   void testJoin() throws PebbleException, IOException {
     PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
         .strictVariables(false).build();
@@ -1042,6 +1057,21 @@ class CoreFiltersTest {
     Writer writer = new StringWriter();
     template.evaluate(writer, context);
     assertEquals("x", writer.toString());
+  }
+
+  @Test
+  void testLastWithEmptyStringInput() throws PebbleException, IOException {
+    PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader())
+        .strictVariables(false).build();
+
+    PebbleTemplate template = pebble.getTemplate("{{ name | last }}");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("name", "");
+
+    Writer writer = new StringWriter();
+    template.evaluate(writer, context);
+    assertEquals("", writer.toString());
   }
 
   @Test

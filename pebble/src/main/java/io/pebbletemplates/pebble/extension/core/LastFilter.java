@@ -38,7 +38,7 @@ public class LastFilter implements Filter {
 
     if (input instanceof String) {
       String inputString = (String) input;
-      return inputString.charAt(inputString.length() - 1);
+      return inputString.isEmpty() ? null : inputString.charAt(inputString.length() - 1);
     }
 
     if (input.getClass().isArray()) {
