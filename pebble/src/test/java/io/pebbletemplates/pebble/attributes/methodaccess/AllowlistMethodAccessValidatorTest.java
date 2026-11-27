@@ -200,6 +200,19 @@ class AllowlistMethodAccessValidatorTest {
   }
 
   @Test
+  void repeatedCallsDependOnTheClassOfTheObject() throws Exception {
+    MethodAccessValidator underTest = AllowlistMethodAccessValidator.builder()
+        .allowMethod(String.class, "toString")
+        .build();
+    Method toString = Object.class.getMethod("toString");
+
+    for (int i = 0; i < 2; i++) {
+      assertThat(underTest.isMethodAccessAllowed("abc", toString)).isTrue();
+      assertThat(underTest.isMethodAccessAllowed(new StringBuilder(), toString)).isFalse();
+    }
+  }
+
+  @Test
   void nullObjectAndMethodAreAlwaysDenied() {
     AllowlistMethodAccessValidator validator = AllowlistMethodAccessValidator.builder()
         .allowDefaults().allowTypes(Object.class).build();
