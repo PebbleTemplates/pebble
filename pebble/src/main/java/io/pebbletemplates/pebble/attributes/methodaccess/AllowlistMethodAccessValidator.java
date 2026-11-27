@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * A {@link MethodAccessValidator} that denies every method call unless it has been explicitly
@@ -94,6 +96,8 @@ public final class AllowlistMethodAccessValidator implements MethodAccessValidat
   private final List<Class<?>> allowedTypes;
   private final List<String> allowedPackages;
   private final Map<Class<?>, Set<String>> allowedMethods;
+  private final ConcurrentMap<Class<?>, ConcurrentMap<Method, Boolean>> decisionCache =
+      new ConcurrentHashMap<>();
 
   private AllowlistMethodAccessValidator(Builder builder) {
     this.allowedTypes = Collections.unmodifiableList(new ArrayList<>(builder.allowedTypes));
@@ -116,7 +120,29 @@ public final class AllowlistMethodAccessValidator implements MethodAccessValidat
 
   @Override
   public boolean isMethodAccessAllowed(Object object, Method method) {
-    if (object == null || method == null || this.isAlwaysForbidden(object, method)) {
+    if (object == null || method == null) {
+      return false;
+    }
+    // the decision only depends on the class of the object and on the method
+    ConcurrentMap<Method, Boolean> decisions = this.decisionCache.get(object.getClass());
+    if (decisions == null) {
+      decisions = new ConcurrentHashMap<>();
+      ConcurrentMap<Method, Boolean> existing =
+          this.decisionCache.putIfAbsent(object.getClass(), decisions);
+      if (existing != null) {
+        decisions = existing;
+      }
+    }
+    Boolean allowed = decisions.get(method);
+    if (allowed == null) {
+      allowed = this.computeMethodAccessAllowed(object, method);
+      decisions.put(method, allowed);
+    }
+    return allowed;
+  }
+
+  private boolean computeMethodAccessAllowed(Object object, Method method) {
+    if (this.isAlwaysForbidden(object, method)) {
       return false;
     }
     return isAllowedByMethod(BUILTIN_METHODS, object, method)
